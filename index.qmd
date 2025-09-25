@@ -1,0 +1,23 @@
+---
+title: "Metabarcoding de comunidades de eucariontes"
+subtitle: "Curso impartido del 24 al 28 de noviembre del 2025 · 9:00–17:00 · ICMyL-UNAM"
+page-layout: article
+---
+
+> Integramos eDNA, metabarcoding, qPCR/ddPCR y análisis ecológico de comunidades con R.
+
+### Objetivos
+- comprender el flujo completo de trabajo en metabarcoding (del muestreo a los ASVs y métricas de comunidad).
+- adquirir habilidades prácticas con **DADA2** y **phyloseq** en R.
+- interpretar y comunicar resultados de diversidad y composición.
+
+### Logística
+- horario: 9:00–17:00 (13:00–15:00 comida).
+- modalidad: presencial con prácticas en computadora.
+- requisitos: cuenta de GitHub, **R** (≥4.3), **RStudio Desktop**, nociones básicas de R.
+
+### Estructura
+- **mañanas**: teoría y demostraciones.
+- **tardes**: prácticas guiadas en computadora.
+
+> El curso está orientado a análisis reproducibles; usaremos Quarto y repositorios de GitHub para compartir materiales.

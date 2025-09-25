@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Metabarcoding de comunidades de eucariontes"
+  navbar:
+    left:
+      - href: index.qmd
+        text: inicio
+      - href: syllabus.qmd
+        text: programa
+      - href: lectures.qmd
+        text: sesiones
+      - href: labs.qmd
+        text: prácticas
+      - href: homework.qmd
+        text: tareas
+      - href: final_project.qmd
+        text: proyecto final
+    right:
+      - icon: github
+        href: https://github.com/BiomicaLab/metabarcoding-curso
+format:
+  html:
+    theme: cosmo
+    toc: true
+    number-sections: false
+    lang: es
+    code-fold: show
+    df-print: paged
+
+execute:
+  freeze: auto

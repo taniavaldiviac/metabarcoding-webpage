@@ -1,0 +1,19 @@
+---
+title: "Programa"
+---
+
+## visión general
+Este curso introduce conceptos y prácticas del **eDNA metabarcoding** enfocados en comunidades de eucariontes: diseño de muestreo, extracción, bibliotecas, secuenciación, **DADA2**, asignación taxonómica, curación y análisis ecológico (beta diversidad, ordenación, modelos básicos).
+
+## calendario (27–31 oct 2025)
+- **día 1** · fundamentos eDNA y diseño de estudios; instalación de software y prueba de entorno.
+- **día 2** · calidad de lecturas, filtrado/truncado, aprendizaje de errores y *denoising* con DADA2.
+- **día 3** · *merge*, *chimera removal*, tabla de ASVs, controles y *track* de reads; asignación taxonómica.
+- **día 4** · *phyloseq*: rarefacción, alfa/beta, NMDS/PCoA; visualización reproducible.
+- **día 5** · reporte reproducible con Quarto; proyecto integrador y presentaciones cortas.
+
+## evaluación
+- tareas prácticas (40%), participación (20%), proyecto final (40%).
+
+## accesibilidad y conducta
+Ambiente inclusivo y respetuoso. Adaptaciones disponibles bajo solicitud.

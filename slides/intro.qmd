@@ -1,0 +1,27 @@
+---
+title: "metabarcoding: panorama general"
+format: revealjs
+execute:
+  echo: true
+  warning: false
+---
+
+## ¿por qué eDNA?
+- no invasivo, sensible, trazable
+- complementa métodos visuales/acústicos
+
+---
+
+## flujo general
+1. muestreo y preservación
+2. extracción y *library prep*
+3. secuenciación
+4. **DADA2** → ASVs
+5. taxonomía, curación y análisis de comunidad
+
+---
+
+## QA/QC (dMIQE)
+- blancos de campo y laboratorio
+- *mock communities*
+- réplicas técnicas/biológicas

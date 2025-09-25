@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "homework.html",
+    "href": "homework.html",
+    "title": "tareas",
+    "section": "",
+    "text": "T1: limpieza y QC de lecturas en un subset (subir .html y .qmd).\nT2: tabla de ASVs y tracking de reads con gráfico de flujo.\nT3: taxonomía y reporte de incertidumbre.\nT4: análisis de comunidad con phyloseq y visualizaciones.\n\nEntrega vía Issues o GitHub Classroom (ver indicaciones del repo)."
+  },
+  {
+    "objectID": "labs.html",
+    "href": "labs.html",
+    "title": "prácticas",
+    "section": "",
+    "text": "Cada práctica incluye objetivos, datos, y un cuaderno ejecutable en R.\n\nsetup del entorno: instalación/verificación de R, RStudio y paquetes; clonar repo del curso.\nDADA2 I: inspección de calidad, filterAndTrim, parámetros de truncado, error learning.\nDADA2 II: dada, merge pairs, removeBimeraDenovo, construcción de tabla de ASVs.\nasignación taxonómica: assignTaxonomy / assignSpecies y bases de referencia; hash-based opcional.\nphyloseq: importación, rarefacción (si aplica), diversidad alfa/beta, NMDS/PCoA.\nreporte reproducible: Quarto + figuras estandarizadas.\n\n\nNota: incluiremos controles, réplicas, y mock communities para enfatizar dMIQE/MIQE."
+  },
+  {
+    "objectID": "final_project.html",
+    "href": "final_project.html",
+    "title": "proyecto final",
+    "section": "",
+    "text": "El proyecto integra el pipeline de principio a fin sobre un dataset pequeño o datos propios.\nentregables 1. plan del proyecto (1 página) con pregunta, datos y criterios de éxito. 2. presentación corta (5–7 min) el 31 de oct. 3. reporte reproducible (.qmd → .html) con código y figuras.\ncriterios - claridad de la pregunta y justificación. - trazabilidad del análisis (código limpio, semillas, sesión). - interpretación ecológica y límites del método."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Metabarcoding de comunidades de eucariontes",
+    "section": "",
+    "text": "Integramos eDNA, metabarcoding, qPCR/ddPCR y análisis ecológico de comunidades con R.\n\n\nobjetivos\n\ncomprender el flujo completo de trabajo en metabarcoding (del muestreo a los ASVs y métricas de comunidad).\nadquirir habilidades prácticas con DADA2 y phyloseq en R.\ninterpretar y comunicar resultados de diversidad y composición.\n\n\n\nlogística\n\nhorario: 9:00–15:00 (12:00–13:00 almuerzo).\nmodalidad: presencial con prácticas en computadora.\nrequisitos: cuenta de GitHub, R (≥4.3), RStudio Desktop, nociones básicas de R.\n\n\n\nestructura\n\nmañanas: teoría y demostraciones.\ntardes: prácticas guiadas en computador.\n\n\nEl curso está orientado a análisis reproducibles; usaremos Quarto y repositorios de GitHub para compartir materiales."
+  },
+  {
+    "objectID": "slides/intro.html#por-qué-edna",
+    "href": "slides/intro.html#por-qué-edna",
+    "title": "metabarcoding: panorama general",
+    "section": "¿por qué eDNA?",
+    "text": "¿por qué eDNA?\n\nno invasivo, sensible, trazable\ncomplementa métodos visuales/acústicos"
+  },
+  {
+    "objectID": "slides/intro.html#flujo-general",
+    "href": "slides/intro.html#flujo-general",
+    "title": "metabarcoding: panorama general",
+    "section": "flujo general",
+    "text": "flujo general\n\nmuestreo y preservación\nextracción y library prep\nsecuenciación\nDADA2 → ASVs\ntaxonomía, curación y análisis de comunidad"
+  },
+  {
+    "objectID": "slides/intro.html#qaqc-dmiqe",
+    "href": "slides/intro.html#qaqc-dmiqe",
+    "title": "metabarcoding: panorama general",
+    "section": "QA/QC (dMIQE)",
+    "text": "QA/QC (dMIQE)\n\nblancos de campo y laboratorio\nmock communities\nréplicas técnicas/biológicas"
+  },
+  {
+    "objectID": "lectures.html",
+    "href": "lectures.html",
+    "title": "sesiones",
+    "section": "",
+    "text": "A continuación un esquema de sesiones y materiales. Las diapositivas estarán en formato HTML (revealjs) y el código fuente en .qmd.\n\n\n\nfecha\ntema\ndiapositivas\nfuente\n\n\n\n\n27 oct\n¿qué es eDNA/metabarcoding? flujo de trabajo y QA/QC\nintroducción\nintro.qmd\n\n\n28 oct\npipeline DADA2 parte 1\n—\n—\n\n\n29 oct\npipeline DADA2 parte 2\n—\n—\n\n\n30 oct\nphyloseq y diversidad\n—\n—\n\n\n31 oct\ncomunicar resultados con Quarto\n—\n—"
+  },
+  {
+    "objectID": "syllabus.html",
+    "href": "syllabus.html",
+    "title": "programa",
+    "section": "",
+    "text": "Este curso introduce conceptos y prácticas del eDNA metabarcoding enfocados en comunidades de eucariontes: diseño de muestreo, extracción, bibliotecas, secuenciación, DADA2, asignación taxonómica, curación y análisis ecológico (beta diversidad, ordenación, modelos básicos)."
+  },
+  {
+    "objectID": "syllabus.html#visión-general",
+    "href": "syllabus.html#visión-general",
+    "title": "programa",
+    "section": "",
+    "text": "Este curso introduce conceptos y prácticas del eDNA metabarcoding enfocados en comunidades de eucariontes: diseño de muestreo, extracción, bibliotecas, secuenciación, DADA2, asignación taxonómica, curación y análisis ecológico (beta diversidad, ordenación, modelos básicos)."
+  },
+  {
+    "objectID": "syllabus.html#calendario-2731-oct-2025",
+    "href": "syllabus.html#calendario-2731-oct-2025",
+    "title": "programa",
+    "section": "calendario (27–31 oct 2025)",
+    "text": "calendario (27–31 oct 2025)\n\ndía 1 · fundamentos eDNA y diseño de estudios; instalación de software y prueba de entorno.\ndía 2 · calidad de lecturas, filtrado/truncado, aprendizaje de errores y denoising con DADA2.\ndía 3 · merge, chimera removal, tabla de ASVs, controles y track de reads; asignación taxonómica.\ndía 4 · phyloseq: rarefacción, alfa/beta, NMDS/PCoA; visualización reproducible.\ndía 5 · reporte reproducible con Quarto; proyecto integrador y presentaciones cortas."
+  },
+  {
+    "objectID": "syllabus.html#evaluación",
+    "href": "syllabus.html#evaluación",
+    "title": "programa",
+    "section": "evaluación",
+    "text": "evaluación\n\ntareas prácticas (40%), participación (20%), proyecto final (40%)."
+  },
+  {
+    "objectID": "syllabus.html#accesibilidad-y-conducta",
+    "href": "syllabus.html#accesibilidad-y-conducta",
+    "title": "programa",
+    "section": "accesibilidad y conducta",
+    "text": "accesibilidad y conducta\nAmbiente inclusivo y respetuoso. Adaptaciones disponibles bajo solicitud."
+  }
+]

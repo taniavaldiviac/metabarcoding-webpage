@@ -1,0 +1,14 @@
+---
+title: "Prácticas"
+---
+
+Cada práctica incluye objetivos, datos, y un cuaderno ejecutable en R.
+
+1. **setup del entorno**: instalación/verificación de R, RStudio y paquetes; clonar repo del curso.
+2. **DADA2 I**: inspección de calidad, `filterAndTrim`, parámetros de truncado, *error learning*.
+3. **DADA2 II**: `dada`, *merge pairs*, `removeBimeraDenovo`, construcción de tabla de ASVs.
+4. **asignación taxonómica**: `assignTaxonomy` / `assignSpecies` y bases de referencia; *hash-based* opcional.
+5. **phyloseq**: importación, rarefacción (si aplica), diversidad alfa/beta, NMDS/PCoA.
+6. **reporte reproducible**: Quarto + figuras estandarizadas.
+
+> Nota: incluiremos **controles**, réplicas, y *mock communities* para enfatizar dMIQE/MIQE.

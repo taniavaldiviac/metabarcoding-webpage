@@ -1,0 +1,15 @@
+---
+title: "Proyecto final"
+---
+
+El proyecto integra el pipeline de principio a fin sobre un *dataset* pequeño o datos propios.
+
+**entregables**
+1. plan del proyecto (1 página) con pregunta, datos y criterios de éxito.
+2. presentación corta (5–7 min) el 31 de oct.
+3. reporte reproducible (.qmd → .html) con código y figuras.
+
+**criterios**
+- claridad de la pregunta y justificación.
+- trazabilidad del análisis (código limpio, semillas, sesión).
+- interpretación ecológica y límites del método.

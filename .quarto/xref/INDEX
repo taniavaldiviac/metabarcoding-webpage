@@ -1,0 +1,23 @@
+{
+  "homework.qmd": {
+    "homework.html": "97782be9"
+  },
+  "labs.qmd": {
+    "labs.html": "6a293da5"
+  },
+  "final_project.qmd": {
+    "final_project.html": "10a020af"
+  },
+  "index.qmd": {
+    "index.html": "ead747db"
+  },
+  "slides/intro.qmd": {
+    "intro.html": "ff6cc983"
+  },
+  "lectures.qmd": {
+    "lectures.html": "0f39cff7"
+  },
+  "syllabus.qmd": {
+    "syllabus.html": "85d454df"
+  }
+}
