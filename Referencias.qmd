@@ -1,0 +1,135 @@
+---
+title: "Metabarcoding de comunidades de eucariontes"
+subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+author: "Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: left
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+Beng, K. C., & Corlett, R. T.
+(2020).
+Applications of environmental DNA (eDNA) in ecology and conservation: opportunities, challenges and prospects.
+*Biodiversity and Conservation*, *29*(7), 2089–2121.
+https://doi.org/10.1007/s10531-020-01980-0\
+\
+Bowers, H. A., Pochon, X., von Ammon, U., Gemmell, N., Stanton, J.-A. L., Jeunen, G.-J., Sherman, C. D. H., & Zaiko, A.
+(n.d.).
+*Towards the Optimization of eDNA/eRNA Sampling Technologies for Marine Biosecurity Surveillance*.
+https://doi.org/10.3390/w13081113\
+\
+Callahan, B. J., McMurdie, P. J., Rosen, M. J., Han, A. W., Johnson, A. J. A., & Holmes, S. P. (2016).
+DADA2: High-resolution sample inference from Illumina amplicon data.
+*Nature Methods*, *13*(7), 581–583.
+https://doi.org/10.1038/nmeth.3869\
+\
+Dickie, I. A., Boyer, S., Buckley, H. L., Duncan, R. P., Gardner, P. P., Hogg, I. D., Holdaway, R. J., Lear, G., Makiola, A., Morales, S. E., Powell, J. R., & Weaver, L.
+(2018).
+Towards robust and repeatable sampling methods in eDNA-based studies.
+*Molecular Ecology Resources*, *18*(5), 940–952.
+https://doi.org/10.1111/1755-0998.12907\
+\
+Gold, Z., Wall, A. R., Schweizer, T. M., Pentcheff, N. D., Curd, E. E., Barber, P. H., Meyer, R. S., Wayne, R., Stolzenbach, K., Prickett, K., Luedy, J., & Wetzer, R.
+(2022).
+A manager’s guide to using eDNA metabarcoding in marine ecosystems.
+*PeerJ*, *10*(e14071), e14071.
+https://doi.org/10.7717/peerj.14071\
+\
+Hakimzadeh, A., Abdala Asbun, A., Albanese, D., Bernard, M., Buchner, D., Callahan, B., Caporaso, J. G., Curd, E., Djemiel, C., Brandström Durling, M., Elbrecht, V., Gold, Z., Gweon, H. S., Hajibabaei, M., Hildebrand, F., Mikryukov, V., Normandeau, E., Özkurt, E., M Palmer, J., … Anslan, S.
+(2024).
+A pile of pipelines: An overview of the bioinformatics software for metabarcoding data analyses.
+*Molecular Ecology Resources*, *24*(5), e13847.
+https://doi.org/10.1111/1755-0998.13847\
+\
+Kumar, G., Eble, J. E., & Gaither, M. R.
+(2020).
+A practical guide to sample preservation and pre-PCR processing of aquatic environmental DNA.
+*Molecular Ecology Resources*, *20*(1), 29–39.
+https://doi.org/10.1111/1755-0998.13107\
+\
+Lamy, T., Pitz, K. J., Chavez, F. P., Yorke, C. E., & Miller, R. J.
+(2021).
+Environmental DNA reveals the fine-grained and hierarchical spatial structure of kelp forest fish communities.
+*Scientific Reports*, *11*(1), 14439.
+https://doi.org/10.1038/s41598-021-93859-5\
+\
+Macher, T.-H., Arle, J., Beermann, A. J., Frank, L., Hupało, K., Koschorreck, J., Schütz, R., & Leese, F.
+(2024).
+Is it worth the extra mile?
+Comparing environmental DNA and RNA metabarcoding for vertebrate and invertebrate biodiversity surveys in a lowland stream.
+*PeerJ*, *12*, e18016.
+https://doi.org/10.7717/peerj.18016\
+\
+Marchesi, J. R., & Ravel, J.
+(2015).
+The vocabulary of microbiome research: a proposal.
+*Microbiome*, *3*(1), 31.
+https://doi.org/10.1186/s40168-015-0094-5\
+\
+Morey, K. C., Myler, E., Hanner, R., & Tetreault, G.
+(2024).
+Taxonomic blind spots: A limitation of environmental DNA metabarcoding‐based detection for Canadian freshwater fishes.
+*Environmental DNA (Hoboken, N.J.)*, *6*(6), e70054.
+https://doi.org/10.1002/edn3.70054\
+\
+Patin, N. V., & Goodwin, K. D.
+(2022).
+Capturing marine microbiomes and environmental DNA: A field sampling guide.
+*Frontiers in Microbiology*, *13*, 1026596.
+https://doi.org/10.3389/fmicb.2022.1026596\
+\
+Pawlowski, J., Bruce, K., Panksep, K., Aguirre, F. I., Amalfitano, S., Apothéloz-Perret-Gentil, L., Baussant, T., Bouchez, A., Carugati, L., Cermakova, K., Cordier, T., Corinaldesi, C., Costa, F. O., Danovaro, R., Dell’Anno, A., Duarte, S., Eisendle, U., Ferrari, B. J. D., Frontalini, F., … Fazi, S.
+(2022).
+Environmental DNA metabarcoding for benthic monitoring: A review of sediment sampling and DNA extraction methods.
+*The Science of the Total Environment*, *818*(151783), 151783.
+https://doi.org/10.1016/j.scitotenv.2021.151783\
+\
+Pawlowski, Jan, Apothéloz-Perret-Gentil, L., & Altermatt, F.
+(2020).
+Environmental DNA: What’s behind the term?
+Clarifying the terminology and recommendations for its future use in biomonitoring.
+*Molecular Ecology*, *29*(22), 4258–4264.
+https://doi.org/10.1111/mec.15643\
+\
+Rodriguez-Ezpeleta, N., Morissette, O., Bean, C. W., Manu, S., Banerjee, P., Lacoursière-Roussel, A., Beng, K. C., Alter, S. E., Roger, F., Holman, L. E., Stewart, K. A., Monaghan, M. T., Mauvisseau, Q., Mirimin, L., Wangensteen, O. S., Antognazza, C. M., Helyar, S. J., de Boer, H., Monchamp, M.-E., … Deiner, K.
+(2021).
+Trade-offs between reducing complex terminology and producing accurate interpretations from environmental DNA: Comment on “Environmental DNA: What’s behind the term?”
+by Pawlowski et al., (2020).
+*Molecular Ecology*, *30*(19), 4601–4605.
+https://doi.org/10.1111/mec.15942\
+\
+Ruppert, K. M., Kline, R. J., & Rahman, M. S.
+(2019).
+Past, present, and future perspectives of environmental DNA (eDNA) metabarcoding: A systematic review in methods, monitoring, and applications of global eDNA.
+*Global Ecology and Conservation*, *17*, e00547.
+https://doi.org/10.1016/j.gecco.2019.e00547\
+\
+Weigand, H., Beermann, A. J., Čiampor, F., Costa, F. O., Csabai, Z., Duarte, S., Geiger, M. F., Grabowski, M., Rimet, F., Rulik, B., Strand, M., Szucsich, N., Weigand, A. M., Willassen, E., Wyler, S. A., Bouchez, A., Borja, A., Čiamporová-Zaťovičová, Z., Ferreira, S., … Ekrem, T.
+(2019).
+DNA barcode reference libraries for the monitoring of aquatic biota in Europe: Gap-analysis and recommendations for future work.
+*The Science of the Total Environment*, *678*, 499–524.
+https://doi.org/10.1016/j.scitotenv.2019.04.247\
+\
+Williams, J., Pettorelli, N., Dowell, R., Macdonald, K., Meyer, C., Steyaert, M., Tweedt, S., & Ransome, E.
+(2024).
+SimpleMetaPipeline: Breaking the bioinformatics bottleneck in metabarcoding.
+*Methods in Ecology and Evolution*, *15*(11), 1949–1957.
+https://doi.org/10.1111/2041-210x.14434\
+\
+Zainal Abidin, D. H., Mohd Nor, S. A., Lavoué, S., A Rahim, M., & Mohammed Akib, N. A.
+(2022).
+Assessing a megadiverse but poorly known community of fishes in a tropical mangrove estuary through environmental DNA (eDNA) metabarcoding.
+*Scientific Reports*, *12*(1), 16346.
+https://doi.org/10.1038/s41598-022-19954-3\
+\
+Zarcero, J., Antich, A., Rius, M., Wangensteen, O. S., & Turon, X.
+(2024).
+A new sampling device for metabarcoding surveillance of port communities and detection of non-indigenous species.
+*iScience*, *27*(1), 108588.
+https://doi.org/10.1016/j.isci.2023.108588

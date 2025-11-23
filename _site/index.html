@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)">
 
-<title>Metabarcoding de comunidades de eucariontes</title>
+<title>Metabarcoding de comunidades de eucariontes - Metabarcoding en comunidades de eucariontes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -81,32 +82,55 @@ ul.task-list li input[type="checkbox"] {
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
- <span class="menu-text">inicio</span></a>
+ <span class="menu-text">Sobre el curso</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./syllabus.html" rel="" target="">
- <span class="menu-text">programa</span></a>
+    <a class="nav-link" href="./programa.html" rel="" target="">
+ <span class="menu-text">Programa</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./lectures.html" rel="" target="">
- <span class="menu-text">sesiones</span></a>
+    <a class="nav-link" href="./sesiones.html" rel="" target="">
+ <span class="menu-text">Sesiones</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./labs.html" rel="" target="">
- <span class="menu-text">prácticas</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-curso2025" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Curso2025</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-curso2025">    
+        <li>
+    <a class="dropdown-item" href="./0-IntroQAQC.html" rel="" target="">
+ <span class="dropdown-text">Control de calidad QAQC</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./homework.html" rel="" target="">
- <span class="menu-text">tareas</span></a>
+        <li>
+    <a class="dropdown-item" href="./1-qaqc-cutadapt.html" rel="" target="">
+ <span class="dropdown-text">QAQC y recorte de primers con Cutadapt</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Introducción</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Prep.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Preparación y Filtrado Inicial</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Filter.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Filter and Trim</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Error.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Análisis de Tasas de Error</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item">
-    <a class="nav-link" href="./final_project.html" rel="" target="">
- <span class="menu-text">proyecto final</span></a>
+    <a class="nav-link" href="./Referencias.html" rel="" target="">
+ <span class="menu-text">Referencias</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/BiomicaLab/metabarcoding-curso" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/taniavaldiviac/metabarcoding2025" rel="" target=""><i class="bi bi-github" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -118,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
@@ -126,25 +150,36 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#objetivos" id="toc-objetivos" class="nav-link active" data-scroll-target="#objetivos">objetivos</a></li>
-  <li><a href="#logística" id="toc-logística" class="nav-link" data-scroll-target="#logística">logística</a></li>
-  <li><a href="#estructura" id="toc-estructura" class="nav-link" data-scroll-target="#estructura">estructura</a></li>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a></li>
+  <li><a href="#descripción-del-curso" id="toc-descripción-del-curso" class="nav-link" data-scroll-target="#descripción-del-curso">Descripción del curso</a></li>
+  <li><a href="#a-quién-va-dirigido" id="toc-a-quién-va-dirigido" class="nav-link" data-scroll-target="#a-quién-va-dirigido">A quién va dirigido</a></li>
+  <li><a href="#visión" id="toc-visión" class="nav-link" data-scroll-target="#visión">Visión</a></li>
+  <li><a href="#misión" id="toc-misión" class="nav-link" data-scroll-target="#misión">Misión</a></li>
+  <li><a href="#objetivo" id="toc-objetivo" class="nav-link" data-scroll-target="#objetivo">Objetivo</a></li>
+  <li><a href="#instructores-participantesinstitución" id="toc-instructores-participantesinstitución" class="nav-link" data-scroll-target="#instructores-participantesinstitución">Instructores participantes/Institución</a></li>
+  <li><a href="#temario-abreviado-del-curso-por-día" id="toc-temario-abreviado-del-curso-por-día" class="nav-link" data-scroll-target="#temario-abreviado-del-curso-por-día">Temario abreviado del curso por día</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Metabarcoding de comunidades de eucariontes</h1>
-<p class="subtitle lead">Curso intensivo — 27–31 de octubre de 2025 · 9:00–15:00 · Sala de cómputo posgrado</p>
+<h1 class="title">Metabarcoding en comunidades de eucariontes</h1>
+<p class="subtitle lead">24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)</p>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx) </p>
+          </div>
+  </div>
     
   
     
@@ -153,34 +188,56 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<blockquote class="blockquote">
-<p>Integramos eDNA, metabarcoding, qPCR/ddPCR y análisis ecológico de comunidades con R.</p>
-</blockquote>
-<section id="objetivos" class="level3">
-<h3 class="anchored" data-anchor-id="objetivos">objetivos</h3>
-<ul>
-<li>comprender el flujo completo de trabajo en metabarcoding (del muestreo a los ASVs y métricas de comunidad).</li>
-<li>adquirir habilidades prácticas con <strong>DADA2</strong> y <strong>phyloseq</strong> en R.</li>
-<li>interpretar y comunicar resultados de diversidad y composición.</li>
-</ul>
+<section id="introducción" class="level2">
+<h2 class="anchored" data-anchor-id="introducción">Introducción</h2>
+<p>Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo. Sus aplicaciones potenciales incluyen análisis de la calidad del agua, evaluación de la biodiversidad de suelos, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado.</p>
 </section>
-<section id="logística" class="level3">
-<h3 class="anchored" data-anchor-id="logística">logística</h3>
-<ul>
-<li>horario: 9:00–15:00 (12:00–13:00 almuerzo).</li>
-<li>modalidad: presencial con prácticas en computadora.</li>
-<li>requisitos: cuenta de GitHub, <strong>R</strong> (≥4.3), <strong>RStudio Desktop</strong>, nociones básicas de R.</li>
-</ul>
+<section id="descripción-del-curso" class="level2">
+<h2 class="anchored" data-anchor-id="descripción-del-curso">Descripción del curso</h2>
+<p>El curso “<strong>Metabarcoding de comunidades de eucariontes</strong>” está diseñado para introducir a estudiantes de posgrado, investigadores y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad mediante técnicas basadas en ADN ambiental (eDNA). A lo largo de cinco días intensivos, los participantes adquirirán conocimientos teóricos y habilidades prácticas para implementar proyectos de metabarcoding, desde el diseño experimental y la recolección de muestras, hasta el procesamiento bioinformático y el análisis ecológico de datos. El curso se centrará en el uso de la herramienta DADA2 para la inferencia de variantes de secuencia (ASVs), control de calidad, remoción de errores y asignación taxonómica. También se incluirán sesiones sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación. Se fomentará un ambiente colaborativo y participativo, con sesiones prácticas guiadas que permitirán a los asistentes aplicar lo aprendido a proyectos reales. El curso culmina con la presentación de proyectos diseñados por los participantes, promoviendo la integración de los conceptos y herramientas adquiridos.</p>
 </section>
-<section id="estructura" class="level3">
-<h3 class="anchored" data-anchor-id="estructura">estructura</h3>
+<section id="a-quién-va-dirigido" class="level2">
+<h2 class="anchored" data-anchor-id="a-quién-va-dirigido">A quién va dirigido</h2>
+<p>Este taller está dirigido principalmente a estudiantes de posgrado, investigadores y técnicos con conocimientos previos en ecología, biodiversidad o biología de comunidades que quieran aprender nuevas herramientas moleculares y bioinformáticas para estudiar la biodiversidad y a los investigadores en otras áreas de la bioinformática que quieran aprender métodos genéticos para la evaluación de la biodiversidad y otras aplicaciones ecológicas. En general, es adecuado para todo investigador que quiera unirse a la creciente comunidad internacional de usuarios del metabarcoding. En este taller se tratarán principalmente técnicas y software útiles para el metabarcoding de eucariontes.</p>
+</section>
+<section id="visión" class="level2">
+<h2 class="anchored" data-anchor-id="visión">Visión</h2>
+<p>Contribuir a la formación continua e interdisciplinaria, capaz de aplicar de manera crítica y efectiva herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad en ecosistemas marinos con la técnica de metabarcoding. Buscamos empoderar a investigadores, estudiantes y técnicos con los conocimientos y habilidades necesarias para incorporar el ADN ambiental y el metabarcoding en sus proyectos de investigación, evaluación ambiental y conservación biológica. Aspiramos a que los participantes no solo dominen los aspectos técnicos del procesamiento y análisis de datos de eDNA, sino que también comprendan el potencial transformador de estas metodologías para generar conocimiento útil, reproducible y de alto impacto en la gestión de la biodiversidad. Promovemos una visión integradora, donde la ciencia molecular se pone al servicio de la ecología, la conservación y la toma de decisiones basada en evidencia.</p>
+</section>
+<section id="misión" class="level2">
+<h2 class="anchored" data-anchor-id="misión">Misión</h2>
+<p>El curso tiene como misión capacitar a investigadores, estudiantes y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. A través de una combinación de teoría y práctica, buscamos proporcionar conocimientos sólidos sobre el metabarcoding, desde la recolección y procesamiento de muestras hasta el análisis e interpretación de datos con enfoques bioinformáticos. Nuestro objetivo es empoderar a los participantes con habilidades técnicas y analíticas que les permitan diseñar e implementar estudios basados en ADN ambiental, optimizando la detección de especies y la evaluación de comunidades biológicas. Fomentamos la adopción de metodologías estandarizadas y reproducibles que faciliten la generación de datos confiables y comparables a nivel global. A través de este curso, promovemos la formación de una comunidad interdisciplinaria comprometida con la aplicación de la genética y la bioinformática en la conservación y monitoreo de la biodiversidad marina, impulsando el uso de tecnologías innovadoras para la toma de decisiones informadas en investigación y gestión ambiental.</p>
+</section>
+<section id="objetivo" class="level2">
+<h2 class="anchored" data-anchor-id="objetivo">Objetivo</h2>
+<p>El objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding y qPCR para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2. Este curso busca proporcionar las habilidades necesarias para:</p>
 <ul>
-<li><strong>mañanas</strong>: teoría y demostraciones.</li>
-<li><strong>tardes</strong>: prácticas guiadas en computador.</li>
+<li><p>Comprender los fundamentos teóricos del metabarcoding aplicado a muestras ambientales en estudios ecológicos.</p></li>
+<li><p>Aplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.</p></li>
+<li><p>Implementar pipelines bioinformáticos para el procesamiento y análisis de secuencias, con énfasis en control de calidad, asignación taxonómica y análisis de diversidad.</p></li>
+<li><p>Interpretar resultados ecológicos y generar visualizaciones efectivas para estudios de biodiversidad.</p></li>
+<li><p>Diseñar estudios de metabarcoding adaptados a distintas preguntas ecológicas y de conservación.</p></li>
 </ul>
-<blockquote class="blockquote">
-<p>El curso está orientado a análisis reproducibles; usaremos Quarto y repositorios de GitHub para compartir materiales.</p>
-</blockquote>
+<p>Al finalizar el curso, los participantes estarán preparados para integrar el metabarcoding en sus proyectos de investigación y contribuir al desarrollo de estrategias de monitoreo de biodiversidad en ecosistemas marinos.</p>
+</section>
+<section id="instructores-participantesinstitución" class="level2">
+<h2 class="anchored" data-anchor-id="instructores-participantesinstitución">Instructores participantes/Institución</h2>
+<p>Dra. Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI</p>
+<p>Dr.&nbsp;Fausto Valenzuela Quiñonez, Investigador Titular B CIBNOR</p>
+</section>
+<section id="temario-abreviado-del-curso-por-día" class="level2">
+<h2 class="anchored" data-anchor-id="temario-abreviado-del-curso-por-día">Temario abreviado del curso por día</h2>
+<p>Durante cinco días intensivos, el curso combinará sesiones teórico-prácticas proporcionando a las y los participantes una formación completa sobre el uso del ADN ambiental (eDNA) y el metabarcoding en el estudio de comunidades eucarióticas en ecosistemas marinos.</p>
+<p><strong>Lunes:</strong></p>
+<p>El curso inicia con la presentación del equipo docente y de los participantes, creando un espacio de intercambio y colaboración entre personas con intereses afines. Posteriormente, se ofrece una introducción general al ADN ambiental, el metabarcoding y las técnicas de detección específica mediante qPCR y ddPCR. Se discutirán los fundamentos conceptuales, ventajas y limitaciones de cada enfoque, así como sus aplicaciones actuales en ecología y conservación. Por la tarde, se abordarán los principios del diseño experimental y del diseño de proyectos con eDNA, considerando aspectos como el tipo de muestra, el número de réplicas, el marcador genético y los objetivos del estudio. Luego, se presentarán las técnicas de muestreo en campo para recolección de eDNA y las mejores prácticas para evitar contaminación. La jornada concluirá con una revisión del flujo de trabajo en laboratorio: extracción de ADN, selección de primers, amplificación por PCR y preparación de librerías para secuenciación masiva.</p>
+<p><strong>Martes:</strong></p>
+<p>El segundo día se enfoca en los aspectos computacionales del análisis bioinformático. Se inicia con una introducción a los entornos de trabajo Linux, Unix y R, necesarios para manejar archivos de secuenciación y ejecutar pipelines reproducibles. Más adelante, se guiará a las y los participantes en la conexión a un servidor remoto, donde trabajarán durante el curso, y se revisarán aspectos clave de la organización de carpetas, la carga de archivos y el uso básico de la terminal. En la sesión práctica de la tarde se trabajará con datos crudos en formato FASTQ, reconociendo su estructura y visualizando la calidad de las lecturas. Luego se introducirá el control de calidad, incluyendo el filtrado y trimming de secuencias con DADA2, y finalmente se ejecutará el paso de aprendizaje del error, fundamental para la posterior inferencia precisa de variantes.</p>
+<p><strong>Miércoles:</strong></p>
+<p>Durante este día se abordará el núcleo del pipeline de DADA2. Por la mañana se cubrirá la inferencia de ASVs (Amplicon Sequence Variants) mediante métodos de denoising, que permiten distinguir secuencias reales de ruido técnico. Se discutirá también el concepto de clustering y su diferencia con los métodos basados en ASVs. A continuación, se trabajará con la unión de lecturas forward y reverse (paired-end), evaluando la eficiencia del ensamblaje. En la tarde se aplicará la remoción de secuencias quiméricas generadas durante la PCR, y posteriormente se ejecutará la asignación taxonómica, donde se vinculan las secuencias con su posible identidad biológica usando bases de datos como SILVA o PR2.</p>
+<p><strong>Jueves:</strong></p>
+<p>Este día está dedicado al procesamiento final y al análisis ecológico de los datos. Se iniciará con la generación de la tabla de abundancia de ASVs por muestra (ASV table) y la tabla taxonómica (tax table), integrando toda la información en objetos de R listos para el análisis. Luego se presentarán herramientas como phyloseq, vegan y ggplot2, útiles para realizar análisis ecológicos y visualización de datos metabarcoding. Por la tarde se explorarán los patrones de diversidad α y β, y se aprenderá a representarlos gráficamente mediante barplots, rarefacción, análisis multivariados (PCA, nMDS, etc.). Finalmente, se discutirá cómo diferentes barcodes (COI, 18S, 12S) pueden influir en los resultados de un estudio, comparando sus alcances, sesgos y utilidad para distintos grupos taxonómicos.</p>
+<p><strong>Viernes:</strong></p>
+<p>El último día comienza con el uso de controles negativos y el filtrado de contaminantes con el paquete decontam, una herramienta crucial para asegurar la confiabilidad de los datos. Después, se presentarán métodos alternativos para la generación de OTUs mediante agrupamiento por similitud con VSEARCH o el paquete clustur en R, permitiendo comparar este enfoque con el uso de ASVs. En la sesión de la tarde se abordarán temas auxiliares, según el interés del grupo, como la construcción de bases de datos personalizadas, diseño de primers in silico o estrategias de documentación reproducible. El curso cierra con una sesión de presentación de proyectos en la que los participantes compartirán ideas desarrolladas durante la semana, recibiendo retroalimentación del equipo docente y sus compañeros, y consolidando así su aprendizaje de manera aplicada y colaborativa.</p>
 
 
 </section>
@@ -420,6 +477,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">© 2025 Todos los derechos reservados</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

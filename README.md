@@ -15,7 +15,7 @@ Sitio del curso construido con **Quarto** y publicado con **GitHub Pages**.
    - Revisa el *workflow* de Actions en `.github/workflows/quarto-publish.yml`.
 
 ## paquetes sugeridos
-`tidyverse`, `ShortRead`, `Biostrings`, `dada2`, `phyloseq`, `vegan`, `ggplot2`, `patchwork`, `knitr`.
+`renv`, `tidyverse`, `phyloseq`, `vegan`, `DECIPHER`, `Biostrings`, `dada2`, `ShortRead`, `ggplot2`
 
 ## estructura
 - `_quarto.yml` configuración del sitio

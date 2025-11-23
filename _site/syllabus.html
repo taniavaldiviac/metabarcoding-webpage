@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Metabarcoding de comunidades de eucariontes - programa</title>
+<title>Metabarcoding de comunidades de eucariontes - Metabarcoding en comunidades de eucariontes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -62,7 +62,7 @@ ul.task-list li input[type="checkbox"] {
 
 </head>
 
-<body class="nav-fixed">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -81,32 +81,55 @@ ul.task-list li input[type="checkbox"] {
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link" href="./index.html" rel="" target="">
- <span class="menu-text">inicio</span></a>
+ <span class="menu-text">Sobre el curso</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./syllabus.html" rel="" target="" aria-current="page">
- <span class="menu-text">programa</span></a>
+    <a class="nav-link" href="./programa.html" rel="" target="">
+ <span class="menu-text">Programa</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./lectures.html" rel="" target="">
- <span class="menu-text">sesiones</span></a>
+    <a class="nav-link" href="./sesiones.html" rel="" target="">
+ <span class="menu-text">Sesiones</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./labs.html" rel="" target="">
- <span class="menu-text">prácticas</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-curso2025" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Curso2025</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-curso2025">    
+        <li>
+    <a class="dropdown-item" href="./0-IntroQAQC.html" rel="" target="">
+ <span class="dropdown-text">Control de calidad QAQC</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./homework.html" rel="" target="">
- <span class="menu-text">tareas</span></a>
+        <li>
+    <a class="dropdown-item" href="./1-qaqc-cutadapt.html" rel="" target="">
+ <span class="dropdown-text">QAQC y recorte de primers con Cutadapt</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Introducción</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Prep.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Preparación y Filtrado Inicial</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Filter.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Filter and Trim</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Error.html" rel="" target="">
+ <span class="dropdown-text">Dada2 - Análisis de Tasas de Error</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item">
-    <a class="nav-link" href="./final_project.html" rel="" target="">
- <span class="menu-text">proyecto final</span></a>
+    <a class="nav-link" href="./Referencias.html" rel="" target="">
+ <span class="menu-text">Referencias</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/BiomicaLab/metabarcoding-curso" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/taniavaldiviac/metabarcoding2025" rel="" target=""><i class="bi bi-github" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -118,27 +141,37 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">En esta página</h2>
    
-  <ul>
-  <li><a href="#visión-general" id="toc-visión-general" class="nav-link active" data-scroll-target="#visión-general">visión general</a></li>
-  <li><a href="#calendario-2731-oct-2025" id="toc-calendario-2731-oct-2025" class="nav-link" data-scroll-target="#calendario-2731-oct-2025">calendario (27–31 oct 2025)</a></li>
-  <li><a href="#evaluación" id="toc-evaluación" class="nav-link" data-scroll-target="#evaluación">evaluación</a></li>
-  <li><a href="#accesibilidad-y-conducta" id="toc-accesibilidad-y-conducta" class="nav-link" data-scroll-target="#accesibilidad-y-conducta">accesibilidad y conducta</a></li>
+  <ul class="collapse">
+  <li><a href="#descripción-del-curso" id="toc-descripción-del-curso" class="nav-link active" data-scroll-target="#descripción-del-curso"><strong>Descripción del curso</strong></a></li>
+  <li><a href="#misión" id="toc-misión" class="nav-link" data-scroll-target="#misión"><strong>Misión</strong></a></li>
+  <li><a href="#objetivo" id="toc-objetivo" class="nav-link" data-scroll-target="#objetivo"><strong>Objetivo</strong></a></li>
+  <li><a href="#equipo-docente" id="toc-equipo-docente" class="nav-link" data-scroll-target="#equipo-docente"><strong>Equipo docente</strong></a></li>
+  <li><a href="#horarios-y-sede" id="toc-horarios-y-sede" class="nav-link" data-scroll-target="#horarios-y-sede">Horarios y sede</a></li>
+  <li><a href="#requisitos-previos" id="toc-requisitos-previos" class="nav-link" data-scroll-target="#requisitos-previos"><strong>Requisitos previos</strong></a></li>
+  <li><a href="#conducta-en-el-aula" id="toc-conducta-en-el-aula" class="nav-link" data-scroll-target="#conducta-en-el-aula"><strong>Conducta en el aula</strong></a></li>
+  <li><a href="#acceso-y-adaptaciones" id="toc-acceso-y-adaptaciones" class="nav-link" data-scroll-target="#acceso-y-adaptaciones"><strong>Acceso y adaptaciones</strong></a></li>
+  <li><a href="#metodología-de-enseñanza" id="toc-metodología-de-enseñanza" class="nav-link" data-scroll-target="#metodología-de-enseñanza"><strong>Metodología de enseñanza</strong></a></li>
+  <li><a href="#comunicación" id="toc-comunicación" class="nav-link" data-scroll-target="#comunicación"><strong>Comunicación</strong></a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">programa</h1>
+<h1 class="title">Metabarcoding en comunidades de eucariontes</h1>
+<p class="subtitle lead">24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)</p>
 </div>
 
 
@@ -153,29 +186,79 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="visión-general" class="level2">
-<h2 class="anchored" data-anchor-id="visión-general">visión general</h2>
-<p>Este curso introduce conceptos y prácticas del <strong>eDNA metabarcoding</strong> enfocados en comunidades de eucariontes: diseño de muestreo, extracción, bibliotecas, secuenciación, <strong>DADA2</strong>, asignación taxonómica, curación y análisis ecológico (beta diversidad, ordenación, modelos básicos).</p>
+<section id="descripción-del-curso" class="level2">
+<h2 class="anchored" data-anchor-id="descripción-del-curso"><strong>Descripción del curso</strong></h2>
+<p>El curso busca formar una nueva generación de investigadores y profesionales capaces de aplicar herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. Este taller proporcionará las bases teóricas y prácticas necesarias para implementar el metabarcoding como una técnica robusta en estudios ecológicos, de conservación y de manejo ambiental. Aspiramos a crear una comunidad de especialistas que puedan integrar el ADN ambiental como una herramienta de monitoreo en ecosistemas marinos, contribuyendo al conocimiento de la biodiversidad y la toma de decisiones basadas en ciencia.</p>
 </section>
-<section id="calendario-2731-oct-2025" class="level2">
-<h2 class="anchored" data-anchor-id="calendario-2731-oct-2025">calendario (27–31 oct 2025)</h2>
+<section id="misión" class="level2">
+<h2 class="anchored" data-anchor-id="misión"><strong>Misión</strong></h2>
+<p>Capacitar a investigadores, estudiantes y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. A través de una combinación de teoría y práctica, buscamos proporcionar conocimientos sólidos sobre el metabarcoding y qPCR, desde la recolección y procesamiento de muestras hasta el análisis e interpretación de datos con enfoques bioinformáticos.</p>
+<p>Nuestro objetivo es empoderar a los participantes con habilidades técnicas y analíticas que les permitan diseñar e implementar estudios basados en ADN ambiental, optimizando la detección de especies y la evaluación de comunidades biológicas. Fomentamos la adopción de metodologías estandarizadas y reproducibles que faciliten la generación de datos confiables y comparables a nivel global.</p>
+<p>A través de este curso, promovemos la formación de una comunidad interdisciplinaria comprometida con la aplicación de la genética y la bioinformática en la conservación y monitoreo de la biodiversidad, impulsando el uso de tecnologías innovadoras para la toma de decisiones informadas en investigación y gestión ambiental.</p>
+</section>
+<section id="objetivo" class="level2">
+<h2 class="anchored" data-anchor-id="objetivo"><strong>Objetivo</strong></h2>
+<p>El objetivo de este curso es capacitar a los participantes en el uso de metabarcoding para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2.</p>
+<p>Este curso busca proporcionar las habilidades necesarias para:</p>
+<p>✔ Comprender los fundamentos teóricos del metabarcoding, qPCR y ADN ambiental en estudios ecológicos.<br>
+✔ Aplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.<br>
+✔ Implementar pipelines bioinformáticos para el procesamiento y análisis de secuencias, con énfasis en control de calidad, asignación taxonómica y análisis de diversidad.<br>
+✔ Interpretar resultados ecológicos y generar visualizaciones efectivas para estudios de biodiversidad.<br>
+✔ Diseñar estudios de metabarcoding adaptados a distintas preguntas ecológicas y de conservación.</p>
+<p>Al finalizar el curso, los participantes estarán preparados para integrar el metabarcoding en sus proyectos de investigación y contribuir al desarrollo de estrategias de monitoreo de biodiversidad en ecosistemas marinos.</p>
+</section>
+<section id="equipo-docente" class="level2">
+<h2 class="anchored" data-anchor-id="equipo-docente"><strong>Equipo docente</strong></h2>
+<p><strong>Dra. Tania Valdivia Carrillo</strong> — Investigadora postdoctoral CIBNOR CONAHCYT (tania.valdiviac@gmail.com)<br>
+<strong>Dr.&nbsp;Fausto Valenzuela Quiñonez</strong> — Investigador Titular B CIBNOR</p>
+</section>
+<section id="horarios-y-sede" class="level2">
+<h2 class="anchored" data-anchor-id="horarios-y-sede">Horarios y sede</h2>
+<p><strong>Fechas:</strong> 24–28 de noviembre de 2025<br>
+<strong>Horario:</strong> 9:00–15:00 (almuerzo 12:00–13:30)<br>
+<strong>Lugar:</strong> Sala de cómputo, edificio de posgrado, ICMyL (UNAM)</p>
+<p><strong>Formato:</strong> Mañanas teóricas (charlas y discusión). Tardes prácticas en computadora (R/DADA2).</p>
+</section>
+<section id="requisitos-previos" class="level2">
+<h2 class="anchored" data-anchor-id="requisitos-previos"><strong>Requisitos previos</strong></h2>
 <ul>
-<li><strong>día 1</strong> · fundamentos eDNA y diseño de estudios; instalación de software y prueba de entorno.</li>
-<li><strong>día 2</strong> · calidad de lecturas, filtrado/truncado, aprendizaje de errores y <em>denoising</em> con DADA2.</li>
-<li><strong>día 3</strong> · <em>merge</em>, <em>chimera removal</em>, tabla de ASVs, controles y <em>track</em> de reads; asignación taxonómica.</li>
-<li><strong>día 4</strong> · <em>phyloseq</em>: rarefacción, alfa/beta, NMDS/PCoA; visualización reproducible.</li>
-<li><strong>día 5</strong> · reporte reproducible con Quarto; proyecto integrador y presentaciones cortas.</li>
+<li>Conocimientos básicos de <strong>biología molecular</strong>.<br>
+</li>
+<li>Manejo elemental de Unix, <strong>R</strong> y RStudio (objetos, scripts, paquetes).<br>
+</li>
+<li>Laptop con permisos para instalar software.</li>
+</ul>
+<p><strong>Antes del día 1</strong>: instalar <strong>R (≥4.3)</strong>, <strong>RStudio</strong>, y crear cuenta en <strong>GitHub</strong>.</p>
+</section>
+<section id="conducta-en-el-aula" class="level2">
+<h2 class="anchored" data-anchor-id="conducta-en-el-aula"><strong>Conducta en el aula</strong></h2>
+<p>Ambiente inclusivo y respetuoso. No se toleran expresiones que excluyan o intimiden. Se espera lenguaje inclusivo, escucha activa, crítica constructiva y colaboración.</p>
+</section>
+<section id="acceso-y-adaptaciones" class="level2">
+<h2 class="anchored" data-anchor-id="acceso-y-adaptaciones"><strong>Acceso y adaptaciones</strong></h2>
+<p>Si necesitas adaptaciones (salud, discapacidad, horarios), avísanos con antelación para acordarlas de manera razonable y efectiva.</p>
+</section>
+<section id="metodología-de-enseñanza" class="level2">
+<h2 class="anchored" data-anchor-id="metodología-de-enseñanza"><strong>Metodología de enseñanza</strong></h2>
+<ul>
+<li><strong>Sesiones teóricas</strong> con diapositivas, ejemplos y discusión guiada.<br>
+</li>
+<li><strong>Laboratorios computacionales</strong> con datasets de ejemplo y notebooks Quarto.<br>
+</li>
+<li><strong>Miniproyecto</strong> por equipo: diseño de muestreo + pipeline + reporte corto reproducible.</li>
 </ul>
 </section>
-<section id="evaluación" class="level2">
-<h2 class="anchored" data-anchor-id="evaluación">evaluación</h2>
+<section id="comunicación" class="level2">
+<h2 class="anchored" data-anchor-id="comunicación"><strong>Comunicación</strong></h2>
 <ul>
-<li>tareas prácticas (40%), participación (20%), proyecto final (40%).</li>
+<li>Dudas: correo (<strong>tania.valdiviac@gmail.com</strong>) o “issues” en GitHub del repositorio asistencia.<br>
+</li>
+<li>Dudas técnicas extensas: bloque de asesoría al cierre de cada práctica.</li>
 </ul>
-</section>
-<section id="accesibilidad-y-conducta" class="level2">
-<h2 class="anchored" data-anchor-id="accesibilidad-y-conducta">accesibilidad y conducta</h2>
-<p>Ambiente inclusivo y respetuoso. Adaptaciones disponibles bajo solicitud.</p>
+<p><br></p>
+<center>
+<em>Actualizado a las <code>r format(Sys.time(), "%H:%M")</code> del <code>r format(Sys.Date(), "%d %b %Y")</code></em>
+</center>
 
 
 </section>
@@ -415,6 +498,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">© 2025 Todos los derechos reservados</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

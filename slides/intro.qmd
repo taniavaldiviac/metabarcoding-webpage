@@ -1,27 +1,55 @@
 ---
-title: "metabarcoding: panorama general"
-format: revealjs
+title: "Metabarcoding en comunidades de eucariontes"
+subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+format:
+  revealjs:
+    plugins: [chalkboard]
+    slide-number: c
+    chalkboard: true
+    toc: false
+    transition: fade
+    controls: true
+    hash: true
 execute:
+  enabled: false      
   echo: true
   warning: false
 ---
 
-## ¿por qué eDNA?
-- no invasivo, sensible, trazable
-- complementa métodos visuales/acústicos
+# ¡Bienvenidas y bienvenidos!
 
----
+::: notes
+Breve icebreaker: nombre, institución, si han usado eDNA antes, y qué esperan del curso.
+:::
+
+# Quiénes somos
+
+## Dra. Tania Valdivia Carrillo
+
+
+## Dr. Fausto Valenzuela Quiñonez
+
+
+
+## ¿por qué eDNA?
+
+-   no invasivo, sensible, trazable
+-   complementa métodos visuales/acústicos
+
+------------------------------------------------------------------------
 
 ## flujo general
-1. muestreo y preservación
-2. extracción y *library prep*
-3. secuenciación
-4. **DADA2** → ASVs
-5. taxonomía, curación y análisis de comunidad
 
----
+1.  muestreo y preservación
+2.  extracción y *library prep*
+3.  secuenciación
+4.  **DADA2** → ASVs
+5.  taxonomía, curación y análisis de comunidad
+
+------------------------------------------------------------------------
 
 ## QA/QC (dMIQE)
-- blancos de campo y laboratorio
-- *mock communities*
-- réplicas técnicas/biológicas
+
+-   blancos de campo y laboratorio
+-   *mock communities*
+-   réplicas técnicas/biológicas

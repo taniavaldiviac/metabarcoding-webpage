@@ -1,93 +1,702 @@
 [
   {
-    "objectID": "homework.html",
-    "href": "homework.html",
-    "title": "tareas",
+    "objectID": "0-IntroQAQC.html",
+    "href": "0-IntroQAQC.html",
+    "title": "Control de calidad QAQC",
     "section": "",
-    "text": "T1: limpieza y QC de lecturas en un subset (subir .html y .qmd).\nT2: tabla de ASVs y tracking de reads con gráfico de flujo.\nT3: taxonomía y reporte de incertidumbre.\nT4: análisis de comunidad con phyloseq y visualizaciones.\n\nEntrega vía Issues o GitHub Classroom (ver indicaciones del repo)."
+    "text": "En esta clase aprenderemos a realizar control de calidad (QA/QC) en archivos FASTQ usando herramientas bioinformáticas."
   },
   {
-    "objectID": "labs.html",
-    "href": "labs.html",
-    "title": "prácticas",
+    "objectID": "0-IntroQAQC.html#objetivo",
+    "href": "0-IntroQAQC.html#objetivo",
+    "title": "Control de calidad QAQC",
     "section": "",
-    "text": "Cada práctica incluye objetivos, datos, y un cuaderno ejecutable en R.\n\nsetup del entorno: instalación/verificación de R, RStudio y paquetes; clonar repo del curso.\nDADA2 I: inspección de calidad, filterAndTrim, parámetros de truncado, error learning.\nDADA2 II: dada, merge pairs, removeBimeraDenovo, construcción de tabla de ASVs.\nasignación taxonómica: assignTaxonomy / assignSpecies y bases de referencia; hash-based opcional.\nphyloseq: importación, rarefacción (si aplica), diversidad alfa/beta, NMDS/PCoA.\nreporte reproducible: Quarto + figuras estandarizadas.\n\n\nNota: incluiremos controles, réplicas, y mock communities para enfatizar dMIQE/MIQE."
+    "text": "En esta clase aprenderemos a realizar control de calidad (QA/QC) en archivos FASTQ usando herramientas bioinformáticas."
+  },
+  {
+    "objectID": "0-IntroQAQC.html#pasos-principales",
+    "href": "0-IntroQAQC.html#pasos-principales",
+    "title": "Control de calidad QAQC",
+    "section": "Pasos principales",
+    "text": "Pasos principales\n\nVerificación de integridad de archivos\nConteo de lecturas\nAnálisis de calidad con FastQC\nFiltrado y recorte de lecturas\nRevisión de resultados"
+  },
+  {
+    "objectID": "0-IntroQAQC.html#verificación-de-integridad",
+    "href": "0-IntroQAQC.html#verificación-de-integridad",
+    "title": "Control de calidad QAQC",
+    "section": "1. Verificación de integridad",
+    "text": "1. Verificación de integridad\nEs una verificación de integridad por checksum:\n\nPara cada archivo .fastq, generas un hash (una “huella” única de sus bytes).\nGuardas esas huellas en un manifiesto (checksums.sha256).\nLuego shasum -a 256 -c checksums.sha256 recalcula la huella de cada archivo presente y la compara con la esperada.\n\nfind raw_fastqs -type f -name '*.fastq*' -print0 \\\n  | sort -z \\\n  | xargs -0 shasum -a 256 &gt; checksums.sha256\nPara verificar:\nshasum -a 256 -c checksums.sha256"
+  },
+  {
+    "objectID": "0-IntroQAQC.html#conteo-de-lecturas",
+    "href": "0-IntroQAQC.html#conteo-de-lecturas",
+    "title": "Control de calidad QAQC",
+    "section": "2. Conteo de lecturas",
+    "text": "2. Conteo de lecturas\nCada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:\nfor f in raw_fastqs/*.fastq; do echo -n \"$(basename \"$f\")   \"; expr $(wc -l &lt; \"$f\") / 4; done &gt; conteo_lecturas.tsv"
+  },
+  {
+    "objectID": "0-IntroQAQC.html#análisis-de-calidad-con-fastqc",
+    "href": "0-IntroQAQC.html#análisis-de-calidad-con-fastqc",
+    "title": "Control de calidad QAQC",
+    "section": "3. Análisis de calidad con FastQC",
+    "text": "3. Análisis de calidad con FastQC\nInstala FastQC y ejecuta:\nmkdir fastqc_reports\nfastqc raw_fastqs/*.fastq -o fastqc_reports/"
+  },
+  {
+    "objectID": "0-IntroQAQC.html#filtrado-y-recorte-de-lecturas",
+    "href": "0-IntroQAQC.html#filtrado-y-recorte-de-lecturas",
+    "title": "Control de calidad QAQC",
+    "section": "4. Filtrado y recorte de lecturas",
+    "text": "4. Filtrado y recorte de lecturas\nPuedes usar herramientas como Cutadapt o Trimmomatic. Ejemplo con Cutadapt:\ncutadapt -q 20 -o output_trimmed.fastq input.fastq"
+  },
+  {
+    "objectID": "0-IntroQAQC.html#revisión-de-resultados",
+    "href": "0-IntroQAQC.html#revisión-de-resultados",
+    "title": "Control de calidad QAQC",
+    "section": "5. Revisión de resultados",
+    "text": "5. Revisión de resultados\nVuelve a correr FastQC sobre los archivos filtrados y compara los reportes."
+  },
+  {
+    "objectID": "0-IntroQAQC.html#ejemplo-en-r-leer-el-conteo-de-lecturas",
+    "href": "0-IntroQAQC.html#ejemplo-en-r-leer-el-conteo-de-lecturas",
+    "title": "Control de calidad QAQC",
+    "section": "Ejemplo en R: Leer el conteo de lecturas",
+    "text": "Ejemplo en R: Leer el conteo de lecturas\nconteo &lt;- read.table(\"conteo_lecturas.tsv\", header = FALSE, sep = \"\\t\")\ncolnames(conteo) &lt;- c(\"Archivo\", \"Lecturas\")\nprint(conteo)"
+  },
+  {
+    "objectID": "0-IntroQAQC.html#conclusiones",
+    "href": "0-IntroQAQC.html#conclusiones",
+    "title": "Control de calidad QAQC",
+    "section": "Conclusiones",
+    "text": "Conclusiones\nEl control de calidad es esencial para asegurar la confiabilidad de los datos antes de cualquier análisis bioinformático."
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html",
+    "href": "1-qaqc-cutadapt.html",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multiqc_reports\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq\n\n\n\nls -1 fastqc_reports/*_fastqc.html | wc -l\n\n\n\nmultiqc fastqc_reports -o multiqc_reports\n# Reporte en multi_qc\n\n\n\nDesde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#ejecutar-fastqc-sobre-todos-los-.fastq",
+    "href": "1-qaqc-cutadapt.html#ejecutar-fastqc-sobre-todos-los-.fastq",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#verificar-instalación-y-conteo-de-reportes",
+    "href": "1-qaqc-cutadapt.html#verificar-instalación-y-conteo-de-reportes",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "ls -1 fastqc_reports/*_fastqc.html | wc -l"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#ejecutar-multiqc-resume-todos-los-fastqc",
+    "href": "1-qaqc-cutadapt.html#ejecutar-multiqc-resume-todos-los-fastqc",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "multiqc fastqc_reports -o multiqc_reports\n# Reporte en multi_qc"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-al-computador-local-scp",
+    "href": "1-qaqc-cutadapt.html#transferir-el-html-al-computador-local-scp",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#copia-y-da-permisos",
+    "href": "1-qaqc-cutadapt.html#copia-y-da-permisos",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "Copia y da permisos",
+    "text": "Copia y da permisos\n\nEn el servidor:\n\nchmod +x scripts/cutadapt.sh"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#define-primers-y-ejecuta",
+    "href": "1-qaqc-cutadapt.html#define-primers-y-ejecuta",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "Define primers y ejecuta",
+    "text": "Define primers y ejecuta\nbash scripts/cutadapt.sh"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#resultados",
+    "href": "1-qaqc-cutadapt.html#resultados",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "Resultados",
+    "text": "Resultados\n\nFASTQ recortados: for_dada2/\nReportes por muestra: cutadapt_reports/*_cutadapt.txt\nResumen: cutadapt_reports/overall_report.txt"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#verificación-post-recorte-opcional",
+    "href": "1-qaqc-cutadapt.html#verificación-post-recorte-opcional",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "Verificación post-recorte (opcional)",
+    "text": "Verificación post-recorte (opcional)\nmkdir -p fastqc_reports/fastqc_trimmed\nmkdir -p multiqc_reports/fastqc_trimmed\n\nfastqc -q -t 4 -o fastqc_reports/fastqc_trimmed for_dada2/*.fastq\nmultiqc fastqc_reports/fastqc_trimmed -o multiqc_reports/fastqc_trimmed\n# Descarga en tu computadora con scp: final_data/fastqc_trimmed/multiqc_report.html\nCorrecciones y notas del script\n- Usa FWD (forward) y el RC del REV para -G (paired-end).\n- No dependas de cambiar de carpeta; el script ya usa rutas claras.\n- Crea directorios de salida antes de escribir.\n- Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/."
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html",
+    "href": "2-dada2QAQC-Error.html",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "",
+    "text": "En secuenciación Illumina, la máquina comete errores al leer las bases del ADN:\n\nUna A real puede leerse erróneamente como C, G o T\nUna C real puede leerse erróneamente como A, G o T\nY así sucesivamente…\n\ndada2 aprende estas tasas de error para distinguir:\n✅ Variantes biológicas reales (diferencias entre especies)\n❌ Errores técnicos (errores de la máquina de secuenciación)"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#qué-es-un-modelo-de-error",
+    "href": "2-dada2QAQC-Error.html#qué-es-un-modelo-de-error",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "",
+    "text": "En secuenciación Illumina, la máquina comete errores al leer las bases del ADN:\n\nUna A real puede leerse erróneamente como C, G o T\nUna C real puede leerse erróneamente como A, G o T\nY así sucesivamente…\n\ndada2 aprende estas tasas de error para distinguir:\n✅ Variantes biológicas reales (diferencias entre especies)\n❌ Errores técnicos (errores de la máquina de secuenciación)"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#inspección-de-errf",
+    "href": "2-dada2QAQC-Error.html#inspección-de-errf",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Inspección de errF",
+    "text": "Inspección de errF\nSalida esperada:\nList of 3\n $ err_out: num [1:16, 1:41] 0.8464 0.0829 0.0296 0.0411 ...\n  ..- attr(*, \"dimnames\")=List of 2\n  .. ..$ : chr [1:16] \"A2A\" \"A2C\" \"A2G\" \"A2T\" ...\n  .. ..$ : chr [1:41] \"0\" \"1\" \"2\" \"3\" ...\n $ err_in : List of 9 (modelos intermedios de cada iteración)\n $ trans  : int [1:16, 1:41] (conteos observados por transición y Q-score)\n\nComponentes clave:\n\n\n\n\n\n\n\nComponente\nDescripción\n\n\n\n\nerr_out\nMatriz de tasas de error [16 transiciones × 41 Q-scores]\n\n\ntrans\nNombres de transiciones (A2A, A2C, A2G, …) en rownames\n\n\nerr_in\nHistorial de modelos intermedios (convergencia)"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#nombres-de-transiciones",
+    "href": "2-dada2QAQC-Error.html#nombres-de-transiciones",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Nombres de Transiciones",
+    "text": "Nombres de Transiciones\nSalida:\n [1] \"A2A\" \"A2C\" \"A2G\" \"A2T\" \"C2A\" \"C2C\" \"C2G\" \"C2T\"\n [9] \"G2A\" \"G2C\" \"G2G\" \"G2T\" \"T2A\" \"T2C\" \"T2G\" \"T2T\"\n\nInterpretación:\n\nA2A, C2C, G2G, T2T: Transiciones correctas (la base se lee correctamente)\nA2C, A2G, A2T: Errores donde una A se lee como C, G o T\nC2A, C2G, C2T: Errores donde una C se lee como A, G o T\nEtc."
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#qué-es-err_summary",
+    "href": "2-dada2QAQC-Error.html#qué-es-err_summary",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "¿Qué es err_summary?",
+    "text": "¿Qué es err_summary?\nEs una tabla resumen que calcula el promedio de las tasas de error para cada tipo de transición (excluyendo las correctas).\nEjemplo de salida:\n  Direction       A2C       A2G       A2T       C2A       C2G       C2T\n1   Forward 0.0318234 0.0116845 0.0158932 0.0529876 0.0046123 0.0084567\n2   Reverse 0.0345678 0.0123456 0.0178901 0.0567890 0.0051234 0.0091234"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#cómo-se-calcula",
+    "href": "2-dada2QAQC-Error.html#cómo-se-calcula",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "¿Cómo se calcula?",
+    "text": "¿Cómo se calcula?\n\nPaso 1: Extraer una fila de err_out\nSalida ejemplo:\n        0         1         2         3  ...        38        39        40\n0.0829362 0.0829362 0.0829362 0.0829362  ... 0.0001627 0.0001627 0.0001627\n\n\nPaso 2: Calcular el promedio\nResultado: 0.0318234 (3.18% de error promedio)\n\n\nPaso 3: Repetir para todas las transiciones"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#valores-normales-buena-calidad",
+    "href": "2-dada2QAQC-Error.html#valores-normales-buena-calidad",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Valores Normales (Buena Calidad)",
+    "text": "Valores Normales (Buena Calidad)\n\n\n\nTransición\nRango Esperado\nInterpretación\n\n\n\n\nA2C, A2G, A2T\n0.001 - 0.05\n0.1% - 5% de error\n\n\nC2A, C2G, C2T\n0.001 - 0.05\nSimilar\n\n\nG2A, G2C, G2T\n0.001 - 0.05\nSimilar\n\n\nT2A, T2C, T2G\n0.001 - 0.05\nSimilar"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#valores-problemáticos",
+    "href": "2-dada2QAQC-Error.html#valores-problemáticos",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Valores Problemáticos",
+    "text": "Valores Problemáticos\nPosibles causas:\n\n⚠️ Calidad de secuenciación muy baja\n⚠️ Problemas con la química de Illumina\n⚠️ Contaminación cruzada (index hopping)\n⚠️ Errores sistemáticos en el run"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#simulación-de-errores",
+    "href": "2-dada2QAQC-Error.html#simulación-de-errores",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Simulación de Errores",
+    "text": "Simulación de Errores"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#cómo-usa-dada2-esta-información",
+    "href": "2-dada2QAQC-Error.html#cómo-usa-dada2-esta-información",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "¿Cómo usa dada2 esta información?",
+    "text": "¿Cómo usa dada2 esta información?\n\n\nCódigo\n# dada2 usa el modelo de error para CORREGIR:\n# \n# Escenario 1: Base con alta calidad (Q30)\n# - Si ve una C en Q30, pero 97% de las lecturas tienen A\n# → Probablemente es una A real (error de secuenciación)\n# \n# Escenario 2: Base con baja calidad (Q10)\n# - Si ve una C en Q10, y solo 60% tienen A\n# → Puede ser una variante real (polimorfismo biológico)"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#tabla-comparativa",
+    "href": "2-dada2QAQC-Error.html#tabla-comparativa",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Tabla Comparativa",
+    "text": "Tabla Comparativa\nNota importante: Es normal que Reverse tenga tasas de error ligeramente mayores."
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#gráfico-de-comparación",
+    "href": "2-dada2QAQC-Error.html#gráfico-de-comparación",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Gráfico de Comparación",
+    "text": "Gráfico de Comparación"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#checklist-de-validación",
+    "href": "2-dada2QAQC-Error.html#checklist-de-validación",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Checklist de Validación",
+    "text": "Checklist de Validación\n\n✅ Señales de Buena Calidad\n\nTasas de error &lt; 5% (0.05)\nReverse ≤ 2× Forward\nGráficos de error muestran puntos rojos cerca de línea negra\n\n\n\n⚠️ Señales de Problemas"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#bloque-completo-de-cálculo-de-err_summary",
+    "href": "2-dada2QAQC-Error.html#bloque-completo-de-cálculo-de-err_summary",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Bloque Completo de Cálculo de err_summary",
+    "text": "Bloque Completo de Cálculo de err_summary"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#tabla-resumen",
+    "href": "2-dada2QAQC-Error.html#tabla-resumen",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Tabla Resumen",
+    "text": "Tabla Resumen"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#documentación-oficial",
+    "href": "2-dada2QAQC-Error.html#documentación-oficial",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Documentación Oficial",
+    "text": "Documentación Oficial\n\ndada2 Tutorial\ndada2 Paper (Callahan et al. 2016)"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#para-tus-alumnos",
+    "href": "2-dada2QAQC-Error.html#para-tus-alumnos",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Para tus Alumnos",
+    "text": "Para tus Alumnos\nEsta tabla err_summary es más para diagnóstico que para análisis final, pero es útil para:\n\n✅ Entender cómo dada2 distingue errores de variantes reales\n✅ Validar la calidad de la secuenciación\n✅ Comparar runs diferentes\n✅ Detectar problemas técnicos temprano en el pipeline"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#ejercicio-1-interpretar-tus-resultados",
+    "href": "2-dada2QAQC-Error.html#ejercicio-1-interpretar-tus-resultados",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Ejercicio 1: Interpretar tus Resultados",
+    "text": "Ejercicio 1: Interpretar tus Resultados\nUsando tu propio err_summary:\n\n¿Qué transición tiene la tasa de error más alta?\n¿Es Reverse &gt; Forward? ¿Cuánto?\n¿Alguna transición supera el 5%?"
+  },
+  {
+    "objectID": "2-dada2QAQC-Error.html#ejercicio-2-comparar-con-datos-simulados",
+    "href": "2-dada2QAQC-Error.html#ejercicio-2-comparar-con-datos-simulados",
+    "title": "Dada2 - Análisis de Tasas de Error",
+    "section": "Ejercicio 2: Comparar con Datos Simulados",
+    "text": "Ejercicio 2: Comparar con Datos Simulados"
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html",
+    "href": "2-dada2QAQC-Filter.html",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "El paso Filter and Trim es el primer gran filtro de calidad en el pipeline de dada2.\nSu objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.\n\n\n\n\n\n\nEl pipeline analiza los perfiles de calidad de las lecturas forward y reverse.\nSe determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (F_qual, R_qual).\nSe usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.\n\n\n\n\n\nSe compara el punto de truncamiento calculado con el valor máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas forward y reverse.\n\n\n\n\n\nSe ejecuta el filtrado usando los parámetros:\n\ntruncLen: recorta las lecturas en los puntos calculados.\nmaxEE: define el máximo de errores esperados permitidos por lectura (usualmente 2).\nmaxN: no permite bases ambiguas (N).\ntruncQ: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).\nrm.phix: elimina lecturas que corresponden al control PhiX de Illumina.\n\nEl código valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\n\n\n\n\n\nSe calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).\nSi la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.\nSe identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.\n\n\n\n\n\nSe guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico.\n\n\n\n\n\n\n\n\n\n\n\n\n\nParámetro\nDescripción\n\n\n\n\ntruncLen\nPosición donde se recorta cada lectura (Forward y Reverse), calculada según calidad\n\n\nmaxEE\nMáximo número de errores esperados permitidos por lectura (por dirección)\n\n\nmaxN\nNúmero máximo de bases ambiguas permitidas (usualmente 0)\n\n\ntruncQ\nRecorta la lectura si encuentra una base con calidad menor a este valor\n\n\nrm.phix\nElimina lecturas que corresponden al control PhiX de Illumina\n\n\n\n\n\n\n\n\nElimina lecturas que podrían introducir errores técnicos en el análisis.\nAsegura que solo las regiones de alta calidad sean usadas para inferir variantes.\nReduce el ruido y la probabilidad de obtener variantes falsas.\nPermite un diagnóstico temprano de problemas de calidad en la secuenciación.\n\n\n\n\n\n\nRevisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\n\n\n\n\n\n\n\n\n\n\n\n\nAspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos\n\n\n\n\n\n\n\n\nIdentifica el punto de truncamiento óptimo usando los gráficos de calidad generados por el pipeline.\nRevisa la tabla de filtrado: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?\nCompara la retención global entre runs diferentes. ¿Qué parámetros afectan más la retención?\n\n\n\n\n\n\n\n\n\n\n\nRecuerda\n\n\n\n\nEl paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.\nAjusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.\n\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes y después del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html#qué-hace-el-código-en-este-paso",
+    "href": "2-dada2QAQC-Filter.html#qué-hace-el-código-en-este-paso",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "El pipeline analiza los perfiles de calidad de las lecturas forward y reverse.\nSe determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (F_qual, R_qual).\nSe usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.\n\n\n\n\n\nSe compara el punto de truncamiento calculado con el valor máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas forward y reverse.\n\n\n\n\n\nSe ejecuta el filtrado usando los parámetros:\n\ntruncLen: recorta las lecturas en los puntos calculados.\nmaxEE: define el máximo de errores esperados permitidos por lectura (usualmente 2).\nmaxN: no permite bases ambiguas (N).\ntruncQ: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).\nrm.phix: elimina lecturas que corresponden al control PhiX de Illumina.\n\nEl código valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\n\n\n\n\n\nSe calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).\nSi la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.\nSe identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.\n\n\n\n\n\nSe guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico."
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html#explicación-de-los-parámetros-principales",
+    "href": "2-dada2QAQC-Filter.html#explicación-de-los-parámetros-principales",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "Parámetro\nDescripción\n\n\n\n\ntruncLen\nPosición donde se recorta cada lectura (Forward y Reverse), calculada según calidad\n\n\nmaxEE\nMáximo número de errores esperados permitidos por lectura (por dirección)\n\n\nmaxN\nNúmero máximo de bases ambiguas permitidas (usualmente 0)\n\n\ntruncQ\nRecorta la lectura si encuentra una base con calidad menor a este valor\n\n\nrm.phix\nElimina lecturas que corresponden al control PhiX de Illumina"
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html#por-qué-es-importante-este-paso",
+    "href": "2-dada2QAQC-Filter.html#por-qué-es-importante-este-paso",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "Elimina lecturas que podrían introducir errores técnicos en el análisis.\nAsegura que solo las regiones de alta calidad sean usadas para inferir variantes.\nReduce el ruido y la probabilidad de obtener variantes falsas.\nPermite un diagnóstico temprano de problemas de calidad en la secuenciación."
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html#recomendaciones-para-el-análisis",
+    "href": "2-dada2QAQC-Filter.html#recomendaciones-para-el-análisis",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "Revisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis."
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html#resumen-ejecutivo",
+    "href": "2-dada2QAQC-Filter.html#resumen-ejecutivo",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos"
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html#ejercicios-prácticos",
+    "href": "2-dada2QAQC-Filter.html#ejercicios-prácticos",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "Identifica el punto de truncamiento óptimo usando los gráficos de calidad generados por el pipeline.\nRevisa la tabla de filtrado: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?\nCompara la retención global entre runs diferentes. ¿Qué parámetros afectan más la retención?"
+  },
+  {
+    "objectID": "2-dada2QAQC-Filter.html#notas-finales",
+    "href": "2-dada2QAQC-Filter.html#notas-finales",
+    "title": "Dada2 - Filter and Trim",
+    "section": "",
+    "text": "Recuerda\n\n\n\n\nEl paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.\nAjusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.\n\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes y después del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html",
+    "href": "2-dada2QAQC-Prep.html",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "La primera parte del pipeline dada2 prepara el entorno y los datos para el análisis de secuencias.\nEstos pasos aseguran reproducibilidad, organización y calidad antes de aplicar los filtros de calidad y trimming.\n\n\n\n\nSe activa el entorno de paquetes con renv si existe, garantizando que todas las dependencias estén controladas y sean reproducibles.\nSe cargan las librerías necesarias para el pipeline:\n\ndada2: procesamiento y denoising de secuencias.\ntidyverse: manipulación de datos y lectura de archivos.\nShortRead y seqinr: utilidades para manejo de archivos FASTQ y FASTA.\ndigest: generación de hashes para identificar secuencias únicas.\nhere y fs: manejo robusto de rutas y archivos.\nreadr: lectura y escritura eficiente de CSVs.\n\n\n\n\n\n\n\nSe detecta la raíz del proyecto y se fija el directorio de trabajo para asegurar rutas relativas correctas.\nSe definen rutas para:\n\nArchivos FASTQ sin procesar.\nCarpeta de salida para resultados y logs.\nCarpeta de metadatos (incluyendo parámetros de primers y bases de datos de referencia).\n\nSe lee la tabla de parámetros (primer_data.csv) que contiene información clave para cada locus/primer:\n\nUmbrales de calidad (F_qual, R_qual).\nNombre de la base de datos de referencia.\nMáximo permitido para truncamiento (max_trim).\n\n\n\n\n\n\n\nSe verifica que la tabla de parámetros contenga todas las columnas necesarias.\nSe guarda la información de la sesión (sessionInfo.txt) para asegurar reproducibilidad y facilitar diagnóstico.\n\n\n\n\n\n\nSe identifican los archivos FASTQ correspondientes al locus/primer a procesar.\nSe construyen los nombres de muestra a partir del nombre de archivo, asegurando unicidad y pareo correcto entre archivos forward y reverse.\nSe verifica que no haya archivos vacíos o corruptos, eliminando estos antes de continuar.\n\n\n\n\n\n\nSe generan gráficos de calidad para las lecturas forward y reverse, permitiendo inspección visual y diagnóstico por parte del usuario.\nSe calcula el punto óptimo de truncamiento (truncLen) para cada dirección, usando la mediana de los ciclos donde la calidad cae por debajo del umbral definido.\nSe limita el truncamiento al máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas.\n\n\n\n\n\n\nSe calcula y grafica la distribución de longitudes de las lecturas crudas, útil para detectar problemas de secuenciación o inconsistencias en los datos.\n\n\n\n\n\n\nSe ejecuta el paso de filter and trim usando los parámetros calculados y definidos:\n\ntruncLen: recorte en los puntos óptimos de calidad.\nmaxEE: máximo de errores esperados por lectura.\nmaxN: no se permiten bases ambiguas.\ntruncQ: recorte en calidad mínima.\nrm.phix: eliminación de lecturas PhiX.\n\nSe valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\nSe reporta la retención global de lecturas y se advierte si es baja (&lt; 50%).\nSe identifican muestras con retención muy baja (&lt; 30%) para diagnóstico.\n\n\n\n\n\n\n\n\n\n\n\n\nAspecto\nExplicación\n\n\n\n\nQué es\nPreparación, validación y filtrado inicial de datos para dada2\n\n\nCómo se calcula\nLectura de parámetros, inspección de calidad, cálculo de truncLen y aplicación de filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp, sin archivos vacíos\n\n\nPor qué importa\nAsegura que solo datos de alta calidad y correctamente organizados pasen al análisis\n\n\nQué hacer\nRevisar gráficos de calidad, ajustar parámetros si la retención es baja, validar metadatos\n\n\n\n\n\n\n\n\nRevisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\nMantén la información de sesión y parámetros guardada para reproducibilidad y diagnóstico.\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#configuración-del-entorno-reproducible",
+    "href": "2-dada2QAQC-Prep.html#configuración-del-entorno-reproducible",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Se activa el entorno de paquetes con renv si existe, garantizando que todas las dependencias estén controladas y sean reproducibles.\nSe cargan las librerías necesarias para el pipeline:\n\ndada2: procesamiento y denoising de secuencias.\ntidyverse: manipulación de datos y lectura de archivos.\nShortRead y seqinr: utilidades para manejo de archivos FASTQ y FASTA.\ndigest: generación de hashes para identificar secuencias únicas.\nhere y fs: manejo robusto de rutas y archivos.\nreadr: lectura y escritura eficiente de CSVs."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#definición-de-rutas-y-parámetros",
+    "href": "2-dada2QAQC-Prep.html#definición-de-rutas-y-parámetros",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Se detecta la raíz del proyecto y se fija el directorio de trabajo para asegurar rutas relativas correctas.\nSe definen rutas para:\n\nArchivos FASTQ sin procesar.\nCarpeta de salida para resultados y logs.\nCarpeta de metadatos (incluyendo parámetros de primers y bases de datos de referencia).\n\nSe lee la tabla de parámetros (primer_data.csv) que contiene información clave para cada locus/primer:\n\nUmbrales de calidad (F_qual, R_qual).\nNombre de la base de datos de referencia.\nMáximo permitido para truncamiento (max_trim)."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#validación-de-parámetros-y-metadatos",
+    "href": "2-dada2QAQC-Prep.html#validación-de-parámetros-y-metadatos",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Se verifica que la tabla de parámetros contenga todas las columnas necesarias.\nSe guarda la información de la sesión (sessionInfo.txt) para asegurar reproducibilidad y facilitar diagnóstico."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#selección-y-validación-de-archivos-de-entrada",
+    "href": "2-dada2QAQC-Prep.html#selección-y-validación-de-archivos-de-entrada",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Se identifican los archivos FASTQ correspondientes al locus/primer a procesar.\nSe construyen los nombres de muestra a partir del nombre de archivo, asegurando unicidad y pareo correcto entre archivos forward y reverse.\nSe verifica que no haya archivos vacíos o corruptos, eliminando estos antes de continuar."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#inspección-de-calidad-y-cálculo-de-puntos-de-truncamiento",
+    "href": "2-dada2QAQC-Prep.html#inspección-de-calidad-y-cálculo-de-puntos-de-truncamiento",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Se generan gráficos de calidad para las lecturas forward y reverse, permitiendo inspección visual y diagnóstico por parte del usuario.\nSe calcula el punto óptimo de truncamiento (truncLen) para cada dirección, usando la mediana de los ciclos donde la calidad cae por debajo del umbral definido.\nSe limita el truncamiento al máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#diagnóstico-opcional-de-longitudes-de-lecturas",
+    "href": "2-dada2QAQC-Prep.html#diagnóstico-opcional-de-longitudes-de-lecturas",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Se calcula y grafica la distribución de longitudes de las lecturas crudas, útil para detectar problemas de secuenciación o inconsistencias en los datos."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#filtrado-y-trimming-de-lecturas",
+    "href": "2-dada2QAQC-Prep.html#filtrado-y-trimming-de-lecturas",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Se ejecuta el paso de filter and trim usando los parámetros calculados y definidos:\n\ntruncLen: recorte en los puntos óptimos de calidad.\nmaxEE: máximo de errores esperados por lectura.\nmaxN: no se permiten bases ambiguas.\ntruncQ: recorte en calidad mínima.\nrm.phix: eliminación de lecturas PhiX.\n\nSe valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\nSe reporta la retención global de lecturas y se advierte si es baja (&lt; 50%).\nSe identifican muestras con retención muy baja (&lt; 30%) para diagnóstico."
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#resumen-ejecutivo",
+    "href": "2-dada2QAQC-Prep.html#resumen-ejecutivo",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPreparación, validación y filtrado inicial de datos para dada2\n\n\nCómo se calcula\nLectura de parámetros, inspección de calidad, cálculo de truncLen y aplicación de filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp, sin archivos vacíos\n\n\nPor qué importa\nAsegura que solo datos de alta calidad y correctamente organizados pasen al análisis\n\n\nQué hacer\nRevisar gráficos de calidad, ajustar parámetros si la retención es baja, validar metadatos"
+  },
+  {
+    "objectID": "2-dada2QAQC-Prep.html#recomendaciones-para-el-análisis",
+    "href": "2-dada2QAQC-Prep.html#recomendaciones-para-el-análisis",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
+    "section": "",
+    "text": "Revisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\nMantén la información de sesión y parámetros guardada para reproducibilidad y diagnóstico.\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+  },
+  {
+    "objectID": "2-dada2QAQC.html",
+    "href": "2-dada2QAQC.html",
+    "title": "Dada2 - Introducción",
+    "section": "",
+    "text": "Este script implementa un pipeline completo y reproducible para el análisis de datos de metabarcoding de ADN ambiental (eDNA) utilizando el paquete dada2 en R. El objetivo es transformar lecturas crudas de secuenciación de alto rendimiento en una tabla de variantes de secuencias amplificadas (ASVs) con asignación taxonómica.\n\n\n\n\n\n\n\nEstablece rutas de trabajo usando here() para independencia de la ubicación\nCarga las librerías necesarias (dada2, tidyverse, ShortRead, etc.)\nLee parámetros específicos por marcador molecular desde metadata/primer_data.csv\nGuarda información de sesión (sessionInfo()) para reproducibilidad\n\n\n\n\n\nLee archivos FASTQ pareados (R1 y R2) filtrados por marcador (for_dada2)\nGenera perfiles de calidad por posición/ciclo para cada muestra\nCalcula automáticamente puntos de truncamiento basados en:\n\nCalidad promedio en ventanas deslizantes (sliding-window)\nUmbrales de calidad específicos por marcador (F_qual, R_qual)\n\nVisualiza distribución de longitudes de lecturas crudas\n\n\n\n\n\nElimina lecturas con baja calidad (maxEE = 2)\nTrunca lecturas según los puntos calculados en el paso anterior\nRemueve secuencias con bases ambiguas (N) y contaminación PhiX\nGenera archivos FASTQ filtrados en subdirectorio filtered/\n\n\n\n\n\nIdentifica secuencias únicas en cada muestra\nReduce redundancia manteniendo información de abundancia\nOptimiza recursos computacionales para pasos posteriores\n\n\n\n\n\nAprende tasas de error específicas para lecturas Forward y Reverse\nUsa más de 100 millones de bases y hasta 25 iteraciones para convergencia\nGuarda gráficos de tasas de error observadas vs. esperadas\n\n\n\n\n\nAplica algoritmo de dada2 para corregir errores de secuenciación\nDistingue variantes biológicas reales de errores técnicos\nResuelve secuencias a resolución de nucleótido único\n\n\n\n\n\nEnsambla lecturas Forward y Reverse usando región de solapamiento\nRequiere mínimo 12 bp de overlap\nReconstruye amplicón completo\n\n\n\n\n\nCrea matriz de abundancias (muestras × ASVs)\nCada columna = secuencia única biológica real\n\n\n\n\n\nDetecta y remueve artefactos de PCR (secuencias quiméricas)\nMétodo “consensus” compara con ASVs parentales más abundantes\nReporta proporción de lecturas no quiméricas\n\n\n\n\n\nDefine rango aceptable: mediana ± desviación estándar\nGenera histogramas antes/después del filtro con líneas de referencia\nGuarda ASVs filtradas en archivos de log\n\n\n\n\n\nUsa base de datos específica por marcador (definida en primer_data.csv)\nAlgoritmo naive Bayesian classifier (RDP)\nPrueba cadena reverso-complementaria automáticamente\nGenera valores de bootstrap (confianza) por rango taxonómico\nCalcula % de secuencias no asignadas por nivel\n\n\n\n\n\nTabla con número de lecturas retenidas en cada paso:\n\nInput → Filtered → Denoised F/R → Merged → No-chimeras → Length filter\n\nPermite identificar dónde se pierden más lecturas\n\n\n\n\nCSV generados:\n\nASV_table.csv: tabla de abundancias en formato largo (Sample_name, Label, Sequence, nReads)\ntaxonomy_output.csv: asignación taxonómica por ASV (Kingdom → Species)\ntax_bootstrap.csv: valores de confianza por nivel taxonómico\nfiltered_out_asv.csv: ASVs removidas por filtro de longitud\n\nGráficos (PNG a 300 DPI):\n\nPerfiles de calidad Forward/Reverse\nDistribución de longitudes crudas\nDistribución de longitudes de ASVs (pre y post-filtrado)\nGráficos de tasas de error\n\nRData:\n\nphyloseq_inputs.RData: contiene objetos listos para importar en phyloseq:\n\notu_mat: matriz de abundancias (integer)\ntax_mat: matriz taxonómica\nsample_meta: metadatos de muestras\ntrack: tabla de seguimiento\nparams: parámetros usados en el análisis\n\n\n\n\n\n\n\n✅ Reproducible: rutas relativas, parámetros documentados, sessionInfo guardado\n✅ Flexible: procesa múltiples marcadores usando tabla de configuración ( ✅ Robusto: maneja archivos vacíos, valida inputs, protege contra errores\n✅ Trazable: guarda logs detallados y gráficos de QC en cada paso\n✅ Listo para análisis: outputs optimizados para phyloseq y análisis downstream\n\n\n\n\n\nAsegúrate de tener archivos FASTQ en for_dada2/\nCompleta metadata/primer_data.csv con parámetros de tu marcador\nCompleta metadata/metadata.csv con información de tus muestras\nAjusta i &lt;- 1 a la fila del marcador que quieres procesar\nEjecuta el script completo o por secciones\n\n¡El pipeline está diseñado para aprender haciendo! Cada sección está comentada para que entiendas qué hace y por qué."
+  },
+  {
+    "objectID": "2-dada2QAQC.html#qué-hace-este-pipeline",
+    "href": "2-dada2QAQC.html#qué-hace-este-pipeline",
+    "title": "Dada2 - Introducción",
+    "section": "",
+    "text": "Este script implementa un pipeline completo y reproducible para el análisis de datos de metabarcoding de ADN ambiental (eDNA) utilizando el paquete dada2 en R. El objetivo es transformar lecturas crudas de secuenciación de alto rendimiento en una tabla de variantes de secuencias amplificadas (ASVs) con asignación taxonómica."
+  },
+  {
+    "objectID": "2-dada2QAQC.html#flujo-de-trabajo-paso-a-paso",
+    "href": "2-dada2QAQC.html#flujo-de-trabajo-paso-a-paso",
+    "title": "Dada2 - Introducción",
+    "section": "",
+    "text": "Establece rutas de trabajo usando here() para independencia de la ubicación\nCarga las librerías necesarias (dada2, tidyverse, ShortRead, etc.)\nLee parámetros específicos por marcador molecular desde metadata/primer_data.csv\nGuarda información de sesión (sessionInfo()) para reproducibilidad\n\n\n\n\n\nLee archivos FASTQ pareados (R1 y R2) filtrados por marcador (for_dada2)\nGenera perfiles de calidad por posición/ciclo para cada muestra\nCalcula automáticamente puntos de truncamiento basados en:\n\nCalidad promedio en ventanas deslizantes (sliding-window)\nUmbrales de calidad específicos por marcador (F_qual, R_qual)\n\nVisualiza distribución de longitudes de lecturas crudas\n\n\n\n\n\nElimina lecturas con baja calidad (maxEE = 2)\nTrunca lecturas según los puntos calculados en el paso anterior\nRemueve secuencias con bases ambiguas (N) y contaminación PhiX\nGenera archivos FASTQ filtrados en subdirectorio filtered/\n\n\n\n\n\nIdentifica secuencias únicas en cada muestra\nReduce redundancia manteniendo información de abundancia\nOptimiza recursos computacionales para pasos posteriores\n\n\n\n\n\nAprende tasas de error específicas para lecturas Forward y Reverse\nUsa más de 100 millones de bases y hasta 25 iteraciones para convergencia\nGuarda gráficos de tasas de error observadas vs. esperadas\n\n\n\n\n\nAplica algoritmo de dada2 para corregir errores de secuenciación\nDistingue variantes biológicas reales de errores técnicos\nResuelve secuencias a resolución de nucleótido único\n\n\n\n\n\nEnsambla lecturas Forward y Reverse usando región de solapamiento\nRequiere mínimo 12 bp de overlap\nReconstruye amplicón completo\n\n\n\n\n\nCrea matriz de abundancias (muestras × ASVs)\nCada columna = secuencia única biológica real\n\n\n\n\n\nDetecta y remueve artefactos de PCR (secuencias quiméricas)\nMétodo “consensus” compara con ASVs parentales más abundantes\nReporta proporción de lecturas no quiméricas\n\n\n\n\n\nDefine rango aceptable: mediana ± desviación estándar\nGenera histogramas antes/después del filtro con líneas de referencia\nGuarda ASVs filtradas en archivos de log\n\n\n\n\n\nUsa base de datos específica por marcador (definida en primer_data.csv)\nAlgoritmo naive Bayesian classifier (RDP)\nPrueba cadena reverso-complementaria automáticamente\nGenera valores de bootstrap (confianza) por rango taxonómico\nCalcula % de secuencias no asignadas por nivel\n\n\n\n\n\nTabla con número de lecturas retenidas en cada paso:\n\nInput → Filtered → Denoised F/R → Merged → No-chimeras → Length filter\n\nPermite identificar dónde se pierden más lecturas\n\n\n\n\nCSV generados:\n\nASV_table.csv: tabla de abundancias en formato largo (Sample_name, Label, Sequence, nReads)\ntaxonomy_output.csv: asignación taxonómica por ASV (Kingdom → Species)\ntax_bootstrap.csv: valores de confianza por nivel taxonómico\nfiltered_out_asv.csv: ASVs removidas por filtro de longitud\n\nGráficos (PNG a 300 DPI):\n\nPerfiles de calidad Forward/Reverse\nDistribución de longitudes crudas\nDistribución de longitudes de ASVs (pre y post-filtrado)\nGráficos de tasas de error\n\nRData:\n\nphyloseq_inputs.RData: contiene objetos listos para importar en phyloseq:\n\notu_mat: matriz de abundancias (integer)\ntax_mat: matriz taxonómica\nsample_meta: metadatos de muestras\ntrack: tabla de seguimiento\nparams: parámetros usados en el análisis"
+  },
+  {
+    "objectID": "2-dada2QAQC.html#ventajas-de-este-pipeline",
+    "href": "2-dada2QAQC.html#ventajas-de-este-pipeline",
+    "title": "Dada2 - Introducción",
+    "section": "",
+    "text": "✅ Reproducible: rutas relativas, parámetros documentados, sessionInfo guardado\n✅ Flexible: procesa múltiples marcadores usando tabla de configuración ( ✅ Robusto: maneja archivos vacíos, valida inputs, protege contra errores\n✅ Trazable: guarda logs detallados y gráficos de QC en cada paso\n✅ Listo para análisis: outputs optimizados para phyloseq y análisis downstream"
+  },
+  {
+    "objectID": "2-dada2QAQC.html#para-empezar",
+    "href": "2-dada2QAQC.html#para-empezar",
+    "title": "Dada2 - Introducción",
+    "section": "",
+    "text": "Asegúrate de tener archivos FASTQ en for_dada2/\nCompleta metadata/primer_data.csv con parámetros de tu marcador\nCompleta metadata/metadata.csv con información de tus muestras\nAjusta i &lt;- 1 a la fila del marcador que quieres procesar\nEjecuta el script completo o por secciones\n\n¡El pipeline está diseñado para aprender haciendo! Cada sección está comentada para que entiendas qué hace y por qué."
+  },
+  {
+    "objectID": "Referencias.html",
+    "href": "Referencias.html",
+    "title": "Metabarcoding de comunidades de eucariontes",
+    "section": "",
+    "text": "Beng, K. C., & Corlett, R. T. (2020). Applications of environmental DNA (eDNA) in ecology and conservation: opportunities, challenges and prospects. Biodiversity and Conservation, 29(7), 2089–2121. https://doi.org/10.1007/s10531-020-01980-0\n\nBowers, H. A., Pochon, X., von Ammon, U., Gemmell, N., Stanton, J.-A. L., Jeunen, G.-J., Sherman, C. D. H., & Zaiko, A. (n.d.). Towards the Optimization of eDNA/eRNA Sampling Technologies for Marine Biosecurity Surveillance. https://doi.org/10.3390/w13081113\n\nCallahan, B. J., McMurdie, P. J., Rosen, M. J., Han, A. W., Johnson, A. J. A., & Holmes, S. P. (2016). DADA2: High-resolution sample inference from Illumina amplicon data. Nature Methods, 13(7), 581–583. https://doi.org/10.1038/nmeth.3869\n\nDickie, I. A., Boyer, S., Buckley, H. L., Duncan, R. P., Gardner, P. P., Hogg, I. D., Holdaway, R. J., Lear, G., Makiola, A., Morales, S. E., Powell, J. R., & Weaver, L. (2018). Towards robust and repeatable sampling methods in eDNA-based studies. Molecular Ecology Resources, 18(5), 940–952. https://doi.org/10.1111/1755-0998.12907\n\nGold, Z., Wall, A. R., Schweizer, T. M., Pentcheff, N. D., Curd, E. E., Barber, P. H., Meyer, R. S., Wayne, R., Stolzenbach, K., Prickett, K., Luedy, J., & Wetzer, R. (2022). A manager’s guide to using eDNA metabarcoding in marine ecosystems. PeerJ, 10(e14071), e14071. https://doi.org/10.7717/peerj.14071\n\nHakimzadeh, A., Abdala Asbun, A., Albanese, D., Bernard, M., Buchner, D., Callahan, B., Caporaso, J. G., Curd, E., Djemiel, C., Brandström Durling, M., Elbrecht, V., Gold, Z., Gweon, H. S., Hajibabaei, M., Hildebrand, F., Mikryukov, V., Normandeau, E., Özkurt, E., M Palmer, J., … Anslan, S. (2024). A pile of pipelines: An overview of the bioinformatics software for metabarcoding data analyses. Molecular Ecology Resources, 24(5), e13847. https://doi.org/10.1111/1755-0998.13847\n\nKumar, G., Eble, J. E., & Gaither, M. R. (2020). A practical guide to sample preservation and pre-PCR processing of aquatic environmental DNA. Molecular Ecology Resources, 20(1), 29–39. https://doi.org/10.1111/1755-0998.13107\n\nLamy, T., Pitz, K. J., Chavez, F. P., Yorke, C. E., & Miller, R. J. (2021). Environmental DNA reveals the fine-grained and hierarchical spatial structure of kelp forest fish communities. Scientific Reports, 11(1), 14439. https://doi.org/10.1038/s41598-021-93859-5\n\nMacher, T.-H., Arle, J., Beermann, A. J., Frank, L., Hupało, K., Koschorreck, J., Schütz, R., & Leese, F. (2024). Is it worth the extra mile? Comparing environmental DNA and RNA metabarcoding for vertebrate and invertebrate biodiversity surveys in a lowland stream. PeerJ, 12, e18016. https://doi.org/10.7717/peerj.18016\n\nMarchesi, J. R., & Ravel, J. (2015). The vocabulary of microbiome research: a proposal. Microbiome, 3(1), 31. https://doi.org/10.1186/s40168-015-0094-5\n\nMorey, K. C., Myler, E., Hanner, R., & Tetreault, G. (2024). Taxonomic blind spots: A limitation of environmental DNA metabarcoding‐based detection for Canadian freshwater fishes. Environmental DNA (Hoboken, N.J.), 6(6), e70054. https://doi.org/10.1002/edn3.70054\n\nPatin, N. V., & Goodwin, K. D. (2022). Capturing marine microbiomes and environmental DNA: A field sampling guide. Frontiers in Microbiology, 13, 1026596. https://doi.org/10.3389/fmicb.2022.1026596\n\nPawlowski, J., Bruce, K., Panksep, K., Aguirre, F. I., Amalfitano, S., Apothéloz-Perret-Gentil, L., Baussant, T., Bouchez, A., Carugati, L., Cermakova, K., Cordier, T., Corinaldesi, C., Costa, F. O., Danovaro, R., Dell’Anno, A., Duarte, S., Eisendle, U., Ferrari, B. J. D., Frontalini, F., … Fazi, S. (2022). Environmental DNA metabarcoding for benthic monitoring: A review of sediment sampling and DNA extraction methods. The Science of the Total Environment, 818(151783), 151783. https://doi.org/10.1016/j.scitotenv.2021.151783\n\nPawlowski, Jan, Apothéloz-Perret-Gentil, L., & Altermatt, F. (2020). Environmental DNA: What’s behind the term? Clarifying the terminology and recommendations for its future use in biomonitoring. Molecular Ecology, 29(22), 4258–4264. https://doi.org/10.1111/mec.15643\n\nRodriguez-Ezpeleta, N., Morissette, O., Bean, C. W., Manu, S., Banerjee, P., Lacoursière-Roussel, A., Beng, K. C., Alter, S. E., Roger, F., Holman, L. E., Stewart, K. A., Monaghan, M. T., Mauvisseau, Q., Mirimin, L., Wangensteen, O. S., Antognazza, C. M., Helyar, S. J., de Boer, H., Monchamp, M.-E., … Deiner, K. (2021). Trade-offs between reducing complex terminology and producing accurate interpretations from environmental DNA: Comment on “Environmental DNA: What’s behind the term?” by Pawlowski et al., (2020). Molecular Ecology, 30(19), 4601–4605. https://doi.org/10.1111/mec.15942\n\nRuppert, K. M., Kline, R. J., & Rahman, M. S. (2019). Past, present, and future perspectives of environmental DNA (eDNA) metabarcoding: A systematic review in methods, monitoring, and applications of global eDNA. Global Ecology and Conservation, 17, e00547. https://doi.org/10.1016/j.gecco.2019.e00547\n\nWeigand, H., Beermann, A. J., Čiampor, F., Costa, F. O., Csabai, Z., Duarte, S., Geiger, M. F., Grabowski, M., Rimet, F., Rulik, B., Strand, M., Szucsich, N., Weigand, A. M., Willassen, E., Wyler, S. A., Bouchez, A., Borja, A., Čiamporová-Zaťovičová, Z., Ferreira, S., … Ekrem, T. (2019). DNA barcode reference libraries for the monitoring of aquatic biota in Europe: Gap-analysis and recommendations for future work. The Science of the Total Environment, 678, 499–524. https://doi.org/10.1016/j.scitotenv.2019.04.247\n\nWilliams, J., Pettorelli, N., Dowell, R., Macdonald, K., Meyer, C., Steyaert, M., Tweedt, S., & Ransome, E. (2024). SimpleMetaPipeline: Breaking the bioinformatics bottleneck in metabarcoding. Methods in Ecology and Evolution, 15(11), 1949–1957. https://doi.org/10.1111/2041-210x.14434\n\nZainal Abidin, D. H., Mohd Nor, S. A., Lavoué, S., A Rahim, M., & Mohammed Akib, N. A. (2022). Assessing a megadiverse but poorly known community of fishes in a tropical mangrove estuary through environmental DNA (eDNA) metabarcoding. Scientific Reports, 12(1), 16346. https://doi.org/10.1038/s41598-022-19954-3\n\nZarcero, J., Antich, A., Rius, M., Wangensteen, O. S., & Turon, X. (2024). A new sampling device for metabarcoding surveillance of port communities and detection of non-indigenous species. iScience, 27(1), 108588. https://doi.org/10.1016/j.isci.2023.108588"
   },
   {
     "objectID": "final_project.html",
     "href": "final_project.html",
-    "title": "proyecto final",
+    "title": "Proyecto final",
     "section": "",
     "text": "El proyecto integra el pipeline de principio a fin sobre un dataset pequeño o datos propios.\nentregables 1. plan del proyecto (1 página) con pregunta, datos y criterios de éxito. 2. presentación corta (5–7 min) el 31 de oct. 3. reporte reproducible (.qmd → .html) con código y figuras.\ncriterios - claridad de la pregunta y justificación. - trazabilidad del análisis (código limpio, semillas, sesión). - interpretación ecológica y límites del método."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "",
+    "text": "Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo. Sus aplicaciones potenciales incluyen análisis de la calidad del agua, evaluación de la biodiversidad de suelos, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado."
+  },
+  {
+    "objectID": "index.html#introducción",
+    "href": "index.html#introducción",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "",
+    "text": "Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo. Sus aplicaciones potenciales incluyen análisis de la calidad del agua, evaluación de la biodiversidad de suelos, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado."
+  },
+  {
+    "objectID": "index.html#descripción-del-curso",
+    "href": "index.html#descripción-del-curso",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Descripción del curso",
+    "text": "Descripción del curso\nEl curso “Metabarcoding de comunidades de eucariontes” está diseñado para introducir a estudiantes de posgrado, investigadores y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad mediante técnicas basadas en ADN ambiental (eDNA). A lo largo de cinco días intensivos, los participantes adquirirán conocimientos teóricos y habilidades prácticas para implementar proyectos de metabarcoding, desde el diseño experimental y la recolección de muestras, hasta el procesamiento bioinformático y el análisis ecológico de datos. El curso se centrará en el uso de la herramienta DADA2 para la inferencia de variantes de secuencia (ASVs), control de calidad, remoción de errores y asignación taxonómica. También se incluirán sesiones sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación. Se fomentará un ambiente colaborativo y participativo, con sesiones prácticas guiadas que permitirán a los asistentes aplicar lo aprendido a proyectos reales. El curso culmina con la presentación de proyectos diseñados por los participantes, promoviendo la integración de los conceptos y herramientas adquiridos."
+  },
+  {
+    "objectID": "index.html#a-quién-va-dirigido",
+    "href": "index.html#a-quién-va-dirigido",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "A quién va dirigido",
+    "text": "A quién va dirigido\nEste taller está dirigido principalmente a estudiantes de posgrado, investigadores y técnicos con conocimientos previos en ecología, biodiversidad o biología de comunidades que quieran aprender nuevas herramientas moleculares y bioinformáticas para estudiar la biodiversidad y a los investigadores en otras áreas de la bioinformática que quieran aprender métodos genéticos para la evaluación de la biodiversidad y otras aplicaciones ecológicas. En general, es adecuado para todo investigador que quiera unirse a la creciente comunidad internacional de usuarios del metabarcoding. En este taller se tratarán principalmente técnicas y software útiles para el metabarcoding de eucariontes."
+  },
+  {
+    "objectID": "index.html#visión",
+    "href": "index.html#visión",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Visión",
+    "text": "Visión\nContribuir a la formación continua e interdisciplinaria, capaz de aplicar de manera crítica y efectiva herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad en ecosistemas marinos con la técnica de metabarcoding. Buscamos empoderar a investigadores, estudiantes y técnicos con los conocimientos y habilidades necesarias para incorporar el ADN ambiental y el metabarcoding en sus proyectos de investigación, evaluación ambiental y conservación biológica. Aspiramos a que los participantes no solo dominen los aspectos técnicos del procesamiento y análisis de datos de eDNA, sino que también comprendan el potencial transformador de estas metodologías para generar conocimiento útil, reproducible y de alto impacto en la gestión de la biodiversidad. Promovemos una visión integradora, donde la ciencia molecular se pone al servicio de la ecología, la conservación y la toma de decisiones basada en evidencia."
+  },
+  {
+    "objectID": "index.html#misión",
+    "href": "index.html#misión",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Misión",
+    "text": "Misión\nEl curso tiene como misión capacitar a investigadores, estudiantes y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. A través de una combinación de teoría y práctica, buscamos proporcionar conocimientos sólidos sobre el metabarcoding, desde la recolección y procesamiento de muestras hasta el análisis e interpretación de datos con enfoques bioinformáticos. Nuestro objetivo es empoderar a los participantes con habilidades técnicas y analíticas que les permitan diseñar e implementar estudios basados en ADN ambiental, optimizando la detección de especies y la evaluación de comunidades biológicas. Fomentamos la adopción de metodologías estandarizadas y reproducibles que faciliten la generación de datos confiables y comparables a nivel global. A través de este curso, promovemos la formación de una comunidad interdisciplinaria comprometida con la aplicación de la genética y la bioinformática en la conservación y monitoreo de la biodiversidad marina, impulsando el uso de tecnologías innovadoras para la toma de decisiones informadas en investigación y gestión ambiental."
+  },
+  {
+    "objectID": "index.html#objetivo",
+    "href": "index.html#objetivo",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Objetivo",
+    "text": "Objetivo\nEl objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding y qPCR para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2. Este curso busca proporcionar las habilidades necesarias para:\n\nComprender los fundamentos teóricos del metabarcoding aplicado a muestras ambientales en estudios ecológicos.\nAplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.\nImplementar pipelines bioinformáticos para el procesamiento y análisis de secuencias, con énfasis en control de calidad, asignación taxonómica y análisis de diversidad.\nInterpretar resultados ecológicos y generar visualizaciones efectivas para estudios de biodiversidad.\nDiseñar estudios de metabarcoding adaptados a distintas preguntas ecológicas y de conservación.\n\nAl finalizar el curso, los participantes estarán preparados para integrar el metabarcoding en sus proyectos de investigación y contribuir al desarrollo de estrategias de monitoreo de biodiversidad en ecosistemas marinos."
+  },
+  {
+    "objectID": "index.html#instructores-participantesinstitución",
+    "href": "index.html#instructores-participantesinstitución",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Instructores participantes/Institución",
+    "text": "Instructores participantes/Institución\nDra. Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI\nDr. Fausto Valenzuela Quiñonez, Investigador Titular B CIBNOR"
+  },
+  {
+    "objectID": "index.html#temario-abreviado-del-curso-por-día",
+    "href": "index.html#temario-abreviado-del-curso-por-día",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Temario abreviado del curso por día",
+    "text": "Temario abreviado del curso por día\nDurante cinco días intensivos, el curso combinará sesiones teórico-prácticas proporcionando a las y los participantes una formación completa sobre el uso del ADN ambiental (eDNA) y el metabarcoding en el estudio de comunidades eucarióticas en ecosistemas marinos.\nLunes:\nEl curso inicia con la presentación del equipo docente y de los participantes, creando un espacio de intercambio y colaboración entre personas con intereses afines. Posteriormente, se ofrece una introducción general al ADN ambiental, el metabarcoding y las técnicas de detección específica mediante qPCR y ddPCR. Se discutirán los fundamentos conceptuales, ventajas y limitaciones de cada enfoque, así como sus aplicaciones actuales en ecología y conservación. Por la tarde, se abordarán los principios del diseño experimental y del diseño de proyectos con eDNA, considerando aspectos como el tipo de muestra, el número de réplicas, el marcador genético y los objetivos del estudio. Luego, se presentarán las técnicas de muestreo en campo para recolección de eDNA y las mejores prácticas para evitar contaminación. La jornada concluirá con una revisión del flujo de trabajo en laboratorio: extracción de ADN, selección de primers, amplificación por PCR y preparación de librerías para secuenciación masiva.\nMartes:\nEl segundo día se enfoca en los aspectos computacionales del análisis bioinformático. Se inicia con una introducción a los entornos de trabajo Linux, Unix y R, necesarios para manejar archivos de secuenciación y ejecutar pipelines reproducibles. Más adelante, se guiará a las y los participantes en la conexión a un servidor remoto, donde trabajarán durante el curso, y se revisarán aspectos clave de la organización de carpetas, la carga de archivos y el uso básico de la terminal. En la sesión práctica de la tarde se trabajará con datos crudos en formato FASTQ, reconociendo su estructura y visualizando la calidad de las lecturas. Luego se introducirá el control de calidad, incluyendo el filtrado y trimming de secuencias con DADA2, y finalmente se ejecutará el paso de aprendizaje del error, fundamental para la posterior inferencia precisa de variantes.\nMiércoles:\nDurante este día se abordará el núcleo del pipeline de DADA2. Por la mañana se cubrirá la inferencia de ASVs (Amplicon Sequence Variants) mediante métodos de denoising, que permiten distinguir secuencias reales de ruido técnico. Se discutirá también el concepto de clustering y su diferencia con los métodos basados en ASVs. A continuación, se trabajará con la unión de lecturas forward y reverse (paired-end), evaluando la eficiencia del ensamblaje. En la tarde se aplicará la remoción de secuencias quiméricas generadas durante la PCR, y posteriormente se ejecutará la asignación taxonómica, donde se vinculan las secuencias con su posible identidad biológica usando bases de datos como SILVA o PR2.\nJueves:\nEste día está dedicado al procesamiento final y al análisis ecológico de los datos. Se iniciará con la generación de la tabla de abundancia de ASVs por muestra (ASV table) y la tabla taxonómica (tax table), integrando toda la información en objetos de R listos para el análisis. Luego se presentarán herramientas como phyloseq, vegan y ggplot2, útiles para realizar análisis ecológicos y visualización de datos metabarcoding. Por la tarde se explorarán los patrones de diversidad α y β, y se aprenderá a representarlos gráficamente mediante barplots, rarefacción, análisis multivariados (PCA, nMDS, etc.). Finalmente, se discutirá cómo diferentes barcodes (COI, 18S, 12S) pueden influir en los resultados de un estudio, comparando sus alcances, sesgos y utilidad para distintos grupos taxonómicos.\nViernes:\nEl último día comienza con el uso de controles negativos y el filtrado de contaminantes con el paquete decontam, una herramienta crucial para asegurar la confiabilidad de los datos. Después, se presentarán métodos alternativos para la generación de OTUs mediante agrupamiento por similitud con VSEARCH o el paquete clustur en R, permitiendo comparar este enfoque con el uso de ASVs. En la sesión de la tarde se abordarán temas auxiliares, según el interés del grupo, como la construcción de bases de datos personalizadas, diseño de primers in silico o estrategias de documentación reproducible. El curso cierra con una sesión de presentación de proyectos en la que los participantes compartirán ideas desarrolladas durante la semana, recibiendo retroalimentación del equipo docente y sus compañeros, y consolidando así su aprendizaje de manera aplicada y colaborativa."
+  },
+  {
+    "objectID": "practicas.html",
+    "href": "practicas.html",
+    "title": "Prácticas",
+    "section": "",
+    "text": "Cada práctica incluye objetivos, datos, y un cuaderno ejecutable en R.\n\nsetup del entorno: instalación/verificación de R, RStudio y paquetes; clonar repo del curso.\nDADA2 I: inspección de calidad, filterAndTrim, parámetros de truncado, error learning.\nDADA2 II: dada, merge pairs, removeBimeraDenovo, construcción de tabla de ASVs.\nasignación taxonómica: assignTaxonomy / assignSpecies y bases de referencia; hash-based opcional.\nphyloseq: importación, rarefacción (si aplica), diversidad alfa/beta, NMDS/PCoA.\nreporte reproducible: Quarto + figuras estandarizadas.\n\n\nNota: incluiremos controles, réplicas, y mock communities para enfatizar dMIQE/MIQE."
+  },
+  {
+    "objectID": "programa.html",
+    "href": "programa.html",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
-    "text": "Integramos eDNA, metabarcoding, qPCR/ddPCR y análisis ecológico de comunidades con R.\n\n\nobjetivos\n\ncomprender el flujo completo de trabajo en metabarcoding (del muestreo a los ASVs y métricas de comunidad).\nadquirir habilidades prácticas con DADA2 y phyloseq en R.\ninterpretar y comunicar resultados de diversidad y composición.\n\n\n\nlogística\n\nhorario: 9:00–15:00 (12:00–13:00 almuerzo).\nmodalidad: presencial con prácticas en computadora.\nrequisitos: cuenta de GitHub, R (≥4.3), RStudio Desktop, nociones básicas de R.\n\n\n\nestructura\n\nmañanas: teoría y demostraciones.\ntardes: prácticas guiadas en computador.\n\n\nEl curso está orientado a análisis reproducibles; usaremos Quarto y repositorios de GitHub para compartir materiales."
+    "text": "Día 1\n9:00 - 11:00 am. Tema: Presentación. Ponentes y participantes del curso\nObjetivo de la sesión: Dar la bienvenida a los participantes e introducir el propósito general del curso, la estructura del programa, los objetivos de aprendizaje y la dinámica de trabajo. Además, se presentarán los ponentes y se facilitará una primera interacción entre los participantes para fomentar un ambiente colaborativo desde el inicio.\nSubtema:\n\nBienvenida oficial e introducción por parte de la coordinación general.\nPresentación del equipo docente: formación, líneas de investigación y rol dentro del curso.\nPresentación breve de los participantes (nombre, afiliación, intereses y expectativas).\nDescripción general del curso: o Propósito y objetivos de aprendizaje. o Contenidos y estructura del programa diario. o Herramientas que se utilizarán durante el curso (R, RStudio, DADA2, etc.). o Recursos disponibles y modalidad de trabajo (clases teóricas, prácticas computacionales, presentaciones, trabajo en equipo).\nEspacio para resolver dudas logísticas y técnicas.\n\n11:00 – 11:20 am Receso\n11:20 - 13:00 Tema: Introducción al eDNA, metabarcoding, qPCR y ddPCR\nObjetivo de la sesión: Proporcionar una visión general de los fundamentos teóricos del ADN ambiental (eDNA) y las principales metodologías asociadas para el estudio y monitoreo de la biodiversidad. Se presentarán los principios del metabarcoding, así como las técnicas de detección dirigida de especies mediante qPCR y ddPCR, resaltando sus ventajas, limitaciones y aplicaciones en contextos ecológicos y de conservación.\nSubtema:\n\n¿Qué es el ADN ambiental? o Definición, orígenes y tipos de ADN detectado en muestras ambientales. o Diferencias entre ADN intracelular y extracelular.\nAplicaciones del eDNA en ecosistemas acuáticos y marinos. • Introducción al metabarcoding: o Fundamento molecular (amplificación de genes marcadores universales). o Ventajas frente a métodos tradicionales de monitoreo biológico. o Ejemplos de aplicaciones reales (inventarios, comunidades bentónicas, conectividad, etc.).\nqPCR y ddPCR en eDNA: o Principios básicos de cuantificación de ADN para especies objetivo. o Comparación entre qPCR y ddPCR (sensibilidad, precisión, costos). o Casos de estudio y complementariedad con metabarcoding. Enfoque didáctico: • Exposición con ejemplos visuales y casos reales publicados.\nEspacio para preguntas y discusión sobre cuándo es más apropiado usar cada técnica. Materiales sugeridos:\nGráficos comparativos entre métodos.\nLectura breve complementaria (revisión reciente o estudio de caso).\nDiagrama de flujo general de un estudio eDNA (detección única vs metabarcoding).\n\n13:00 – 14:00 | Comida\n14:00 - 15:00 Tema: Diseño experimental. Diseño de proyectos\nObjetivo de la sesión:\nIntroducir los elementos clave para planear y diseñar proyectos de investigación basados en ADN ambiental, con énfasis en metabarcoding y detección específica de especies. Se destacará la importancia de un diseño experimental sólido para garantizar la robustez, reproducibilidad y aplicabilidad de los resultados. Que cada participante tenga claridad sobre los elementos esenciales que debe considerar al planear un proyecto basado en eDNA, y cuente con una estructura inicial para desarrollarlo durante el taller.\nSubtema:\n• Principios del diseño experimental en estudios de eDNA: o Definición de objetivos y preguntas de investigación. o Selección del enfoque metodológico: metabarcoding vs qPCR/ddPCR. o Tipos de muestra y estrategias de muestreo según la pregunta ecológica.\n• Consideraciones prácticas: o Número de réplicas ecológicas y técnicas. o Controles negativos y blancos. o Profundidad de secuenciación y capacidad de detección.\n• Herramientas de planificación y presupuesto: o Elección de marcadores genéticos y primers. o Consideraciones sobre análisis bioinformático posterior.\n• Ejemplos de esquemas de diseño para distintos escenarios (monitoreo de comunidades, detección de invasoras, comparación de hábitats, etc.).\n15:00 – 15:10 pm Receso\n15:10 – 15:30 Tema: Trabajo de campo: Técnicas de muestreo para ADN ambiental\nObjetivo de la sesión: Brindar una introducción a las distintas metodologías de muestreo utilizadas para recolectar ADN ambiental (eDNA) en ecosistemas marinos y costeros, destacando la importancia de la planeación del muestreo, el manejo adecuado de las muestras y las estrategias para evitar contaminación cruzada. Que los participantes comprendan las variables clave del muestreo de eDNA y cómo elegir la estrategia adecuada para sus propios proyectos, integrando criterios logísticos, ecológicos y moleculares.\nSubtema:\n\nTipos de muestras para eDNA: agua, sedimentos, biofilms, plancton, tejidos, entre otros.\nMétodos de recolección: muestreo manual, bombas peristálticas, jeringas, botellas Niskin.\nVolúmenes y frecuencias de muestreo según el tipo de estudio.\nTécnicas de pretratamiento: filtración en campo o laboratorio, congelamiento, preservación con tampones (etanol, CTAB, Longmire, etc.).\nProtocolos para evitar la contaminación: uso de guantes, bolsas selladas, tubos estériles, desinfección de material.\nLogística de campo en ambientes marinos: transporte, conservación, documentación. Enfoque didáctico:\nRevisión de ejemplos visuales de distintos métodos de muestreo.\nDiscusión sobre ventajas y limitaciones de cada técnica según el ambiente y el objetivo del estudio.\nEspacio para resolver dudas prácticas sobre diseño de muestreo.\n\n15:30 – 17:00 Tema: Trabajo de laboratorio: Extracción de ADN. Primers. PCR. Preparación de librerías de amplicones\nObjetivo de la sesión: Familiarizar a los participantes con los pasos fundamentales del procesamiento de muestras en el laboratorio para estudios de ADN ambiental, desde la extracción de ADN, la selección de primers y la amplificación por PCR, hasta la preparación de librerías de amplicones para secuenciación masiva. Que los participantes comprendan el flujo completo del procesamiento en laboratorio para metabarcoding, con especial atención a los puntos críticos donde puede comprometerse la calidad del análisis posterior. Subtema: • Extracción de ADN: o Métodos comunes (kits comerciales, protocolos caseros). o Factores que afectan el rendimiento y la calidad del ADN. o Manejo de inhibidores y muestras con bajo contenido de ADN. • Diseño y selección de primers: o Marcadores genéticos comunes en metabarcoding de eucariontes (COI, 18S, 12S, etc.). o Consideraciones para elegir entre primers universales vs específicos. o Introducción al sesgo por primers y su efecto en la diversidad detectada. • PCR y preparación de librerías: o Etapas de amplificación: PCR convencional, indexación, limpieza. o Buenas prácticas de laboratorio para evitar contaminación. o Estrategias de multiplexado: etiquetas, adaptadores y placas. o Controles necesarios: blancos de extracción, controles negativos y positivos. Enfoque didáctico: • Explicación paso a paso del flujo de trabajo de laboratorio con esquemas ilustrativos. • Revisión de ejemplos de protocolos utilizados en proyectos reales. • Espacio para discusión sobre cómo adaptar protocolos según el tipo de muestra y marcador.\n\n\nDía 2\n9:00 – 11:00 Tema: Introducción a Linux, Unix y R\nObjetivo de la sesión: Brindar a los participantes una introducción práctica al entorno de trabajo que se utilizará durante el análisis bioinformático. Se abordarán los fundamentos del uso de la línea de comandos en sistemas tipo Unix/Linux y los conceptos básicos del lenguaje de programación R, ambos esenciales para ejecutar los análisis de metabarcoding con DADA2 y otras herramientas. Que los participantes se familiaricen con el uso de la terminal y R para trabajar con datos de secuenciación, y que puedan navegar de forma autónoma por su entorno de trabajo, preparar carpetas, cargar scripts y ejecutar comandos básicos necesarios para el pipeline.\nSubtema: • ¿Por qué usamos Linux y R en bioinformática? • Navegación básica en la terminal: o Estructura de directorios. o Comandos esenciales: ls, cd, mkdir, cp, mv, rm, nano, chmod, head, grep, less, etc. • Gestión de archivos y permisos. • Introducción a R: o Conceptos básicos: variables, vectores, funciones, paquetes. o Uso de RStudio y R Markdown. o Estructura de un script en R. o Carga e instalación de paquetes (install.packages, library). • Buenas prácticas para organización de proyectos bioinformáticos (nombres de archivos, estructura de carpetas, bitácoras). Enfoque didáctico: • Demostración en vivo por terminal y RStudio. • Ejercicios interactivos guiados paso a paso. • Entrega de una hoja de comandos y atajos útiles. 11:00 – 11:20 am Receso 11:20 – 13:00 Conexión al servidor Expositoras/es: • Dra. Tania Valdivia Carrillo • Dr. Fausto Valenzuela Quiñonez • Dr. Miguel A. Martínez Delgado Objetivo de la sesión: Guiar a los participantes en el acceso y uso de un servidor remoto para el procesamiento de datos de secuenciación. Esta sesión es clave para garantizar que todas y todos puedan ejecutar análisis pesados y reproducibles en un entorno bioinformático común. Que todas las personas participantes puedan acceder correctamente al servidor remoto, navegar por su estructura, subir sus datos y estén listas para iniciar el análisis bioinformático de sus muestras en las siguientes sesiones. Subtema: • ¿Qué es un servidor y por qué lo usamos en bioinformática? • Acceso al servidor por línea de comandos (SSH). • Estructura de carpetas del servidor del curso. • Subida y descarga de archivos (uso de scp, rsync, o alternativas como FileZilla). • Gestión de scripts y ejecución de tareas en el servidor. • Buenas prácticas: o Organización de carpetas y resultados. o Trabajo colaborativo y manejo de conflictos. o Cuidado con la sobreescritura de archivos. • Solución de errores comunes de conexión y permisos. Enfoque didáctico: • Conexión real al servidor durante la sesión. • Revisión paso a paso del proceso de acceso y navegación. • Acompañamiento personalizado en caso de problemas técnicos. • Entrega de guía escrita con comandos básicos y configuraciones sugeridas. 13:00 – 14:00 Comida 14:00 – 15:00 Importación y visualización de datos crudos (FASTQ) Expositores: • Dr. Fausto Valenzuela Quiñonez • Dr. Miguel A. Martínez Delgado Objetivo de la sesión: Introducir a los participantes en el reconocimiento, organización e inspección de archivos de datos crudos provenientes de secuenciación masiva en formato FASTQ, preparando el camino para las etapas posteriores del análisis con DADA2. Que los participantes reconozcan correctamente los archivos FASTQ, comprendan su estructura y puedan realizar una inspección inicial de la calidad de las secuencias, sentando las bases para el control de calidad y filtrado en las siguientes sesiones. Subtema: • ¿Qué es un archivo FASTQ? o Estructura del archivo: encabezado, secuencia, símbolo +, calidad (Phred). o Paired-end vs single-end. • Exploración e inspección de archivos FASTQ con línea de comandos (head, less, grep). • Introducción a la calidad de las lecturas: o Concepto de score Phred. o Patrones comunes de calidad por ciclo. • Organización de archivos para análisis en DADA2: o Nombrado consistente de archivos. o Estructura de carpetas de trabajo. o Verificación de correspondencias entre archivos forward y reverse. Enfoque didáctico: • Ejercicios prácticos: visualización directa de archivos FASTQ en el servidor. • Uso de ejemplos con errores comunes (archivos corruptos, mal nombrados). • Preguntas dirigidas para familiarizar a los participantes con la interpretación del formato. 15:00 – 15:10 pm Receso 15:10 – 15:30 Tema: Control de calidad (filtrado y trimming) Expositores: • Dr. Fausto Valenzuela Quiñonez • Dr. Miguel A. Martínez Delgado Objetivo de la sesión: Introducir a los participantes en los conceptos fundamentales del control de calidad de secuencias obtenidas por secuenciación masiva y guiarlos en la aplicación de herramientas específicas para el filtrado y recorte (trimming) de lecturas de baja calidad antes del análisis con DADA2. Que los participantes comprendan la lógica del control de calidad y estén en capacidad de aplicar filtros adecuados para limpiar sus datos antes del aprendizaje del error y la inferencia de ASVs. Subtema: • Fundamentos del control de calidad en secuencias de alto rendimiento: o Degradación de calidad a lo largo de la lectura. o Contaminación con adaptadores y secuencias indeseadas. o Importancia de remover regiones de baja calidad para evitar errores en el análisis posterior. • Herramientas comunes para quality control (mención breve): o FastQC, Cutadapt, Trimmomatic. o Enfoque en el filtrado con filterAndTrim() de DADA2. • Parámetros clave en filterAndTrim(): o truncLen, maxN, maxEE, truncQ. o Cómo elegir valores adecuados en función de la visualización previa. Enfoque didáctico: • Demostración práctica en R usando funciones de DADA2. • Revisión rápida de resultados de filtrado: cantidad de reads retenidos vs descartados. • Conversación sobre el balance entre calidad y cantidad de datos. 15:30 – 17:00 Tema: Aprendizaje del error Expositores: • Dra. Tania Valdivia Carrillo • Dr. Miguel A. Martínez Delgado Objetivo de la sesión: Explicar el fundamento y la importancia del modelo de error en el pipeline de DADA2, y guiar a los participantes en la aplicación de los pasos necesarios para estimar y visualizar los perfiles de error a partir de sus propias secuencias filtradas. Que los participantes comprendan el funcionamiento del modelo de error en DADA2, puedan ejecutarlo correctamente sobre sus datos, y sean capaces de interpretar su salida para tomar decisiones informadas antes de continuar con la inferencia de ASVs. Subtema: • ¿Por qué es importante aprender un modelo de error en metabarcoding? o Comparación con métodos de clustering tradicionales (OTUs). o Rol del modelo de error en la inferencia precisa de variantes de secuencia (ASVs). • Introducción a la función learnErrors() de DADA2: o ¿Qué calcula? ¿Cómo interpreta los patrones de error? o Diferencia entre forward y reverse reads. o Visualización del ajuste del modelo (plotErrors()). • Buenas prácticas y criterios para evaluar la calidad del aprendizaje: o ¿Cuándo es necesario volver a filtrar o ajustar parámetros? o ¿Qué hacer si el modelo no converge adecuadamente? Enfoque didáctico: • Ejecución del proceso completo en R, paso a paso. • Visualización e interpretación de las gráficas de error generadas. • Discusión abierta sobre cómo los errores pueden afectar los resultados posteriores.\n\n\nDía 3\n09:00 – 11:00 Tema Denoising e inferencia de ASVs, clustering\nObjetivo de la sesión: Guiar a los participantes en la etapa central del pipeline de DADA2: la inferencia de variantes de secuencia (ASVs) a partir de lecturas depuradas, utilizando un enfoque de denoising que permite identificar secuencias reales presentes en la muestra, eliminando errores sin necesidad de agrupar por similitud. Que los participantes comprendan cómo y por qué se infieren ASVs a partir de sus secuencias, ejecuten el proceso con éxito sobre sus datos, y estén listos para continuar con el ensamblaje de pares y la generación de la tabla de secuencias. Subtema: • ¿Qué es el denoising? o Diferencias conceptuales entre denoising y clustering. o Ventajas del enfoque ASV frente a OTUs (resolución, reproducibilidad, trazabilidad). • Inferencia de ASVs con DADA2: o Uso de la función dada() y cómo se conecta con el modelo de error aprendido. o Parámetros clave y recomendaciones para optimizar resultados. • Resultados generados: o Secuencias inferidas por muestra. o Recuento de abundancia de ASVs. o Cómo evaluar si la inferencia fue exitosa. • Introducción al concepto de clustering (sin aplicación directa en esta etapa): o Mención breve de herramientas como SWARM o VSEARCH. o Contextos en los que el clustering sigue siendo útil (comparaciones entre métodos, otros pipelines). Enfoque didáctico: • Demostración práctica del uso de dada() en forward y reverse reads. • Visualización de resultados intermedios. • Discusión sobre el impacto del denoising en la precisión del análisis ecológico. 11:00 – 11:20 am Receso 11:20 – 13:00 Tema: Unión de pares (si se trata de lecturas paired-end) Expositora: Dra. Tania Valdivia Carrillo Objetivo de la sesión: Enseñar a los participantes a unir lecturas forward y reverse obtenidas mediante secuenciación paired-end, utilizando funciones del paquete DADA2, y destacar los beneficios y requisitos de una correcta unión de pares para mejorar la precisión y cobertura del análisis de metabarcoding. Que los participantes comprendan la lógica y los requisitos para unir lecturas paired-end, realicen exitosamente la unión en sus propios datos, y cuenten con un conjunto limpio de secuencias ensambladas para los pasos posteriores del pipeline. Subtema: • ¿Qué es la secuenciación paired-end? o Principios del enfoque y ventajas respecto a lecturas single-end. o Importancia de la región solapada entre las lecturas forward y reverse. • Unión de pares en DADA2: o Función mergePairs(): requerimientos de entrada, parámetros importantes (minOverlap, maxMismatch). o Resultados de la unión: secuencias ensambladas y filtradas. o Verificación de la eficiencia del merge (porcentaje de lecturas unidas). • Problemas comunes y cómo resolverlos: o Falta de solapamiento suficiente. o Baja calidad en los extremos. o Muestras con pobre recuperación tras el merge. Enfoque didáctico: • Ejecución práctica del paso de unión con mergePairs(). • Visualización de estadísticas y discusión de los resultados obtenidos. • Recomendaciones sobre cómo ajustar parámetros si el ensamblaje es bajo. 13:00 – 14:00 Comida 14:00 – 15:00 Tema: Remoción de quimeras Expositora: Dra. Tania Valdivia Carrillo Objetivo de la sesión: Explicar qué son las quimeras en secuenciación masiva y por qué es fundamental detectarlas y eliminarlas para evitar falsos positivos en estudios de biodiversidad. Se guiará a los participantes en la aplicación de la función correspondiente en DADA2 para identificar y remover secuencias quiméricas en sus datos procesados. Que los participantes entiendan la importancia de la remoción de quimeras, puedan aplicar correctamente la función correspondiente en su conjunto de datos, y continúen hacia la asignación taxonómica con un dataset depurado. Subtema: • ¿Qué son las secuencias quiméricas? o Cómo se forman durante la PCR (recombinación de fragmentos). o Por qué son problemáticas en estudios metabarcoding. • Detección y eliminación de quimeras en DADA2: o Uso de la función removeBimeraDenovo() o Parámetros clave y métodos utilizados por DADA2 (consensus vs pooled). o Evaluación de resultados: proporción de secuencias eliminadas y su interpretación. • Buenas prácticas: o Evaluar si una alta proporción de quimeras indica un problema de calidad o diseño. o Comparación con herramientas externas (breve mención a UCHIME, VSEARCH). Enfoque didáctico: • Ejecución paso a paso de la función en R. • Análisis de los resultados antes y después de la remoción. • Discusión abierta sobre cómo afectan las quimeras la interpretación ecológica. 15:00 – 15:10 pm Receso 15:10 – 17:00 Tema: Asignación taxonómica Expositora: Dra. Tania Valdivia Carrillo Objetivo de la sesión: Capacitar a los participantes en el uso de herramientas bioinformáticas para realizar la asignación taxonómica de las secuencias representativas obtenidas tras la inferencia de ASVs. Esta etapa permite vincular las secuencias con organismos conocidos, proporcionando un marco ecológico para su interpretación. Que los participantes comprendan el proceso de asignación taxonómica, puedan implementarlo con sus propios datos, y obtengan una tabla de ASVs con sus respectivas clasificaciones para proceder al análisis ecológico. Subtema: • ¿Qué es la asignación taxonómica y por qué es fundamental en metabarcoding? o Conexión entre secuencias (ASVs) y unidades biológicas (especies, géneros, etc.). o Limitaciones e incertidumbres en la clasificación. • Métodos de asignación en DADA2: o Función assignTaxonomy() y addSpecies(). o Bases de datos compatibles: SILVA, PR2, RDP, MIDORI, BOLD. o Creación y uso de bases de datos personalizadas. • Parámetros y estrategias: o Ajuste del parámetro minBoot (confianza en la asignación). o Asignación hasta especie vs niveles taxonómicos superiores. • Evaluación y limpieza de las asignaciones: o Identificación de secuencias no asignadas o con asignaciones ambiguas. o Buenas prácticas para filtrar resultados con baja confianza. Enfoque didáctico: • Demostración práctica del uso de funciones en R para asignar taxonomía. • Comparación entre bases de datos y discusión sobre sesgos taxonómicos. • Exploración de salidas tabulares y preparación de datos para análisis ecológicos posteriores.\n\n\nDía 4\n09:00 – 11:00 Tema: Creación de tablas: ASV table y tax table\nObjetivo de la sesión: Guiar a los participantes en la creación de las tablas fundamentales para el análisis ecológico posterior: la tabla de abundancia de ASVs por muestra (ASV table) y la tabla taxonómica (tax table), utilizando los objetos generados en el pipeline de DADA2. Que los participantes comprendan cómo se estructuran las tablas de ASVs y taxonomía, sean capaces de generarlas e integrarlas, y estén listos para iniciar los análisis ecológicos y estadísticos en las siguientes sesiones. Subtema: • ¿Qué son las ASV table y tax table? o Relación entre muestras, secuencias y taxonomía. o Estructura y propósito de cada tabla. • Creación de tablas en R: o makeSequenceTable(): generación de la tabla de abundancia de ASVs. o Conversión de tablas a formato compatible con otros paquetes (phyloseq, vegan). o Asociación de taxonomía a ASVs: combinación de taxa con ASVs. • Revisión y limpieza de tablas: o Filtrado de secuencias espurias (ej. no asignadas, contaminantes). o Inspección de dimensiones y coherencia de las tablas. • Introducción breve a phyloseq: o Creación de un objeto phyloseq con ASVs, taxonomía y metadatos. o Ventajas de trabajar con objetos integrados. Enfoque didáctico: • Construcción paso a paso de la ASV table y tax table en R. • Visualización e inspección de las primeras filas de cada tabla. • Resolución de errores comunes (muestras sin reads, taxonomías faltantes, etc.). 11:00 – 11:20 am Receso 11:20 – 13:00 Tema: Exportación y análisis en phyloseq, vegan, ggplot2, etc. Expositora: Dra. Tania Valdivia Carrillo Objetivo de la sesión: Enseñar a los participantes a exportar e integrar sus datos de ASVs y taxonomía en paquetes especializados de R para el análisis ecológico de comunidades microbianas o eucarióticas, utilizando herramientas como phyloseq, vegan y ggplot2 para organizar, explorar y visualizar los datos. Que los participantes se familiaricen con las herramientas de análisis y visualización más utilizadas en estudios de eDNA, y puedan generar gráficos y resultados interpretables a partir de sus datos procesados. Subtema: • Introducción a phyloseq: o Estructura del objeto phyloseq. o Integración de ASV table, tax table y metadatos. o Funciones básicas: plot_richness(), plot_bar(), ordinate(). • Uso de vegan para análisis ecológico: o Matrices de comunidad y diversidad. o Cálculo de índices de diversidad: Shannon, Simpson, etc. o Transformación y rarefacción de datos (decostand, rarefy). • Visualización con ggplot2: o Construcción de gráficos personalizados (barras, cajas, puntos, etc.). o Personalización de ejes, colores, leyendas y temas. o Combinación con phyloseq para generar gráficos complejos. • Exportación de resultados: o Guardado de objetos, tablas y figuras para uso externo. o Formatos útiles para compartir y publicar (CSV, PNG, PDF). Enfoque didáctico: • Ejercicios prácticos con un conjunto de datos de ejemplo. • Revisión de scripts y comandos en R con salida visual inmediata. • Enlaces a plantillas y scripts reutilizables. 13:00 – 14:00 Comida 14:00 – 15:00 Tema: Análisis ecológico de comunidades. Representación gráfica de resultados: barplots, patrones de α- y ß-diversidad Expositora: Dra. Tania Valdivia Carrillo Objetivo de la sesión: Proporcionar a los participantes las herramientas conceptuales y prácticas para analizar e interpretar patrones de diversidad biológica a partir de datos de metabarcoding, utilizando métricas ecológicas de diversidad alfa y beta, así como su representación gráfica en barplots y gráficos de ordenamiento. Subtema: • Diversidad α (alfa): o Definición e interpretación. o Cálculo de índices (riqueza observada, Shannon, Simpson). o Rarefacción y cobertura. • Diversidad ß (beta): o Comparación de comunidades. o Matrices de disimilitud: Jaccard, Bray-Curtis. o Visualización con análisis multivariados: nMDS, PCA, PCoA. • Representación gráfica: o Construcción e interpretación de barplots de abundancia relativa. o Uso de phyloseq y ggplot2 para representar resultados. o Organización por grupo, hábitat o condición experimental. Enfoque didáctico: • Aplicación en R con un conjunto de datos de ejemplo. • Visualización de resultados paso a paso. • Ejemplos de cómo adaptar las visualizaciones para publicaciones o presentaciones. Resultado esperado: Que los participantes comprendan cómo evaluar la estructura de comunidades a partir de datos de eDNA, calcular índices de diversidad y generar representaciones gráficas claras y efectivas para comunicar sus resultados.\n15:00 – 15:10 pm Receso 15:30 – 17:00 Tema: Comparación de resultados de diferentes barcodes\nExpositora: Dra. Tania Valdivia Carrillo\nObjetivo de la sesión: Analizar y discutir cómo la elección de distintos marcadores genéticos (barcodes) puede influir en los resultados obtenidos mediante metabarcoding, tanto en términos de taxones detectados como en la resolución taxonómica, y explorar estrategias para comparar, complementar o seleccionar marcadores de forma informada. Que los participantes reconozcan cómo la elección del marcador puede moldear los resultados de un estudio de eDNA/metabarcoding, y cuenten con criterios sólidos para elegir, comparar o combinar barcodes según sus objetivos de investigación.\nSubtema:\n• ¿Qué es un barcode en metabarcoding? o Regiones génicas comúnmente utilizadas en eucariontes: COI, 18S rRNA, 12S, ITS, etc. o Características deseables de un marcador: universalidad, especificidad, resolución taxonómica, cobertura en bases de datos. • Comparación de resultados entre barcodes: o Diferencias en la detección de grupos taxonómicos (e.g., animales vs protistas). o Variaciones en riqueza y composición de comunidades. o Casos de estudio: ejemplos en donde diferentes barcodes generan patrones complementarios o contradictorios. • Métodos para la comparación: o Visualización conjunta de resultados (barplots combinados, Venn diagrams, heatmaps). o Análisis multivariado de datasets paralelos. o Filtros taxonómicos para evaluar sesgos por marcador. • Estrategias prácticas: o ¿Cuándo usar más de un marcador? o Selección del marcador según el objetivo del estudio. o Consideraciones de costo, tiempo y recursos bioinformáticos.\nEnfoque didáctico: • Revisión de datasets reales procesados con distintos barcodes. • Discusión guiada sobre decisiones metodológicas en función de la pregunta ecológica. • Intercambio de experiencias entre participantes sobre marcadores utilizados en distintos sistemas.\n\n\nDía 5\n09:00 – 11:00 Tema: Uso de controles negativos y eliminación de contaminantes con decontam (R)\nExpositor: Dr. Miguel A. Martínez Delgado\nObjetivo de la sesión: Introducir a los participantes en el uso de controles negativos dentro de estudios de ADN ambiental, y enseñar cómo detectar y remover contaminantes mediante el paquete decontam de R. Esta etapa es fundamental para asegurar la calidad y la confiabilidad de los resultados de metabarcoding. Que los participantes comprendan el valor del uso de controles negativos y dominen el uso de decontam para identificar y remover secuencias contaminantes de sus datos, mejorando la calidad de sus análisis de biodiversidad.\nSubtema: • ¿Qué son los controles negativos y cuál es su función? o Tipos: blanco de extracción, blanco de PCR, blanco de campo. o Importancia de incluirlos desde el diseño experimental. • ¿Por qué es importante identificar contaminantes en estudios de eDNA? o Fuentes comunes de contaminación: laboratorio, reactivos, manipulación. o Impacto en los resultados ecológicos y decisiones de manejo. • Introducción al paquete decontam en R: o Métodos disponibles: frequency, prevalence, combined. o Requisitos del input: tabla de ASVs, metadatos de muestras (identificación de controles). o Interpretación de resultados y filtros sugeridos. • Visualización y documentación: o Representación de contaminantes detectados. o Registro de decisiones de filtrado para asegurar reproducibilidad. Enfoque didáctico: • Ejercicio práctico con un dataset que incluye controles negativos. • Aplicación paso a paso del pipeline con decontam. • Discusión sobre estrategias para evitar contaminación y manejo de resultados inciertos.\n11:00 – 11:20 am Receso\n11:20 – 13:00 Tema: OTUs: agrupamiento por similitud con VSEARCH o clustur (R)\nExpositores: • Dra. Tania Valdivia Carrillo • Dr. Miguel A. Martínez Delgado\nObjetivo de la sesión: Introducir a los participantes en el enfoque tradicional de generación de OTUs (Operational Taxonomic Units) mediante agrupamiento por similitud de secuencias, como una alternativa o complemento al enfoque basado en ASVs. Se explorarán herramientas como VSEARCH y el paquete clustur en R. Que los participantes comprendan el proceso de agrupamiento por similitud, sean capaces de generar OTUs a partir de sus secuencias, y reflexionen sobre la elección entre OTUs y ASVs en función de los objetivos, tipo de muestra y marcadores utilizados. Subtema: • Diferencias entre OTUs y ASVs: o Definición, ventajas y limitaciones de cada enfoque. o ¿Cuándo y por qué seguir utilizando OTUs? • Agrupamiento de secuencias por identidad: o Enfoque de clustering “de novo” (sin referencia). o Uso de umbrales de identidad (97%, 99%, etc.). • Introducción a VSEARCH: o Flujo de trabajo básico: dereplicación, clustering, chimera checking. o Parámetros clave y formatos de entrada/salida. o Ejecución en línea de comandos o a través de un wrapper en R. • Introducción a clustur en R: o Clustering directamente desde tablas de ASVs. o Integración con phyloseq y análisis comparativos. • Comparación práctica de resultados: o Número de OTUs vs ASVs. o Cambios en riqueza y composición observada. o Visualización con gráficos comparativos. Enfoque didáctico: • Demostraciones prácticas usando datasets del curso. • Discusión sobre la elección del método más adecuado según el contexto del estudio. • Exploración de cómo presentar resultados comparativos en artículos científicos.\n13:00 – 14:00 Comida\n14:00 – 15:00 Tema: Temas auxiliares Expositora: Dra. Tania Valdivia Carrillo Objetivo de la sesión: Abordar temas complementarios que enriquecen la comprensión y aplicación de los métodos de ADN ambiental y metabarcoding, así como resolver dudas acumuladas durante la semana. Esta sesión funcionará también como espacio abierto para profundizar en intereses específicos de los participantes. Que los participantes afiancen conceptos clave, aclaren dudas específicas, y se lleven recursos adicionales para seguir explorando y profundizando en el uso del ADN ambiental en sus contextos de trabajo e investigación. Contenido posible (adaptable según el grupo): • Bases de datos de referencia personalizadas: o Cómo construir y curar una base de datos para asignación taxonómica. o Herramientas como ecoPCR, OBITools, BLAST, entre otras. • Diseño de primers in silico: o Introducción a herramientas como ecoPrimers, PrimerMiner, Primer3. o Evaluación de cobertura y especificidad. • Consideraciones sobre almacenamiento, reproducibilidad y documentación de análisis: o Estructura de carpetas, uso de RMarkdown o Quarto. o Versionado de código y datos (mención breve a Git/GitHub). • Errores comunes y soluciones prácticas en análisis de eDNA: o Mala calidad de datos, falta de asignación taxonómica, sobre-filtrado, etc. • Oportunidades y limitaciones del metabarcoding en aplicaciones reales: o Estudios de impacto ambiental, monitoreo de especies invasoras, conservación. Enfoque didáctico: • Formato flexible tipo “consultorio técnico” y diálogo abierto. • Prioridad a preguntas de los participantes y discusión de casos reales. • Revisión rápida de herramientas adicionales sugeridas por los instructores.\n15:00 – 15:10 pm Receso\n15:30 – 17:00 Tema: Brainstorming y presentación de proyectos Facilitadora: Dra. Tania Valdivia Carrillo Objetivo de la sesión: Culminar el curso con una actividad integradora en la que los participantes presenten ideas de proyectos aplicando los conocimientos adquiridos durante la semana. Esta sesión busca fomentar el pensamiento crítico, la colaboración, la retroalimentación constructiva y la proyección hacia aplicaciones reales de los métodos de ADN ambiental. Que cada participante consolide los conocimientos adquiridos mediante la aplicación a un caso o idea de proyecto, reciba retroalimentación útil para desarrollarlo más allá del curso, y se integre en una comunidad activa de usuarios de eDNA y metabarcoding. Subtema: • Presentación de proyectos breves: o Cada participante (o grupo) presentará una propuesta de proyecto en 5–7 minutos. o Formato libre: esquema experimental, objetivo, muestras, método (metabarcoding o qPCR/ddPCR), análisis esperado. o No se requiere presentación formal, pero se pueden mostrar esquemas, tablas, ideas clave en RMarkdown, etc. • Espacio de retroalimentación y discusión: o Comentarios por parte de instructores y compañeros. o Sugerencias metodológicas, mejora de diseño experimental, herramientas adicionales. o Identificación de posibles colaboraciones o proyectos en desarrollo. • Cierre del curso: o Síntesis de aprendizajes clave. o Encuesta de retroalimentación. o Entrega de constancias y despedida. Enfoque didáctico: • Participación activa y horizontal. • Enfoque práctico y flexible para fortalecer el aprendizaje aplicado. • Ambiente de respeto, creatividad y colaboración."
+  },
+  {
+    "objectID": "sesiones.html",
+    "href": "sesiones.html",
+    "title": "Metabarcoding de comunidades de eucariontes",
+    "section": "",
+    "text": "fecha\ntema\ndiapositivas\ncódigo\n\n\n\n\n27 oct\neDNA/metabarcoding + QA/QC\nPDF\nrepo estudiantes\n\n\n28 oct\nDADA2 parte 1\nPDF\n—\n\n\n29 oct\nDADA2 parte 2\nPDF\n—\n\n\n30 oct\nphyloseq y diversidad\nPDF\n—\n\n\n31 oct\ncomunicar resultados con Quarto\nPDF\n—"
+  },
+  {
+    "objectID": "slides/intro.html#dra.-tania-valdivia-carrillo",
+    "href": "slides/intro.html#dra.-tania-valdivia-carrillo",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Dra. Tania Valdivia Carrillo",
+    "text": "Dra. Tania Valdivia Carrillo"
+  },
+  {
+    "objectID": "slides/intro.html#dr.-fausto-valenzuela-quiñonez",
+    "href": "slides/intro.html#dr.-fausto-valenzuela-quiñonez",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Dr. Fausto Valenzuela Quiñonez",
+    "text": "Dr. Fausto Valenzuela Quiñonez"
   },
   {
     "objectID": "slides/intro.html#por-qué-edna",
     "href": "slides/intro.html#por-qué-edna",
-    "title": "metabarcoding: panorama general",
+    "title": "Metabarcoding en comunidades de eucariontes",
     "section": "¿por qué eDNA?",
     "text": "¿por qué eDNA?\n\nno invasivo, sensible, trazable\ncomplementa métodos visuales/acústicos"
   },
   {
     "objectID": "slides/intro.html#flujo-general",
     "href": "slides/intro.html#flujo-general",
-    "title": "metabarcoding: panorama general",
+    "title": "Metabarcoding en comunidades de eucariontes",
     "section": "flujo general",
     "text": "flujo general\n\nmuestreo y preservación\nextracción y library prep\nsecuenciación\nDADA2 → ASVs\ntaxonomía, curación y análisis de comunidad"
   },
   {
     "objectID": "slides/intro.html#qaqc-dmiqe",
     "href": "slides/intro.html#qaqc-dmiqe",
-    "title": "metabarcoding: panorama general",
+    "title": "Metabarcoding en comunidades de eucariontes",
     "section": "QA/QC (dMIQE)",
     "text": "QA/QC (dMIQE)\n\nblancos de campo y laboratorio\nmock communities\nréplicas técnicas/biológicas"
   },
   {
-    "objectID": "lectures.html",
-    "href": "lectures.html",
-    "title": "sesiones",
-    "section": "",
-    "text": "A continuación un esquema de sesiones y materiales. Las diapositivas estarán en formato HTML (revealjs) y el código fuente en .qmd.\n\n\n\nfecha\ntema\ndiapositivas\nfuente\n\n\n\n\n27 oct\n¿qué es eDNA/metabarcoding? flujo de trabajo y QA/QC\nintroducción\nintro.qmd\n\n\n28 oct\npipeline DADA2 parte 1\n—\n—\n\n\n29 oct\npipeline DADA2 parte 2\n—\n—\n\n\n30 oct\nphyloseq y diversidad\n—\n—\n\n\n31 oct\ncomunicar resultados con Quarto\n—\n—"
-  },
-  {
     "objectID": "syllabus.html",
     "href": "syllabus.html",
-    "title": "programa",
+    "title": "Metabarcoding en comunidades de eucariontes",
     "section": "",
-    "text": "Este curso introduce conceptos y prácticas del eDNA metabarcoding enfocados en comunidades de eucariontes: diseño de muestreo, extracción, bibliotecas, secuenciación, DADA2, asignación taxonómica, curación y análisis ecológico (beta diversidad, ordenación, modelos básicos)."
+    "text": "El curso busca formar una nueva generación de investigadores y profesionales capaces de aplicar herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. Este taller proporcionará las bases teóricas y prácticas necesarias para implementar el metabarcoding como una técnica robusta en estudios ecológicos, de conservación y de manejo ambiental. Aspiramos a crear una comunidad de especialistas que puedan integrar el ADN ambiental como una herramienta de monitoreo en ecosistemas marinos, contribuyendo al conocimiento de la biodiversidad y la toma de decisiones basadas en ciencia."
   },
   {
-    "objectID": "syllabus.html#visión-general",
-    "href": "syllabus.html#visión-general",
-    "title": "programa",
+    "objectID": "syllabus.html#descripción-del-curso",
+    "href": "syllabus.html#descripción-del-curso",
+    "title": "Metabarcoding en comunidades de eucariontes",
     "section": "",
-    "text": "Este curso introduce conceptos y prácticas del eDNA metabarcoding enfocados en comunidades de eucariontes: diseño de muestreo, extracción, bibliotecas, secuenciación, DADA2, asignación taxonómica, curación y análisis ecológico (beta diversidad, ordenación, modelos básicos)."
+    "text": "El curso busca formar una nueva generación de investigadores y profesionales capaces de aplicar herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. Este taller proporcionará las bases teóricas y prácticas necesarias para implementar el metabarcoding como una técnica robusta en estudios ecológicos, de conservación y de manejo ambiental. Aspiramos a crear una comunidad de especialistas que puedan integrar el ADN ambiental como una herramienta de monitoreo en ecosistemas marinos, contribuyendo al conocimiento de la biodiversidad y la toma de decisiones basadas en ciencia."
   },
   {
-    "objectID": "syllabus.html#calendario-2731-oct-2025",
-    "href": "syllabus.html#calendario-2731-oct-2025",
-    "title": "programa",
-    "section": "calendario (27–31 oct 2025)",
-    "text": "calendario (27–31 oct 2025)\n\ndía 1 · fundamentos eDNA y diseño de estudios; instalación de software y prueba de entorno.\ndía 2 · calidad de lecturas, filtrado/truncado, aprendizaje de errores y denoising con DADA2.\ndía 3 · merge, chimera removal, tabla de ASVs, controles y track de reads; asignación taxonómica.\ndía 4 · phyloseq: rarefacción, alfa/beta, NMDS/PCoA; visualización reproducible.\ndía 5 · reporte reproducible con Quarto; proyecto integrador y presentaciones cortas."
+    "objectID": "syllabus.html#misión",
+    "href": "syllabus.html#misión",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Misión",
+    "text": "Misión\nCapacitar a investigadores, estudiantes y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. A través de una combinación de teoría y práctica, buscamos proporcionar conocimientos sólidos sobre el metabarcoding y qPCR, desde la recolección y procesamiento de muestras hasta el análisis e interpretación de datos con enfoques bioinformáticos.\nNuestro objetivo es empoderar a los participantes con habilidades técnicas y analíticas que les permitan diseñar e implementar estudios basados en ADN ambiental, optimizando la detección de especies y la evaluación de comunidades biológicas. Fomentamos la adopción de metodologías estandarizadas y reproducibles que faciliten la generación de datos confiables y comparables a nivel global.\nA través de este curso, promovemos la formación de una comunidad interdisciplinaria comprometida con la aplicación de la genética y la bioinformática en la conservación y monitoreo de la biodiversidad, impulsando el uso de tecnologías innovadoras para la toma de decisiones informadas en investigación y gestión ambiental."
   },
   {
-    "objectID": "syllabus.html#evaluación",
-    "href": "syllabus.html#evaluación",
-    "title": "programa",
-    "section": "evaluación",
-    "text": "evaluación\n\ntareas prácticas (40%), participación (20%), proyecto final (40%)."
+    "objectID": "syllabus.html#objetivo",
+    "href": "syllabus.html#objetivo",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Objetivo",
+    "text": "Objetivo\nEl objetivo de este curso es capacitar a los participantes en el uso de metabarcoding para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2.\nEste curso busca proporcionar las habilidades necesarias para:\n✔ Comprender los fundamentos teóricos del metabarcoding, qPCR y ADN ambiental en estudios ecológicos.\n✔ Aplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.\n✔ Implementar pipelines bioinformáticos para el procesamiento y análisis de secuencias, con énfasis en control de calidad, asignación taxonómica y análisis de diversidad.\n✔ Interpretar resultados ecológicos y generar visualizaciones efectivas para estudios de biodiversidad.\n✔ Diseñar estudios de metabarcoding adaptados a distintas preguntas ecológicas y de conservación.\nAl finalizar el curso, los participantes estarán preparados para integrar el metabarcoding en sus proyectos de investigación y contribuir al desarrollo de estrategias de monitoreo de biodiversidad en ecosistemas marinos."
   },
   {
-    "objectID": "syllabus.html#accesibilidad-y-conducta",
-    "href": "syllabus.html#accesibilidad-y-conducta",
-    "title": "programa",
-    "section": "accesibilidad y conducta",
-    "text": "accesibilidad y conducta\nAmbiente inclusivo y respetuoso. Adaptaciones disponibles bajo solicitud."
+    "objectID": "syllabus.html#equipo-docente",
+    "href": "syllabus.html#equipo-docente",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Equipo docente",
+    "text": "Equipo docente\nDra. Tania Valdivia Carrillo — Investigadora postdoctoral CIBNOR CONAHCYT (tania.valdiviac@gmail.com)\nDr. Fausto Valenzuela Quiñonez — Investigador Titular B CIBNOR"
+  },
+  {
+    "objectID": "syllabus.html#horarios-y-sede",
+    "href": "syllabus.html#horarios-y-sede",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Horarios y sede",
+    "text": "Horarios y sede\nFechas: 24–28 de noviembre de 2025\nHorario: 9:00–15:00 (almuerzo 12:00–13:30)\nLugar: Sala de cómputo, edificio de posgrado, ICMyL (UNAM)\nFormato: Mañanas teóricas (charlas y discusión). Tardes prácticas en computadora (R/DADA2)."
+  },
+  {
+    "objectID": "syllabus.html#requisitos-previos",
+    "href": "syllabus.html#requisitos-previos",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Requisitos previos",
+    "text": "Requisitos previos\n\nConocimientos básicos de biología molecular.\n\nManejo elemental de Unix, R y RStudio (objetos, scripts, paquetes).\n\nLaptop con permisos para instalar software.\n\nAntes del día 1: instalar R (≥4.3), RStudio, y crear cuenta en GitHub."
+  },
+  {
+    "objectID": "syllabus.html#conducta-en-el-aula",
+    "href": "syllabus.html#conducta-en-el-aula",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Conducta en el aula",
+    "text": "Conducta en el aula\nAmbiente inclusivo y respetuoso. No se toleran expresiones que excluyan o intimiden. Se espera lenguaje inclusivo, escucha activa, crítica constructiva y colaboración."
+  },
+  {
+    "objectID": "syllabus.html#acceso-y-adaptaciones",
+    "href": "syllabus.html#acceso-y-adaptaciones",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Acceso y adaptaciones",
+    "text": "Acceso y adaptaciones\nSi necesitas adaptaciones (salud, discapacidad, horarios), avísanos con antelación para acordarlas de manera razonable y efectiva."
+  },
+  {
+    "objectID": "syllabus.html#metodología-de-enseñanza",
+    "href": "syllabus.html#metodología-de-enseñanza",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Metodología de enseñanza",
+    "text": "Metodología de enseñanza\n\nSesiones teóricas con diapositivas, ejemplos y discusión guiada.\n\nLaboratorios computacionales con datasets de ejemplo y notebooks Quarto.\n\nMiniproyecto por equipo: diseño de muestreo + pipeline + reporte corto reproducible."
+  },
+  {
+    "objectID": "syllabus.html#comunicación",
+    "href": "syllabus.html#comunicación",
+    "title": "Metabarcoding en comunidades de eucariontes",
+    "section": "Comunicación",
+    "text": "Comunicación\n\nDudas: correo (tania.valdiviac@gmail.com) o “issues” en GitHub del repositorio asistencia.\n\nDudas técnicas extensas: bloque de asesoría al cierre de cada práctica.\n\n\n\nActualizado a las r format(Sys.time(), \"%H:%M\") del r format(Sys.Date(), \"%d %b %Y\")"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#verificar-conteo-de-reportes",
+    "href": "1-qaqc-cutadapt.html#verificar-conteo-de-reportes",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "ls -1 fastqc_reports/*_fastqc.html | wc -l"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#crear-dir",
+    "href": "1-qaqc-cutadapt.html#crear-dir",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#crear-directorios",
+    "href": "1-qaqc-cutadapt.html#crear-directorios",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fas",
+    "href": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fas",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fastqc",
+    "href": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fastqc",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multiqc_reports\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-a-ls-computador-local-scp",
+    "href": "1-qaqc-cutadapt.html#transferir-el-html-a-ls-computador-local-scp",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-scp",
+    "href": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-scp",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-usando-scp",
+    "href": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-usando-scp",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "",
+    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
+  },
+  {
+    "objectID": "1-qaqc-cutadapt.html#da-permisos",
+    "href": "1-qaqc-cutadapt.html#da-permisos",
+    "title": "QAQC y recorte de primers con Cutadapt",
+    "section": "Da permisos",
+    "text": "Da permisos\n\nEn el servidor:\n\nchmod +x scripts/cutadapt.sh"
   }
 ]

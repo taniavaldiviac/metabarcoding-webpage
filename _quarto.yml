@@ -1,34 +1,59 @@
 project:
   type: website
   output-dir: _site
+  render:
+    - "*.qmd"
+    - "slides/*.qmd"
+    - "!**/*.ipynb"   # ← ignora notebooks
+    - "!**/*.py"      # ← ignora scripts Python
 
 website:
+  repo-url: https://github.com/USUARIO/OTRO_REPO
   title: "Metabarcoding de comunidades de eucariontes"
+  page-footer:
+    left: "© 2025 Todos los derechos reservados"
+    #right: "<a href='legal.html'>Aviso legal</a>"
+    border: true
   navbar:
+    background: primary
     left:
       - href: index.qmd
-        text: inicio
-      - href: syllabus.qmd
-        text: programa
-      - href: lectures.qmd
-        text: sesiones
-      - href: labs.qmd
-        text: prácticas
-      - href: homework.qmd
-        text: tareas
-      - href: final_project.qmd
-        text: proyecto final
+        text: Sobre el curso
+      - href: programa.qmd
+        text: Programa
+      - href: sesiones.qmd
+        text: Sesiones
+      - text: Curso2025
+        menu:
+          - href: 0-IntroQAQC.qmd
+          - href: 1-qaqc-cutadapt.qmd
+          - href: 2-dada2QAQC.qmd
+          - href: 2-dada2QAQC-Prep.qmd
+          - href: 2-dada2QAQC-Filter.qmd
+          - href: 2-dada2QAQC-Error.qmd
+      - href: Referencias.qmd
+        text: Referencias
     right:
       - icon: github
-        href: https://github.com/BiomicaLab/metabarcoding-curso
+        href: https://github.com/taniavaldiviac/metabarcoding2025
+
 format:
   html:
     theme: cosmo
+   # css: styles.scss
     toc: true
     number-sections: false
     lang: es
     code-fold: show
     df-print: paged
+    #code-tools: true
+    page-layout: full
 
 execute:
   freeze: auto
+  enabled: false
+  
+resources:
+  - slides/*.pdf
+
+

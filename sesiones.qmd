@@ -1,0 +1,23 @@
+---
+title: "Metabarcoding de comunidades de eucariontes"
+subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+author: "Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)"
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    toc-location: right
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+
+| fecha  | tema                                  | diapositivas                                 | código |
+|-------:|---------------------------------------|----------------------------------------------|--------|
+| 27 oct | eDNA/metabarcoding + QA/QC            | [PDF](slides/01_intro.pdf) | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding2025-code) |
+| 28 oct | DADA2 parte 1                         | [PDF](slides/02_dada2_parte1.pdf)            | —      |
+| 29 oct | DADA2 parte 2                         | [PDF](slides/03_dada2_parte2.pdf)            | —      |
+| 30 oct | phyloseq y diversidad                 | [PDF](slides/04_phyloseq.pdf)                | —      |
+| 31 oct | comunicar resultados con Quarto       | [PDF](slides/05_quarto.pdf)                  | —      |

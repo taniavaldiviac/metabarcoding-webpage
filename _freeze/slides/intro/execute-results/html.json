@@ -1,0 +1,12 @@
+{
+  "hash": "63f38196a776f56d4f9e1cb3e1e08e5a",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Metabarcoding en comunidades de eucariontes\"\nsubtitle: \"24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)\"\nformat:\n  revealjs:\n    plugins: [chalkboard]   # pizarrón (B para abrir/cerrar)\n    slide-number: c\n    chalkboard: true\n    toc: false\n    transition: fade\n    controls: true\n    hash: true\nexecute:\n  echo: true\n  warning: false\n---\n\n# ¡Bienvenidas y bienvenidos!\n\n::: notes\nBreve icebreaker: nombre, institución, si han usado eDNA antes, y qué esperan del curso.\n:::\n\n# Quiénes somos\n\n## Dra. Tania Valdivia Carrillo\n\n![](images/Screenshot%202025-09-10%20at%2011.52.01.png){fig-align=\"right\" width=\"168\"}\n\n\n## Dr. Fausto Valenzuela Quiñonez\n\n## Chequeo webR {.panel-tabset}\n\n### Estado\n```{webr}\ncat(R.version.string, \"\\n\")\ncat(\"Plataforma:\", R.version$platform, \"\\n\")\ncat(\"webR ok?: \", grepl(\"wasm\", R.version$platform), \"\\n\")\n```\n\n### Cálculo\n```{webr}\nset.seed(42)\nmean(rnorm(5))\n```\n\n### Gráfico\n```{webr}\nx <- rnorm(300)\nhist(x, main = \"Histograma (webR)\")\n```\n\n\n## ¿por qué eDNA?\n\n-   no invasivo, sensible, trazable\n-   complementa métodos visuales/acústicos\n\n------------------------------------------------------------------------\n\n## flujo general\n\n1.  muestreo y preservación\n2.  extracción y *library prep*\n3.  secuenciación\n4.  **DADA2** → ASVs\n5.  taxonomía, curación y análisis de comunidad\n\n------------------------------------------------------------------------\n\n## QA/QC (dMIQE)\n\n-   blancos de campo y laboratorio\n-   *mock communities*\n-   réplicas técnicas/biológicas\n\n",
+    "supporting": [
+      "intro_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

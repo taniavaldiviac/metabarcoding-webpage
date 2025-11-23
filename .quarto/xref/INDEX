@@ -19,5 +19,42 @@
   },
   "syllabus.qmd": {
     "syllabus.html": "85d454df"
+  },
+  "programa.qmd": {
+    "programa.html": "9a24f872"
+  },
+  "sesiones.qmd": {
+    "sesiones.html": "dc9e4ab5"
+  },
+  "practicas.qmd": {
+    "practicas.html": "64a84b11"
+  },
+  "Referencias.qmd": {
+    "Referencias.html": "2837cf6b"
+  },
+  "Report_MURI_Module3.qmd": {
+    "Report_MURI_Module3.tex": "757511e0",
+    "Report_MURI_Module3.html": "8a8e2560"
+  },
+  "0-IntroQAQC.qmd": {
+    "0-IntroQAQC.html": "3c6f93d9"
+  },
+  "1-qaqc-cutadapt.qmd": {
+    "1-qaqc-cutadapt.html": "fb64be55"
+  },
+  "2-dada2QAQC.qmd": {
+    "2-dada2QAQC.html": "49bf396f"
+  },
+  "2-dada2QAQC-Prep.qmd": {
+    "2-dada2QAQC-Prep.html": "2a25c916"
+  },
+  "Control de calidad 1.qmd": {
+    "Control de calidad 1.html": "cd7f6ed1"
+  },
+  "2-dada2QAQC-Filter.qmd": {
+    "2-dada2QAQC-Filter.html": "a1d182bb"
+  },
+  "2-dada2QAQC-Error.qmd": {
+    "2-dada2QAQC-Error.html": "5f9133ff"
   }
 }
