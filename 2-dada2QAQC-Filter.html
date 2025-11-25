@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Metabarcoding de comunidades de eucariontes - QAQC y recorte de primers con Cutadapt</title>
+<title>Metabarcoding de comunidades de eucariontes - Dada2 - Filter and Trim</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -4550,23 +4550,22 @@ vertical-align: -.125em;
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#objetivo" id="toc-objetivo" class="nav-link active" data-scroll-target="#objetivo">Objetivo</a>
+  <li><a href="#introducción-al-paso-filter-and-trim-en-dada2" id="toc-introducción-al-paso-filter-and-trim-en-dada2" class="nav-link active" data-scroll-target="#introducción-al-paso-filter-and-trim-en-dada2">Introducción al paso Filter and Trim en dada2</a>
   <ul class="collapse">
-  <li><a href="#pasos-principales" id="toc-pasos-principales" class="nav-link" data-scroll-target="#pasos-principales">Pasos principales</a></li>
-  <li><a href="#verificación-de-integridad" id="toc-verificación-de-integridad" class="nav-link" data-scroll-target="#verificación-de-integridad"><strong>1. Verificación de integridad</strong></a></li>
-  <li><a href="#conteo-de-lecturas" id="toc-conteo-de-lecturas" class="nav-link" data-scroll-target="#conteo-de-lecturas">2. Conteo de lecturas</a></li>
-  <li><a href="#evaluación-de-calidad-fastqc-y-multiqc" id="toc-evaluación-de-calidad-fastqc-y-multiqc" class="nav-link" data-scroll-target="#evaluación-de-calidad-fastqc-y-multiqc">3. Evaluación de calidad: FastQC y MultiQC</a></li>
-  <li><a href="#crear-directorios-y-correr-fastqc" id="toc-crear-directorios-y-correr-fastqc" class="nav-link" data-scroll-target="#crear-directorios-y-correr-fastqc">Crear directorios y correr fastqc</a></li>
-  <li><a href="#verificar-conteo-de-reportes" id="toc-verificar-conteo-de-reportes" class="nav-link" data-scroll-target="#verificar-conteo-de-reportes">Verificar conteo de reportes</a></li>
-  <li><a href="#ejecutar-multiqc-resume-todos-los-fastqc" id="toc-ejecutar-multiqc-resume-todos-los-fastqc" class="nav-link" data-scroll-target="#ejecutar-multiqc-resume-todos-los-fastqc">Ejecutar MultiQC (resume todos los FastQC)</a></li>
-  <li><a href="#revisión-de-resultados" id="toc-revisión-de-resultados" class="nav-link" data-scroll-target="#revisión-de-resultados">4. Revisión de resultados</a></li>
-  <li><a href="#transferir-el-html-a-la-computadora-local-usando-scp" id="toc-transferir-el-html-a-la-computadora-local-usando-scp" class="nav-link" data-scroll-target="#transferir-el-html-a-la-computadora-local-usando-scp">Transferir el HTML a la computadora local usando scp</a></li>
-  <li><a href="#cortar-primers-con-cutadapt" id="toc-cortar-primers-con-cutadapt" class="nav-link" data-scroll-target="#cortar-primers-con-cutadapt">5. Cortar primers con Cutadapt</a></li>
-  <li><a href="#da-permisos" id="toc-da-permisos" class="nav-link" data-scroll-target="#da-permisos">Da permisos</a></li>
-  <li><a href="#parámetros-principales-usados" id="toc-parámetros-principales-usados" class="nav-link" data-scroll-target="#parámetros-principales-usados">Parámetros principales usados</a></li>
-  <li><a href="#ejecuta" id="toc-ejecuta" class="nav-link" data-scroll-target="#ejecuta">Ejecuta</a></li>
-  <li><a href="#obtendrás" id="toc-obtendrás" class="nav-link" data-scroll-target="#obtendrás">Obtendrás</a></li>
-  <li><a href="#revisión-de-resultados-1" id="toc-revisión-de-resultados-1" class="nav-link" data-scroll-target="#revisión-de-resultados-1">6. Revisión de resultados</a></li>
+  <li><a href="#qué-hace-el-código-en-este-paso" id="toc-qué-hace-el-código-en-este-paso" class="nav-link" data-scroll-target="#qué-hace-el-código-en-este-paso">¿Qué hace el código en este paso?</a>
+  <ul class="collapse">
+  <li><a href="#cálculo-de-puntos-de-truncamiento-trunclen" id="toc-cálculo-de-puntos-de-truncamiento-trunclen" class="nav-link" data-scroll-target="#cálculo-de-puntos-de-truncamiento-trunclen">1. Cálculo de puntos de truncamiento (<code>truncLen</code>)</a></li>
+  <li><a href="#limitación-del-recorte-máximo-max_trim" id="toc-limitación-del-recorte-máximo-max_trim" class="nav-link" data-scroll-target="#limitación-del-recorte-máximo-max_trim">2. Limitación del recorte máximo (<code>max_trim</code>)</a></li>
+  <li><a href="#filtrado-y-trimming" id="toc-filtrado-y-trimming" class="nav-link" data-scroll-target="#filtrado-y-trimming">3. Filtrado y trimming</a></li>
+  <li><a href="#diagnóstico-y-reporte-de-retención" id="toc-diagnóstico-y-reporte-de-retención" class="nav-link" data-scroll-target="#diagnóstico-y-reporte-de-retención">4. Diagnóstico y reporte de retención</a></li>
+  <li><a href="#guardado-de-estadísticas" id="toc-guardado-de-estadísticas" class="nav-link" data-scroll-target="#guardado-de-estadísticas">5. Guardado de estadísticas</a></li>
+  </ul></li>
+  <li><a href="#explicación-de-los-parámetros-principales" id="toc-explicación-de-los-parámetros-principales" class="nav-link" data-scroll-target="#explicación-de-los-parámetros-principales">Explicación de los parámetros principales</a></li>
+  <li><a href="#por-qué-es-importante-este-paso" id="toc-por-qué-es-importante-este-paso" class="nav-link" data-scroll-target="#por-qué-es-importante-este-paso">¿Por qué es importante este paso?</a></li>
+  <li><a href="#recomendaciones-para-el-análisis" id="toc-recomendaciones-para-el-análisis" class="nav-link" data-scroll-target="#recomendaciones-para-el-análisis">Recomendaciones para el análisis</a></li>
+  <li><a href="#resumen" id="toc-resumen" class="nav-link" data-scroll-target="#resumen">Resumen</a></li>
+  <li><a href="#ejercicios-prácticos" id="toc-ejercicios-prácticos" class="nav-link" data-scroll-target="#ejercicios-prácticos">Ejercicios prácticos</a></li>
+  <li><a href="#notas-finales" id="toc-notas-finales" class="nav-link" data-scroll-target="#notas-finales">Notas finales</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -4576,7 +4575,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">QAQC y recorte de primers con Cutadapt</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Código</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Dada2 - Filter and Trim</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Código</button></div></div>
 </div>
 
 
@@ -4591,146 +4590,197 @@ vertical-align: -.125em;
 
 </header>
 
-<section id="objetivo" class="level2">
-<h2 class="anchored" data-anchor-id="objetivo">Objetivo</h2>
-<p>En esta clase aprenderemos a realizar control de calidad (QA/QC) en archivos FASTQ usando herramientas bioinformáticas.</p>
-<section id="pasos-principales" class="level3">
-<h3 class="anchored" data-anchor-id="pasos-principales">Pasos principales</h3>
-<ol type="1">
-<li><strong>Verificación de integridad de archivos</strong></li>
-<li><strong>Conteo de lecturas</strong></li>
-<li><strong>Análisis de calidad con FastQC y MultiQC</strong></li>
-<li><strong>Revisión de resultados</strong></li>
-<li><strong>Cortar primers con cutadapt</strong></li>
-<li><strong>Revisión de resultados</strong></li>
-</ol>
-</section>
-<section id="verificación-de-integridad" class="level3">
-<h3 class="anchored" data-anchor-id="verificación-de-integridad"><strong>1. Verificación de integridad</strong></h3>
-<p>Es una <strong>verificación de integridad</strong> por <em>checksum</em>:</p>
+<section id="introducción-al-paso-filter-and-trim-en-dada2" class="level1">
+<h1>Introducción al paso Filter and Trim en dada2</h1>
+<p>El paso <strong>Filter and Trim</strong> es el primer gran filtro de calidad en el pipeline de dada2.<br>
+Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.</p>
+<hr>
+<section id="qué-hace-el-código-en-este-paso" class="level2">
+<h2 class="anchored" data-anchor-id="qué-hace-el-código-en-este-paso">¿Qué hace el código en este paso?</h2>
+<section id="cálculo-de-puntos-de-truncamiento-trunclen" class="level3">
+<h3 class="anchored" data-anchor-id="cálculo-de-puntos-de-truncamiento-trunclen">1. Cálculo de puntos de truncamiento (<code>truncLen</code>)</h3>
 <ul>
-<li><p>Para cada archivo .fastq, generas un hash (una “huella” única de sus bytes).</p></li>
-<li><p>Guardas esas huellas en un manifiesto (checksums.sha256).</p></li>
-<li><p>Luego shasum -a 256 -c checksums.sha256 recalcula la huella de cada archivo presente y la compara con la esperada.</p></li>
+<li>El pipeline analiza los perfiles de calidad de las lecturas forward y reverse.</li>
+<li>Se determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (<code>F_qual</code>, <code>R_qual</code>).</li>
+<li>Se usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.</li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> raw_fastqs <span class="at">-type</span> f <span class="at">-name</span> <span class="st">&#39;*.fastq*&#39;</span> <span class="at">-print0</span> <span class="dt">\</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-z</span> <span class="dt">\</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-0</span> shasum <span class="at">-a</span> 256 <span class="op">&gt;</span> checksums.sha256</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Para verificar:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">shasum</span> <span class="at">-a</span> 256 <span class="at">-c</span> checksums.sha256</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="conteo-de-lecturas" class="level3">
-<h3 class="anchored" data-anchor-id="conteo-de-lecturas">2. Conteo de lecturas</h3>
-<p>Cada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> raw_fastqs/<span class="pp">*</span>.fastq<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="at">-n</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">&quot;</span><span class="va">$f</span><span class="st">&quot;</span><span class="va">)</span><span class="st">   &quot;</span><span class="kw">;</span> <span class="fu">expr</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> <span class="st">&quot;</span><span class="va">$f</span><span class="st">&quot;</span><span class="va">)</span> / 4<span class="kw">;</span> <span class="cf">done</span> <span class="op">&gt;</span> conteo_lecturas.tsv</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="evaluación-de-calidad-fastqc-y-multiqc" class="level3">
-<h3 class="anchored" data-anchor-id="evaluación-de-calidad-fastqc-y-multiqc">3. Evaluación de calidad: FastQC y MultiQC</h3>
-</section>
-<section id="crear-directorios-y-correr-fastqc" class="level3">
-<h3 class="anchored" data-anchor-id="crear-directorios-y-correr-fastqc">Crear directorios y correr fastqc</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /metabarcoding-code/</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> fastqc_reports</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> multiqc_reports</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> fastqc_reports raw_fastqs/<span class="pp">*</span>.fastq</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="verificar-conteo-de-reportes" class="level3">
-<h3 class="anchored" data-anchor-id="verificar-conteo-de-reportes">Verificar conteo de reportes</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> fastqc_reports/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="ejecutar-multiqc-resume-todos-los-fastqc" class="level3">
-<h3 class="anchored" data-anchor-id="ejecutar-multiqc-resume-todos-los-fastqc">Ejecutar MultiQC (resume todos los FastQC)</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> fastqc_reports <span class="at">-o</span> multiqc_reports</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Reporte en multi_qc</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="revisión-de-resultados" class="level3">
-<h3 class="anchored" data-anchor-id="revisión-de-resultados">4. Revisión de resultados</h3>
-</section>
-<section id="transferir-el-html-a-la-computadora-local-usando-scp" class="level3">
-<h3 class="anchored" data-anchor-id="transferir-el-html-a-la-computadora-local-usando-scp">Transferir el HTML a la computadora local usando scp</h3>
-<p><strong>Desde tu terminal local:</strong></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Indica la ubicación de descarga en tu computadora</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Transferir toda la carpeta (si quieres conservar los .zip FastQC):</strong></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/fastqc_local/multiqc_report.html</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Tips de revisión en MultiQC:</strong><br>
-- Per base sequence quality: define zonas de truncado (Q≥25–30).<br>
-- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.<br>
-- Length distribution: valida rango del amplicón esperado.</p>
-</section>
-<section id="cortar-primers-con-cutadapt" class="level3">
-<h3 class="anchored" data-anchor-id="cortar-primers-con-cutadapt">5. Cortar primers con Cutadapt</h3>
-<p>Este script <code>cutadapt.sh</code> es un pipeline automatizado en bash para recortar los primers de archivos de secuenciación paired-end usando la herramienta cutadapt.</p>
-<ol type="1">
-<li><strong>Configura rutas y variables:</strong> Define dónde están los archivos originales (raw_fastqs), dónde guardar los archivos recortados (for_dada2) y los reportes (cutadapt_reports). También define los primers a recortar y otros parámetros (pueden modificarse).</li>
-<li><strong>Verifica dependencias:</strong> Busca que cutadapt esté instalado y que existan los archivos necesarios.</li>
-<li><strong>Busca los archivos FASTQ:</strong> Localiza todos los archivos *_R1_001.fastq y sus pares *_R2_001.fastq.</li>
-<li><strong>Procesa cada muestra:</strong>
+<section id="limitación-del-recorte-máximo-max_trim" class="level3">
+<h3 class="anchored" data-anchor-id="limitación-del-recorte-máximo-max_trim">2. Limitación del recorte máximo (<code>max_trim</code>)</h3>
 <ul>
-<li>Ejecuta cutadapt para recortar los primers de cada par de archivos (R1 y R2).</li>
-<li>Guarda los archivos recortados y un reporte individual para cada muestra.</li>
-<li>Extrae estadísticas clave del reporte (pares procesados, reads con adaptador, reads escritos, porcentaje de éxito) y las resume en archivos TXT y TSV.</li>
+<li>Se compara el punto de truncamiento calculado con el valor máximo permitido (<code>max_trim</code>) para evitar perder el solapamiento necesario entre lecturas forward y reverse.</li>
+</ul>
+</section>
+<section id="filtrado-y-trimming" class="level3">
+<h3 class="anchored" data-anchor-id="filtrado-y-trimming">3. Filtrado y trimming</h3>
+<ul>
+<li>Se ejecuta el filtrado usando los parámetros:
+<ul>
+<li><strong><code>truncLen</code></strong>: recorta las lecturas en los puntos calculados.</li>
+<li><strong><code>maxEE</code></strong>: define el máximo de errores esperados permitidos por lectura (usualmente 2).</li>
+<li><strong><code>maxN</code></strong>: no permite bases ambiguas (N).</li>
+<li><strong><code>truncQ</code></strong>: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).</li>
+<li><strong><code>rm.phix</code></strong>: elimina lecturas que corresponden al control PhiX de Illumina.</li>
 </ul></li>
-<li><strong>Resultados:</strong>
+<li>El código valida que los puntos de truncamiento sean razonables (no menores a 50 bp).</li>
+</ul>
+</section>
+<section id="diagnóstico-y-reporte-de-retención" class="level3">
+<h3 class="anchored" data-anchor-id="diagnóstico-y-reporte-de-retención">4. Diagnóstico y reporte de retención</h3>
 <ul>
-<li>Los archivos recortados quedan listos para análisis posteriores (por ejemplo, DADA2).</li>
-<li>Los reportes permiten revisar cuántas lecturas fueron recortadas correctamente.</li>
-</ul></li>
+<li>Se calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).</li>
+<li>Si la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.</li>
+<li>Se identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.</li>
+</ul>
+</section>
+<section id="guardado-de-estadísticas" class="level3">
+<h3 class="anchored" data-anchor-id="guardado-de-estadísticas">5. Guardado de estadísticas</h3>
+<ul>
+<li>Se guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="explicación-de-los-parámetros-principales" class="level2">
+<h2 class="anchored" data-anchor-id="explicación-de-los-parámetros-principales">Explicación de los parámetros principales</h2>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 85%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parámetro</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>truncLen</code></td>
+<td>Posición donde se recorta cada lectura (Forward y Reverse), calculada según calidad</td>
+</tr>
+<tr class="even">
+<td><code>maxEE</code></td>
+<td>Máximo número de errores esperados permitidos por lectura (por dirección)</td>
+</tr>
+<tr class="odd">
+<td><code>maxN</code></td>
+<td>Número máximo de bases ambiguas permitidas (usualmente 0)</td>
+</tr>
+<tr class="even">
+<td><code>truncQ</code></td>
+<td>Recorta la lectura si encuentra una base con calidad menor a este valor</td>
+</tr>
+<tr class="odd">
+<td><code>rm.phix</code></td>
+<td>Elimina lecturas que corresponden al control PhiX de Illumina</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="por-qué-es-importante-este-paso" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-es-importante-este-paso">¿Por qué es importante este paso?</h2>
+<ul>
+<li>Elimina lecturas que podrían introducir errores técnicos en el análisis.</li>
+<li>Asegura que solo las regiones de alta calidad sean usadas para inferir variantes.</li>
+<li>Reduce el ruido y la probabilidad de obtener variantes falsas.</li>
+<li>Permite un diagnóstico temprano de problemas de calidad en la secuenciación.</li>
+</ul>
+<hr>
+</section>
+<section id="recomendaciones-para-el-análisis" class="level2">
+<h2 class="anchored" data-anchor-id="recomendaciones-para-el-análisis">Recomendaciones para el análisis</h2>
+<ul>
+<li>Revisa los gráficos de calidad antes de definir los parámetros de recorte.</li>
+<li>Si la retención de lecturas es baja, considera relajar los parámetros (<code>maxEE</code>, <code>truncLen</code>) o revisar la calidad de la secuenciación.</li>
+<li>Usa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.</li>
+</ul>
+<hr>
+</section>
+<section id="resumen" class="level2">
+<h2 class="anchored" data-anchor-id="resumen">Resumen</h2>
+<table class="table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 59%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspecto</th>
+<th>Explicación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Qué es</strong></td>
+<td>Primer filtro de calidad y recorte de lecturas en dada2</td>
+</tr>
+<tr class="even">
+<td><strong>Cómo se calcula</strong></td>
+<td>Analiza perfiles de calidad, define puntos de truncamiento y aplica filtros</td>
+</tr>
+<tr class="odd">
+<td><strong>Valores normales</strong></td>
+<td>Retención global &gt; 50%, truncLen &gt; 50 bp</td>
+</tr>
+<tr class="even">
+<td><strong>Por qué importa</strong></td>
+<td>Evita errores técnicos y mejora la precisión de los ASVs</td>
+</tr>
+<tr class="odd">
+<td><strong>Qué hacer</strong></td>
+<td>Ajusta parámetros según calidad, revisa diagnósticos y gráficos</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="ejercicios-prácticos" class="level2">
+<h2 class="anchored" data-anchor-id="ejercicios-prácticos">Ejercicios prácticos</h2>
+<ol type="1">
+<li><strong>Identifica el punto de truncamiento óptimo</strong> usando los gráficos de calidad generados por el pipeline.</li>
+<li><strong>Revisa la tabla de filtrado</strong>: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?</li>
+<li><strong>Compara la retención global</strong> entre runs diferentes. ¿Qué parámetros afectan más la retención?</li>
 </ol>
-<p><strong>¿Por qué es útil?</strong><br>
-Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.</p>
+<hr>
 </section>
-<section id="da-permisos" class="level3">
-<h3 class="anchored" data-anchor-id="da-permisos">Da permisos</h3>
+<section id="notas-finales" class="level2">
+<h2 class="anchored" data-anchor-id="notas-finales">Notas finales</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recuerda
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>En el servidor:</li>
+<li>El paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.</li>
+<li>Ajusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x scripts/cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Visualiza que hay en el archivo bash:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="parámetros-principales-usados" class="level3">
-<h3 class="anchored" data-anchor-id="parámetros-principales-usados">Parámetros principales usados</h3>
-<ul>
-<li><code>-j ${THREADS}</code>: Número de hilos (procesos en paralelo) para acelerar el procesamiento.</li>
-<li><code>-g &quot;^${FWD}&quot;</code>: Primer a buscar al inicio de las lecturas R1 (el símbolo ^ indica “al inicio”).</li>
-<li><code>-G &quot;^${ADAPTER_R2}&quot;</code>: Primer a buscar al inicio de las lecturas R2.</li>
-<li><code>-e ${ERROR_RATE}</code>: Tasa máxima de error permitida al buscar el primer (por defecto 0.10, es decir, 10% de errores permitidos).</li>
-<li><code>-m ${MIN_LEN}</code>: Longitud mínima de las lecturas después del recorte (por defecto 40 bases).</li>
-<li><code>--discard-untrimmed</code>: (Opcional) Si se activa, descarta las lecturas donde no se encontró el primer.</li>
-<li><code>-o ${out_R1}</code>: Archivo de salida para las lecturas R1 recortadas.</li>
-<li><code>-p ${out_R2}</code>: Archivo de salida para las lecturas R2 recortadas.</li>
-</ul>
-</section>
-<section id="ejecuta" class="level3">
-<h3 class="anchored" data-anchor-id="ejecuta">Ejecuta</h3>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="obtendrás" class="level3">
-<h3 class="anchored" data-anchor-id="obtendrás">Obtendrás</h3>
-<ul>
-<li>FASTQ recortados: for_dada2/</li>
-<li>Reportes por muestra: cutadapt_reports/*_cutadapt.txt</li>
-<li>Resumen: cutadapt_reports/overall_report.txt</li>
-</ul>
-</section>
-<section id="revisión-de-resultados-1" class="level3">
-<h3 class="anchored" data-anchor-id="revisión-de-resultados-1">6. Revisión de resultados</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> fastqc_reports/fastqc_trimmed</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> multiqc_reports/fastqc_trimmed</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> fastqc_reports/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> fastqc_reports/fastqc_trimmed <span class="at">-o</span> multiqc_reports/fastqc_trimmed</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Descarga en tu computadora con scp: final_data/fastqc_trimmed/multiqc_report.html</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Notas del script</strong><br>
-- Usa FWD (forward) y el RC del REV para -G (paired-end).<br>
-- No dependas de cambiar de carpeta; el script ya usa rutas claras.<br>
-- Crea directorios de salida antes de escribir.<br>
-- Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Para el curso
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Los gráficos de calidad antes y después del filtrado.</li>
+<li>La tabla de filtrado y retención por muestra.</li>
+<li>Cómo interpretar valores “normales” vs “problemáticos”.</li>
+<li>Qué hacer si hay valores bajos de retención.</li>
+</ol>
+</div>
+</div>
 
 
 <!-- -->
@@ -5023,207 +5073,129 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
-<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;QAQC y recorte de primers con Cutadapt&quot;</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#subtitle: &quot;24–28 de noviembre de 2025&lt;br&gt;Instituto de Ciencias del Mar y Limnología (UNAM)&quot;</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">    #theme: cosmo</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">    highlight-style: github</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## Objetivo</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>En esta clase aprenderemos a realizar control de calidad (QA/QC) en</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>archivos FASTQ usando herramientas bioinformáticas.</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pasos principales</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Verificación de integridad de archivos**</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Conteo de lecturas**</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Análisis de calidad con FastQC y MultiQC**</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Revisión de resultados**</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Cortar primers con cutadapt**</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Revisión de resultados**</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="fu">### **1. Verificación de integridad**</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>Es una **verificación de integridad** por *checksum*:</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Para cada archivo .fastq, generas un hash (una “huella” única de sus</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>    bytes).</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Guardas esas huellas en un manifiesto (checksums.sha256).</span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Luego shasum -a 256 -c checksums.sha256 recalcula la huella de cada</span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>    archivo presente y la compara con la esperada.</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> raw_fastqs <span class="at">-type</span> f <span class="at">-name</span> <span class="st">&#39;*.fastq*&#39;</span> <span class="at">-print0</span> <span class="dt">\</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-z</span> <span class="dt">\</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-0</span> shasum <span class="at">-a</span> 256 <span class="op">&gt;</span> checksums.sha256</span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>Para verificar:</span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="ex">shasum</span> <span class="at">-a</span> 256 <span class="at">-c</span> checksums.sha256</span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Conteo de lecturas</span></span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>Cada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:</span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> raw_fastqs/<span class="pp">*</span>.fastq<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="at">-n</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">&quot;</span><span class="va">$f</span><span class="st">&quot;</span><span class="va">)</span><span class="st">   &quot;</span><span class="kw">;</span> <span class="fu">expr</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> <span class="st">&quot;</span><span class="va">$f</span><span class="st">&quot;</span><span class="va">)</span> / 4<span class="kw">;</span> <span class="cf">done</span> <span class="op">&gt;</span> conteo_lecturas.tsv</span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Evaluación de calidad: FastQC y MultiQC</span></span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a><span class="fu">### Crear directorios y correr fastqc</span></span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /metabarcoding-code/</span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> fastqc_reports</span>
-<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> multiqc_reports</span>
-<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> fastqc_reports raw_fastqs/<span class="pp">*</span>.fastq</span>
-<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="fu">### Verificar conteo de reportes</span></span>
-<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> fastqc_reports/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
-<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecutar MultiQC (resume todos los FastQC)</span></span>
-<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> fastqc_reports <span class="at">-o</span> multiqc_reports</span>
-<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Reporte en multi_qc</span></span>
-<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. Revisión de resultados</span></span>
-<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a><span class="fu">### Transferir el HTML a la computadora local usando scp</span></span>
-<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a>**Desde tu terminal local:**</span>
-<span id="cb13-93"><a href="#cb13-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-94"><a href="#cb13-94" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-95"><a href="#cb13-95" aria-hidden="true" tabindex="-1"></a><span class="co"># Indica la ubicación de descarga en tu computadora</span></span>
-<span id="cb13-96"><a href="#cb13-96" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/</span>
-<span id="cb13-97"><a href="#cb13-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-98"><a href="#cb13-98" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span>
-<span id="cb13-99"><a href="#cb13-99" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-100"><a href="#cb13-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-101"><a href="#cb13-101" aria-hidden="true" tabindex="-1"></a>**Transferir toda la carpeta (si quieres conservar los .zip FastQC):**</span>
-<span id="cb13-102"><a href="#cb13-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-103"><a href="#cb13-103" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-104"><a href="#cb13-104" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/</span>
-<span id="cb13-105"><a href="#cb13-105" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/fastqc_local/multiqc_report.html</span>
-<span id="cb13-106"><a href="#cb13-106" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-108"><a href="#cb13-108" aria-hidden="true" tabindex="-1"></a>| **Tips de revisión en MultiQC:**</span>
-<span id="cb13-109"><a href="#cb13-109" aria-hidden="true" tabindex="-1"></a>| - Per base sequence quality: define zonas de truncado (Q≥25–30).</span>
-<span id="cb13-110"><a href="#cb13-110" aria-hidden="true" tabindex="-1"></a>| - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.</span>
-<span id="cb13-111"><a href="#cb13-111" aria-hidden="true" tabindex="-1"></a>| - Length distribution: valida rango del amplicón esperado.</span>
-<span id="cb13-112"><a href="#cb13-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-113"><a href="#cb13-113" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. Cortar primers con Cutadapt</span></span>
-<span id="cb13-114"><a href="#cb13-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-115"><a href="#cb13-115" aria-hidden="true" tabindex="-1"></a>Este script <span class="in">`cutadapt.sh`</span> es un pipeline automatizado en bash para</span>
-<span id="cb13-116"><a href="#cb13-116" aria-hidden="true" tabindex="-1"></a>recortar los primers de archivos de secuenciación paired-end usando la</span>
-<span id="cb13-117"><a href="#cb13-117" aria-hidden="true" tabindex="-1"></a>herramienta cutadapt.</span>
-<span id="cb13-118"><a href="#cb13-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-119"><a href="#cb13-119" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Configura rutas y variables:** Define dónde están los archivos</span>
-<span id="cb13-120"><a href="#cb13-120" aria-hidden="true" tabindex="-1"></a>    originales (raw_fastqs), dónde guardar los archivos recortados</span>
-<span id="cb13-121"><a href="#cb13-121" aria-hidden="true" tabindex="-1"></a>    (for_dada2) y los reportes (cutadapt_reports). También define los</span>
-<span id="cb13-122"><a href="#cb13-122" aria-hidden="true" tabindex="-1"></a>    primers a recortar y otros parámetros (pueden modificarse).</span>
-<span id="cb13-123"><a href="#cb13-123" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Verifica dependencias:** Busca que cutadapt esté instalado y que</span>
-<span id="cb13-124"><a href="#cb13-124" aria-hidden="true" tabindex="-1"></a>    existan los archivos necesarios.</span>
-<span id="cb13-125"><a href="#cb13-125" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Busca los archivos FASTQ:** Localiza todos los archivos</span>
-<span id="cb13-126"><a href="#cb13-126" aria-hidden="true" tabindex="-1"></a>    <span class="sc">\*\_</span>R1_001.fastq y sus pares <span class="sc">\*\_</span>R2_001.fastq.</span>
-<span id="cb13-127"><a href="#cb13-127" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Procesa cada muestra:**</span>
-<span id="cb13-128"><a href="#cb13-128" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Ejecuta cutadapt para recortar los primers de cada par de</span>
-<span id="cb13-129"><a href="#cb13-129" aria-hidden="true" tabindex="-1"></a>        archivos (R1 y R2).</span>
-<span id="cb13-130"><a href="#cb13-130" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Guarda los archivos recortados y un reporte individual para cada</span>
-<span id="cb13-131"><a href="#cb13-131" aria-hidden="true" tabindex="-1"></a>        muestra.</span>
-<span id="cb13-132"><a href="#cb13-132" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Extrae estadísticas clave del reporte (pares procesados, reads</span>
-<span id="cb13-133"><a href="#cb13-133" aria-hidden="true" tabindex="-1"></a>        con adaptador, reads escritos, porcentaje de éxito) y las resume</span>
-<span id="cb13-134"><a href="#cb13-134" aria-hidden="true" tabindex="-1"></a>        en archivos TXT y TSV.</span>
-<span id="cb13-135"><a href="#cb13-135" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Resultados:**</span>
-<span id="cb13-136"><a href="#cb13-136" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Los archivos recortados quedan listos para análisis posteriores</span>
-<span id="cb13-137"><a href="#cb13-137" aria-hidden="true" tabindex="-1"></a>        (por ejemplo, DADA2).</span>
-<span id="cb13-138"><a href="#cb13-138" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Los reportes permiten revisar cuántas lecturas fueron recortadas</span>
-<span id="cb13-139"><a href="#cb13-139" aria-hidden="true" tabindex="-1"></a>        correctamente.</span>
-<span id="cb13-140"><a href="#cb13-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-141"><a href="#cb13-141" aria-hidden="true" tabindex="-1"></a>| **¿Por qué es útil?**</span>
-<span id="cb13-142"><a href="#cb13-142" aria-hidden="true" tabindex="-1"></a>| Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.</span>
-<span id="cb13-143"><a href="#cb13-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-144"><a href="#cb13-144" aria-hidden="true" tabindex="-1"></a><span class="fu">### Da permisos</span></span>
-<span id="cb13-145"><a href="#cb13-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-146"><a href="#cb13-146" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>En el servidor:</span>
-<span id="cb13-147"><a href="#cb13-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-148"><a href="#cb13-148" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-149"><a href="#cb13-149" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x scripts/cutadapt.sh</span>
-<span id="cb13-150"><a href="#cb13-150" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-151"><a href="#cb13-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-152"><a href="#cb13-152" aria-hidden="true" tabindex="-1"></a>Visualiza que hay en el archivo bash:</span>
-<span id="cb13-153"><a href="#cb13-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-154"><a href="#cb13-154" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-155"><a href="#cb13-155" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/cutadapt.sh</span>
-<span id="cb13-156"><a href="#cb13-156" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-157"><a href="#cb13-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-158"><a href="#cb13-158" aria-hidden="true" tabindex="-1"></a><span class="fu">### Parámetros principales usados</span></span>
-<span id="cb13-159"><a href="#cb13-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-160"><a href="#cb13-160" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-j ${THREADS}`</span>: Número de hilos (procesos en paralelo) para</span>
-<span id="cb13-161"><a href="#cb13-161" aria-hidden="true" tabindex="-1"></a>    acelerar el procesamiento.</span>
-<span id="cb13-162"><a href="#cb13-162" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-g &quot;^${FWD}&quot;`</span>: Primer a buscar al inicio de las lecturas R1 (el</span>
-<span id="cb13-163"><a href="#cb13-163" aria-hidden="true" tabindex="-1"></a>    símbolo \^ indica “al inicio”).</span>
-<span id="cb13-164"><a href="#cb13-164" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-G &quot;^${ADAPTER_R2}&quot;`</span>: Primer a buscar al inicio de las lecturas R2.</span>
-<span id="cb13-165"><a href="#cb13-165" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-e ${ERROR_RATE}`</span>: Tasa máxima de error permitida al buscar el</span>
-<span id="cb13-166"><a href="#cb13-166" aria-hidden="true" tabindex="-1"></a>    primer (por defecto 0.10, es decir, 10% de errores permitidos).</span>
-<span id="cb13-167"><a href="#cb13-167" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-m ${MIN_LEN}`</span>: Longitud mínima de las lecturas después del recorte</span>
-<span id="cb13-168"><a href="#cb13-168" aria-hidden="true" tabindex="-1"></a>    (por defecto 40 bases).</span>
-<span id="cb13-169"><a href="#cb13-169" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`--discard-untrimmed`</span>: (Opcional) Si se activa, descarta las</span>
-<span id="cb13-170"><a href="#cb13-170" aria-hidden="true" tabindex="-1"></a>    lecturas donde no se encontró el primer.</span>
-<span id="cb13-171"><a href="#cb13-171" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-o ${out_R1}`</span>: Archivo de salida para las lecturas R1 recortadas.</span>
-<span id="cb13-172"><a href="#cb13-172" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-p ${out_R2}`</span>: Archivo de salida para las lecturas R2 recortadas.</span>
-<span id="cb13-173"><a href="#cb13-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-174"><a href="#cb13-174" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecuta</span></span>
-<span id="cb13-175"><a href="#cb13-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-176"><a href="#cb13-176" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-177"><a href="#cb13-177" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/cutadapt.sh</span>
-<span id="cb13-178"><a href="#cb13-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-179"><a href="#cb13-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-180"><a href="#cb13-180" aria-hidden="true" tabindex="-1"></a><span class="fu">### Obtendrás</span></span>
-<span id="cb13-181"><a href="#cb13-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-182"><a href="#cb13-182" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FASTQ recortados: for_dada2/</span>
-<span id="cb13-183"><a href="#cb13-183" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reportes por muestra: cutadapt_reports/<span class="sc">\*\_</span>cutadapt.txt</span>
-<span id="cb13-184"><a href="#cb13-184" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Resumen: cutadapt_reports/overall_report.txt</span>
-<span id="cb13-185"><a href="#cb13-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-186"><a href="#cb13-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. Revisión de resultados</span></span>
-<span id="cb13-187"><a href="#cb13-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-188"><a href="#cb13-188" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb13-189"><a href="#cb13-189" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> fastqc_reports/fastqc_trimmed</span>
-<span id="cb13-190"><a href="#cb13-190" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> multiqc_reports/fastqc_trimmed</span>
-<span id="cb13-191"><a href="#cb13-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-192"><a href="#cb13-192" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> fastqc_reports/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
-<span id="cb13-193"><a href="#cb13-193" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> fastqc_reports/fastqc_trimmed <span class="at">-o</span> multiqc_reports/fastqc_trimmed</span>
-<span id="cb13-194"><a href="#cb13-194" aria-hidden="true" tabindex="-1"></a><span class="co"># Descarga en tu computadora con scp: final_data/fastqc_trimmed/multiqc_report.html</span></span>
-<span id="cb13-195"><a href="#cb13-195" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-196"><a href="#cb13-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-197"><a href="#cb13-197" aria-hidden="true" tabindex="-1"></a>| **Notas del script**</span>
-<span id="cb13-198"><a href="#cb13-198" aria-hidden="true" tabindex="-1"></a>| - Usa FWD (forward) y el RC del REV para -G (paired-end).</span>
-<span id="cb13-199"><a href="#cb13-199" aria-hidden="true" tabindex="-1"></a>| - No dependas de cambiar de carpeta; el script ya usa rutas claras.</span>
-<span id="cb13-200"><a href="#cb13-200" aria-hidden="true" tabindex="-1"></a>| - Crea directorios de salida antes de escribir.</span>
-<span id="cb13-201"><a href="#cb13-201" aria-hidden="true" tabindex="-1"></a>| - Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/.</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Dada2 - Filter and Trim&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#subtitle: &quot;24–28 de noviembre de 2025&lt;br&gt;Instituto de Ciencias del Mar y Limnología (UNAM)&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    #theme: cosmo</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    highlight-style: github</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    embed-resources: true</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introducción al paso Filter and Trim en dada2</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>El paso **Filter and Trim** es el primer gran filtro de calidad en el pipeline de dada2.  </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">## ¿Qué hace el código en este paso?</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Cálculo de puntos de truncamiento (`truncLen`)</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El pipeline analiza los perfiles de calidad de las lecturas forward y reverse.</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (<span class="in">`F_qual`</span>, <span class="in">`R_qual`</span>).</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Limitación del recorte máximo (`max_trim`)</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se compara el punto de truncamiento calculado con el valor máximo permitido (<span class="in">`max_trim`</span>) para evitar perder el solapamiento necesario entre lecturas forward y reverse.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Filtrado y trimming</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se ejecuta el filtrado usando los parámetros:</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**`truncLen`**: recorta las lecturas en los puntos calculados.</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**`maxEE`**: define el máximo de errores esperados permitidos por lectura (usualmente 2).</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**`maxN`**: no permite bases ambiguas (N).</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**`truncQ`**: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**`rm.phix`**: elimina lecturas que corresponden al control PhiX de Illumina.</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El código valida que los puntos de truncamiento sean razonables (no menores a 50 bp).</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. Diagnóstico y reporte de retención</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. Guardado de estadísticas</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico.</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="fu">## Explicación de los parámetros principales</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>| Parámetro   | Descripción                                                                 |</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>|-------------|-----------------------------------------------------------------------------|</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>| <span class="in">`truncLen`</span>  | Posición donde se recorta cada lectura (Forward y Reverse), calculada según calidad |</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>| <span class="in">`maxEE`</span>     | Máximo número de errores esperados permitidos por lectura (por dirección)   |</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>| <span class="in">`maxN`</span>      | Número máximo de bases ambiguas permitidas (usualmente 0)                   |</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>| <span class="in">`truncQ`</span>    | Recorta la lectura si encuentra una base con calidad menor a este valor     |</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>| <span class="in">`rm.phix`</span>   | Elimina lecturas que corresponden al control PhiX de Illumina               |</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## ¿Por qué es importante este paso?</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Elimina lecturas que podrían introducir errores técnicos en el análisis.</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Asegura que solo las regiones de alta calidad sean usadas para inferir variantes.</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Reduce el ruido y la probabilidad de obtener variantes falsas.</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Permite un diagnóstico temprano de problemas de calidad en la secuenciación.</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recomendaciones para el análisis</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Revisa los gráficos de calidad antes de definir los parámetros de recorte.</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si la retención de lecturas es baja, considera relajar los parámetros (<span class="in">`maxEE`</span>, <span class="in">`truncLen`</span>) o revisar la calidad de la secuenciación.</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="fu">## Resumen</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>| Aspecto | Explicación |</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>|---------|-------------|</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>| **Qué es** | Primer filtro de calidad y recorte de lecturas en dada2 |</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>| **Cómo se calcula** | Analiza perfiles de calidad, define puntos de truncamiento y aplica filtros |</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>| **Valores normales** | Retención global &gt; 50%, truncLen &gt; 50 bp |</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>| **Por qué importa** | Evita errores técnicos y mejora la precisión de los ASVs |</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>| **Qué hacer** | Ajusta parámetros según calidad, revisa diagnósticos y gráficos |</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ejercicios prácticos</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Identifica el punto de truncamiento óptimo** usando los gráficos de calidad generados por el pipeline.</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Revisa la tabla de filtrado**: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Compara la retención global** entre runs diferentes. ¿Qué parámetros afectan más la retención?</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## Notas finales</span></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Ajusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Los gráficos de calidad antes y después del filtrado.</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>La tabla de filtrado y retención por muestra.</span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Cómo interpretar valores &quot;normales&quot; vs &quot;problemáticos&quot;.</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Qué hacer si hay valores bajos de retención.</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
