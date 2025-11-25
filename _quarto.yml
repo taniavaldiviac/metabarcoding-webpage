@@ -28,9 +28,6 @@ website:
           - href: 0-Conexion-clonacion.qmd
           - href: 1-qaqc-cutadapt.qmd
           - href: 2-dada2QAQC.qmd
-          - href: 2-dada2QAQC-Prep.qmd
-          - href: 2-dada2QAQC-Filter.qmd
-          - href: 2-dada2QAQC-Error.qmd
       - href: Referencias.qmd
         text: Referencias
     right:
@@ -55,5 +52,3 @@ execute:
   
 resources:
   - slides/*.pdf
-
-

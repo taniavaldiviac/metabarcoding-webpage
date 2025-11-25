@@ -168,13 +168,6 @@
     "text": "Ejercicio 1: Interpretar tus Resultados\nUsando tu propio err_summary:\n\n¿Qué transición tiene la tasa de error más alta?\n¿Es Reverse &gt; Forward? ¿Cuánto?\n¿Alguna transición supera el 5%?\n\n\n\nCódigo\n# Tu código aquí\nerr_summary &lt;- read.csv(\"tu_error_rates_summary.csv\")\n\n# Encuentra la transición con mayor error\nmax_error &lt;- max(err_summary[err_summary$Direction == \"Forward\", -1], na.rm = TRUE)\n# ..."
   },
   {
-    "objectID": "2-dada2QAQC-Error.html#ejercicio-2-comparar-con-datos-simulados",
-    "href": "2-dada2QAQC-Error.html#ejercicio-2-comparar-con-datos-simulados",
-    "title": "Dada2 - Análisis de Tasas de Error",
-    "section": "Ejercicio 2: Comparar con Datos Simulados",
-    "text": "Ejercicio 2: Comparar con Datos Simulados"
-  },
-  {
     "objectID": "2-dada2QAQC-Filter.html",
     "href": "2-dada2QAQC-Filter.html",
     "title": "Dada2 - Filter and Trim",
@@ -210,8 +203,8 @@
     "text": "Revisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis."
   },
   {
-    "objectID": "2-dada2QAQC-Filter.html#resumen-ejecutivo",
-    "href": "2-dada2QAQC-Filter.html#resumen-ejecutivo",
+    "objectID": "2-dada2QAQC-Filter.html#resumen",
+    "href": "2-dada2QAQC-Filter.html#resumen",
     "title": "Dada2 - Filter and Trim",
     "section": "",
     "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos"
@@ -287,8 +280,8 @@
     "text": "Se ejecuta el paso de filter and trim usando los parámetros calculados y definidos:\n\ntruncLen: recorte en los puntos óptimos de calidad.\nmaxEE: máximo de errores esperados por lectura.\nmaxN: no se permiten bases ambiguas.\ntruncQ: recorte en calidad mínima.\nrm.phix: eliminación de lecturas PhiX.\n\nSe valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\nSe reporta la retención global de lecturas y se advierte si es baja (&lt; 50%).\nSe identifican muestras con retención muy baja (&lt; 30%) para diagnóstico."
   },
   {
-    "objectID": "2-dada2QAQC-Prep.html#resumen-ejecutivo",
-    "href": "2-dada2QAQC-Prep.html#resumen-ejecutivo",
+    "objectID": "2-dada2QAQC-Prep.html#resumen",
+    "href": "2-dada2QAQC-Prep.html#resumen",
     "title": "Dada2 - Preparación y Filtrado Inicial",
     "section": "",
     "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPreparación, validación y filtrado inicial de datos para dada2\n\n\nCómo se calcula\nLectura de parámetros, inspección de calidad, cálculo de truncLen y aplicación de filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp, sin archivos vacíos\n\n\nPor qué importa\nAsegura que solo datos de alta calidad y correctamente organizados pasen al análisis\n\n\nQué hacer\nRevisar gráficos de calidad, ajustar parámetros si la retención es baja, validar metadatos"
@@ -495,19 +488,5 @@
     "title": "Metabarcoding en comunidades de eucariontes",
     "section": "Comunicación",
     "text": "Comunicación\n\nDudas: correo (tania.valdiviac@gmail.com) o “issues” en GitHub del repositorio asistencia.\n\nDudas técnicas extensas: bloque de asesoría al cierre de cada práctica."
-  },
-  {
-    "objectID": "2-dada2QAQC-Prep.html#resumen-ejecutiv",
-    "href": "2-dada2QAQC-Prep.html#resumen-ejecutiv",
-    "title": "Dada2 - Preparación y Filtrado Inicial",
-    "section": "",
-    "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPreparación, validación y filtrado inicial de datos para dada2\n\n\nCómo se calcula\nLectura de parámetros, inspección de calidad, cálculo de truncLen y aplicación de filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp, sin archivos vacíos\n\n\nPor qué importa\nAsegura que solo datos de alta calidad y correctamente organizados pasen al análisis\n\n\nQué hacer\nRevisar gráficos de calidad, ajustar parámetros si la retención es baja, validar metadatos"
-  },
-  {
-    "objectID": "2-dada2QAQC-Filter.html#resumen",
-    "href": "2-dada2QAQC-Filter.html#resumen",
-    "title": "Dada2 - Filter and Trim",
-    "section": "",
-    "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos"
   }
 ]
