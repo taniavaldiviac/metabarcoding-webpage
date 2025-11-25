@@ -13,11 +13,10 @@ execute:
   message: false
 ---
 
-
-| fecha  | tema                                  | diapositivas                                 | código |
-|-------:|---------------------------------------|----------------------------------------------|--------|
-| 27 oct | eDNA/metabarcoding + QA/QC            | [PDF](slides/01_intro.pdf) | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding2025-code) |
-| 28 oct | DADA2 parte 1                         | [PDF](slides/02_dada2_parte1.pdf)            | —      |
-| 29 oct | DADA2 parte 2                         | [PDF](slides/03_dada2_parte2.pdf)            | —      |
-| 30 oct | phyloseq y diversidad                 | [PDF](slides/04_phyloseq.pdf)                | —      |
-| 31 oct | comunicar resultados con Quarto       | [PDF](slides/05_quarto.pdf)                  | —      |
+|  fecha | tema                                    | diapositivas | código                                                                       |
+|------------:|----------------------|--------------------------|-------------|
+| 24 nov | eDNA/metabarcoding + QA/QC              | [PDF](slides/Dia1.pdf)            | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding2025-code) |
+| 25 nov | Conexión al servidor y QAQC             |      |     |
+| 26 nov | DADA2                                   |      |     |
+| 27 nov | *phyloseq* y diversidad en comunidades  |      |     |
+| 28 nov | Temas auxiliares                        |      |     |

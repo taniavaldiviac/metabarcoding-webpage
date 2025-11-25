@@ -19,8 +19,6 @@ website:
     left:
       - href: index.qmd
         text: Sobre el curso
-      - href: programa.qmd
-        text: Programa
       - href: sesiones.qmd
         text: Sesiones
       - text: Curso2025
