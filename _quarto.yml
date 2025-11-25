@@ -25,7 +25,7 @@ website:
         text: Sesiones
       - text: Curso2025
         menu:
-          - href: 0-IntroQAQC.qmd
+          - href: 0-Conexion-clonacion.qmd
           - href: 1-qaqc-cutadapt.qmd
           - href: 2-dada2QAQC.qmd
           - href: 2-dada2QAQC-Prep.qmd

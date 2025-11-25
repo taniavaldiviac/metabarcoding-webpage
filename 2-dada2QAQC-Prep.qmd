@@ -91,7 +91,7 @@ Estos pasos aseguran reproducibilidad, organización y calidad antes de aplicar 
 
 ---
 
-## Resumen ejecutivo
+## Resumen
 
 | Aspecto | Explicación |
 |---------|-------------|
@@ -113,10 +113,7 @@ Estos pasos aseguran reproducibilidad, organización y calidad antes de aplicar 
 ---
 
 :::{.callout-tip}
-## Para el curso
-
-Muestra a tus alumnos:
-
+## Para el curso 
 1. Los gráficos de calidad antes del filtrado.
 2. La tabla de filtrado y retención por muestra.
 3. Cómo interpretar valores "normales" vs "problemáticos".

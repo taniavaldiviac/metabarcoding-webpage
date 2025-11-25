@@ -10,7 +10,7 @@ format:
     highlight-style: github
     embed-resources: true
 execute:
-  echo: false
+  echo: true
   warning: false
 ---
 
@@ -428,10 +428,10 @@ kable(summary_table, format = "html") %>%
 
 Esta tabla `err_summary` es **más para diagnóstico que para análisis final**, pero es útil para:
 
-1. ✅ Entender cómo dada2 distingue errores de variantes reales
-2. ✅ Validar la calidad de la secuenciación
-3. ✅ Comparar runs diferentes
-4. ✅ Detectar problemas técnicos temprano en el pipeline
+1. Entender cómo dada2 distingue errores de variantes reales
+2. Validar la calidad de la secuenciación
+3. Comparar runs diferentes
+4. Detectar problemas técnicos temprano en el pipeline
 
 ---
 
@@ -454,25 +454,6 @@ max_error <- max(err_summary[err_summary$Direction == "Forward", -1], na.rm = TR
 # ...
 ```
 
-## Ejercicio 2: Comparar con Datos Simulados
-
-```{r}
-# Genera datos simulados con error conocido
-set.seed(123)
-n_reads <- 10000
-true_seq <- sample(c("A", "C", "G", "T"), n_reads, replace = TRUE)
-
-# Introduce 3% de errores A→C
-observed_seq <- true_seq
-errors_idx <- sample(which(true_seq == "A"), size = round(0.03 * sum(true_seq == "A")))
-observed_seq[errors_idx] <- "C"
-
-# Calcula tasa de error observada
-observed_rate <- sum(observed_seq != true_seq) / n_reads
-cat("Tasa de error introducida: 3%\n")
-cat("Tasa de error observada:", round(observed_rate * 100, 2), "%\n")
-```
-
 ---
 
 # Notas Finales
@@ -488,19 +469,8 @@ cat("Tasa de error observada:", round(observed_rate * 100, 2), "%\n")
 
 :::{.callout-tip}
 ## Para el Curso
-
-Muestra a tus alumnos:
-
 1. La tabla `err_summary` impresa
 2. Los gráficos `errF.png` y `errR.png`
 3. Cómo interpretar valores "normales" vs "problemáticos"
 4. Qué hacer si hay valores altos (> 10%)
 :::
-
----
-
-# Session Info
-
-```{r}
-sessionInfo()
-```

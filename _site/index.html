@@ -98,8 +98,8 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-curso2025">    
         <li>
-    <a class="dropdown-item" href="./0-IntroQAQC.html" rel="" target="">
- <span class="dropdown-text">Control de calidad QAQC</span></a>
+    <a class="dropdown-item" href="./0-Conexion-clonacion.html" rel="" target="">
+ <span class="dropdown-text">Conexión al servidor y clonación de repositorio Github</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./1-qaqc-cutadapt.html" rel="" target="">
@@ -157,7 +157,6 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#misión" id="toc-misión" class="nav-link" data-scroll-target="#misión">Misión</a></li>
   <li><a href="#objetivo" id="toc-objetivo" class="nav-link" data-scroll-target="#objetivo">Objetivo</a></li>
   <li><a href="#instructores-participantesinstitución" id="toc-instructores-participantesinstitución" class="nav-link" data-scroll-target="#instructores-participantesinstitución">Instructores participantes/Institución</a></li>
-  <li><a href="#temario-abreviado-del-curso-por-día" id="toc-temario-abreviado-del-curso-por-día" class="nav-link" data-scroll-target="#temario-abreviado-del-curso-por-día">Temario abreviado del curso por día</a></li>
   </ul>
 </nav>
     </div>
@@ -224,20 +223,6 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="instructores-participantesinstitución">Instructores participantes/Institución</h2>
 <p>Dra. Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI</p>
 <p>Dr.&nbsp;Fausto Valenzuela Quiñonez, Investigador Titular B CIBNOR</p>
-</section>
-<section id="temario-abreviado-del-curso-por-día" class="level2">
-<h2 class="anchored" data-anchor-id="temario-abreviado-del-curso-por-día">Temario abreviado del curso por día</h2>
-<p>Durante cinco días intensivos, el curso combinará sesiones teórico-prácticas proporcionando a las y los participantes una formación completa sobre el uso del ADN ambiental (eDNA) y el metabarcoding en el estudio de comunidades eucarióticas en ecosistemas marinos.</p>
-<p><strong>Lunes:</strong></p>
-<p>El curso inicia con la presentación del equipo docente y de los participantes, creando un espacio de intercambio y colaboración entre personas con intereses afines. Posteriormente, se ofrece una introducción general al ADN ambiental, el metabarcoding y las técnicas de detección específica mediante qPCR y ddPCR. Se discutirán los fundamentos conceptuales, ventajas y limitaciones de cada enfoque, así como sus aplicaciones actuales en ecología y conservación. Por la tarde, se abordarán los principios del diseño experimental y del diseño de proyectos con eDNA, considerando aspectos como el tipo de muestra, el número de réplicas, el marcador genético y los objetivos del estudio. Luego, se presentarán las técnicas de muestreo en campo para recolección de eDNA y las mejores prácticas para evitar contaminación. La jornada concluirá con una revisión del flujo de trabajo en laboratorio: extracción de ADN, selección de primers, amplificación por PCR y preparación de librerías para secuenciación masiva.</p>
-<p><strong>Martes:</strong></p>
-<p>El segundo día se enfoca en los aspectos computacionales del análisis bioinformático. Se inicia con una introducción a los entornos de trabajo Linux, Unix y R, necesarios para manejar archivos de secuenciación y ejecutar pipelines reproducibles. Más adelante, se guiará a las y los participantes en la conexión a un servidor remoto, donde trabajarán durante el curso, y se revisarán aspectos clave de la organización de carpetas, la carga de archivos y el uso básico de la terminal. En la sesión práctica de la tarde se trabajará con datos crudos en formato FASTQ, reconociendo su estructura y visualizando la calidad de las lecturas. Luego se introducirá el control de calidad, incluyendo el filtrado y trimming de secuencias con DADA2, y finalmente se ejecutará el paso de aprendizaje del error, fundamental para la posterior inferencia precisa de variantes.</p>
-<p><strong>Miércoles:</strong></p>
-<p>Durante este día se abordará el núcleo del pipeline de DADA2. Por la mañana se cubrirá la inferencia de ASVs (Amplicon Sequence Variants) mediante métodos de denoising, que permiten distinguir secuencias reales de ruido técnico. Se discutirá también el concepto de clustering y su diferencia con los métodos basados en ASVs. A continuación, se trabajará con la unión de lecturas forward y reverse (paired-end), evaluando la eficiencia del ensamblaje. En la tarde se aplicará la remoción de secuencias quiméricas generadas durante la PCR, y posteriormente se ejecutará la asignación taxonómica, donde se vinculan las secuencias con su posible identidad biológica usando bases de datos como SILVA o PR2.</p>
-<p><strong>Jueves:</strong></p>
-<p>Este día está dedicado al procesamiento final y al análisis ecológico de los datos. Se iniciará con la generación de la tabla de abundancia de ASVs por muestra (ASV table) y la tabla taxonómica (tax table), integrando toda la información en objetos de R listos para el análisis. Luego se presentarán herramientas como phyloseq, vegan y ggplot2, útiles para realizar análisis ecológicos y visualización de datos metabarcoding. Por la tarde se explorarán los patrones de diversidad α y β, y se aprenderá a representarlos gráficamente mediante barplots, rarefacción, análisis multivariados (PCA, nMDS, etc.). Finalmente, se discutirá cómo diferentes barcodes (COI, 18S, 12S) pueden influir en los resultados de un estudio, comparando sus alcances, sesgos y utilidad para distintos grupos taxonómicos.</p>
-<p><strong>Viernes:</strong></p>
-<p>El último día comienza con el uso de controles negativos y el filtrado de contaminantes con el paquete decontam, una herramienta crucial para asegurar la confiabilidad de los datos. Después, se presentarán métodos alternativos para la generación de OTUs mediante agrupamiento por similitud con VSEARCH o el paquete clustur en R, permitiendo comparar este enfoque con el uso de ASVs. En la sesión de la tarde se abordarán temas auxiliares, según el interés del grupo, como la construcción de bases de datos personalizadas, diseño de primers in silico o estrategias de documentación reproducible. El curso cierra con una sesión de presentación de proyectos en la que los participantes compartirán ideas desarrolladas durante la semana, recibiendo retroalimentación del equipo docente y sus compañeros, y consolidando así su aprendizaje de manera aplicada y colaborativa.</p>
 
 
 </section>

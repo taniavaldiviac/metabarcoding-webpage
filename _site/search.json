@@ -1,136 +1,45 @@
 [
   {
-    "objectID": "0-IntroQAQC.html",
-    "href": "0-IntroQAQC.html",
-    "title": "Control de calidad QAQC",
+    "objectID": "0-Conexion-clonacion.html",
+    "href": "0-Conexion-clonacion.html",
+    "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "",
-    "text": "En esta clase aprenderemos a realizar control de calidad (QA/QC) en archivos FASTQ usando herramientas bioinformáticas."
+    "text": "Abre la terminal en tu computadora e ingresa el siguiente comando (reemplaza usuario y IP por los datos que te proporcionen):\nssh usuario@IP\nLuego, cuando se te pida, escribe tu contraseña y presiona Enter.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter.\nUna vez conectado, ya puedes seguir con los pasos siguientes directamente en el servidor."
   },
   {
-    "objectID": "0-IntroQAQC.html#objetivo",
-    "href": "0-IntroQAQC.html#objetivo",
-    "title": "Control de calidad QAQC",
+    "objectID": "0-Conexion-clonacion.html#conéctate-al-servidor-desde-tu-computadora",
+    "href": "0-Conexion-clonacion.html#conéctate-al-servidor-desde-tu-computadora",
+    "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "",
-    "text": "En esta clase aprenderemos a realizar control de calidad (QA/QC) en archivos FASTQ usando herramientas bioinformáticas."
+    "text": "Abre la terminal en tu computadora e ingresa el siguiente comando (reemplaza usuario y IP por los datos que te proporcionen):\nssh usuario@IP\nLuego, cuando se te pida, escribe tu contraseña y presiona Enter.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter.\nUna vez conectado, ya puedes seguir con los pasos siguientes directamente en el servidor."
   },
   {
-    "objectID": "0-IntroQAQC.html#pasos-principales",
-    "href": "0-IntroQAQC.html#pasos-principales",
-    "title": "Control de calidad QAQC",
-    "section": "Pasos principales",
-    "text": "Pasos principales\n\nVerificación de integridad de archivos\nConteo de lecturas\nAnálisis de calidad con FastQC\nFiltrado y recorte de lecturas\nRevisión de resultados"
+    "objectID": "0-Conexion-clonacion.html#pasos-para-reproducir-el-análisis",
+    "href": "0-Conexion-clonacion.html#pasos-para-reproducir-el-análisis",
+    "title": "Conexión al servidor y clonación de repositorio Github",
+    "section": "Pasos para reproducir el análisis",
+    "text": "Pasos para reproducir el análisis\n\n1. Activa el entorno conda\n\n\n¿Qué es un entorno (environment) en conda?\nUn entorno (o environment) en conda es un espacio aislado donde puedes instalar versiones específicas de Python, R y otros paquetes, sin afectar el resto del sistema ni otros proyectos. Esto ayuda a evitar conflictos entre dependencias y facilita la reproducibilidad.\nEsto te asegura que todos los paquetes y programas que uses estarán dentro de ese entorno.\nconda activate r-bio\n\n\nVerifica qué paquetes hay en el entorno\nPara ver la lista de paquetes instalados en el entorno r-bio, ejecuta:\nconda list\nEsto mostrará todos los paquetes y sus versiones dentro del entorno activo.\n\n\n3. Clona tu repositorio\ngit clone https://github.com/taniavaldiviac/metabarcoding-code\ncd metabarcoding-code"
   },
   {
-    "objectID": "0-IntroQAQC.html#verificación-de-integridad",
-    "href": "0-IntroQAQC.html#verificación-de-integridad",
-    "title": "Control de calidad QAQC",
-    "section": "1. Verificación de integridad",
-    "text": "1. Verificación de integridad\nEs una verificación de integridad por checksum:\n\nPara cada archivo .fastq, generas un hash (una “huella” única de sus bytes).\nGuardas esas huellas en un manifiesto (checksums.sha256).\nLuego shasum -a 256 -c checksums.sha256 recalcula la huella de cada archivo presente y la compara con la esperada.\n\nfind raw_fastqs -type f -name '*.fastq*' -print0 \\\n  | sort -z \\\n  | xargs -0 shasum -a 256 &gt; checksums.sha256\nPara verificar:\nshasum -a 256 -c checksums.sha256"
-  },
-  {
-    "objectID": "0-IntroQAQC.html#conteo-de-lecturas",
-    "href": "0-IntroQAQC.html#conteo-de-lecturas",
-    "title": "Control de calidad QAQC",
-    "section": "2. Conteo de lecturas",
-    "text": "2. Conteo de lecturas\nCada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:\nfor f in raw_fastqs/*.fastq; do echo -n \"$(basename \"$f\")   \"; expr $(wc -l &lt; \"$f\") / 4; done &gt; conteo_lecturas.tsv"
-  },
-  {
-    "objectID": "0-IntroQAQC.html#análisis-de-calidad-con-fastqc",
-    "href": "0-IntroQAQC.html#análisis-de-calidad-con-fastqc",
-    "title": "Control de calidad QAQC",
-    "section": "3. Análisis de calidad con FastQC",
-    "text": "3. Análisis de calidad con FastQC\nInstala FastQC y ejecuta:\nmkdir fastqc_reports\nfastqc raw_fastqs/*.fastq -o fastqc_reports/"
-  },
-  {
-    "objectID": "0-IntroQAQC.html#filtrado-y-recorte-de-lecturas",
-    "href": "0-IntroQAQC.html#filtrado-y-recorte-de-lecturas",
-    "title": "Control de calidad QAQC",
-    "section": "4. Filtrado y recorte de lecturas",
-    "text": "4. Filtrado y recorte de lecturas\nPuedes usar herramientas como Cutadapt o Trimmomatic. Ejemplo con Cutadapt:\ncutadapt -q 20 -o output_trimmed.fastq input.fastq"
-  },
-  {
-    "objectID": "0-IntroQAQC.html#revisión-de-resultados",
-    "href": "0-IntroQAQC.html#revisión-de-resultados",
-    "title": "Control de calidad QAQC",
-    "section": "5. Revisión de resultados",
-    "text": "5. Revisión de resultados\nVuelve a correr FastQC sobre los archivos filtrados y compara los reportes."
-  },
-  {
-    "objectID": "0-IntroQAQC.html#ejemplo-en-r-leer-el-conteo-de-lecturas",
-    "href": "0-IntroQAQC.html#ejemplo-en-r-leer-el-conteo-de-lecturas",
-    "title": "Control de calidad QAQC",
-    "section": "Ejemplo en R: Leer el conteo de lecturas",
-    "text": "Ejemplo en R: Leer el conteo de lecturas\nconteo &lt;- read.table(\"conteo_lecturas.tsv\", header = FALSE, sep = \"\\t\")\ncolnames(conteo) &lt;- c(\"Archivo\", \"Lecturas\")\nprint(conteo)"
-  },
-  {
-    "objectID": "0-IntroQAQC.html#conclusiones",
-    "href": "0-IntroQAQC.html#conclusiones",
-    "title": "Control de calidad QAQC",
-    "section": "Conclusiones",
-    "text": "Conclusiones\nEl control de calidad es esencial para asegurar la confiabilidad de los datos antes de cualquier análisis bioinformático."
+    "objectID": "0-Conexion-clonacion.html#qué-contiene-este-repositorio",
+    "href": "0-Conexion-clonacion.html#qué-contiene-este-repositorio",
+    "title": "Conexión al servidor y clonación de repositorio Github",
+    "section": "¿Qué contiene este repositorio?",
+    "text": "¿Qué contiene este repositorio?\nEl repositorio curso-metabarcoding está diseñado para enseñar y reproducir análisis de metabarcoding, integrando scripts, reportes y recursos para el procesamiento de datos de metabarcoding en DADA2.\n\nEstructura principal\n\nscripts/: Scripts en bash, R y Quarto (.qmd) para automatizar pasos del análisis, como recorte de secuencias, análisis de calidad y generación de reportes.\nraw_fastqs/: Carpeta donde se almacenan los archivos de secuenciación originales (FASTQ).\nfor_dada2/: Carpeta de salida para archivos procesados, listos para análisis con DADA2.\ncutadapt_reports/: Reportes generados por el preprocesamiento con cutadapt.\nOtros archivos y carpetas: Pueden incluir datos de ejemplo, archivos de configuración y documentación.\n\n\n\n¿Para qué sirve?\n\nPermite reproducir todo el flujo de trabajo de análisis de datos de metabarcoding, desde la preparación de datos hasta la generación de reportes finales.\nIncluye instrucciones para instalar dependencias, activar entornos, clonar el repositorio y ejecutar los análisis paso a paso.\nFacilita la colaboración y la enseñanza, asegurando que todos trabajen con los mismos scripts y versiones de paquetes.\n\n\n\n4. Abre R en el entorno conda\nR\n\n\n5. Instala los paquetes CRAN y Bioconductor desde R\ninstall.packages(c(\n  \"RColorBrewer\", \"ape\", \"colorspace\", \"data.table\", \"dplyr\", \"filesstrings\",\n  \"ggforce\", \"ggplot2\", \"ggsci\", \"here\", \"insect\", \"kableExtra\", \"pander\",\n  \"pandoc\", \"pheatmap\", \"purrr\", \"readr\", \"rentrez\", \"scales\", \"seqinr\",\n  \"sqldf\", \"strex\", \"stringr\", \"svglite\", \"taxize\", \"tibble\", \"tidyr\",\n  \"tidyverse\", \"vegan\", \"viridis\"\n))\nif (!requireNamespace(\"BiocManager\", quietly = TRUE)) install.packages(\"BiocManager\")\nBiocManager::install(c(\"ShortRead\", \"phyloseq\", \"dada2\", \"Biostrings\"))\n\n\n6. Si usas renv, restaura el entorno\nrenv::restore()\n\n\n7. Si los paquetes base no se ven en renv, agrega la ruta de conda a .libPaths()\n.libPaths(c(.libPaths(), \"/home/bio/conda/envs/r-bio/lib/R/library\"))\n.libPaths()\n\n\n8. Renderiza el reporte Quarto\nquarto render scripts/Bienvenidos.qmd\n\nRecuerda\nUsa la carpeta metabarcoding-code como tu proyecto.\nActiva ambiente r-bio con conda  Sigue estos pasos para reproducir el análisis y reporte en cualquier servidor."
   },
   {
     "objectID": "1-qaqc-cutadapt.html",
     "href": "1-qaqc-cutadapt.html",
     "title": "QAQC y recorte de primers con Cutadapt",
     "section": "",
-    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multiqc_reports\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq\n\n\n\nls -1 fastqc_reports/*_fastqc.html | wc -l\n\n\n\nmultiqc fastqc_reports -o multiqc_reports\n# Reporte en multi_qc\n\n\n\nDesde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
+    "text": "En esta clase aprenderemos a realizar control de calidad (QA/QC) en archivos FASTQ usando herramientas bioinformáticas.\n\n\n\nVerificación de integridad de archivos\nConteo de lecturas\nAnálisis de calidad con FastQC y MultiQC\nRevisión de resultados\nCortar primers con cutadapt\nRevisión de resultados\n\n\n\n\nEs una verificación de integridad por checksum:\n\nPara cada archivo .fastq, generas un hash (una “huella” única de sus bytes).\nGuardas esas huellas en un manifiesto (checksums.sha256).\nLuego shasum -a 256 -c checksums.sha256 recalcula la huella de cada archivo presente y la compara con la esperada.\n\nfind raw_fastqs -type f -name '*.fastq*' -print0 \\\n  | sort -z \\\n  | xargs -0 shasum -a 256 &gt; checksums.sha256\nPara verificar:\nshasum -a 256 -c checksums.sha256\n\n\n\nCada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:\nfor f in raw_fastqs/*.fastq; do echo -n \"$(basename \"$f\")   \"; expr $(wc -l &lt; \"$f\") / 4; done &gt; conteo_lecturas.tsv\n\n\n\n\n\n\ncd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multiqc_reports\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq\n\n\n\nls -1 fastqc_reports/*_fastqc.html | wc -l\n\n\n\nmultiqc fastqc_reports -o multiqc_reports\n# Reporte en multi_qc\n\n\n\n\n\n\nDesde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado.\n\n\n\nEste script cutadapt.sh es un pipeline automatizado en bash para recortar los primers de archivos de secuenciación paired-end usando la herramienta cutadapt.\n\nConfigura rutas y variables: Define dónde están los archivos originales (raw_fastqs), dónde guardar los archivos recortados (for_dada2) y los reportes (cutadapt_reports). También define los primers a recortar y otros parámetros (pueden modificarse).\nVerifica dependencias: Busca que cutadapt esté instalado y que existan los archivos necesarios.\nBusca los archivos FASTQ: Localiza todos los archivos *_R1_001.fastq y sus pares *_R2_001.fastq.\nProcesa cada muestra:\n\nEjecuta cutadapt para recortar los primers de cada par de archivos (R1 y R2).\nGuarda los archivos recortados y un reporte individual para cada muestra.\nExtrae estadísticas clave del reporte (pares procesados, reads con adaptador, reads escritos, porcentaje de éxito) y las resume en archivos TXT y TSV.\n\nResultados:\n\nLos archivos recortados quedan listos para análisis posteriores (por ejemplo, DADA2).\nLos reportes permiten revisar cuántas lecturas fueron recortadas correctamente.\n\n\n¿Por qué es útil?\nAutomatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.\n\n\n\n\nEn el servidor:\n\nchmod +x scripts/cutadapt.sh\nVisualiza que hay en el archivo bash:\ncat scripts/cutadapt.sh\n\n\n\n\n-j ${THREADS}: Número de hilos (procesos en paralelo) para acelerar el procesamiento.\n-g \"^${FWD}\": Primer a buscar al inicio de las lecturas R1 (el símbolo ^ indica “al inicio”).\n-G \"^${ADAPTER_R2}\": Primer a buscar al inicio de las lecturas R2.\n-e ${ERROR_RATE}: Tasa máxima de error permitida al buscar el primer (por defecto 0.10, es decir, 10% de errores permitidos).\n-m ${MIN_LEN}: Longitud mínima de las lecturas después del recorte (por defecto 40 bases).\n--discard-untrimmed: (Opcional) Si se activa, descarta las lecturas donde no se encontró el primer.\n-o ${out_R1}: Archivo de salida para las lecturas R1 recortadas.\n-p ${out_R2}: Archivo de salida para las lecturas R2 recortadas.\n\n\n\n\nbash scripts/cutadapt.sh\n\n\n\n\nFASTQ recortados: for_dada2/\nReportes por muestra: cutadapt_reports/*_cutadapt.txt\nResumen: cutadapt_reports/overall_report.txt\n\n\n\n\nmkdir -p fastqc_reports/fastqc_trimmed\nmkdir -p multiqc_reports/fastqc_trimmed\n\nfastqc -q -t 4 -o fastqc_reports/fastqc_trimmed for_dada2/*.fastq\nmultiqc fastqc_reports/fastqc_trimmed -o multiqc_reports/fastqc_trimmed\n# Descarga en tu computadora con scp: final_data/fastqc_trimmed/multiqc_report.html\nNotas del script\n- Usa FWD (forward) y el RC del REV para -G (paired-end).\n- No dependas de cambiar de carpeta; el script ya usa rutas claras.\n- Crea directorios de salida antes de escribir.\n- Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/."
   },
   {
-    "objectID": "1-qaqc-cutadapt.html#ejecutar-fastqc-sobre-todos-los-.fastq",
-    "href": "1-qaqc-cutadapt.html#ejecutar-fastqc-sobre-todos-los-.fastq",
+    "objectID": "1-qaqc-cutadapt.html#objetivo",
+    "href": "1-qaqc-cutadapt.html#objetivo",
     "title": "QAQC y recorte de primers con Cutadapt",
     "section": "",
-    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#verificar-instalación-y-conteo-de-reportes",
-    "href": "1-qaqc-cutadapt.html#verificar-instalación-y-conteo-de-reportes",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "ls -1 fastqc_reports/*_fastqc.html | wc -l"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#ejecutar-multiqc-resume-todos-los-fastqc",
-    "href": "1-qaqc-cutadapt.html#ejecutar-multiqc-resume-todos-los-fastqc",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "multiqc fastqc_reports -o multiqc_reports\n# Reporte en multi_qc"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-al-computador-local-scp",
-    "href": "1-qaqc-cutadapt.html#transferir-el-html-al-computador-local-scp",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#copia-y-da-permisos",
-    "href": "1-qaqc-cutadapt.html#copia-y-da-permisos",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "Copia y da permisos",
-    "text": "Copia y da permisos\n\nEn el servidor:\n\nchmod +x scripts/cutadapt.sh"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#define-primers-y-ejecuta",
-    "href": "1-qaqc-cutadapt.html#define-primers-y-ejecuta",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "Define primers y ejecuta",
-    "text": "Define primers y ejecuta\nbash scripts/cutadapt.sh"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#resultados",
-    "href": "1-qaqc-cutadapt.html#resultados",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "Resultados",
-    "text": "Resultados\n\nFASTQ recortados: for_dada2/\nReportes por muestra: cutadapt_reports/*_cutadapt.txt\nResumen: cutadapt_reports/overall_report.txt"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#verificación-post-recorte-opcional",
-    "href": "1-qaqc-cutadapt.html#verificación-post-recorte-opcional",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "Verificación post-recorte (opcional)",
-    "text": "Verificación post-recorte (opcional)\nmkdir -p fastqc_reports/fastqc_trimmed\nmkdir -p multiqc_reports/fastqc_trimmed\n\nfastqc -q -t 4 -o fastqc_reports/fastqc_trimmed for_dada2/*.fastq\nmultiqc fastqc_reports/fastqc_trimmed -o multiqc_reports/fastqc_trimmed\n# Descarga en tu computadora con scp: final_data/fastqc_trimmed/multiqc_report.html\nCorrecciones y notas del script\n- Usa FWD (forward) y el RC del REV para -G (paired-end).\n- No dependas de cambiar de carpeta; el script ya usa rutas claras.\n- Crea directorios de salida antes de escribir.\n- Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/."
+    "text": "En esta clase aprenderemos a realizar control de calidad (QA/QC) en archivos FASTQ usando herramientas bioinformáticas.\n\n\n\nVerificación de integridad de archivos\nConteo de lecturas\nAnálisis de calidad con FastQC y MultiQC\nRevisión de resultados\nCortar primers con cutadapt\nRevisión de resultados\n\n\n\n\nEs una verificación de integridad por checksum:\n\nPara cada archivo .fastq, generas un hash (una “huella” única de sus bytes).\nGuardas esas huellas en un manifiesto (checksums.sha256).\nLuego shasum -a 256 -c checksums.sha256 recalcula la huella de cada archivo presente y la compara con la esperada.\n\nfind raw_fastqs -type f -name '*.fastq*' -print0 \\\n  | sort -z \\\n  | xargs -0 shasum -a 256 &gt; checksums.sha256\nPara verificar:\nshasum -a 256 -c checksums.sha256\n\n\n\nCada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:\nfor f in raw_fastqs/*.fastq; do echo -n \"$(basename \"$f\")   \"; expr $(wc -l &lt; \"$f\") / 4; done &gt; conteo_lecturas.tsv\n\n\n\n\n\n\ncd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multiqc_reports\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq\n\n\n\nls -1 fastqc_reports/*_fastqc.html | wc -l\n\n\n\nmultiqc fastqc_reports -o multiqc_reports\n# Reporte en multi_qc\n\n\n\n\n\n\nDesde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado.\n\n\n\nEste script cutadapt.sh es un pipeline automatizado en bash para recortar los primers de archivos de secuenciación paired-end usando la herramienta cutadapt.\n\nConfigura rutas y variables: Define dónde están los archivos originales (raw_fastqs), dónde guardar los archivos recortados (for_dada2) y los reportes (cutadapt_reports). También define los primers a recortar y otros parámetros (pueden modificarse).\nVerifica dependencias: Busca que cutadapt esté instalado y que existan los archivos necesarios.\nBusca los archivos FASTQ: Localiza todos los archivos *_R1_001.fastq y sus pares *_R2_001.fastq.\nProcesa cada muestra:\n\nEjecuta cutadapt para recortar los primers de cada par de archivos (R1 y R2).\nGuarda los archivos recortados y un reporte individual para cada muestra.\nExtrae estadísticas clave del reporte (pares procesados, reads con adaptador, reads escritos, porcentaje de éxito) y las resume en archivos TXT y TSV.\n\nResultados:\n\nLos archivos recortados quedan listos para análisis posteriores (por ejemplo, DADA2).\nLos reportes permiten revisar cuántas lecturas fueron recortadas correctamente.\n\n\n¿Por qué es útil?\nAutomatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.\n\n\n\n\nEn el servidor:\n\nchmod +x scripts/cutadapt.sh\nVisualiza que hay en el archivo bash:\ncat scripts/cutadapt.sh\n\n\n\n\n-j ${THREADS}: Número de hilos (procesos en paralelo) para acelerar el procesamiento.\n-g \"^${FWD}\": Primer a buscar al inicio de las lecturas R1 (el símbolo ^ indica “al inicio”).\n-G \"^${ADAPTER_R2}\": Primer a buscar al inicio de las lecturas R2.\n-e ${ERROR_RATE}: Tasa máxima de error permitida al buscar el primer (por defecto 0.10, es decir, 10% de errores permitidos).\n-m ${MIN_LEN}: Longitud mínima de las lecturas después del recorte (por defecto 40 bases).\n--discard-untrimmed: (Opcional) Si se activa, descarta las lecturas donde no se encontró el primer.\n-o ${out_R1}: Archivo de salida para las lecturas R1 recortadas.\n-p ${out_R2}: Archivo de salida para las lecturas R2 recortadas.\n\n\n\n\nbash scripts/cutadapt.sh\n\n\n\n\nFASTQ recortados: for_dada2/\nReportes por muestra: cutadapt_reports/*_cutadapt.txt\nResumen: cutadapt_reports/overall_report.txt\n\n\n\n\nmkdir -p fastqc_reports/fastqc_trimmed\nmkdir -p multiqc_reports/fastqc_trimmed\n\nfastqc -q -t 4 -o fastqc_reports/fastqc_trimmed for_dada2/*.fastq\nmultiqc fastqc_reports/fastqc_trimmed -o multiqc_reports/fastqc_trimmed\n# Descarga en tu computadora con scp: final_data/fastqc_trimmed/multiqc_report.html\nNotas del script\n- Usa FWD (forward) y el RC del REV para -G (paired-end).\n- No dependas de cambiar de carpeta; el script ya usa rutas claras.\n- Crea directorios de salida antes de escribir.\n- Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/."
   },
   {
     "objectID": "2-dada2QAQC-Error.html",
@@ -151,28 +60,28 @@
     "href": "2-dada2QAQC-Error.html#inspección-de-errf",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Inspección de errF",
-    "text": "Inspección de errF\nSalida esperada:\nList of 3\n $ err_out: num [1:16, 1:41] 0.8464 0.0829 0.0296 0.0411 ...\n  ..- attr(*, \"dimnames\")=List of 2\n  .. ..$ : chr [1:16] \"A2A\" \"A2C\" \"A2G\" \"A2T\" ...\n  .. ..$ : chr [1:41] \"0\" \"1\" \"2\" \"3\" ...\n $ err_in : List of 9 (modelos intermedios de cada iteración)\n $ trans  : int [1:16, 1:41] (conteos observados por transición y Q-score)\n\nComponentes clave:\n\n\n\n\n\n\n\nComponente\nDescripción\n\n\n\n\nerr_out\nMatriz de tasas de error [16 transiciones × 41 Q-scores]\n\n\ntrans\nNombres de transiciones (A2A, A2C, A2G, …) en rownames\n\n\nerr_in\nHistorial de modelos intermedios (convergencia)"
+    "text": "Inspección de errF\n\n\nCódigo\n# Ver estructura completa del modelo de error\nstr(errF)\n\n\nSalida esperada:\nList of 3\n $ err_out: num [1:16, 1:41] 0.8464 0.0829 0.0296 0.0411 ...\n  ..- attr(*, \"dimnames\")=List of 2\n  .. ..$ : chr [1:16] \"A2A\" \"A2C\" \"A2G\" \"A2T\" ...\n  .. ..$ : chr [1:41] \"0\" \"1\" \"2\" \"3\" ...\n $ err_in : List of 9 (modelos intermedios de cada iteración)\n $ trans  : int [1:16, 1:41] (conteos observados por transición y Q-score)\n\nComponentes clave:\n\n\n\n\n\n\n\nComponente\nDescripción\n\n\n\n\nerr_out\nMatriz de tasas de error [16 transiciones × 41 Q-scores]\n\n\ntrans\nNombres de transiciones (A2A, A2C, A2G, …) en rownames\n\n\nerr_in\nHistorial de modelos intermedios (convergencia)"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#nombres-de-transiciones",
     "href": "2-dada2QAQC-Error.html#nombres-de-transiciones",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Nombres de Transiciones",
-    "text": "Nombres de Transiciones\nSalida:\n [1] \"A2A\" \"A2C\" \"A2G\" \"A2T\" \"C2A\" \"C2C\" \"C2G\" \"C2T\"\n [9] \"G2A\" \"G2C\" \"G2G\" \"G2T\" \"T2A\" \"T2C\" \"T2G\" \"T2T\"\n\nInterpretación:\n\nA2A, C2C, G2G, T2T: Transiciones correctas (la base se lee correctamente)\nA2C, A2G, A2T: Errores donde una A se lee como C, G o T\nC2A, C2G, C2T: Errores donde una C se lee como A, G o T\nEtc."
+    "text": "Nombres de Transiciones\n\n\nCódigo\n# Ver nombres de filas (transiciones)\nrownames(errF$err_out)\n\n\nSalida:\n [1] \"A2A\" \"A2C\" \"A2G\" \"A2T\" \"C2A\" \"C2C\" \"C2G\" \"C2T\"\n [9] \"G2A\" \"G2C\" \"G2G\" \"G2T\" \"T2A\" \"T2C\" \"T2G\" \"T2T\"\n\nInterpretación:\n\nA2A, C2C, G2G, T2T: Transiciones correctas (la base se lee correctamente)\nA2C, A2G, A2T: Errores donde una A se lee como C, G o T\nC2A, C2G, C2T: Errores donde una C se lee como A, G o T\nEtc."
   },
   {
     "objectID": "2-dada2QAQC-Error.html#qué-es-err_summary",
     "href": "2-dada2QAQC-Error.html#qué-es-err_summary",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "¿Qué es err_summary?",
-    "text": "¿Qué es err_summary?\nEs una tabla resumen que calcula el promedio de las tasas de error para cada tipo de transición (excluyendo las correctas).\nEjemplo de salida:\n  Direction       A2C       A2G       A2T       C2A       C2G       C2T\n1   Forward 0.0318234 0.0116845 0.0158932 0.0529876 0.0046123 0.0084567\n2   Reverse 0.0345678 0.0123456 0.0178901 0.0567890 0.0051234 0.0091234"
+    "text": "¿Qué es err_summary?\nEs una tabla resumen que calcula el promedio de las tasas de error para cada tipo de transición (excluyendo las correctas).\n\n\nCódigo\n# Estructura de err_summary\nerr_summary\n\n\nEjemplo de salida:\n  Direction       A2C       A2G       A2T       C2A       C2G       C2T\n1   Forward 0.0318234 0.0116845 0.0158932 0.0529876 0.0046123 0.0084567\n2   Reverse 0.0345678 0.0123456 0.0178901 0.0567890 0.0051234 0.0091234"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#cómo-se-calcula",
     "href": "2-dada2QAQC-Error.html#cómo-se-calcula",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "¿Cómo se calcula?",
-    "text": "¿Cómo se calcula?\n\nPaso 1: Extraer una fila de err_out\nSalida ejemplo:\n        0         1         2         3  ...        38        39        40\n0.0829362 0.0829362 0.0829362 0.0829362  ... 0.0001627 0.0001627 0.0001627\n\n\nPaso 2: Calcular el promedio\nResultado: 0.0318234 (3.18% de error promedio)\n\n\nPaso 3: Repetir para todas las transiciones"
+    "text": "¿Cómo se calcula?\n\nPaso 1: Extraer una fila de err_out\n\n\nCódigo\n# Extraer tasas de error para la transición A→C (A2C)\n# Esta es una fila de 41 valores (uno por cada Q-score: Q0, Q1, ..., Q40)\nerrF$err_out[\"A2C\", ]\n\n\nSalida ejemplo:\n        0         1         2         3  ...        38        39        40\n0.0829362 0.0829362 0.0829362 0.0829362  ... 0.0001627 0.0001627 0.0001627\n\n\nPaso 2: Calcular el promedio\n\n\nCódigo\n# Promedio a través de todos los Q-scores\nmean(errF$err_out[\"A2C\", ], na.rm = TRUE)\n\n\nResultado: 0.0318234 (3.18% de error promedio)\n\n\nPaso 3: Repetir para todas las transiciones\n\n\nCódigo\nerr_summary_F &lt;- data.frame(\n  Direction = \"Forward\",\n  A2C = mean(errF$err_out[\"A2C\", ], na.rm = TRUE),\n  A2G = mean(errF$err_out[\"A2G\", ], na.rm = TRUE),\n  A2T = mean(errF$err_out[\"A2T\", ], na.rm = TRUE),\n  C2A = mean(errF$err_out[\"C2A\", ], na.rm = TRUE),\n  # ... y así para todas las transiciones de error\n  stringsAsFactors = FALSE\n)"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#valores-normales-buena-calidad",
@@ -186,14 +95,14 @@
     "href": "2-dada2QAQC-Error.html#valores-problemáticos",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Valores Problemáticos",
-    "text": "Valores Problemáticos\nPosibles causas:\n\n⚠️ Calidad de secuenciación muy baja\n⚠️ Problemas con la química de Illumina\n⚠️ Contaminación cruzada (index hopping)\n⚠️ Errores sistemáticos en el run"
+    "text": "Valores Problemáticos\n\n\nCódigo\n# Ejemplo de valor alto (PROBLEMA)\nA2C = 0.15  # 15% de error → ¡Demasiado alto!\n\n\nPosibles causas:\n\n⚠️ Calidad de secuenciación muy baja\n⚠️ Problemas con la química de Illumina\n⚠️ Contaminación cruzada (index hopping)\n⚠️ Errores sistemáticos en el run"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#simulación-de-errores",
     "href": "2-dada2QAQC-Error.html#simulación-de-errores",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Simulación de Errores",
-    "text": "Simulación de Errores"
+    "text": "Simulación de Errores\n\n\nCódigo\n# Supongamos que tienes 1000 As reales en tu secuencia\nn_bases_A &lt;- 1000\n\n# Y err_summary dice: A2C = 0.03 (3%)\nerror_rate_A2C &lt;- 0.03\n\n# Entonces:\nbases_correctas &lt;- round(n_bases_A * (1 - error_rate_A2C))\nbases_incorrectas &lt;- round(n_bases_A * error_rate_A2C)\n\ncat(\"De\", n_bases_A, \"As reales:\\n\")\ncat(\"  -\", bases_correctas, \"se leen correctamente como A (\", (1-error_rate_A2C)*100, \"%)\\n\")\ncat(\"  -\", bases_incorrectas, \"se leen erróneamente como C (\", error_rate_A2C*100, \"%)\\n\")"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#cómo-usa-dada2-esta-información",
@@ -214,7 +123,7 @@
     "href": "2-dada2QAQC-Error.html#gráfico-de-comparación",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Gráfico de Comparación",
-    "text": "Gráfico de Comparación"
+    "text": "Gráfico de Comparación\n\n\nCódigo\nlibrary(ggplot2)\nlibrary(tidyr)\n\n# Datos de ejemplo (reemplazar con tus valores reales)\nerr_summary &lt;- data.frame(\n  Direction = c(\"Forward\", \"Reverse\"),\n  A2C = c(0.0318, 0.0346),\n  A2G = c(0.0117, 0.0123),\n  A2T = c(0.0159, 0.0179),\n  C2A = c(0.0530, 0.0568),\n  C2G = c(0.0046, 0.0051),\n  C2T = c(0.0085, 0.0091),\n  G2A = c(0.0068, 0.0072),\n  G2C = c(0.0109, 0.0112),\n  G2T = c(0.0054, 0.0059),\n  T2A = c(0.0235, 0.0257),\n  T2C = c(0.0077, 0.0085),\n  T2G = c(0.0123, 0.0135)\n)\n\n# Convertir a formato largo para ggplot\nerr_long &lt;- err_summary %&gt;%\n  pivot_longer(cols = -Direction, \n               names_to = \"Transition\", \n               values_to = \"Error_Rate\")\n\n# Gráfico de barras\nggplot(err_long, aes(x = Transition, y = Error_Rate, fill = Direction)) +\n  geom_col(position = \"dodge\", alpha = 0.8) +\n  geom_hline(yintercept = 0.05, linetype = \"dashed\", color = \"red\", linewidth = 0.8) +\n  annotate(\"text\", x = 10, y = 0.052, label = \"Umbral 5%\", color = \"red\", fontface = \"bold\") +\n  scale_fill_manual(values = c(\"Forward\" = \"#69b3a2\", \"Reverse\" = \"#f77f00\")) +\n  labs(\n    title = \"Tasas de Error por Transición: Forward vs Reverse\",\n    subtitle = \"Promedio a través de todos los Q-scores (0-40)\",\n    x = \"Tipo de Transición\",\n    y = \"Tasa de Error Promedio\",\n    fill = \"Dirección\"\n  ) +\n  theme_minimal(base_size = 12) +\n  theme(\n    plot.title = element_text(face = \"bold\", hjust = 0.5),\n    plot.subtitle = element_text(hjust = 0.5, color = \"grey40\"),\n    axis.text.x = element_text(angle = 45, hjust = 1),\n    legend.position = \"top\"\n  )"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#checklist-de-validación",
@@ -228,7 +137,7 @@
     "href": "2-dada2QAQC-Error.html#bloque-completo-de-cálculo-de-err_summary",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Bloque Completo de Cálculo de err_summary",
-    "text": "Bloque Completo de Cálculo de err_summary"
+    "text": "Bloque Completo de Cálculo de err_summary\n\n\nCódigo\n# Diagnóstico rápido: tasas de error promedio por transición\nif (!is.null(errF) && is.matrix(errF$err_out)) {\n  transition_names &lt;- rownames(errF$err_out)\n  \n  if (is.null(transition_names)) {\n    warning(\"errF$err_out no tiene nombres de fila.\")\n    err_summary_F &lt;- data.frame(\n      Direction = \"Forward\",\n      A2C = NA, A2G = NA, A2T = NA, C2A = NA,\n      stringsAsFactors = FALSE\n    )\n  } else {\n    err_summary_F &lt;- data.frame(\n      Direction = \"Forward\",\n      A2C = if(\"A2C\" %in% transition_names) mean(errF$err_out[\"A2C\", ], na.rm = TRUE) else NA,\n      A2G = if(\"A2G\" %in% transition_names) mean(errF$err_out[\"A2G\", ], na.rm = TRUE) else NA,\n      A2T = if(\"A2T\" %in% transition_names) mean(errF$err_out[\"A2T\", ], na.rm = TRUE) else NA,\n      C2A = if(\"C2A\" %in% transition_names) mean(errF$err_out[\"C2A\", ], na.rm = TRUE) else NA,\n      C2G = if(\"C2G\" %in% transition_names) mean(errF$err_out[\"C2G\", ], na.rm = TRUE) else NA,\n      C2T = if(\"C2T\" %in% transition_names) mean(errF$err_out[\"C2T\", ], na.rm = TRUE) else NA,\n      G2A = if(\"G2A\" %in% transition_names) mean(errF$err_out[\"G2A\", ], na.rm = TRUE) else NA,\n      G2C = if(\"G2C\" %in% transition_names) mean(errF$err_out[\"G2C\", ], na.rm = TRUE) else NA,\n      G2T = if(\"G2T\" %in% transition_names) mean(errF$err_out[\"G2T\", ], na.rm = TRUE) else NA,\n      T2A = if(\"T2A\" %in% transition_names) mean(errF$err_out[\"T2A\", ], na.rm = TRUE) else NA,\n      T2C = if(\"T2C\" %in% transition_names) mean(errF$err_out[\"T2C\", ], na.rm = TRUE) else NA,\n      T2G = if(\"T2G\" %in% transition_names) mean(errF$err_out[\"T2G\", ], na.rm = TRUE) else NA,\n      stringsAsFactors = FALSE\n    )\n    \n    message(\"Transiciones Forward disponibles: \", paste(transition_names, collapse = \", \"))\n  }\n} else {\n  warning(\"errF$err_out no es una matriz.\")\n}\n\n# Repetir para Reverse (errR)\n# ... (mismo código cambiando errF por errR)\n\n# Combinar y guardar\nerr_summary &lt;- rbind(err_summary_F, err_summary_R)\nwrite.csv(err_summary, \"error_rates_summary.csv\", row.names = FALSE)\n\nmessage(\"\\n=== Resumen de tasas de error (promedio) ===\")\nprint(err_summary)"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#tabla-resumen",
@@ -249,14 +158,14 @@
     "href": "2-dada2QAQC-Error.html#para-tus-alumnos",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Para tus Alumnos",
-    "text": "Para tus Alumnos\nEsta tabla err_summary es más para diagnóstico que para análisis final, pero es útil para:\n\n✅ Entender cómo dada2 distingue errores de variantes reales\n✅ Validar la calidad de la secuenciación\n✅ Comparar runs diferentes\n✅ Detectar problemas técnicos temprano en el pipeline"
+    "text": "Para tus Alumnos\nEsta tabla err_summary es más para diagnóstico que para análisis final, pero es útil para:\n\nEntender cómo dada2 distingue errores de variantes reales\nValidar la calidad de la secuenciación\nComparar runs diferentes\nDetectar problemas técnicos temprano en el pipeline"
   },
   {
     "objectID": "2-dada2QAQC-Error.html#ejercicio-1-interpretar-tus-resultados",
     "href": "2-dada2QAQC-Error.html#ejercicio-1-interpretar-tus-resultados",
     "title": "Dada2 - Análisis de Tasas de Error",
     "section": "Ejercicio 1: Interpretar tus Resultados",
-    "text": "Ejercicio 1: Interpretar tus Resultados\nUsando tu propio err_summary:\n\n¿Qué transición tiene la tasa de error más alta?\n¿Es Reverse &gt; Forward? ¿Cuánto?\n¿Alguna transición supera el 5%?"
+    "text": "Ejercicio 1: Interpretar tus Resultados\nUsando tu propio err_summary:\n\n¿Qué transición tiene la tasa de error más alta?\n¿Es Reverse &gt; Forward? ¿Cuánto?\n¿Alguna transición supera el 5%?\n\n\n\nCódigo\n# Tu código aquí\nerr_summary &lt;- read.csv(\"tu_error_rates_summary.csv\")\n\n# Encuentra la transición con mayor error\nmax_error &lt;- max(err_summary[err_summary$Direction == \"Forward\", -1], na.rm = TRUE)\n# ..."
   },
   {
     "objectID": "2-dada2QAQC-Error.html#ejercicio-2-comparar-con-datos-simulados",
@@ -270,7 +179,7 @@
     "href": "2-dada2QAQC-Filter.html",
     "title": "Dada2 - Filter and Trim",
     "section": "",
-    "text": "El paso Filter and Trim es el primer gran filtro de calidad en el pipeline de dada2.\nSu objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.\n\n\n\n\n\n\nEl pipeline analiza los perfiles de calidad de las lecturas forward y reverse.\nSe determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (F_qual, R_qual).\nSe usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.\n\n\n\n\n\nSe compara el punto de truncamiento calculado con el valor máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas forward y reverse.\n\n\n\n\n\nSe ejecuta el filtrado usando los parámetros:\n\ntruncLen: recorta las lecturas en los puntos calculados.\nmaxEE: define el máximo de errores esperados permitidos por lectura (usualmente 2).\nmaxN: no permite bases ambiguas (N).\ntruncQ: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).\nrm.phix: elimina lecturas que corresponden al control PhiX de Illumina.\n\nEl código valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\n\n\n\n\n\nSe calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).\nSi la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.\nSe identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.\n\n\n\n\n\nSe guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico.\n\n\n\n\n\n\n\n\n\n\n\n\n\nParámetro\nDescripción\n\n\n\n\ntruncLen\nPosición donde se recorta cada lectura (Forward y Reverse), calculada según calidad\n\n\nmaxEE\nMáximo número de errores esperados permitidos por lectura (por dirección)\n\n\nmaxN\nNúmero máximo de bases ambiguas permitidas (usualmente 0)\n\n\ntruncQ\nRecorta la lectura si encuentra una base con calidad menor a este valor\n\n\nrm.phix\nElimina lecturas que corresponden al control PhiX de Illumina\n\n\n\n\n\n\n\n\nElimina lecturas que podrían introducir errores técnicos en el análisis.\nAsegura que solo las regiones de alta calidad sean usadas para inferir variantes.\nReduce el ruido y la probabilidad de obtener variantes falsas.\nPermite un diagnóstico temprano de problemas de calidad en la secuenciación.\n\n\n\n\n\n\nRevisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\n\n\n\n\n\n\n\n\n\n\n\n\nAspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos\n\n\n\n\n\n\n\n\nIdentifica el punto de truncamiento óptimo usando los gráficos de calidad generados por el pipeline.\nRevisa la tabla de filtrado: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?\nCompara la retención global entre runs diferentes. ¿Qué parámetros afectan más la retención?\n\n\n\n\n\n\n\n\n\n\n\nRecuerda\n\n\n\n\nEl paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.\nAjusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.\n\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes y después del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+    "text": "El paso Filter and Trim es el primer gran filtro de calidad en el pipeline de dada2.\nSu objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.\n\n\n\n\n\n\nEl pipeline analiza los perfiles de calidad de las lecturas forward y reverse.\nSe determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (F_qual, R_qual).\nSe usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.\n\n\n\n\n\nSe compara el punto de truncamiento calculado con el valor máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas forward y reverse.\n\n\n\n\n\nSe ejecuta el filtrado usando los parámetros:\n\ntruncLen: recorta las lecturas en los puntos calculados.\nmaxEE: define el máximo de errores esperados permitidos por lectura (usualmente 2).\nmaxN: no permite bases ambiguas (N).\ntruncQ: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).\nrm.phix: elimina lecturas que corresponden al control PhiX de Illumina.\n\nEl código valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\n\n\n\n\n\nSe calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).\nSi la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.\nSe identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.\n\n\n\n\n\nSe guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico.\n\n\n\n\n\n\n\n\n\n\n\n\n\nParámetro\nDescripción\n\n\n\n\ntruncLen\nPosición donde se recorta cada lectura (Forward y Reverse), calculada según calidad\n\n\nmaxEE\nMáximo número de errores esperados permitidos por lectura (por dirección)\n\n\nmaxN\nNúmero máximo de bases ambiguas permitidas (usualmente 0)\n\n\ntruncQ\nRecorta la lectura si encuentra una base con calidad menor a este valor\n\n\nrm.phix\nElimina lecturas que corresponden al control PhiX de Illumina\n\n\n\n\n\n\n\n\nElimina lecturas que podrían introducir errores técnicos en el análisis.\nAsegura que solo las regiones de alta calidad sean usadas para inferir variantes.\nReduce el ruido y la probabilidad de obtener variantes falsas.\nPermite un diagnóstico temprano de problemas de calidad en la secuenciación.\n\n\n\n\n\n\nRevisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\n\n\n\n\n\n\n\n\n\n\n\n\nAspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos\n\n\n\n\n\n\n\n\nIdentifica el punto de truncamiento óptimo usando los gráficos de calidad generados por el pipeline.\nRevisa la tabla de filtrado: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?\nCompara la retención global entre runs diferentes. ¿Qué parámetros afectan más la retención?\n\n\n\n\n\n\n\n\n\n\n\nRecuerda\n\n\n\n\nEl paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.\nAjusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.\n\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\n\nLos gráficos de calidad antes y después del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
   },
   {
     "objectID": "2-dada2QAQC-Filter.html#qué-hace-el-código-en-este-paso",
@@ -319,14 +228,14 @@
     "href": "2-dada2QAQC-Filter.html#notas-finales",
     "title": "Dada2 - Filter and Trim",
     "section": "",
-    "text": "Recuerda\n\n\n\n\nEl paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.\nAjusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.\n\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes y después del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+    "text": "Recuerda\n\n\n\n\nEl paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.\nAjusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.\n\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\n\nLos gráficos de calidad antes y después del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
   },
   {
     "objectID": "2-dada2QAQC-Prep.html",
     "href": "2-dada2QAQC-Prep.html",
     "title": "Dada2 - Preparación y Filtrado Inicial",
     "section": "",
-    "text": "La primera parte del pipeline dada2 prepara el entorno y los datos para el análisis de secuencias.\nEstos pasos aseguran reproducibilidad, organización y calidad antes de aplicar los filtros de calidad y trimming.\n\n\n\n\nSe activa el entorno de paquetes con renv si existe, garantizando que todas las dependencias estén controladas y sean reproducibles.\nSe cargan las librerías necesarias para el pipeline:\n\ndada2: procesamiento y denoising de secuencias.\ntidyverse: manipulación de datos y lectura de archivos.\nShortRead y seqinr: utilidades para manejo de archivos FASTQ y FASTA.\ndigest: generación de hashes para identificar secuencias únicas.\nhere y fs: manejo robusto de rutas y archivos.\nreadr: lectura y escritura eficiente de CSVs.\n\n\n\n\n\n\n\nSe detecta la raíz del proyecto y se fija el directorio de trabajo para asegurar rutas relativas correctas.\nSe definen rutas para:\n\nArchivos FASTQ sin procesar.\nCarpeta de salida para resultados y logs.\nCarpeta de metadatos (incluyendo parámetros de primers y bases de datos de referencia).\n\nSe lee la tabla de parámetros (primer_data.csv) que contiene información clave para cada locus/primer:\n\nUmbrales de calidad (F_qual, R_qual).\nNombre de la base de datos de referencia.\nMáximo permitido para truncamiento (max_trim).\n\n\n\n\n\n\n\nSe verifica que la tabla de parámetros contenga todas las columnas necesarias.\nSe guarda la información de la sesión (sessionInfo.txt) para asegurar reproducibilidad y facilitar diagnóstico.\n\n\n\n\n\n\nSe identifican los archivos FASTQ correspondientes al locus/primer a procesar.\nSe construyen los nombres de muestra a partir del nombre de archivo, asegurando unicidad y pareo correcto entre archivos forward y reverse.\nSe verifica que no haya archivos vacíos o corruptos, eliminando estos antes de continuar.\n\n\n\n\n\n\nSe generan gráficos de calidad para las lecturas forward y reverse, permitiendo inspección visual y diagnóstico por parte del usuario.\nSe calcula el punto óptimo de truncamiento (truncLen) para cada dirección, usando la mediana de los ciclos donde la calidad cae por debajo del umbral definido.\nSe limita el truncamiento al máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas.\n\n\n\n\n\n\nSe calcula y grafica la distribución de longitudes de las lecturas crudas, útil para detectar problemas de secuenciación o inconsistencias en los datos.\n\n\n\n\n\n\nSe ejecuta el paso de filter and trim usando los parámetros calculados y definidos:\n\ntruncLen: recorte en los puntos óptimos de calidad.\nmaxEE: máximo de errores esperados por lectura.\nmaxN: no se permiten bases ambiguas.\ntruncQ: recorte en calidad mínima.\nrm.phix: eliminación de lecturas PhiX.\n\nSe valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\nSe reporta la retención global de lecturas y se advierte si es baja (&lt; 50%).\nSe identifican muestras con retención muy baja (&lt; 30%) para diagnóstico.\n\n\n\n\n\n\n\n\n\n\n\n\nAspecto\nExplicación\n\n\n\n\nQué es\nPreparación, validación y filtrado inicial de datos para dada2\n\n\nCómo se calcula\nLectura de parámetros, inspección de calidad, cálculo de truncLen y aplicación de filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp, sin archivos vacíos\n\n\nPor qué importa\nAsegura que solo datos de alta calidad y correctamente organizados pasen al análisis\n\n\nQué hacer\nRevisar gráficos de calidad, ajustar parámetros si la retención es baja, validar metadatos\n\n\n\n\n\n\n\n\nRevisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\nMantén la información de sesión y parámetros guardada para reproducibilidad y diagnóstico.\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+    "text": "La primera parte del pipeline dada2 prepara el entorno y los datos para el análisis de secuencias.\nEstos pasos aseguran reproducibilidad, organización y calidad antes de aplicar los filtros de calidad y trimming.\n\n\n\n\nSe activa el entorno de paquetes con renv si existe, garantizando que todas las dependencias estén controladas y sean reproducibles.\nSe cargan las librerías necesarias para el pipeline:\n\ndada2: procesamiento y denoising de secuencias.\ntidyverse: manipulación de datos y lectura de archivos.\nShortRead y seqinr: utilidades para manejo de archivos FASTQ y FASTA.\ndigest: generación de hashes para identificar secuencias únicas.\nhere y fs: manejo robusto de rutas y archivos.\nreadr: lectura y escritura eficiente de CSVs.\n\n\n\n\n\n\n\nSe detecta la raíz del proyecto y se fija el directorio de trabajo para asegurar rutas relativas correctas.\nSe definen rutas para:\n\nArchivos FASTQ sin procesar.\nCarpeta de salida para resultados y logs.\nCarpeta de metadatos (incluyendo parámetros de primers y bases de datos de referencia).\n\nSe lee la tabla de parámetros (primer_data.csv) que contiene información clave para cada locus/primer:\n\nUmbrales de calidad (F_qual, R_qual).\nNombre de la base de datos de referencia.\nMáximo permitido para truncamiento (max_trim).\n\n\n\n\n\n\n\nSe verifica que la tabla de parámetros contenga todas las columnas necesarias.\nSe guarda la información de la sesión (sessionInfo.txt) para asegurar reproducibilidad y facilitar diagnóstico.\n\n\n\n\n\n\nSe identifican los archivos FASTQ correspondientes al locus/primer a procesar.\nSe construyen los nombres de muestra a partir del nombre de archivo, asegurando unicidad y pareo correcto entre archivos forward y reverse.\nSe verifica que no haya archivos vacíos o corruptos, eliminando estos antes de continuar.\n\n\n\n\n\n\nSe generan gráficos de calidad para las lecturas forward y reverse, permitiendo inspección visual y diagnóstico por parte del usuario.\nSe calcula el punto óptimo de truncamiento (truncLen) para cada dirección, usando la mediana de los ciclos donde la calidad cae por debajo del umbral definido.\nSe limita el truncamiento al máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas.\n\n\n\n\n\n\nSe calcula y grafica la distribución de longitudes de las lecturas crudas, útil para detectar problemas de secuenciación o inconsistencias en los datos.\n\n\n\n\n\n\nSe ejecuta el paso de filter and trim usando los parámetros calculados y definidos:\n\ntruncLen: recorte en los puntos óptimos de calidad.\nmaxEE: máximo de errores esperados por lectura.\nmaxN: no se permiten bases ambiguas.\ntruncQ: recorte en calidad mínima.\nrm.phix: eliminación de lecturas PhiX.\n\nSe valida que los puntos de truncamiento sean razonables (no menores a 50 bp).\nSe reporta la retención global de lecturas y se advierte si es baja (&lt; 50%).\nSe identifican muestras con retención muy baja (&lt; 30%) para diagnóstico.\n\n\n\n\n\n\n\n\n\n\n\n\nAspecto\nExplicación\n\n\n\n\nQué es\nPreparación, validación y filtrado inicial de datos para dada2\n\n\nCómo se calcula\nLectura de parámetros, inspección de calidad, cálculo de truncLen y aplicación de filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp, sin archivos vacíos\n\n\nPor qué importa\nAsegura que solo datos de alta calidad y correctamente organizados pasen al análisis\n\n\nQué hacer\nRevisar gráficos de calidad, ajustar parámetros si la retención es baja, validar metadatos\n\n\n\n\n\n\n\n\nRevisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\nMantén la información de sesión y parámetros guardada para reproducibilidad y diagnóstico.\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\n\nLos gráficos de calidad antes del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
   },
   {
     "objectID": "2-dada2QAQC-Prep.html#configuración-del-entorno-reproducible",
@@ -389,14 +298,14 @@
     "href": "2-dada2QAQC-Prep.html#recomendaciones-para-el-análisis",
     "title": "Dada2 - Preparación y Filtrado Inicial",
     "section": "",
-    "text": "Revisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\nMantén la información de sesión y parámetros guardada para reproducibilidad y diagnóstico.\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\nMuestra a tus alumnos:\n\nLos gráficos de calidad antes del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+    "text": "Revisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.\nMantén la información de sesión y parámetros guardada para reproducibilidad y diagnóstico.\n\n\n\n\n\n\n\n\nPara el curso\n\n\n\n\nLos gráficos de calidad antes del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
   },
   {
     "objectID": "2-dada2QAQC.html",
     "href": "2-dada2QAQC.html",
     "title": "Dada2 - Introducción",
     "section": "",
-    "text": "Este script implementa un pipeline completo y reproducible para el análisis de datos de metabarcoding de ADN ambiental (eDNA) utilizando el paquete dada2 en R. El objetivo es transformar lecturas crudas de secuenciación de alto rendimiento en una tabla de variantes de secuencias amplificadas (ASVs) con asignación taxonómica.\n\n\n\n\n\n\n\nEstablece rutas de trabajo usando here() para independencia de la ubicación\nCarga las librerías necesarias (dada2, tidyverse, ShortRead, etc.)\nLee parámetros específicos por marcador molecular desde metadata/primer_data.csv\nGuarda información de sesión (sessionInfo()) para reproducibilidad\n\n\n\n\n\nLee archivos FASTQ pareados (R1 y R2) filtrados por marcador (for_dada2)\nGenera perfiles de calidad por posición/ciclo para cada muestra\nCalcula automáticamente puntos de truncamiento basados en:\n\nCalidad promedio en ventanas deslizantes (sliding-window)\nUmbrales de calidad específicos por marcador (F_qual, R_qual)\n\nVisualiza distribución de longitudes de lecturas crudas\n\n\n\n\n\nElimina lecturas con baja calidad (maxEE = 2)\nTrunca lecturas según los puntos calculados en el paso anterior\nRemueve secuencias con bases ambiguas (N) y contaminación PhiX\nGenera archivos FASTQ filtrados en subdirectorio filtered/\n\n\n\n\n\nIdentifica secuencias únicas en cada muestra\nReduce redundancia manteniendo información de abundancia\nOptimiza recursos computacionales para pasos posteriores\n\n\n\n\n\nAprende tasas de error específicas para lecturas Forward y Reverse\nUsa más de 100 millones de bases y hasta 25 iteraciones para convergencia\nGuarda gráficos de tasas de error observadas vs. esperadas\n\n\n\n\n\nAplica algoritmo de dada2 para corregir errores de secuenciación\nDistingue variantes biológicas reales de errores técnicos\nResuelve secuencias a resolución de nucleótido único\n\n\n\n\n\nEnsambla lecturas Forward y Reverse usando región de solapamiento\nRequiere mínimo 12 bp de overlap\nReconstruye amplicón completo\n\n\n\n\n\nCrea matriz de abundancias (muestras × ASVs)\nCada columna = secuencia única biológica real\n\n\n\n\n\nDetecta y remueve artefactos de PCR (secuencias quiméricas)\nMétodo “consensus” compara con ASVs parentales más abundantes\nReporta proporción de lecturas no quiméricas\n\n\n\n\n\nDefine rango aceptable: mediana ± desviación estándar\nGenera histogramas antes/después del filtro con líneas de referencia\nGuarda ASVs filtradas en archivos de log\n\n\n\n\n\nUsa base de datos específica por marcador (definida en primer_data.csv)\nAlgoritmo naive Bayesian classifier (RDP)\nPrueba cadena reverso-complementaria automáticamente\nGenera valores de bootstrap (confianza) por rango taxonómico\nCalcula % de secuencias no asignadas por nivel\n\n\n\n\n\nTabla con número de lecturas retenidas en cada paso:\n\nInput → Filtered → Denoised F/R → Merged → No-chimeras → Length filter\n\nPermite identificar dónde se pierden más lecturas\n\n\n\n\nCSV generados:\n\nASV_table.csv: tabla de abundancias en formato largo (Sample_name, Label, Sequence, nReads)\ntaxonomy_output.csv: asignación taxonómica por ASV (Kingdom → Species)\ntax_bootstrap.csv: valores de confianza por nivel taxonómico\nfiltered_out_asv.csv: ASVs removidas por filtro de longitud\n\nGráficos (PNG a 300 DPI):\n\nPerfiles de calidad Forward/Reverse\nDistribución de longitudes crudas\nDistribución de longitudes de ASVs (pre y post-filtrado)\nGráficos de tasas de error\n\nRData:\n\nphyloseq_inputs.RData: contiene objetos listos para importar en phyloseq:\n\notu_mat: matriz de abundancias (integer)\ntax_mat: matriz taxonómica\nsample_meta: metadatos de muestras\ntrack: tabla de seguimiento\nparams: parámetros usados en el análisis\n\n\n\n\n\n\n\n✅ Reproducible: rutas relativas, parámetros documentados, sessionInfo guardado\n✅ Flexible: procesa múltiples marcadores usando tabla de configuración ( ✅ Robusto: maneja archivos vacíos, valida inputs, protege contra errores\n✅ Trazable: guarda logs detallados y gráficos de QC en cada paso\n✅ Listo para análisis: outputs optimizados para phyloseq y análisis downstream\n\n\n\n\n\nAsegúrate de tener archivos FASTQ en for_dada2/\nCompleta metadata/primer_data.csv con parámetros de tu marcador\nCompleta metadata/metadata.csv con información de tus muestras\nAjusta i &lt;- 1 a la fila del marcador que quieres procesar\nEjecuta el script completo o por secciones\n\n¡El pipeline está diseñado para aprender haciendo! Cada sección está comentada para que entiendas qué hace y por qué."
+    "text": "Este script implementa un pipeline completo y reproducible para el análisis de datos de metabarcoding de ADN ambiental (eDNA) utilizando el paquete dada2 en R. El objetivo es transformar lecturas crudas de secuenciación de alto rendimiento en una tabla de variantes de secuencias amplificadas (ASVs) con asignación taxonómica.\n\n\n\n\n\n\n\nEstablece rutas de trabajo usando here() para independencia de la ubicación\nCarga las librerías necesarias (dada2, tidyverse, ShortRead, etc.)\nLee parámetros específicos por marcador molecular desde metadata/primer_data.csv\nGuarda información de sesión (sessionInfo()) para reproducibilidad\n\n\n\n\n\nLee archivos FASTQ pareados (R1 y R2) filtrados por marcador (for_dada2)\nGenera perfiles de calidad por posición/ciclo para cada muestra\nCalcula automáticamente puntos de truncamiento basados en:\n\nCalidad promedio en ventanas deslizantes (sliding-window)\nUmbrales de calidad específicos por marcador (F_qual, R_qual)\n\nVisualiza distribución de longitudes de lecturas crudas\n\n\n\n\n\nElimina lecturas con baja calidad (maxEE = 2)\nTrunca lecturas según los puntos calculados en el paso anterior\nRemueve secuencias con bases ambiguas (N) y contaminación PhiX\nGenera archivos FASTQ filtrados en subdirectorio filtered/\n\n\n\n\n\nIdentifica secuencias únicas en cada muestra\nReduce redundancia manteniendo información de abundancia\nOptimiza recursos computacionales para pasos posteriores\n\n\n\n\n\nAprende tasas de error específicas para lecturas Forward y Reverse\nUsa más de 100 millones de bases y hasta 25 iteraciones para convergencia\nGuarda gráficos de tasas de error observadas vs. esperadas\n\n\n\n\n\nAplica algoritmo de dada2 para corregir errores de secuenciación\nDistingue variantes biológicas reales de errores técnicos\nResuelve secuencias a resolución de nucleótido único\n\n\n\n\n\nEnsambla lecturas Forward y Reverse usando región de solapamiento\nRequiere mínimo 12 bp de overlap\nReconstruye amplicón completo\n\n\n\n\n\nCrea matriz de abundancias (muestras × ASVs)\nCada columna = secuencia única biológica real\n\n\n\n\n\nDetecta y remueve artefactos de PCR (secuencias quiméricas)\nMétodo “consensus” compara con ASVs parentales más abundantes\nReporta proporción de lecturas no quiméricas\n\n\n\n\n\nDefine rango aceptable: mediana ± desviación estándar\nGenera histogramas antes/después del filtro con líneas de referencia\nGuarda ASVs filtradas en archivos de log\n\n\n\n\n\nUsa base de datos específica por marcador (definida en primer_data.csv)\nAlgoritmo naive Bayesian classifier (RDP)\nPrueba cadena reverso-complementaria automáticamente\nGenera valores de bootstrap (confianza) por rango taxonómico\nCalcula % de secuencias no asignadas por nivel\n\n\n\n\n\nTabla con número de lecturas retenidas en cada paso:\n\nInput → Filtered → Denoised F/R → Merged → No-chimeras → Length filter\n\nPermite identificar dónde se pierden más lecturas\n\n\n\n\nCSV generados:\n\nASV_table.csv: tabla de abundancias en formato largo (Sample_name, Label, Sequence, nReads)\ntaxonomy_output.csv: asignación taxonómica por ASV (Kingdom → Species)\ntax_bootstrap.csv: valores de confianza por nivel taxonómico\nfiltered_out_asv.csv: ASVs removidas por filtro de longitud\n\nGráficos (PNG a 300 DPI):\n\nPerfiles de calidad Forward/Reverse\nDistribución de longitudes crudas\nDistribución de longitudes de ASVs (pre y post-filtrado)\nGráficos de tasas de error\n\nRData:\n\nphyloseq_inputs.RData: contiene objetos listos para importar en phyloseq:\n\notu_mat: matriz de abundancias (integer)\ntax_mat: matriz taxonómica\nsample_meta: metadatos de muestras\ntrack: tabla de seguimiento\nparams: parámetros usados en el análisis\n\n\n\n\n\n\n\n*Reproducible: rutas relativas, parámetros documentados, sessionInfo guardado\nFlexible: procesa múltiples marcadores usando tabla de configuración ( ✅ Robusto: maneja archivos vacíos, valida inputs, protege contra errores\nTrazable: guarda logs detallados y gráficos de QC en cada paso\nListo para análisis**: outputs optimizados para phyloseq y análisis downstream\n\n\n\n\n\nAsegúrate de tener archivos FASTQ en for_dada2/\nCompleta metadata/primer_data.csv con parámetros de tu marcador\nCompleta metadata/metadata.csv con información de tus muestras\nAjusta i &lt;- 1 a la fila del marcador que quieres procesar\nEjecuta el script completo o por secciones"
   },
   {
     "objectID": "2-dada2QAQC.html#qué-hace-este-pipeline",
@@ -417,14 +326,14 @@
     "href": "2-dada2QAQC.html#ventajas-de-este-pipeline",
     "title": "Dada2 - Introducción",
     "section": "",
-    "text": "✅ Reproducible: rutas relativas, parámetros documentados, sessionInfo guardado\n✅ Flexible: procesa múltiples marcadores usando tabla de configuración ( ✅ Robusto: maneja archivos vacíos, valida inputs, protege contra errores\n✅ Trazable: guarda logs detallados y gráficos de QC en cada paso\n✅ Listo para análisis: outputs optimizados para phyloseq y análisis downstream"
+    "text": "*Reproducible: rutas relativas, parámetros documentados, sessionInfo guardado\nFlexible: procesa múltiples marcadores usando tabla de configuración ( ✅ Robusto: maneja archivos vacíos, valida inputs, protege contra errores\nTrazable: guarda logs detallados y gráficos de QC en cada paso\nListo para análisis**: outputs optimizados para phyloseq y análisis downstream"
   },
   {
     "objectID": "2-dada2QAQC.html#para-empezar",
     "href": "2-dada2QAQC.html#para-empezar",
     "title": "Dada2 - Introducción",
     "section": "",
-    "text": "Asegúrate de tener archivos FASTQ en for_dada2/\nCompleta metadata/primer_data.csv con parámetros de tu marcador\nCompleta metadata/metadata.csv con información de tus muestras\nAjusta i &lt;- 1 a la fila del marcador que quieres procesar\nEjecuta el script completo o por secciones\n\n¡El pipeline está diseñado para aprender haciendo! Cada sección está comentada para que entiendas qué hace y por qué."
+    "text": "Asegúrate de tener archivos FASTQ en for_dada2/\nCompleta metadata/primer_data.csv con parámetros de tu marcador\nCompleta metadata/metadata.csv con información de tus muestras\nAjusta i &lt;- 1 a la fila del marcador que quieres procesar\nEjecuta el script completo o por secciones"
   },
   {
     "objectID": "Referencias.html",
@@ -432,13 +341,6 @@
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
     "text": "Beng, K. C., & Corlett, R. T. (2020). Applications of environmental DNA (eDNA) in ecology and conservation: opportunities, challenges and prospects. Biodiversity and Conservation, 29(7), 2089–2121. https://doi.org/10.1007/s10531-020-01980-0\n\nBowers, H. A., Pochon, X., von Ammon, U., Gemmell, N., Stanton, J.-A. L., Jeunen, G.-J., Sherman, C. D. H., & Zaiko, A. (n.d.). Towards the Optimization of eDNA/eRNA Sampling Technologies for Marine Biosecurity Surveillance. https://doi.org/10.3390/w13081113\n\nCallahan, B. J., McMurdie, P. J., Rosen, M. J., Han, A. W., Johnson, A. J. A., & Holmes, S. P. (2016). DADA2: High-resolution sample inference from Illumina amplicon data. Nature Methods, 13(7), 581–583. https://doi.org/10.1038/nmeth.3869\n\nDickie, I. A., Boyer, S., Buckley, H. L., Duncan, R. P., Gardner, P. P., Hogg, I. D., Holdaway, R. J., Lear, G., Makiola, A., Morales, S. E., Powell, J. R., & Weaver, L. (2018). Towards robust and repeatable sampling methods in eDNA-based studies. Molecular Ecology Resources, 18(5), 940–952. https://doi.org/10.1111/1755-0998.12907\n\nGold, Z., Wall, A. R., Schweizer, T. M., Pentcheff, N. D., Curd, E. E., Barber, P. H., Meyer, R. S., Wayne, R., Stolzenbach, K., Prickett, K., Luedy, J., & Wetzer, R. (2022). A manager’s guide to using eDNA metabarcoding in marine ecosystems. PeerJ, 10(e14071), e14071. https://doi.org/10.7717/peerj.14071\n\nHakimzadeh, A., Abdala Asbun, A., Albanese, D., Bernard, M., Buchner, D., Callahan, B., Caporaso, J. G., Curd, E., Djemiel, C., Brandström Durling, M., Elbrecht, V., Gold, Z., Gweon, H. S., Hajibabaei, M., Hildebrand, F., Mikryukov, V., Normandeau, E., Özkurt, E., M Palmer, J., … Anslan, S. (2024). A pile of pipelines: An overview of the bioinformatics software for metabarcoding data analyses. Molecular Ecology Resources, 24(5), e13847. https://doi.org/10.1111/1755-0998.13847\n\nKumar, G., Eble, J. E., & Gaither, M. R. (2020). A practical guide to sample preservation and pre-PCR processing of aquatic environmental DNA. Molecular Ecology Resources, 20(1), 29–39. https://doi.org/10.1111/1755-0998.13107\n\nLamy, T., Pitz, K. J., Chavez, F. P., Yorke, C. E., & Miller, R. J. (2021). Environmental DNA reveals the fine-grained and hierarchical spatial structure of kelp forest fish communities. Scientific Reports, 11(1), 14439. https://doi.org/10.1038/s41598-021-93859-5\n\nMacher, T.-H., Arle, J., Beermann, A. J., Frank, L., Hupało, K., Koschorreck, J., Schütz, R., & Leese, F. (2024). Is it worth the extra mile? Comparing environmental DNA and RNA metabarcoding for vertebrate and invertebrate biodiversity surveys in a lowland stream. PeerJ, 12, e18016. https://doi.org/10.7717/peerj.18016\n\nMarchesi, J. R., & Ravel, J. (2015). The vocabulary of microbiome research: a proposal. Microbiome, 3(1), 31. https://doi.org/10.1186/s40168-015-0094-5\n\nMorey, K. C., Myler, E., Hanner, R., & Tetreault, G. (2024). Taxonomic blind spots: A limitation of environmental DNA metabarcoding‐based detection for Canadian freshwater fishes. Environmental DNA (Hoboken, N.J.), 6(6), e70054. https://doi.org/10.1002/edn3.70054\n\nPatin, N. V., & Goodwin, K. D. (2022). Capturing marine microbiomes and environmental DNA: A field sampling guide. Frontiers in Microbiology, 13, 1026596. https://doi.org/10.3389/fmicb.2022.1026596\n\nPawlowski, J., Bruce, K., Panksep, K., Aguirre, F. I., Amalfitano, S., Apothéloz-Perret-Gentil, L., Baussant, T., Bouchez, A., Carugati, L., Cermakova, K., Cordier, T., Corinaldesi, C., Costa, F. O., Danovaro, R., Dell’Anno, A., Duarte, S., Eisendle, U., Ferrari, B. J. D., Frontalini, F., … Fazi, S. (2022). Environmental DNA metabarcoding for benthic monitoring: A review of sediment sampling and DNA extraction methods. The Science of the Total Environment, 818(151783), 151783. https://doi.org/10.1016/j.scitotenv.2021.151783\n\nPawlowski, Jan, Apothéloz-Perret-Gentil, L., & Altermatt, F. (2020). Environmental DNA: What’s behind the term? Clarifying the terminology and recommendations for its future use in biomonitoring. Molecular Ecology, 29(22), 4258–4264. https://doi.org/10.1111/mec.15643\n\nRodriguez-Ezpeleta, N., Morissette, O., Bean, C. W., Manu, S., Banerjee, P., Lacoursière-Roussel, A., Beng, K. C., Alter, S. E., Roger, F., Holman, L. E., Stewart, K. A., Monaghan, M. T., Mauvisseau, Q., Mirimin, L., Wangensteen, O. S., Antognazza, C. M., Helyar, S. J., de Boer, H., Monchamp, M.-E., … Deiner, K. (2021). Trade-offs between reducing complex terminology and producing accurate interpretations from environmental DNA: Comment on “Environmental DNA: What’s behind the term?” by Pawlowski et al., (2020). Molecular Ecology, 30(19), 4601–4605. https://doi.org/10.1111/mec.15942\n\nRuppert, K. M., Kline, R. J., & Rahman, M. S. (2019). Past, present, and future perspectives of environmental DNA (eDNA) metabarcoding: A systematic review in methods, monitoring, and applications of global eDNA. Global Ecology and Conservation, 17, e00547. https://doi.org/10.1016/j.gecco.2019.e00547\n\nWeigand, H., Beermann, A. J., Čiampor, F., Costa, F. O., Csabai, Z., Duarte, S., Geiger, M. F., Grabowski, M., Rimet, F., Rulik, B., Strand, M., Szucsich, N., Weigand, A. M., Willassen, E., Wyler, S. A., Bouchez, A., Borja, A., Čiamporová-Zaťovičová, Z., Ferreira, S., … Ekrem, T. (2019). DNA barcode reference libraries for the monitoring of aquatic biota in Europe: Gap-analysis and recommendations for future work. The Science of the Total Environment, 678, 499–524. https://doi.org/10.1016/j.scitotenv.2019.04.247\n\nWilliams, J., Pettorelli, N., Dowell, R., Macdonald, K., Meyer, C., Steyaert, M., Tweedt, S., & Ransome, E. (2024). SimpleMetaPipeline: Breaking the bioinformatics bottleneck in metabarcoding. Methods in Ecology and Evolution, 15(11), 1949–1957. https://doi.org/10.1111/2041-210x.14434\n\nZainal Abidin, D. H., Mohd Nor, S. A., Lavoué, S., A Rahim, M., & Mohammed Akib, N. A. (2022). Assessing a megadiverse but poorly known community of fishes in a tropical mangrove estuary through environmental DNA (eDNA) metabarcoding. Scientific Reports, 12(1), 16346. https://doi.org/10.1038/s41598-022-19954-3\n\nZarcero, J., Antich, A., Rius, M., Wangensteen, O. S., & Turon, X. (2024). A new sampling device for metabarcoding surveillance of port communities and detection of non-indigenous species. iScience, 27(1), 108588. https://doi.org/10.1016/j.isci.2023.108588"
-  },
-  {
-    "objectID": "final_project.html",
-    "href": "final_project.html",
-    "title": "Proyecto final",
-    "section": "",
-    "text": "El proyecto integra el pipeline de principio a fin sobre un dataset pequeño o datos propios.\nentregables 1. plan del proyecto (1 página) con pregunta, datos y criterios de éxito. 2. presentación corta (5–7 min) el 31 de oct. 3. reporte reproducible (.qmd → .html) con código y figuras.\ncriterios - claridad de la pregunta y justificación. - trazabilidad del análisis (código limpio, semillas, sesión). - interpretación ecológica y límites del método."
   },
   {
     "objectID": "index.html",
@@ -497,13 +399,6 @@
     "text": "Instructores participantes/Institución\nDra. Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI\nDr. Fausto Valenzuela Quiñonez, Investigador Titular B CIBNOR"
   },
   {
-    "objectID": "index.html#temario-abreviado-del-curso-por-día",
-    "href": "index.html#temario-abreviado-del-curso-por-día",
-    "title": "Metabarcoding en comunidades de eucariontes",
-    "section": "Temario abreviado del curso por día",
-    "text": "Temario abreviado del curso por día\nDurante cinco días intensivos, el curso combinará sesiones teórico-prácticas proporcionando a las y los participantes una formación completa sobre el uso del ADN ambiental (eDNA) y el metabarcoding en el estudio de comunidades eucarióticas en ecosistemas marinos.\nLunes:\nEl curso inicia con la presentación del equipo docente y de los participantes, creando un espacio de intercambio y colaboración entre personas con intereses afines. Posteriormente, se ofrece una introducción general al ADN ambiental, el metabarcoding y las técnicas de detección específica mediante qPCR y ddPCR. Se discutirán los fundamentos conceptuales, ventajas y limitaciones de cada enfoque, así como sus aplicaciones actuales en ecología y conservación. Por la tarde, se abordarán los principios del diseño experimental y del diseño de proyectos con eDNA, considerando aspectos como el tipo de muestra, el número de réplicas, el marcador genético y los objetivos del estudio. Luego, se presentarán las técnicas de muestreo en campo para recolección de eDNA y las mejores prácticas para evitar contaminación. La jornada concluirá con una revisión del flujo de trabajo en laboratorio: extracción de ADN, selección de primers, amplificación por PCR y preparación de librerías para secuenciación masiva.\nMartes:\nEl segundo día se enfoca en los aspectos computacionales del análisis bioinformático. Se inicia con una introducción a los entornos de trabajo Linux, Unix y R, necesarios para manejar archivos de secuenciación y ejecutar pipelines reproducibles. Más adelante, se guiará a las y los participantes en la conexión a un servidor remoto, donde trabajarán durante el curso, y se revisarán aspectos clave de la organización de carpetas, la carga de archivos y el uso básico de la terminal. En la sesión práctica de la tarde se trabajará con datos crudos en formato FASTQ, reconociendo su estructura y visualizando la calidad de las lecturas. Luego se introducirá el control de calidad, incluyendo el filtrado y trimming de secuencias con DADA2, y finalmente se ejecutará el paso de aprendizaje del error, fundamental para la posterior inferencia precisa de variantes.\nMiércoles:\nDurante este día se abordará el núcleo del pipeline de DADA2. Por la mañana se cubrirá la inferencia de ASVs (Amplicon Sequence Variants) mediante métodos de denoising, que permiten distinguir secuencias reales de ruido técnico. Se discutirá también el concepto de clustering y su diferencia con los métodos basados en ASVs. A continuación, se trabajará con la unión de lecturas forward y reverse (paired-end), evaluando la eficiencia del ensamblaje. En la tarde se aplicará la remoción de secuencias quiméricas generadas durante la PCR, y posteriormente se ejecutará la asignación taxonómica, donde se vinculan las secuencias con su posible identidad biológica usando bases de datos como SILVA o PR2.\nJueves:\nEste día está dedicado al procesamiento final y al análisis ecológico de los datos. Se iniciará con la generación de la tabla de abundancia de ASVs por muestra (ASV table) y la tabla taxonómica (tax table), integrando toda la información en objetos de R listos para el análisis. Luego se presentarán herramientas como phyloseq, vegan y ggplot2, útiles para realizar análisis ecológicos y visualización de datos metabarcoding. Por la tarde se explorarán los patrones de diversidad α y β, y se aprenderá a representarlos gráficamente mediante barplots, rarefacción, análisis multivariados (PCA, nMDS, etc.). Finalmente, se discutirá cómo diferentes barcodes (COI, 18S, 12S) pueden influir en los resultados de un estudio, comparando sus alcances, sesgos y utilidad para distintos grupos taxonómicos.\nViernes:\nEl último día comienza con el uso de controles negativos y el filtrado de contaminantes con el paquete decontam, una herramienta crucial para asegurar la confiabilidad de los datos. Después, se presentarán métodos alternativos para la generación de OTUs mediante agrupamiento por similitud con VSEARCH o el paquete clustur en R, permitiendo comparar este enfoque con el uso de ASVs. En la sesión de la tarde se abordarán temas auxiliares, según el interés del grupo, como la construcción de bases de datos personalizadas, diseño de primers in silico o estrategias de documentación reproducible. El curso cierra con una sesión de presentación de proyectos en la que los participantes compartirán ideas desarrolladas durante la semana, recibiendo retroalimentación del equipo docente y sus compañeros, y consolidando así su aprendizaje de manera aplicada y colaborativa."
-  },
-  {
     "objectID": "practicas.html",
     "href": "practicas.html",
     "title": "Prácticas",
@@ -523,41 +418,6 @@
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
     "text": "fecha\ntema\ndiapositivas\ncódigo\n\n\n\n\n27 oct\neDNA/metabarcoding + QA/QC\nPDF\nrepo estudiantes\n\n\n28 oct\nDADA2 parte 1\nPDF\n—\n\n\n29 oct\nDADA2 parte 2\nPDF\n—\n\n\n30 oct\nphyloseq y diversidad\nPDF\n—\n\n\n31 oct\ncomunicar resultados con Quarto\nPDF\n—"
-  },
-  {
-    "objectID": "slides/intro.html#dra.-tania-valdivia-carrillo",
-    "href": "slides/intro.html#dra.-tania-valdivia-carrillo",
-    "title": "Metabarcoding en comunidades de eucariontes",
-    "section": "Dra. Tania Valdivia Carrillo",
-    "text": "Dra. Tania Valdivia Carrillo"
-  },
-  {
-    "objectID": "slides/intro.html#dr.-fausto-valenzuela-quiñonez",
-    "href": "slides/intro.html#dr.-fausto-valenzuela-quiñonez",
-    "title": "Metabarcoding en comunidades de eucariontes",
-    "section": "Dr. Fausto Valenzuela Quiñonez",
-    "text": "Dr. Fausto Valenzuela Quiñonez"
-  },
-  {
-    "objectID": "slides/intro.html#por-qué-edna",
-    "href": "slides/intro.html#por-qué-edna",
-    "title": "Metabarcoding en comunidades de eucariontes",
-    "section": "¿por qué eDNA?",
-    "text": "¿por qué eDNA?\n\nno invasivo, sensible, trazable\ncomplementa métodos visuales/acústicos"
-  },
-  {
-    "objectID": "slides/intro.html#flujo-general",
-    "href": "slides/intro.html#flujo-general",
-    "title": "Metabarcoding en comunidades de eucariontes",
-    "section": "flujo general",
-    "text": "flujo general\n\nmuestreo y preservación\nextracción y library prep\nsecuenciación\nDADA2 → ASVs\ntaxonomía, curación y análisis de comunidad"
-  },
-  {
-    "objectID": "slides/intro.html#qaqc-dmiqe",
-    "href": "slides/intro.html#qaqc-dmiqe",
-    "title": "Metabarcoding en comunidades de eucariontes",
-    "section": "QA/QC (dMIQE)",
-    "text": "QA/QC (dMIQE)\n\nblancos de campo y laboratorio\nmock communities\nréplicas técnicas/biológicas"
   },
   {
     "objectID": "syllabus.html",
@@ -634,69 +494,20 @@
     "href": "syllabus.html#comunicación",
     "title": "Metabarcoding en comunidades de eucariontes",
     "section": "Comunicación",
-    "text": "Comunicación\n\nDudas: correo (tania.valdiviac@gmail.com) o “issues” en GitHub del repositorio asistencia.\n\nDudas técnicas extensas: bloque de asesoría al cierre de cada práctica.\n\n\n\nActualizado a las r format(Sys.time(), \"%H:%M\") del r format(Sys.Date(), \"%d %b %Y\")"
+    "text": "Comunicación\n\nDudas: correo (tania.valdiviac@gmail.com) o “issues” en GitHub del repositorio asistencia.\n\nDudas técnicas extensas: bloque de asesoría al cierre de cada práctica."
   },
   {
-    "objectID": "1-qaqc-cutadapt.html#verificar-conteo-de-reportes",
-    "href": "1-qaqc-cutadapt.html#verificar-conteo-de-reportes",
-    "title": "QAQC y recorte de primers con Cutadapt",
+    "objectID": "2-dada2QAQC-Prep.html#resumen-ejecutiv",
+    "href": "2-dada2QAQC-Prep.html#resumen-ejecutiv",
+    "title": "Dada2 - Preparación y Filtrado Inicial",
     "section": "",
-    "text": "ls -1 fastqc_reports/*_fastqc.html | wc -l"
+    "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPreparación, validación y filtrado inicial de datos para dada2\n\n\nCómo se calcula\nLectura de parámetros, inspección de calidad, cálculo de truncLen y aplicación de filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp, sin archivos vacíos\n\n\nPor qué importa\nAsegura que solo datos de alta calidad y correctamente organizados pasen al análisis\n\n\nQué hacer\nRevisar gráficos de calidad, ajustar parámetros si la retención es baja, validar metadatos"
   },
   {
-    "objectID": "1-qaqc-cutadapt.html#crear-dir",
-    "href": "1-qaqc-cutadapt.html#crear-dir",
-    "title": "QAQC y recorte de primers con Cutadapt",
+    "objectID": "2-dada2QAQC-Filter.html#resumen",
+    "href": "2-dada2QAQC-Filter.html#resumen",
+    "title": "Dada2 - Filter and Trim",
     "section": "",
-    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#crear-directorios",
-    "href": "1-qaqc-cutadapt.html#crear-directorios",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fas",
-    "href": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fas",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multi_qc\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fastqc",
-    "href": "1-qaqc-cutadapt.html#crear-directorios-y-correr-fastqc",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "cd /metabarcoding-code/\nmkdir -p fastqc_reports\nmkdir -p multiqc_reports\n\nfastqc -q -t 4 -o fastqc_reports raw_fastqs/*.fastq"
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-a-ls-computador-local-scp",
-    "href": "1-qaqc-cutadapt.html#transferir-el-html-a-ls-computador-local-scp",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-scp",
-    "href": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-scp",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-usando-scp",
-    "href": "1-qaqc-cutadapt.html#transferir-el-html-a-la-computadora-local-usando-scp",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "",
-    "text": "Desde tu terminal local:\n# Indica la ubicación de descarga en tu computadora\nscp CMetaXX@serverIP:/home/CMetaXX/metabarcoding-code/multiqc_reports/multiqc_report.html ~/Downloads/\n\nopen ~/Downloads/multiqc_report.html\nTransferir toda la carpeta (si quieres conservar los .zip FastQC):\nscp -r user@server:/ruta/proyecto/final_data/fastqc ~/fastqc_local/\nopen ~/fastqc_local/multiqc_report.html\nTips de revisión en MultiQC:\n- Per base sequence quality: define zonas de truncado (Q≥25–30).\n- Adapter/Overrepresented/Primer content: confirma necesidad de recorte.\n- Length distribution: valida rango del amplicón esperado."
-  },
-  {
-    "objectID": "1-qaqc-cutadapt.html#da-permisos",
-    "href": "1-qaqc-cutadapt.html#da-permisos",
-    "title": "QAQC y recorte de primers con Cutadapt",
-    "section": "Da permisos",
-    "text": "Da permisos\n\nEn el servidor:\n\nchmod +x scripts/cutadapt.sh"
+    "text": "Aspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos"
   }
 ]

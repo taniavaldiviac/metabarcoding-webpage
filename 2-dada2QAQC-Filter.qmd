@@ -84,7 +84,7 @@ Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las 
 
 ---
 
-## Resumen ejecutivo
+## Resumen
 
 | Aspecto | Explicación |
 |---------|-------------|
@@ -115,8 +115,6 @@ Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las 
 
 :::{.callout-tip}
 ## Para el curso
-
-Muestra a tus alumnos:
 
 1. Los gráficos de calidad antes y después del filtrado.
 2. La tabla de filtrado y retención por muestra.
