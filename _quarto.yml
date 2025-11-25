@@ -8,7 +8,7 @@ project:
     - "!**/*.py"      # ← ignora scripts Python
 
 website:
-  repo-url: https://github.com/USUARIO/OTRO_REPO
+  repo-url: https://github.com/taniavaldiviac/metabarcoding-webpage
   title: "Metabarcoding de comunidades de eucariontes"
   page-footer:
     left: "© 2025 Todos los derechos reservados"
@@ -30,7 +30,7 @@ website:
         text: Referencias
     right:
       - icon: github
-        href: https://github.com/taniavaldiviac/metabarcoding2025
+        href: https://github.com/taniavaldiviac/metabarcoding-code
 
 format:
   html:
