@@ -30,7 +30,7 @@ website:
         text: Referencias
     right:
       - icon: github
-        href: https://github.com/taniavaldiviac/metabarcoding-code
+        href: https://github.com/taniavaldiviac/metabarcoding-webpage
 
 format:
   html:
