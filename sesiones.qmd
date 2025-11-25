@@ -15,7 +15,7 @@ execute:
 
 |  fecha | tema                                    | diapositivas | código                                                                       |
 |------------:|----------------------|--------------------------|-------------|
-| 24 nov | eDNA/metabarcoding + QA/QC              | [PDF](slides/Dia1.pdf)            | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding2025-code) |
+| 24 nov | Introducción y teoría              | [PDF](slides/Dia1.pdf)            | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding2025-code) |
 | 25 nov | Conexión al servidor y QAQC             |      |     |
 | 26 nov | DADA2                                   |      |     |
 | 27 nov | *phyloseq* y diversidad en comunidades  |      |     |
