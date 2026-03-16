@@ -249,7 +249,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 
 **Preparación del entorno:**
 
-- Activación de `renv` y carga de librerías: `dada2`, `tidyverse`, `ShortRead`, `here`
+- Carga de librerías: `dada2`, `tidyverse`, `ShortRead`, `here`
 - Definición de rutas con `here()` para reproducibilidad
 - Lectura de parámetros desde `primer_data.csv` (umbrales de calidad, base de datos)
 - Verificación y selección de archivos FASTQ por locus/primer
