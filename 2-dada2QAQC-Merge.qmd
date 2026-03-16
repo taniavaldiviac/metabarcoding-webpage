@@ -1,0 +1,149 @@
+---
+title: "Dada2 - Unión de lecturas paired-end"
+#subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+format:
+  html:
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    highlight-style: github
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+---
+
+# Introducción a la unión de lecturas paired-end en dada2
+
+En secuenciación **paired-end**, cada fragmento de ADN se lee desde ambos extremos: una lectura **forward** (R1) y una lectura **reverse** (R2). Para obtener la secuencia completa del amplicón, estas dos lecturas deben ensamblarse aprovechando la región de **solapamiento** que comparten en el centro.
+
+dada2 realiza esta unión con la función `mergePairs()`, pero solo después de que cada lectura fue procesada individualmente por el modelo de error y el denoising (`dada()`). Esto garantiza que solo secuencias biológicamente coherentes sean ensambladas.
+
+---
+
+## ¿Por qué es importante unir las lecturas?
+
+- Las lecturas individuales (R1 o R2) solo cubren una parte del amplicón.
+- Al unirlas se obtiene la secuencia completa → mayor información taxonómica.
+- El solapamiento actúa como **verificación de calidad**: si las lecturas no coinciden en la región compartida, el par se descarta.
+- Reduce errores: las bases en la zona de solapamiento se confirman por ambas lecturas.
+
+---
+
+## ¿Qué hace el código en este paso?
+
+### 1. Ensamblaje con `mergePairs()`
+
+```{r eval=FALSE}
+mergers <- mergePairs(
+  dadaFs, filtFs,
+  dadaRs, filtRs,
+  minOverlap = 12,
+  maxMismatch = 0,
+  verbose = TRUE
+)
+```
+
+- **`dadaFs` / `dadaRs`**: objetos dada de las lecturas forward y reverse ya denoisadas.
+- **`filtFs` / `filtRs`**: archivos FASTQ filtrados correspondientes.
+- **`minOverlap`**: mínimo de bases que deben solapar (recomendado ≥ 12 bp).
+- **`maxMismatch`**: desajustes permitidos en la zona de solapamiento (recomendado 0).
+
+### 2. Verificación de la eficiencia del merge
+
+```{r eval=FALSE}
+# Revisar el resultado del merge para una muestra
+head(mergers[[1]])
+```
+
+Cada fila representa una secuencia ensamblada única. Las columnas más importantes son:
+
+| Columna | Descripción |
+|---------|-------------|
+| `abundance` | Número de lecturas con esa secuencia |
+| `accept` | `TRUE` si el par fue ensamblado exitosamente |
+| `nmatch` | Bases coincidentes en la zona de solapamiento |
+| `nmismatch` | Desajustes encontrados |
+
+### 3. Construcción de la tabla de secuencias
+
+```{r eval=FALSE}
+seqtab <- makeSequenceTable(mergers)
+dim(seqtab)           # filas = muestras, columnas = secuencias únicas
+table(nchar(getSequences(seqtab)))  # distribución de longitudes
+```
+
+---
+
+## Parámetros clave
+
+| Parámetro | Descripción | Valor típico |
+|-----------|-------------|-------------|
+| `minOverlap` | Mínimo de bases que deben solapar F y R | 12 bp |
+| `maxMismatch` | Desajustes permitidos en el solapamiento | 0 |
+| `justConcatenate` | Une sin solapamiento (usar solo si no hay overlap) | FALSE |
+| `returnRejects` | Incluye pares rechazados en el output | FALSE |
+
+---
+
+## ¿Por qué puede fallar el merge?
+
+El porcentaje de lecturas unidas exitosamente varía según la calidad de los datos. Los problemas más comunes son:
+
+| Problema | Causa probable | Solución |
+|----------|---------------|----------|
+| Solapamiento insuficiente | Amplicón muy largo o recorte excesivo en `truncLen` | Reducir `truncLen` o aumentar `minOverlap` con precaución |
+| Baja calidad en los extremos | Lecturas R2 de mala calidad | Ajustar `truncLen` para R2 |
+| Poca recuperación en muestras específicas | Baja calidad o contaminación de la muestra | Revisar QC de esa muestra |
+| `maxMismatch > 0` requerido | Variabilidad real en la zona de solapamiento | Aumentar a 1 con precaución |
+
+---
+
+## ¿Por qué es importante este paso?
+
+- Es el paso que genera la secuencia **completa** del amplicón, esencial para la asignación taxonómica.
+- La zona de solapamiento actúa como un **filtro de coherencia** entre lecturas.
+- Un mal merge produce secuencias quiméricas artificiales que contaminan los resultados.
+- La distribución de longitudes resultante permite detectar amplicones inesperados.
+
+---
+
+## Recomendaciones
+
+- Verifica la distribución de longitudes con `table(nchar(getSequences(seqtab)))`. Deberías ver una distribución centrada alrededor de la longitud esperada del amplicón.
+- Si el porcentaje de merge es bajo (<70%) en muchas muestras, revisa el recorte aplicado en `filterAndTrim`: los extremos deben solapar al menos `minOverlap` bases.
+- En amplicones cortos (< 200 bp total), es normal tener un solapamiento amplio, lo que mejora la calidad.
+
+---
+
+## Resumen
+
+| Aspecto | Explicación |
+|---------|-------------|
+| **Qué es** | Ensamblaje de lecturas R1 y R2 usando su región de solapamiento |
+| **Función** | `mergePairs()` |
+| **Parámetro clave** | `minOverlap` (mínimo 12 bp) |
+| **Valores normales** | >70–80% de lecturas unidas exitosamente |
+| **Por qué importa** | Produce la secuencia completa del amplicón para asignación taxonómica |
+
+---
+
+## Ejercicios prácticos
+
+1. **Revisa el porcentaje de merge** por muestra: ¿hay muestras con < 50% de lecturas unidas? ¿Qué tienen en común?
+2. **Inspecciona la distribución de longitudes** de `seqtab`: ¿coincide con el tamaño esperado de tu amplicón?
+3. **Experimenta con `minOverlap`**: ¿qué ocurre si lo reduces a 6? ¿Aumenta el porcentaje de merge? ¿A qué costo?
+
+---
+
+:::{.callout-note}
+## Recuerda
+El merge solo funciona correctamente si los puntos de truncamiento en `filterAndTrim` preservan suficiente solapamiento entre R1 y R2. Un recorte demasiado agresivo en el paso anterior puede causar un merge fallido aquí.
+:::
+
+:::{.callout-tip}
+## Para el curso — revisar en clase
+1. Porcentaje de lecturas unidas por muestra.
+2. Distribución de longitudes en `seqtab`.
+3. Casos con baja eficiencia de merge y diagnóstico.
+:::

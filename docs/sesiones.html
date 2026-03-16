@@ -101,9 +101,34 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="./1-qaqc-cutadapt.html" rel="" target="">
  <span class="dropdown-text">QAQC y Cutadapt</span></a>
   </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./2-dada2QAQC.html" rel="" target="">
- <span class="dropdown-text">DADA2</span></a>
+ <span class="dropdown-text">DADA2 — Pipeline completo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Prep.html" rel="" target="">
+ <span class="dropdown-text">DADA2 — Preparación</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Filter.html" rel="" target="">
+ <span class="dropdown-text">DADA2 — Filter and Trim</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Error.html" rel="" target="">
+ <span class="dropdown-text">DADA2 — Tasas de error</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Merge.html" rel="" target="">
+ <span class="dropdown-text">DADA2 — Unión paired-end</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Chimeras.html" rel="" target="">
+ <span class="dropdown-text">DADA2 — Quimeras</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./2-dada2QAQC-Taxonomy.html" rel="" target="">
+ <span class="dropdown-text">DADA2 — Asignación taxonómica</span></a>
   </li>  
     </ul>
   </li>
@@ -672,14 +697,16 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Objetivo:</strong> Ensamblar las lecturas forward y reverse para obtener la secuencia completa del amplicón.</p>
+<p><strong>Objetivo:</strong> Ensamblar las lecturas forward y reverse usando su región de solapamiento para obtener la secuencia completa del amplicón.</p>
 </div>
 </div>
 <ul>
 <li>¿Qué es la secuenciación paired-end y por qué se unen las lecturas?</li>
-<li>Función <code>mergePairs()</code>: parámetros <code>minOverlap</code> y <code>maxMismatch</code></li>
-<li>Verificación de eficiencia: porcentaje de lecturas unidas por muestra</li>
-<li>Problemas comunes: solapamiento insuficiente, baja calidad en extremos, baja recuperación</li>
+<li>La zona de solapamiento como verificación de coherencia entre lecturas</li>
+<li>Función <code>mergePairs()</code>: parámetros <code>minOverlap</code> (mín. 12 bp) y <code>maxMismatch</code></li>
+<li>Verificación de eficiencia: porcentaje de lecturas unidas por muestra (esperado &gt;70%)</li>
+<li>Construcción de la tabla de secuencias con <code>makeSequenceTable()</code></li>
+<li>Problemas comunes: solapamiento insuficiente, baja calidad en extremos R2, truncación excesiva</li>
 </ul>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -691,7 +718,8 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Práctica:</strong> <a href="./2-dada2QAQC.html">DADA2 — Introducción y pipeline completo</a></p>
+<p><strong>Práctica paso a paso:</strong><br>
+→ <a href="./2-dada2QAQC-Merge.html">DADA2 — Unión de lecturas paired-end</a></p>
 </div>
 </div>
 <hr>
@@ -713,11 +741,12 @@ Nota
 </div>
 </div>
 <ul>
-<li>¿Cómo se forman las quimeras durante la PCR por recombinación de fragmentos?</li>
-<li>Función <code>removeBimeraDenovo()</code>: métodos <code>consensus</code> y <code>pooled</code></li>
-<li>Evaluación de resultados: proporción eliminada y su interpretación</li>
-<li>Señales de alerta: alta proporción de quimeras como indicador de calidad deficiente</li>
-<li>Mención breve a herramientas externas: UCHIME, VSEARCH</li>
+<li>¿Cómo se forman las quimeras por recombinación de fragmentos en la PCR?</li>
+<li>Por qué inflaman artificialmente la riqueza de especies</li>
+<li>Función <code>removeBimeraDenovo()</code>: métodos <code>consensus</code> (recomendado) y <code>pooled</code></li>
+<li>Evaluación de resultados: proporción de lecturas retenidas (esperado &gt;85–95%)</li>
+<li>Diferencia entre % de secuencias únicas quiméricas vs % de lecturas quiméricas</li>
+<li>Señales de alerta y su relación con el diseño de PCR</li>
 </ul>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -729,7 +758,8 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Práctica:</strong> <a href="./2-dada2QAQC.html">DADA2 — Introducción y pipeline completo</a></p>
+<p><strong>Práctica paso a paso:</strong><br>
+→ <a href="./2-dada2QAQC-Chimeras.html">DADA2 — Remoción de quimeras</a></p>
 </div>
 </div>
 <hr>
@@ -747,16 +777,16 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Objetivo:</strong> Asignar identidad taxonómica a los ASVs mediante bases de datos de referencia, obteniendo la tabla de taxonomía lista para el análisis ecológico.</p>
+<p><strong>Objetivo:</strong> Convertir los ASVs en información biológica interpretable, asignando identidad taxonómica mediante bases de datos de referencia.</p>
 </div>
 </div>
 <ul>
-<li>Función <code>assignTaxonomy()</code>: clasificador bayesiano naïve de RDP</li>
+<li>El clasificador bayesiano naïve (RDP): cómo funciona y por qué es robusto</li>
+<li>Función <code>assignTaxonomy()</code> y el parámetro <code>minBoot</code> (confianza mínima, recomendado ≥80)</li>
 <li>Función <code>addSpecies()</code>: asignación a especie por coincidencia exacta</li>
-<li>Bases de datos compatibles: <strong>SILVA</strong>, <strong>PR2</strong>, <strong>MIDORI</strong>, <strong>BOLD</strong>, <strong>RDP</strong></li>
-<li>Parámetro <code>minBoot</code>: confianza mínima para la asignación (recomendado ≥80)</li>
-<li>Asignación hasta especie vs niveles taxonómicos superiores</li>
-<li>Limpieza: secuencias no asignadas y asignaciones con baja confianza</li>
+<li>Bases de datos según marcador: <strong>SILVA</strong>, <strong>PR2</strong>, <strong>MIDORI</strong>, <strong>BOLD</strong>, <strong>RDP</strong></li>
+<li>Interpretación del porcentaje de asignación por nivel taxonómico</li>
+<li>Causas de baja asignación y cómo diagnosticarlas</li>
 <li>Introducción a bases de datos personalizadas (se retoma en Día 5)</li>
 </ul>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
@@ -769,7 +799,8 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Práctica:</strong> <a href="./2-dada2QAQC.html">DADA2 — Introducción y pipeline completo</a></p>
+<p><strong>Práctica paso a paso:</strong><br>
+→ <a href="./2-dada2QAQC-Taxonomy.html">DADA2 — Asignación taxonómica</a></p>
 </div>
 </div>
 <hr>

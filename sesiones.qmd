@@ -298,16 +298,19 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **11:20 – 13:00** *(continuación del pipeline)*
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Ensamblar las lecturas forward y reverse para obtener la secuencia completa del amplicón.
+**Objetivo:** Ensamblar las lecturas forward y reverse usando su región de solapamiento para obtener la secuencia completa del amplicón.
 :::
 
 - ¿Qué es la secuenciación paired-end y por qué se unen las lecturas?
-- Función `mergePairs()`: parámetros `minOverlap` y `maxMismatch`
-- Verificación de eficiencia: porcentaje de lecturas unidas por muestra
-- Problemas comunes: solapamiento insuficiente, baja calidad en extremos, baja recuperación
+- La zona de solapamiento como verificación de coherencia entre lecturas
+- Función `mergePairs()`: parámetros `minOverlap` (mín. 12 bp) y `maxMismatch`
+- Verificación de eficiencia: porcentaje de lecturas unidas por muestra (esperado >70%)
+- Construcción de la tabla de secuencias con `makeSequenceTable()`
+- Problemas comunes: solapamiento insuficiente, baja calidad en extremos R2, truncación excesiva
 
 ::: {.callout-tip icon="false"}
-**Práctica:** [DADA2 — Introducción y pipeline completo](2-dada2QAQC.qmd)
+**Práctica paso a paso:**\
+→ [DADA2 — Unión de lecturas paired-end](2-dada2QAQC-Merge.qmd)
 :::
 
 ---
@@ -320,14 +323,16 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **Objetivo:** Detectar y eliminar secuencias quiméricas generadas durante la PCR para evitar falsos positivos en los análisis de biodiversidad.
 :::
 
-- ¿Cómo se forman las quimeras durante la PCR por recombinación de fragmentos?
-- Función `removeBimeraDenovo()`: métodos `consensus` y `pooled`
-- Evaluación de resultados: proporción eliminada y su interpretación
-- Señales de alerta: alta proporción de quimeras como indicador de calidad deficiente
-- Mención breve a herramientas externas: UCHIME, VSEARCH
+- ¿Cómo se forman las quimeras por recombinación de fragmentos en la PCR?
+- Por qué inflaman artificialmente la riqueza de especies
+- Función `removeBimeraDenovo()`: métodos `consensus` (recomendado) y `pooled`
+- Evaluación de resultados: proporción de lecturas retenidas (esperado >85–95%)
+- Diferencia entre % de secuencias únicas quiméricas vs % de lecturas quiméricas
+- Señales de alerta y su relación con el diseño de PCR
 
 ::: {.callout-tip icon="false"}
-**Práctica:** [DADA2 — Introducción y pipeline completo](2-dada2QAQC.qmd)
+**Práctica paso a paso:**\
+→ [DADA2 — Remoción de quimeras](2-dada2QAQC-Chimeras.qmd)
 :::
 
 ---
@@ -337,19 +342,20 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **15:10 – 17:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Asignar identidad taxonómica a los ASVs mediante bases de datos de referencia, obteniendo la tabla de taxonomía lista para el análisis ecológico.
+**Objetivo:** Convertir los ASVs en información biológica interpretable, asignando identidad taxonómica mediante bases de datos de referencia.
 :::
 
-- Función `assignTaxonomy()`: clasificador bayesiano naïve de RDP
+- El clasificador bayesiano naïve (RDP): cómo funciona y por qué es robusto
+- Función `assignTaxonomy()` y el parámetro `minBoot` (confianza mínima, recomendado ≥80)
 - Función `addSpecies()`: asignación a especie por coincidencia exacta
-- Bases de datos compatibles: **SILVA**, **PR2**, **MIDORI**, **BOLD**, **RDP**
-- Parámetro `minBoot`: confianza mínima para la asignación (recomendado ≥80)
-- Asignación hasta especie vs niveles taxonómicos superiores
-- Limpieza: secuencias no asignadas y asignaciones con baja confianza
+- Bases de datos según marcador: **SILVA**, **PR2**, **MIDORI**, **BOLD**, **RDP**
+- Interpretación del porcentaje de asignación por nivel taxonómico
+- Causas de baja asignación y cómo diagnosticarlas
 - Introducción a bases de datos personalizadas (se retoma en Día 5)
 
 ::: {.callout-tip icon="false"}
-**Práctica:** [DADA2 — Introducción y pipeline completo](2-dada2QAQC.qmd)
+**Práctica paso a paso:**\
+→ [DADA2 — Asignación taxonómica](2-dada2QAQC-Taxonomy.qmd)
 :::
 
 ---
