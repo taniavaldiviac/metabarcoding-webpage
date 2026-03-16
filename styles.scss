@@ -97,6 +97,26 @@ pre.sourceCode {
 code { color: #1a8c7a; font-size: 0.9em; }
 pre code { color: #d4e8ef; }
 
+/* Resaltado de sintaxis dentro de bloques de código oscuro */
+pre.sourceCode span {
+  &.st { color: #ffcb6b; }   /* strings, rutas de archivos/carpetas → amarillo */
+  &.fu { color: #82aaff; }   /* funciones y comandos → azul claro */
+  &.bu { color: #89ddff; }   /* built-ins (cd, ls, echo) → cian */
+  &.ex { color: #89ddff; }   /* extensiones → cian */
+  &.co { color: #546e7a; }   /* comentarios → gris azulado */
+  &.in { color: #c3e88d; }   /* información / inline → verde claro */
+  &.ss { color: #c3e88d; }   /* special strings → verde claro */
+  &.sc { color: #f78c6c; }   /* special chars → naranja */
+  &.cn { color: #c792ea; }   /* constantes → lila */
+  &.cf { color: #c792ea; }   /* control flow → lila */
+  &.at { color: #ffcb6b; }   /* atributos → amarillo */
+  &.an { color: #546e7a; }   /* anotaciones → gris */
+  &.kw { color: #c792ea; }   /* keywords → lila */
+  &.dt { color: #f07178; }   /* data types → rojo suave */
+  &.op { color: #89ddff; }   /* operadores → cian */
+  &.va { color: #f07178; }   /* variables → rojo suave */
+}
+
 /* TOC lateral */
 .sidebar nav[role="doc-toc"] {
   border-left: 3px solid $secondary;
