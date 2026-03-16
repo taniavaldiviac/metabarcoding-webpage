@@ -4,28 +4,56 @@
     "href": "0-Conexion-clonacion.html",
     "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "",
-    "text": "Abre la terminal en tu computadora e ingresa el siguiente comando (reemplaza usuario y IP por los datos que te proporcionen):\nssh usuario@IP\nLuego, cuando se te pida, escribe tu contraseña y presiona Enter.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter.\nUna vez conectado, ya puedes seguir con los pasos siguientes directamente en el servidor."
+    "text": "Antes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
   },
   {
-    "objectID": "0-Conexion-clonacion.html#conéctate-al-servidor-desde-tu-computadora",
-    "href": "0-Conexion-clonacion.html#conéctate-al-servidor-desde-tu-computadora",
+    "objectID": "0-Conexion-clonacion.html#conéctate-a-la-vpn",
+    "href": "0-Conexion-clonacion.html#conéctate-a-la-vpn",
     "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "",
-    "text": "Abre la terminal en tu computadora e ingresa el siguiente comando (reemplaza usuario y IP por los datos que te proporcionen):\nssh usuario@IP\nLuego, cuando se te pida, escribe tu contraseña y presiona Enter.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter.\nUna vez conectado, ya puedes seguir con los pasos siguientes directamente en el servidor."
+    "text": "Antes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
   },
   {
-    "objectID": "0-Conexion-clonacion.html#pasos-para-reproducir-el-análisis",
-    "href": "0-Conexion-clonacion.html#pasos-para-reproducir-el-análisis",
+    "objectID": "0-Conexion-clonacion.html#conéctate-al-servidor-por-ssh",
+    "href": "0-Conexion-clonacion.html#conéctate-al-servidor-por-ssh",
     "title": "Conexión al servidor y clonación de repositorio Github",
-    "section": "Pasos para reproducir el análisis",
-    "text": "Pasos para reproducir el análisis\n\n1. Activa el entorno conda\n\n\n¿Qué es un entorno (environment) en conda?\nUn entorno (o environment) en conda es un espacio aislado donde puedes instalar versiones específicas de Python, R y otros paquetes, sin afectar el resto del sistema ni otros proyectos. Esto ayuda a evitar conflictos entre dependencias y facilita la reproducibilidad.\nEsto te asegura que todos los paquetes y programas que uses estarán dentro de ese entorno.\nconda activate r-bio\n\n\nVerifica qué paquetes hay en el entorno\nPara ver la lista de paquetes instalados en el entorno r-bio, ejecuta:\nconda list\nEsto mostrará todos los paquetes y sus versiones dentro del entorno activo.\n\n\n3. Clona tu repositorio\ngit clone https://github.com/taniavaldiviac/metabarcoding-code\ncd metabarcoding-code"
+    "section": "2. Conéctate al servidor por SSH",
+    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter."
+  },
+  {
+    "objectID": "0-Conexion-clonacion.html#clona-el-repositorio-del-curso",
+    "href": "0-Conexion-clonacion.html#clona-el-repositorio-del-curso",
+    "title": "Conexión al servidor y clonación de repositorio Github",
+    "section": "3. Clona el repositorio del curso",
+    "text": "3. Clona el repositorio del curso\ngit clone https://github.com/taniavaldiviac/metabarcoding-code.git ~/metabarcoding-code\ncd ~/metabarcoding-code"
+  },
+  {
+    "objectID": "0-Conexion-clonacion.html#copia-los-archivos-fastq",
+    "href": "0-Conexion-clonacion.html#copia-los-archivos-fastq",
+    "title": "Conexión al servidor y clonación de repositorio Github",
+    "section": "4. Copia los archivos FASTQ",
+    "text": "4. Copia los archivos FASTQ\nLos archivos de secuenciación están en el directorio del instructor:\ncp /home/tvaldivia/metabarcoding-code/raw_fastqs/* ~/metabarcoding-code/raw_fastqs/"
+  },
+  {
+    "objectID": "0-Conexion-clonacion.html#verifica-los-paquetes-de-r",
+    "href": "0-Conexion-clonacion.html#verifica-los-paquetes-de-r",
+    "title": "Conexión al servidor y clonación de repositorio Github",
+    "section": "5. Verifica los paquetes de R",
+    "text": "5. Verifica los paquetes de R\nLos paquetes necesarios ya están instalados en el servidor. Tu cuenta está configurada para encontrarlos automáticamente. Verifica abriendo R:\nR\nDentro de R:\nlibrary(dada2)\nlibrary(phyloseq)\nlibrary(tidyverse)\nq()\nSi no hay errores, está todo listo."
+  },
+  {
+    "objectID": "0-Conexion-clonacion.html#ambiente-conda-para-herramientas-de-línea-de-comandos",
+    "href": "0-Conexion-clonacion.html#ambiente-conda-para-herramientas-de-línea-de-comandos",
+    "title": "Conexión al servidor y clonación de repositorio Github",
+    "section": "6. Ambiente conda para herramientas de línea de comandos",
+    "text": "6. Ambiente conda para herramientas de línea de comandos\nPara los pasos de control de calidad y remoción de adaptadores, activa el ambiente metabarcoding:\nconda activate metabarcoding\nEste ambiente contiene:\n\n\n\nHerramienta\nUso\n\n\n\n\ncutadapt\nRemoción de adaptadores y primers\n\n\nfastqc\nControl de calidad de lecturas\n\n\nmultiqc\nReporte agregado de calidad\n\n\n\nPara desactivarlo cuando termines:\nconda deactivate"
   },
   {
     "objectID": "0-Conexion-clonacion.html#qué-contiene-este-repositorio",
     "href": "0-Conexion-clonacion.html#qué-contiene-este-repositorio",
     "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "¿Qué contiene este repositorio?",
-    "text": "¿Qué contiene este repositorio?\nEl repositorio curso-metabarcoding está diseñado para enseñar y reproducir análisis de metabarcoding, integrando scripts, reportes y recursos para el procesamiento de datos de metabarcoding en DADA2.\n\nEstructura principal\n\nscripts/: Scripts en bash, R y Quarto (.qmd) para automatizar pasos del análisis, como recorte de secuencias, análisis de calidad y generación de reportes.\nraw_fastqs/: Carpeta donde se almacenan los archivos de secuenciación originales (FASTQ).\nfor_dada2/: Carpeta de salida para archivos procesados, listos para análisis con DADA2.\ncutadapt_reports/: Reportes generados por el preprocesamiento con cutadapt.\nOtros archivos y carpetas: Pueden incluir datos de ejemplo, archivos de configuración y documentación.\n\n\n\n¿Para qué sirve?\n\nPermite reproducir todo el flujo de trabajo de análisis de datos de metabarcoding, desde la preparación de datos hasta la generación de reportes finales.\nIncluye instrucciones para instalar dependencias, activar entornos, clonar el repositorio y ejecutar los análisis paso a paso.\nFacilita la colaboración y la enseñanza, asegurando que todos trabajen con los mismos scripts y versiones de paquetes.\n\n\n\n4. Abre R en el entorno conda\nR\n\n\n5. Instala los paquetes CRAN y Bioconductor desde R\ninstall.packages(c(\n  \"RColorBrewer\", \"ape\", \"colorspace\", \"data.table\", \"dplyr\", \"filesstrings\",\n  \"ggforce\", \"ggplot2\", \"ggsci\", \"here\", \"insect\", \"kableExtra\", \"pander\",\n  \"pandoc\", \"pheatmap\", \"purrr\", \"readr\", \"rentrez\", \"scales\", \"seqinr\",\n  \"sqldf\", \"strex\", \"stringr\", \"svglite\", \"taxize\", \"tibble\", \"tidyr\",\n  \"tidyverse\", \"vegan\", \"viridis\"\n))\nif (!requireNamespace(\"BiocManager\", quietly = TRUE)) install.packages(\"BiocManager\")\nBiocManager::install(c(\"ShortRead\", \"phyloseq\", \"dada2\", \"Biostrings\"))\n\n\n6. Renderiza el reporte Quarto\nquarto render scripts/Bienvenidos.qmd\n\nRecuerda\nUsa la carpeta metabarcoding-code como tu proyecto.\nActiva ambiente r-bio con conda  Sigue estos pasos para reproducir el análisis y reporte en cualquier servidor."
+    "text": "¿Qué contiene este repositorio?\n\nscripts/: Scripts numerados en orden de ejecución (bash, R, Quarto).\nraw_fastqs/: Archivos FASTQ originales.\nfor_dada2/: Archivos procesados listos para DADA2.\ncutadapt_reports/: Reportes del preprocesamiento con Cutadapt.\nfinal_data/: Resultados del análisis (tablas, figuras, RData).\nmetadata/: Archivos de configuración (primers, metadatos).\n\n\n\n\n\n\n\n\nRecuerda\n\n\n\n\nUsa siempre ~/metabarcoding-code como tu directorio de proyecto.\nLos paquetes de R están disponibles automáticamente — no necesitas instalar nada.\nActiva conda activate metabarcoding solo para los pasos de QC y Cutadapt."
   },
   {
     "objectID": "1-qaqc-cutadapt.html",
