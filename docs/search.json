@@ -410,7 +410,7 @@
     "href": "sesiones.html",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
-    "text": "fecha\ntema\ndiapositivas\ncódigo\n\n\n\n\n24 nov\nIntroducción y teoría\nPDF\nrepo estudiantes\n\n\n25 nov\nConexión al servidor y QAQC\n\n\n\n\n26 nov\nDADA2\n\n\n\n\n27 nov\nphyloseq y diversidad en comunidades\n\n\n\n\n28 nov\nTemas auxiliares"
+    "text": "sesión\ntema\ndiapositivas\ncódigo\n\n\n\n\nDía 1\nIntroducción y teoría\nPDF\nrepo estudiantes\n\n\nDía 2\nConexión al servidor y QAQC\n\n\n\n\nDía 3\nDADA2\n\n\n\n\nDía 4\nphyloseq y diversidad en comunidades\n\n\n\n\nDía 5\nTemas auxiliares"
   },
   {
     "objectID": "syllabus.html",
@@ -452,7 +452,7 @@
     "href": "syllabus.html#horarios-y-sede",
     "title": "Metabarcoding en comunidades de eucariontes",
     "section": "Horarios y sede",
-    "text": "Horarios y sede\nFechas: 24–28 de noviembre de 2025\nHorario: 9:00–15:00 (almuerzo 12:00–13:30)\nLugar: Sala de cómputo, edificio de posgrado, ICMyL (UNAM)\nFormato: Mañanas teóricas (charlas y discusión). Tardes prácticas en computadora (R/DADA2)."
+    "text": "Horarios y sede\nDuración: 5 días (lunes a viernes)\nHorario: 9:00–15:00 (almuerzo 12:00–13:30)\nLugar: A confirmar según sede\nFormato: Mañanas teóricas (charlas y discusión). Tardes prácticas en computadora (R/DADA2)."
   },
   {
     "objectID": "syllabus.html#requisitos-previos",

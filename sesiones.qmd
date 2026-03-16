@@ -1,6 +1,6 @@
 ---
 title: "Metabarcoding de comunidades de eucariontes"
-subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+#subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
 author: "Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)"
 format:
   html:
@@ -13,10 +13,10 @@ execute:
   message: false
 ---
 
-| fecha  | tema                                    | diapositivas           | código                                                                       |
+| sesión | tema                                    | diapositivas           | código                                                                       |
 |-------:|:----------------------------------------|:-----------------------|:-----------------------------------------------------------------------------|
-| 24 nov | Introducción y teoría                   | [PDF](slides/Dia1.pdf) | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding-code)     |
-| 25 nov | Conexión al servidor y QAQC             |                        |                                                                              |
-| 26 nov | DADA2                                   |                        |                                                                              |
-| 27 nov | *phyloseq* y diversidad en comunidades  |                        |                                                                              |
-| 28 nov | Temas auxiliares                        |                        |                                                                              |
+| Día 1  | Introducción y teoría                   | [PDF](slides/Dia1.pdf) | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding-code)     |
+| Día 2  | Conexión al servidor y QAQC             |                        |                                                                              |
+| Día 3  | DADA2                                   |                        |                                                                              |
+| Día 4  | *phyloseq* y diversidad en comunidades  |                        |                                                                              |
+| Día 5  | Temas auxiliares                        |                        |                                                                              |

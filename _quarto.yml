@@ -11,21 +11,24 @@ website:
   repo-url: https://github.com/taniavaldiviac/metabarcoding-webpage
   title: "Metabarcoding de comunidades de eucariontes"
   page-footer:
-    left: "© 2025 Todos los derechos reservados"
-    #right: "<a href='legal.html'>Aviso legal</a>"
+    left: "© Dra. Tania Valdivia Carrillo — Todos los derechos reservados"
     border: true
   navbar:
     background: primary
+    foreground: light
     left:
       - href: index.qmd
         text: Sobre el curso
       - href: sesiones.qmd
         text: Sesiones
-      - text: Curso2025
+      - text: Materiales
         menu:
           - href: 0-Conexion-clonacion.qmd
+            text: "Conexión al servidor"
           - href: 1-qaqc-cutadapt.qmd
+            text: "QAQC y Cutadapt"
           - href: 2-dada2QAQC.qmd
+            text: "DADA2"
       - href: Referencias.qmd
         text: Referencias
     right:
@@ -34,14 +37,12 @@ website:
 
 format:
   html:
-    theme: cosmo
-   # css: styles.scss
+    theme: [flatly, styles.scss]
     toc: true
     number-sections: false
     lang: es
     code-fold: show
     df-print: paged
-    #code-tools: true
     page-layout: full
 
 execute:
