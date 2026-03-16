@@ -86,19 +86,41 @@ tbody tr:nth-child(even) { background: white; }
 tbody td { padding: 0.55rem 0.9rem; }
 tbody tr:hover { background: #cde8f2; transition: background 0.15s; }
 
-/* Código */
+/* Código — tema Eclipse (igual que RStudio Eclipse) */
 pre.sourceCode {
-  background: #eef1f3;
+  background: #ffffff;
   border-radius: 10px;
   border: 1px solid #d0d7de;
   padding: 1rem 1.25rem;
   font-size: 0.88rem;
 }
 code { color: $primary; font-size: 0.9em; }
-pre code { color: #24292f; }
+pre code { color: #000000; }
 
-/* Sin colores de sintaxis personalizados: texto oscuro sobre fondo claro, legible */
-pre.sourceCode span { color: #24292f; }
+/* Sintaxis Eclipse */
+pre.sourceCode span {
+  color: #000000;                          /* texto base */
+  &.kw { color: #7f0055; font-weight: bold; }  /* keywords → magenta oscuro */
+  &.cf { color: #7f0055; font-weight: bold; }  /* control flow → magenta oscuro */
+  &.dt { color: #7f0055; font-weight: bold; }  /* data types → magenta oscuro */
+  &.st { color: #2a00ff; }                     /* strings → azul */
+  &.vs { color: #2a00ff; }                     /* verbatim strings → azul */
+  &.co { color: #3f7f5f; font-style: italic; } /* comentarios → verde */
+  &.an { color: #3f7f5f; font-style: italic; } /* anotaciones → verde */
+  &.do { color: #3f7f5f; font-style: italic; } /* doc comments → verde */
+  &.dv { color: #0000c0; }                     /* números → azul oscuro */
+  &.bn { color: #0000c0; }                     /* base N → azul oscuro */
+  &.fl { color: #0000c0; }                     /* floats → azul oscuro */
+  &.fu { color: #000000; }                     /* funciones → negro */
+  &.bu { color: #000000; }                     /* built-ins → negro */
+  &.op { color: #000000; }                     /* operadores → negro */
+  &.sc { color: #2a00ff; }                     /* special chars → azul */
+  &.ss { color: #000000; }                     /* special strings → negro */
+  &.at { color: #7f0055; }                     /* atributos → magenta */
+  &.va { color: #000000; }                     /* variables → negro */
+  &.in { color: #000000; }                     /* inline → negro */
+  &.pp { color: #7f0055; }                     /* preprocesador → magenta */
+}
 
 /* TOC lateral */
 .sidebar nav[role="doc-toc"] {
