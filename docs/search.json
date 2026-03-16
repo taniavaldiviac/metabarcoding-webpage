@@ -338,56 +338,56 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
     "text": "Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo. Sus aplicaciones potenciales incluyen análisis de la calidad del agua, evaluación de la biodiversidad de suelos, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado."
   },
   {
     "objectID": "index.html#introducción",
     "href": "index.html#introducción",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
     "text": "Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo. Sus aplicaciones potenciales incluyen análisis de la calidad del agua, evaluación de la biodiversidad de suelos, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado."
   },
   {
     "objectID": "index.html#descripción-del-curso",
     "href": "index.html#descripción-del-curso",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Descripción del curso",
     "text": "Descripción del curso\nEl curso “Metabarcoding de comunidades de eucariontes” está diseñado para introducir a estudiantes de posgrado, investigadores y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad mediante técnicas basadas en ADN ambiental (eDNA). A lo largo de cinco días intensivos, los participantes adquirirán conocimientos teóricos y habilidades prácticas para implementar proyectos de metabarcoding, desde el diseño experimental y la recolección de muestras, hasta el procesamiento bioinformático y el análisis ecológico de datos. El curso se centrará en el uso de la herramienta DADA2 para la inferencia de variantes de secuencia (ASVs), control de calidad, remoción de errores y asignación taxonómica. También se incluirán sesiones sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación. Se fomentará un ambiente colaborativo y participativo, con sesiones prácticas guiadas que permitirán a los asistentes aplicar lo aprendido a proyectos reales. El curso culmina con la presentación de proyectos diseñados por los participantes, promoviendo la integración de los conceptos y herramientas adquiridos."
   },
   {
     "objectID": "index.html#a-quién-va-dirigido",
     "href": "index.html#a-quién-va-dirigido",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "A quién va dirigido",
     "text": "A quién va dirigido\nEste taller está dirigido principalmente a estudiantes de posgrado, investigadores y técnicos con conocimientos previos en ecología, biodiversidad o biología de comunidades que quieran aprender nuevas herramientas moleculares y bioinformáticas para estudiar la biodiversidad y a los investigadores en otras áreas de la bioinformática que quieran aprender métodos genéticos para la evaluación de la biodiversidad y otras aplicaciones ecológicas. En general, es adecuado para todo investigador que quiera unirse a la creciente comunidad internacional de usuarios del metabarcoding. En este taller se tratarán principalmente técnicas y software útiles para el metabarcoding de eucariontes."
   },
   {
     "objectID": "index.html#visión",
     "href": "index.html#visión",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Visión",
     "text": "Visión\nContribuir a la formación continua e interdisciplinaria, capaz de aplicar de manera crítica y efectiva herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad en ecosistemas marinos con la técnica de metabarcoding. Buscamos empoderar a investigadores, estudiantes y técnicos con los conocimientos y habilidades necesarias para incorporar el ADN ambiental y el metabarcoding en sus proyectos de investigación, evaluación ambiental y conservación biológica. Aspiramos a que los participantes no solo dominen los aspectos técnicos del procesamiento y análisis de datos de eDNA, sino que también comprendan el potencial transformador de estas metodologías para generar conocimiento útil, reproducible y de alto impacto en la gestión de la biodiversidad. Promovemos una visión integradora, donde la ciencia molecular se pone al servicio de la ecología, la conservación y la toma de decisiones basada en evidencia."
   },
   {
     "objectID": "index.html#misión",
     "href": "index.html#misión",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Misión",
     "text": "Misión\nEl curso tiene como misión capacitar a investigadores, estudiantes y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. A través de una combinación de teoría y práctica, buscamos proporcionar conocimientos sólidos sobre el metabarcoding, desde la recolección y procesamiento de muestras hasta el análisis e interpretación de datos con enfoques bioinformáticos. Nuestro objetivo es empoderar a los participantes con habilidades técnicas y analíticas que les permitan diseñar e implementar estudios basados en ADN ambiental, optimizando la detección de especies y la evaluación de comunidades biológicas. Fomentamos la adopción de metodologías estandarizadas y reproducibles que faciliten la generación de datos confiables y comparables a nivel global. A través de este curso, promovemos la formación de una comunidad interdisciplinaria comprometida con la aplicación de la genética y la bioinformática en la conservación y monitoreo de la biodiversidad marina, impulsando el uso de tecnologías innovadoras para la toma de decisiones informadas en investigación y gestión ambiental."
   },
   {
     "objectID": "index.html#objetivo",
     "href": "index.html#objetivo",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Objetivo",
     "text": "Objetivo\nEl objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding y qPCR para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2. Este curso busca proporcionar las habilidades necesarias para:\n\nComprender los fundamentos teóricos del metabarcoding aplicado a muestras ambientales en estudios ecológicos.\nAplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.\nImplementar pipelines bioinformáticos para el procesamiento y análisis de secuencias, con énfasis en control de calidad, asignación taxonómica y análisis de diversidad.\nInterpretar resultados ecológicos y generar visualizaciones efectivas para estudios de biodiversidad.\nDiseñar estudios de metabarcoding adaptados a distintas preguntas ecológicas y de conservación.\n\nAl finalizar el curso, los participantes estarán preparados para integrar el metabarcoding en sus proyectos de investigación y contribuir al desarrollo de estrategias de monitoreo de biodiversidad en ecosistemas marinos."
   },
   {
     "objectID": "index.html#instructores-participantesinstitución",
     "href": "index.html#instructores-participantesinstitución",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Instructores participantes/Institución",
     "text": "Instructores participantes/Institución\nDra. Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI\nDr. Fausto Valenzuela Quiñonez, Investigador Titular B CIBNOR"
   },
@@ -415,77 +415,77 @@
   {
     "objectID": "syllabus.html",
     "href": "syllabus.html",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
     "text": "El curso busca formar una nueva generación de investigadores y profesionales capaces de aplicar herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. Este taller proporcionará las bases teóricas y prácticas necesarias para implementar el metabarcoding como una técnica robusta en estudios ecológicos, de conservación y de manejo ambiental. Aspiramos a crear una comunidad de especialistas que puedan integrar el ADN ambiental como una herramienta de monitoreo en ecosistemas marinos, contribuyendo al conocimiento de la biodiversidad y la toma de decisiones basadas en ciencia."
   },
   {
     "objectID": "syllabus.html#descripción-del-curso",
     "href": "syllabus.html#descripción-del-curso",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
     "text": "El curso busca formar una nueva generación de investigadores y profesionales capaces de aplicar herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. Este taller proporcionará las bases teóricas y prácticas necesarias para implementar el metabarcoding como una técnica robusta en estudios ecológicos, de conservación y de manejo ambiental. Aspiramos a crear una comunidad de especialistas que puedan integrar el ADN ambiental como una herramienta de monitoreo en ecosistemas marinos, contribuyendo al conocimiento de la biodiversidad y la toma de decisiones basadas en ciencia."
   },
   {
     "objectID": "syllabus.html#misión",
     "href": "syllabus.html#misión",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Misión",
     "text": "Misión\nCapacitar a investigadores, estudiantes y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio de la biodiversidad. A través de una combinación de teoría y práctica, buscamos proporcionar conocimientos sólidos sobre el metabarcoding y qPCR, desde la recolección y procesamiento de muestras hasta el análisis e interpretación de datos con enfoques bioinformáticos.\nNuestro objetivo es empoderar a los participantes con habilidades técnicas y analíticas que les permitan diseñar e implementar estudios basados en ADN ambiental, optimizando la detección de especies y la evaluación de comunidades biológicas. Fomentamos la adopción de metodologías estandarizadas y reproducibles que faciliten la generación de datos confiables y comparables a nivel global.\nA través de este curso, promovemos la formación de una comunidad interdisciplinaria comprometida con la aplicación de la genética y la bioinformática en la conservación y monitoreo de la biodiversidad, impulsando el uso de tecnologías innovadoras para la toma de decisiones informadas en investigación y gestión ambiental."
   },
   {
     "objectID": "syllabus.html#objetivo",
     "href": "syllabus.html#objetivo",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Objetivo",
     "text": "Objetivo\nEl objetivo de este curso es capacitar a los participantes en el uso de metabarcoding para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2.\nEste curso busca proporcionar las habilidades necesarias para:\n✔ Comprender los fundamentos teóricos del metabarcoding, qPCR y ADN ambiental en estudios ecológicos.\n✔ Aplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.\n✔ Implementar pipelines bioinformáticos para el procesamiento y análisis de secuencias, con énfasis en control de calidad, asignación taxonómica y análisis de diversidad.\n✔ Interpretar resultados ecológicos y generar visualizaciones efectivas para estudios de biodiversidad.\n✔ Diseñar estudios de metabarcoding adaptados a distintas preguntas ecológicas y de conservación.\nAl finalizar el curso, los participantes estarán preparados para integrar el metabarcoding en sus proyectos de investigación y contribuir al desarrollo de estrategias de monitoreo de biodiversidad en ecosistemas marinos."
   },
   {
     "objectID": "syllabus.html#equipo-docente",
     "href": "syllabus.html#equipo-docente",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Equipo docente",
     "text": "Equipo docente\nDra. Tania Valdivia Carrillo — Investigadora postdoctoral CIBNOR CONAHCYT (tania.valdiviac@gmail.com)\nDr. Fausto Valenzuela Quiñonez — Investigador Titular B CIBNOR"
   },
   {
     "objectID": "syllabus.html#horarios-y-sede",
     "href": "syllabus.html#horarios-y-sede",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Horarios y sede",
     "text": "Horarios y sede\nDuración: 5 días (lunes a viernes)\nHorario: 9:00–15:00 (almuerzo 12:00–13:30)\nLugar: A confirmar según sede\nFormato: Mañanas teóricas (charlas y discusión). Tardes prácticas en computadora (R/DADA2)."
   },
   {
     "objectID": "syllabus.html#requisitos-previos",
     "href": "syllabus.html#requisitos-previos",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Requisitos previos",
     "text": "Requisitos previos\n\nConocimientos básicos de biología molecular.\n\nManejo elemental de Unix, R y RStudio (objetos, scripts, paquetes).\n\nLaptop con permisos para instalar software.\n\nAntes del día 1: instalar R (≥4.3), RStudio, y crear cuenta en GitHub."
   },
   {
     "objectID": "syllabus.html#conducta-en-el-aula",
     "href": "syllabus.html#conducta-en-el-aula",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Conducta en el aula",
     "text": "Conducta en el aula\nAmbiente inclusivo y respetuoso. No se toleran expresiones que excluyan o intimiden. Se espera lenguaje inclusivo, escucha activa, crítica constructiva y colaboración."
   },
   {
     "objectID": "syllabus.html#acceso-y-adaptaciones",
     "href": "syllabus.html#acceso-y-adaptaciones",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Acceso y adaptaciones",
     "text": "Acceso y adaptaciones\nSi necesitas adaptaciones (salud, discapacidad, horarios), avísanos con antelación para acordarlas de manera razonable y efectiva."
   },
   {
     "objectID": "syllabus.html#metodología-de-enseñanza",
     "href": "syllabus.html#metodología-de-enseñanza",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Metodología de enseñanza",
     "text": "Metodología de enseñanza\n\nSesiones teóricas con diapositivas, ejemplos y discusión guiada.\n\nLaboratorios computacionales con datasets de ejemplo y notebooks Quarto.\n\nMiniproyecto por equipo: diseño de muestreo + pipeline + reporte corto reproducible."
   },
   {
     "objectID": "syllabus.html#comunicación",
     "href": "syllabus.html#comunicación",
-    "title": "Metabarcoding en comunidades de eucariontes",
+    "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Comunicación",
     "text": "Comunicación\n\nDudas: correo (tania.valdiviac@gmail.com) o “issues” en GitHub del repositorio asistencia.\n\nDudas técnicas extensas: bloque de asesoría al cierre de cada práctica."
   }
