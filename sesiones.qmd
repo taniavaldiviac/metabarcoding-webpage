@@ -15,15 +15,71 @@ execute:
 
 ## Resumen del curso
 
-El curso se desarrolla en **cinco días intensivos**, combinando sesiones teóricas por la mañana con prácticas computacionales por la tarde. La siguiente tabla muestra la distribución general de contenidos:
+El curso se desarrolla en **cinco días intensivos**, combinando sesiones teórico-prácticas.
 
-| Día | Enfoque principal | Herramientas |
-|----:|:------------------|:-------------|
-| 1 | Fundamentos teóricos: eDNA, metabarcoding, diseño experimental y laboratorio | Diapositivas, discusión |
-| 2 | Entorno bioinformático, conexión al servidor, control de calidad y primers | Linux, R, FastQC, Cutadapt |
-| 3 | Pipeline DADA2: denoising, ASVs, quimeras y asignación taxonómica | R / DADA2 |
-| 4 | Análisis ecológico: tablas, diversidad y visualización | R / phyloseq, vegan, ggplot2 |
-| 5 | Temas avanzados: contaminantes, OTUs y proyecto final | R / decontam, VSEARCH |
+::: {.grid}
+
+::: {.g-col-12}
+::: {.card .border-primary}
+::: {.card-body}
+### [Día 1]{.text-primary} — Fundamentos
+**Temas:** eDNA, metabarcoding, qPCR/ddPCR, diseño experimental, muestreo, extracción y preparación de librerías.
+
+**Herramientas:** Diapositivas, discusión
+[→ Ver sesión](#día-1-introducción-teórica-y-fundamentos)
+:::
+:::
+:::
+
+::: {.g-col-12}
+::: {.card .border-success}
+::: {.card-body}
+### [Día 2]{.text-success} — Bioinformática y QC
+**Temas:** Linux, R, SSH, FastQC, MultiQC, Cutadapt, archivos FASTQ.
+
+**Herramientas:** `fastqc` · `multiqc` · `cutadapt`
+[→ Ver sesión](#día-2-entorno-bioinformático-y-control-de-calidad)
+:::
+:::
+:::
+
+::: {.g-col-12}
+::: {.card .border-warning}
+::: {.card-body}
+### [Día 3]{.text-warning} — Pipeline DADA2
+**Temas:** Filtrado, modelo de error, denoising, merge, quimeras y asignación taxonómica.
+
+**Herramientas:** `dada2` · `R`
+[→ Ver sesión](#día-3-pipeline-dada2)
+:::
+:::
+:::
+
+::: {.g-col-12}
+::: {.card .border-danger}
+::: {.card-body}
+### [Día 4]{.text-danger} — Análisis ecológico
+**Temas:** Objeto phyloseq, diversidad α y β, visualización, comparación de marcadores.
+
+**Herramientas:** `phyloseq` · `vegan` · `ggplot2`
+[→ Ver sesión](#día-4-análisis-ecológico-de-comunidades)
+:::
+:::
+:::
+
+::: {.g-col-12}
+::: {.card .border-secondary}
+::: {.card-body}
+### [Día 5]{.text-secondary} — Temas avanzados
+**Temas:** Contaminantes con `decontam`, OTUs con VSEARCH, bases de datos personalizadas, proyecto final.
+
+**Herramientas:** `decontam` · `VSEARCH` · `rentrez`
+[→ Ver sesión](#día-5-temas-avanzados-y-proyecto-final)
+:::
+:::
+:::
+
+:::
 
 ---
 

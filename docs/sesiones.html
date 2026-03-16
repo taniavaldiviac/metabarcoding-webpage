@@ -175,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#archivos-fastq-estructura-y-organización" id="toc-archivos-fastq-estructura-y-organización" class="nav-link" data-scroll-target="#archivos-fastq-estructura-y-organización">Archivos FASTQ: estructura y organización</a></li>
   <li><a href="#control-de-calidad-con-fastqc-y-cutadapt" id="toc-control-de-calidad-con-fastqc-y-cutadapt" class="nav-link" data-scroll-target="#control-de-calidad-con-fastqc-y-cutadapt">Control de calidad con FastQC y Cutadapt</a></li>
   </ul></li>
-  <li><a href="#día-3-pipeline-dada2" id="toc-día-3-pipeline-dada2" class="nav-link" data-scroll-target="#día-3-pipeline-dada2">Día 3 — Pipeline DADA2</a>
+  <li><a href="#día-3-pipeline-dada2-1" id="toc-día-3-pipeline-dada2-1" class="nav-link" data-scroll-target="#día-3-pipeline-dada2-1">Día 3 — Pipeline DADA2</a>
   <ul class="collapse">
   <li><a href="#introducción-al-pipeline-dada2-y-denoising" id="toc-introducción-al-pipeline-dada2-y-denoising" class="nav-link" data-scroll-target="#introducción-al-pipeline-dada2-y-denoising">Introducción al pipeline DADA2 y denoising</a></li>
   <li><a href="#preparación-del-entorno-y-filtrado-de-lecturas" id="toc-preparación-del-entorno-y-filtrado-de-lecturas" class="nav-link" data-scroll-target="#preparación-del-entorno-y-filtrado-de-lecturas">Preparación del entorno y filtrado de lecturas</a></li>
@@ -230,48 +230,54 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="resumen-del-curso" class="level2">
 <h2 class="anchored" data-anchor-id="resumen-del-curso">Resumen del curso</h2>
-<p>El curso se desarrolla en <strong>cinco días intensivos</strong>, combinando sesiones teóricas por la mañana con prácticas computacionales por la tarde. La siguiente tabla muestra la distribución general de contenidos:</p>
-<table class="table">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 50%">
-<col style="width: 36%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;">Día</th>
-<th style="text-align: left;">Enfoque principal</th>
-<th style="text-align: left;">Herramientas</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">Fundamentos teóricos: eDNA, metabarcoding, diseño experimental y laboratorio</td>
-<td style="text-align: left;">Diapositivas, discusión</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2</td>
-<td style="text-align: left;">Entorno bioinformático, conexión al servidor, control de calidad y primers</td>
-<td style="text-align: left;">Linux, R, FastQC, Cutadapt</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">3</td>
-<td style="text-align: left;">Pipeline DADA2: denoising, ASVs, quimeras y asignación taxonómica</td>
-<td style="text-align: left;">R / DADA2</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4</td>
-<td style="text-align: left;">Análisis ecológico: tablas, diversidad y visualización</td>
-<td style="text-align: left;">R / phyloseq, vegan, ggplot2</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">5</td>
-<td style="text-align: left;">Temas avanzados: contaminantes, OTUs y proyecto final</td>
-<td style="text-align: left;">R / decontam, VSEARCH</td>
-</tr>
-</tbody>
-</table>
+<p>El curso se desarrolla en <strong>cinco días intensivos</strong>, combinando sesiones teórico-prácticas.</p>
+<div class="grid">
+<div class="g-col-12">
+<div class="card border-primary">
+<section id="día-1-fundamentos" class="level3 card-body">
+<h3 class="anchored" data-anchor-id="día-1-fundamentos"><span class="text-primary">Día 1</span> — Fundamentos</h3>
+<p><strong>Temas:</strong> eDNA, metabarcoding, qPCR/ddPCR, diseño experimental, muestreo, extracción y preparación de librerías.</p>
+<p><strong>Herramientas:</strong> Diapositivas, discusión <a href="#día-1-introducción-teórica-y-fundamentos">→ Ver sesión</a></p>
+</section>
+</div>
+</div>
+<div class="g-col-12">
+<div class="card border-success">
+<section id="día-2-bioinformática-y-qc" class="level3 card-body">
+<h3 class="anchored" data-anchor-id="día-2-bioinformática-y-qc"><span class="text-success">Día 2</span> — Bioinformática y QC</h3>
+<p><strong>Temas:</strong> Linux, R, SSH, FastQC, MultiQC, Cutadapt, archivos FASTQ.</p>
+<p><strong>Herramientas:</strong> <code>fastqc</code> · <code>multiqc</code> · <code>cutadapt</code> <a href="#día-2-entorno-bioinformático-y-control-de-calidad">→ Ver sesión</a></p>
+</section>
+</div>
+</div>
+<div class="g-col-12">
+<div class="card border-warning">
+<section id="día-3-pipeline-dada2" class="level3 card-body">
+<h3 class="anchored" data-anchor-id="día-3-pipeline-dada2"><span class="text-warning">Día 3</span> — Pipeline DADA2</h3>
+<p><strong>Temas:</strong> Filtrado, modelo de error, denoising, merge, quimeras y asignación taxonómica.</p>
+<p><strong>Herramientas:</strong> <code>dada2</code> · <code>R</code> <a href="#día-3-pipeline-dada2">→ Ver sesión</a></p>
+</section>
+</div>
+</div>
+<div class="g-col-12">
+<div class="card border-danger">
+<section id="día-4-análisis-ecológico" class="level3 card-body">
+<h3 class="anchored" data-anchor-id="día-4-análisis-ecológico"><span class="text-danger">Día 4</span> — Análisis ecológico</h3>
+<p><strong>Temas:</strong> Objeto phyloseq, diversidad α y β, visualización, comparación de marcadores.</p>
+<p><strong>Herramientas:</strong> <code>phyloseq</code> · <code>vegan</code> · <code>ggplot2</code> <a href="#día-4-análisis-ecológico-de-comunidades">→ Ver sesión</a></p>
+</section>
+</div>
+</div>
+<div class="g-col-12">
+<div class="card border-secondary">
+<section id="día-5-temas-avanzados" class="level3 card-body">
+<h3 class="anchored" data-anchor-id="día-5-temas-avanzados"><span class="text-secondary">Día 5</span> — Temas avanzados</h3>
+<p><strong>Temas:</strong> Contaminantes con <code>decontam</code>, OTUs con VSEARCH, bases de datos personalizadas, proyecto final.</p>
+<p><strong>Herramientas:</strong> <code>decontam</code> · <code>VSEARCH</code> · <code>rentrez</code> <a href="#día-5-temas-avanzados-y-proyecto-final">→ Ver sesión</a></p>
+</section>
+</div>
+</div>
+</div>
 <hr>
 </section>
 <section id="día-1-introducción-teórica-y-fundamentos" class="level2">
@@ -555,8 +561,8 @@ Tip
 <hr>
 </section>
 </section>
-<section id="día-3-pipeline-dada2" class="level2">
-<h2 class="anchored" data-anchor-id="día-3-pipeline-dada2">Día 3 — Pipeline DADA2</h2>
+<section id="día-3-pipeline-dada2-1" class="level2">
+<h2 class="anchored" data-anchor-id="día-3-pipeline-dada2-1">Día 3 — Pipeline DADA2</h2>
 <section id="introducción-al-pipeline-dada2-y-denoising" class="level3">
 <h3 class="anchored" data-anchor-id="introducción-al-pipeline-dada2-y-denoising">Introducción al pipeline DADA2 y denoising</h3>
 <p><strong>9:00 – 11:00</strong></p>
