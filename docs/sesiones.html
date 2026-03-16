@@ -129,11 +129,56 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#resumen-del-curso" id="toc-resumen-del-curso" class="nav-link active" data-scroll-target="#resumen-del-curso">Resumen del curso</a></li>
+  <li><a href="#día-1-introducción-teórica-y-fundamentos" id="toc-día-1-introducción-teórica-y-fundamentos" class="nav-link" data-scroll-target="#día-1-introducción-teórica-y-fundamentos">Día 1 — Introducción teórica y fundamentos</a>
+  <ul class="collapse">
+  <li><a href="#bienvenida-y-presentación-del-curso" id="toc-bienvenida-y-presentación-del-curso" class="nav-link" data-scroll-target="#bienvenida-y-presentación-del-curso">Bienvenida y presentación del curso</a></li>
+  <li><a href="#edna-metabarcoding-qpcr-y-ddpcr" id="toc-edna-metabarcoding-qpcr-y-ddpcr" class="nav-link" data-scroll-target="#edna-metabarcoding-qpcr-y-ddpcr">eDNA, metabarcoding, qPCR y ddPCR</a></li>
+  <li><a href="#diseño-experimental" id="toc-diseño-experimental" class="nav-link" data-scroll-target="#diseño-experimental">Diseño experimental</a></li>
+  <li><a href="#muestreo-de-adn-ambiental" id="toc-muestreo-de-adn-ambiental" class="nav-link" data-scroll-target="#muestreo-de-adn-ambiental">Muestreo de ADN ambiental</a></li>
+  <li><a href="#extracción-primers-pcr-y-preparación-de-librerías" id="toc-extracción-primers-pcr-y-preparación-de-librerías" class="nav-link" data-scroll-target="#extracción-primers-pcr-y-preparación-de-librerías">Extracción, primers, PCR y preparación de librerías</a></li>
+  </ul></li>
+  <li><a href="#día-2-entorno-bioinformático-y-control-de-calidad" id="toc-día-2-entorno-bioinformático-y-control-de-calidad" class="nav-link" data-scroll-target="#día-2-entorno-bioinformático-y-control-de-calidad">Día 2 — Entorno bioinformático y control de calidad</a>
+  <ul class="collapse">
+  <li><a href="#introducción-a-linux-y-r" id="toc-introducción-a-linux-y-r" class="nav-link" data-scroll-target="#introducción-a-linux-y-r">Introducción a Linux y R</a></li>
+  <li><a href="#conexión-al-servidor-remoto" id="toc-conexión-al-servidor-remoto" class="nav-link" data-scroll-target="#conexión-al-servidor-remoto">Conexión al servidor remoto</a></li>
+  <li><a href="#archivos-fastq-estructura-y-organización" id="toc-archivos-fastq-estructura-y-organización" class="nav-link" data-scroll-target="#archivos-fastq-estructura-y-organización">Archivos FASTQ: estructura y organización</a></li>
+  <li><a href="#control-de-calidad-con-fastqc-y-cutadapt" id="toc-control-de-calidad-con-fastqc-y-cutadapt" class="nav-link" data-scroll-target="#control-de-calidad-con-fastqc-y-cutadapt">Control de calidad con FastQC y Cutadapt</a></li>
+  </ul></li>
+  <li><a href="#día-3-pipeline-dada2" id="toc-día-3-pipeline-dada2" class="nav-link" data-scroll-target="#día-3-pipeline-dada2">Día 3 — Pipeline DADA2</a>
+  <ul class="collapse">
+  <li><a href="#introducción-al-pipeline-dada2-y-denoising" id="toc-introducción-al-pipeline-dada2-y-denoising" class="nav-link" data-scroll-target="#introducción-al-pipeline-dada2-y-denoising">Introducción al pipeline DADA2 y denoising</a></li>
+  <li><a href="#preparación-del-entorno-y-filtrado-de-lecturas" id="toc-preparación-del-entorno-y-filtrado-de-lecturas" class="nav-link" data-scroll-target="#preparación-del-entorno-y-filtrado-de-lecturas">Preparación del entorno y filtrado de lecturas</a></li>
+  <li><a href="#aprendizaje-del-modelo-de-error" id="toc-aprendizaje-del-modelo-de-error" class="nav-link" data-scroll-target="#aprendizaje-del-modelo-de-error">Aprendizaje del modelo de error</a></li>
+  <li><a href="#unión-de-lecturas-paired-end" id="toc-unión-de-lecturas-paired-end" class="nav-link" data-scroll-target="#unión-de-lecturas-paired-end">Unión de lecturas paired-end</a></li>
+  <li><a href="#remoción-de-quimeras" id="toc-remoción-de-quimeras" class="nav-link" data-scroll-target="#remoción-de-quimeras">Remoción de quimeras</a></li>
+  <li><a href="#asignación-taxonómica" id="toc-asignación-taxonómica" class="nav-link" data-scroll-target="#asignación-taxonómica">Asignación taxonómica</a></li>
+  </ul></li>
+  <li><a href="#día-4-análisis-ecológico-de-comunidades" id="toc-día-4-análisis-ecológico-de-comunidades" class="nav-link" data-scroll-target="#día-4-análisis-ecológico-de-comunidades">Día 4 — Análisis ecológico de comunidades</a>
+  <ul class="collapse">
+  <li><a href="#tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq" id="toc-tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq" class="nav-link" data-scroll-target="#tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq">Tablas ASV y taxonomía — construcción del objeto phyloseq</a></li>
+  <li><a href="#exportación-y-análisis-con-phyloseq-vegan-y-ggplot2" id="toc-exportación-y-análisis-con-phyloseq-vegan-y-ggplot2" class="nav-link" data-scroll-target="#exportación-y-análisis-con-phyloseq-vegan-y-ggplot2">Exportación y análisis con phyloseq, vegan y ggplot2</a></li>
+  <li><a href="#diversidad-α-y-β-visualización-e-interpretación" id="toc-diversidad-α-y-β-visualización-e-interpretación" class="nav-link" data-scroll-target="#diversidad-α-y-β-visualización-e-interpretación">Diversidad α y β — visualización e interpretación</a></li>
+  <li><a href="#comparación-entre-marcadores-genéticos-barcodes" id="toc-comparación-entre-marcadores-genéticos-barcodes" class="nav-link" data-scroll-target="#comparación-entre-marcadores-genéticos-barcodes">Comparación entre marcadores genéticos (barcodes)</a></li>
+  </ul></li>
+  <li><a href="#día-5-temas-avanzados-y-proyecto-final" id="toc-día-5-temas-avanzados-y-proyecto-final" class="nav-link" data-scroll-target="#día-5-temas-avanzados-y-proyecto-final">Día 5 — Temas avanzados y proyecto final</a>
+  <ul class="collapse">
+  <li><a href="#detección-y-remoción-de-contaminantes-con-decontam" id="toc-detección-y-remoción-de-contaminantes-con-decontam" class="nav-link" data-scroll-target="#detección-y-remoción-de-contaminantes-con-decontam">Detección y remoción de contaminantes con <code>decontam</code></a></li>
+  <li><a href="#otus-agrupamiento-por-similitud-con-vsearch" id="toc-otus-agrupamiento-por-similitud-con-vsearch" class="nav-link" data-scroll-target="#otus-agrupamiento-por-similitud-con-vsearch">OTUs: agrupamiento por similitud con VSEARCH</a></li>
+  <li><a href="#bases-de-datos-de-referencia-personalizadas" id="toc-bases-de-datos-de-referencia-personalizadas" class="nav-link" data-scroll-target="#bases-de-datos-de-referencia-personalizadas">Bases de datos de referencia personalizadas</a></li>
+  <li><a href="#temas-auxiliares-y-dudas-del-curso" id="toc-temas-auxiliares-y-dudas-del-curso" class="nav-link" data-scroll-target="#temas-auxiliares-y-dudas-del-curso">Temas auxiliares y dudas del curso</a></li>
+  <li><a href="#presentación-de-proyectos-y-cierre-del-curso" id="toc-presentación-de-proyectos-y-cierre-del-curso" class="nav-link" data-scroll-target="#presentación-de-proyectos-y-cierre-del-curso">Presentación de proyectos y cierre del curso</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -158,50 +203,836 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="resumen-del-curso" class="level2">
+<h2 class="anchored" data-anchor-id="resumen-del-curso">Resumen del curso</h2>
+<p>El curso se desarrolla en <strong>cinco días intensivos</strong>, combinando sesiones teóricas por la mañana con prácticas computacionales por la tarde. La siguiente tabla muestra la distribución general de contenidos:</p>
 <table class="table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 50%">
+<col style="width: 36%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: right;">sesión</th>
-<th style="text-align: left;">tema</th>
-<th style="text-align: left;">diapositivas</th>
-<th style="text-align: left;">código</th>
+<th style="text-align: right;">Día</th>
+<th style="text-align: left;">Enfoque principal</th>
+<th style="text-align: left;">Herramientas</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">Día 1</td>
-<td style="text-align: left;">Introducción y teoría</td>
-<td style="text-align: left;"><a href="slides/Dia1.pdf">PDF</a></td>
-<td style="text-align: left;"><a href="https://github.com/taniavaldiviac/metabarcoding-code">repo estudiantes</a></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Fundamentos teóricos: eDNA, metabarcoding, diseño experimental y laboratorio</td>
+<td style="text-align: left;">Diapositivas, discusión</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">Día 2</td>
-<td style="text-align: left;">Conexión al servidor y QAQC</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">Entorno bioinformático, conexión al servidor, control de calidad y primers</td>
+<td style="text-align: left;">Linux, R, FastQC, Cutadapt</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">Día 3</td>
-<td style="text-align: left;">DADA2</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">Pipeline DADA2: denoising, ASVs, quimeras y asignación taxonómica</td>
+<td style="text-align: left;">R / DADA2</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">Día 4</td>
-<td style="text-align: left;"><em>phyloseq</em> y diversidad en comunidades</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Análisis ecológico: tablas, diversidad y visualización</td>
+<td style="text-align: left;">R / phyloseq, vegan, ggplot2</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">Día 5</td>
-<td style="text-align: left;">Temas auxiliares</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">Temas avanzados: contaminantes, OTUs y proyecto final</td>
+<td style="text-align: left;">R / decontam, VSEARCH</td>
 </tr>
 </tbody>
 </table>
+<hr>
+</section>
+<section id="día-1-introducción-teórica-y-fundamentos" class="level2">
+<h2 class="anchored" data-anchor-id="día-1-introducción-teórica-y-fundamentos">Día 1 — Introducción teórica y fundamentos</h2>
+<section id="bienvenida-y-presentación-del-curso" class="level3">
+<h3 class="anchored" data-anchor-id="bienvenida-y-presentación-del-curso">Bienvenida y presentación del curso</h3>
+<p><strong>9:00 – 11:00</strong></p>
+<p>La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar claras las bases del curso: qué aprenderemos, cómo trabajaremos y quiénes participamos.</p>
+<ul>
+<li>Presentación del equipo docente y los participantes</li>
+<li>Objetivos de aprendizaje y estructura del programa</li>
+<li>Herramientas que se utilizarán (R, RStudio, DADA2, servidor remoto)</li>
+<li>Dinámica de trabajo: teoría + práctica computacional</li>
+</ul>
+<hr>
+</section>
+<section id="edna-metabarcoding-qpcr-y-ddpcr" class="level3">
+<h3 class="anchored" data-anchor-id="edna-metabarcoding-qpcr-y-ddpcr">eDNA, metabarcoding, qPCR y ddPCR</h3>
+<p><strong>11:20 – 13:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Comprender los fundamentos del ADN ambiental (eDNA) y las metodologías asociadas para el estudio de la biodiversidad, incluyendo metabarcoding y técnicas de detección dirigida.</p>
+</div>
+</div>
+<p><strong>Temas:</strong></p>
+<ul>
+<li>¿Qué es el ADN ambiental? Orígenes, tipos y persistencia en el ambiente</li>
+<li>Metabarcoding: amplificación de genes marcadores universales y ventajas frente a métodos tradicionales</li>
+<li>qPCR y ddPCR para detección de especies objetivo</li>
+<li>Comparación entre métodos: ¿cuándo usar cada uno?</li>
+<li>Aplicaciones reales en ecosistemas acuáticos y marinos</li>
+</ul>
+<p>📎 <a href="slides/Dia1.pdf">Diapositivas Día 1</a></p>
+<hr>
+</section>
+<section id="diseño-experimental" class="level3">
+<h3 class="anchored" data-anchor-id="diseño-experimental">Diseño experimental</h3>
+<p><strong>14:00 – 15:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Conocer los elementos clave para planear un proyecto basado en eDNA, desde la pregunta de investigación hasta la estrategia de muestreo y análisis.</p>
+</div>
+</div>
+<p><strong>Temas:</strong></p>
+<ul>
+<li>Definición de objetivos y preguntas de investigación</li>
+<li>Elección del enfoque: metabarcoding vs qPCR/ddPCR</li>
+<li>Réplicas ecológicas y técnicas, controles negativos y blancos</li>
+<li>Selección de marcadores genéticos y profundidad de secuenciación</li>
+<li>Ejemplos de esquemas de diseño para distintos escenarios ecológicos</li>
+</ul>
+<hr>
+</section>
+<section id="muestreo-de-adn-ambiental" class="level3">
+<h3 class="anchored" data-anchor-id="muestreo-de-adn-ambiental">Muestreo de ADN ambiental</h3>
+<p><strong>15:10 – 15:30</strong></p>
+<ul>
+<li>Tipos de muestras para eDNA: agua, sedimentos, biofilms, plancton</li>
+<li>Métodos de recolección y volúmenes adecuados según el estudio</li>
+<li>Pretratamiento en campo: filtración, preservación, congelamiento</li>
+<li>Protocolos para evitar contaminación cruzada</li>
+</ul>
+<hr>
+</section>
+<section id="extracción-primers-pcr-y-preparación-de-librerías" class="level3">
+<h3 class="anchored" data-anchor-id="extracción-primers-pcr-y-preparación-de-librerías">Extracción, primers, PCR y preparación de librerías</h3>
+<p><strong>15:30 – 17:00</strong></p>
+<ul>
+<li>Métodos de extracción de ADN y manejo de inhibidores</li>
+<li>Marcadores genéticos comunes en eucariontes: COI, 18S, 12S, ITS</li>
+<li>Etapas de la preparación de librerías de amplicones</li>
+<li>Controles de laboratorio: blancos de extracción, negativos, positivos</li>
+<li>Buenas prácticas para evitar contaminación</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="día-2-entorno-bioinformático-y-control-de-calidad" class="level2">
+<h2 class="anchored" data-anchor-id="día-2-entorno-bioinformático-y-control-de-calidad">Día 2 — Entorno bioinformático y control de calidad</h2>
+<section id="introducción-a-linux-y-r" class="level3">
+<h3 class="anchored" data-anchor-id="introducción-a-linux-y-r">Introducción a Linux y R</h3>
+<p><strong>9:00 – 11:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Familiarizarse con la terminal Unix/Linux y con R como herramientas esenciales para el análisis bioinformático.</p>
+</div>
+</div>
+<p><strong>Línea de comandos (terminal):</strong></p>
+<ul>
+<li>Estructura de directorios y navegación básica</li>
+<li>Comandos esenciales: <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>cp</code>, <code>mv</code>, <code>chmod</code>, <code>head</code>, <code>grep</code></li>
+<li>Gestión de archivos, permisos y organización de proyectos</li>
+</ul>
+<p><strong>R y RStudio:</strong></p>
+<ul>
+<li>Variables, vectores, funciones y paquetes</li>
+<li>Estructura de un script en R y uso de RMarkdown/Quarto</li>
+<li>Carga e instalación de paquetes (<code>install.packages</code>, <code>library</code>)</li>
+<li>Buenas prácticas de organización y documentación</li>
+</ul>
+<hr>
+</section>
+<section id="conexión-al-servidor-remoto" class="level3">
+<h3 class="anchored" data-anchor-id="conexión-al-servidor-remoto">Conexión al servidor remoto</h3>
+<p><strong>11:20 – 13:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Que todos los participantes puedan conectarse al servidor remoto, navegar su estructura y estar listos para ejecutar los análisis del curso.</p>
+</div>
+</div>
+<section id="paso-1-conexión-vpn-desde-fuera-de-la-red-cibnor" class="level4">
+<h4 class="anchored" data-anchor-id="paso-1-conexión-vpn-desde-fuera-de-la-red-cibnor">Paso 1 — Conexión VPN (desde fuera de la red CIBNOR)</h4>
+<p>Para acceder al servidor desde fuera de las instalaciones del CIBNOR es necesario establecer primero una conexión VPN con <strong>Hillstone Secure Connect</strong>.</p>
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Requisito previo:</strong> Descarga e instala el cliente VPN desde:<br>
+<a href="https://www.hillstonenet.com/more/services/product-downloads/" class="uri">https://www.hillstonenet.com/more/services/product-downloads/</a></p>
+</div>
+</div>
+<p>Una vez instalado, agrega una nueva conexión con los siguientes datos:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Campo</th>
+<th style="text-align: left;">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Connection name</td>
+<td style="text-align: left;"><code>CIBNOR Bioinfo</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Server</td>
+<td style="text-align: left;"><code>200.23.161.197</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Port</td>
+<td style="text-align: left;"><code>4666</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Authentication Type</td>
+<td style="text-align: left;">Username</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Username</td>
+<td style="text-align: left;"><code>BIO\tu_cuenta</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Login Mode</td>
+<td style="text-align: left;">TLS</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p>Reemplaza <code>tu_cuenta</code> con el nombre de usuario que te proporcionó el CIBNOR. El campo username se escribe con diagonal invertida: <code>BIO\cuenta</code>.</p>
+</blockquote>
+<p>Una vez conectado a la VPN, podrás continuar con el acceso por SSH.</p>
+<hr>
+</section>
+<section id="paso-2-acceso-por-ssh-y-configuración-del-entorno" class="level4">
+<h4 class="anchored" data-anchor-id="paso-2-acceso-por-ssh-y-configuración-del-entorno">Paso 2 — Acceso por SSH y configuración del entorno</h4>
+<ul>
+<li>¿Qué es un servidor y por qué lo usamos en bioinformática?</li>
+<li>Acceso al servidor por SSH: configuración y autenticación</li>
+<li>Estructura de carpetas del servidor del curso</li>
+<li>Transferencia de archivos: <code>scp</code>, <code>rsync</code> o FileZilla</li>
+<li>Activación del entorno conda del curso (<code>conda activate metabarcoding</code>)</li>
+<li>Clonación del repositorio con los scripts y datos</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> <a href="./0-Conexion-clonacion.html">Conexión al servidor y clonación del repositorio</a></p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="archivos-fastq-estructura-y-organización" class="level3">
+<h3 class="anchored" data-anchor-id="archivos-fastq-estructura-y-organización">Archivos FASTQ: estructura y organización</h3>
+<p><strong>14:00 – 15:00</strong></p>
+<ul>
+<li>Estructura del formato FASTQ: encabezado, secuencia, calidad Phred</li>
+<li>Paired-end vs single-end sequencing</li>
+<li>Inspección de archivos en terminal: <code>head</code>, <code>less</code>, <code>grep</code></li>
+<li>Verificación de integridad con checksums (SHA256)</li>
+<li>Conteo de lecturas y organización de archivos para DADA2</li>
+</ul>
+<hr>
+</section>
+<section id="control-de-calidad-con-fastqc-y-cutadapt" class="level3">
+<h3 class="anchored" data-anchor-id="control-de-calidad-con-fastqc-y-cutadapt">Control de calidad con FastQC y Cutadapt</h3>
+<p><strong>15:10 – 17:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Aprender a evaluar la calidad de las secuencias brutas y a remover primers y adaptadores con Cutadapt, dejando los datos listos para el pipeline de DADA2.</p>
+</div>
+</div>
+<p><strong>Control de calidad:</strong></p>
+<ul>
+<li>Evaluación de calidad con FastQC y MultiQC</li>
+<li>Interpretación de perfiles de calidad por ciclo (score Phred)</li>
+<li>Degradación de calidad a lo largo de la lectura y contaminación con adaptadores</li>
+</ul>
+<p><strong>Recorte de primers con Cutadapt:</strong></p>
+<ul>
+<li>Parámetros clave: <code>-g</code>, <code>-G</code>, <code>-e</code>, <code>-m</code>, <code>--discard-untrimmed</code></li>
+<li>Ejecución automatizada del script de Cutadapt</li>
+<li>Generación de reportes de calidad post-recorte</li>
+<li>Descarga de reportes al equipo local con <code>scp</code></li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> <a href="./1-qaqc-cutadapt.html">QAQC y recorte de primers con Cutadapt</a></p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="día-3-pipeline-dada2" class="level2">
+<h2 class="anchored" data-anchor-id="día-3-pipeline-dada2">Día 3 — Pipeline DADA2</h2>
+<section id="introducción-al-pipeline-dada2-y-denoising" class="level3">
+<h3 class="anchored" data-anchor-id="introducción-al-pipeline-dada2-y-denoising">Introducción al pipeline DADA2 y denoising</h3>
+<p><strong>9:00 – 11:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Comprender la lógica general del pipeline DADA2 y el enfoque de denoising para inferir variantes de secuencia (ASVs) con resolución de un solo nucleótido.</p>
+</div>
+</div>
+<ul>
+<li>Visión general del pipeline: de FASTQ recortados a tabla de ASVs</li>
+<li>¿Qué es el denoising y en qué se diferencia del clustering?</li>
+<li>Ventajas de los ASVs frente a OTUs: reproducibilidad, resolución, trazabilidad</li>
+<li>Función <code>dada()</code>: conexión con el modelo de error</li>
+<li>Parámetros clave y cómo evaluar que la inferencia fue exitosa</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Lectura recomendada:</strong> <a href="./2-dada2QAQC.html">DADA2 — Introducción y pipeline completo</a></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="preparación-del-entorno-y-filtrado-de-lecturas" class="level3">
+<h3 class="anchored" data-anchor-id="preparación-del-entorno-y-filtrado-de-lecturas">Preparación del entorno y filtrado de lecturas</h3>
+<p><strong>11:20 – 13:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Configurar el entorno de análisis en R y aplicar el filtrado de calidad para eliminar lecturas problemáticas antes de la inferencia de ASVs.</p>
+</div>
+</div>
+<p><strong>Preparación del entorno:</strong></p>
+<ul>
+<li>Activación de <code>renv</code> y carga de librerías: <code>dada2</code>, <code>tidyverse</code>, <code>ShortRead</code>, <code>here</code></li>
+<li>Definición de rutas con <code>here()</code> para reproducibilidad</li>
+<li>Lectura de parámetros desde <code>primer_data.csv</code> (umbrales de calidad, base de datos)</li>
+<li>Verificación y selección de archivos FASTQ por locus/primer</li>
+<li>Inspección de perfiles de calidad con <code>plotQualityProfile()</code></li>
+</ul>
+<p><strong>Filtrado y recorte (<code>filterAndTrim</code>):</strong></p>
+<ul>
+<li>Cálculo del punto de truncación óptimo a partir de la caída de calidad mediana</li>
+<li>Parámetros: <code>truncLen</code>, <code>maxEE</code> (errores esperados), <code>maxN</code>, <code>truncQ</code>, <code>rm.phix</code></li>
+<li>Limitación del recorte con <code>max_trim</code> para preservar el solapamiento F/R</li>
+<li>Diagnóstico de retención global y detección de muestras problemáticas (&lt;30%)</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica paso a paso:</strong><br>
+→ <a href="./2-dada2QAQC-Prep.html">DADA2 — Preparación y filtrado inicial</a><br>
+→ <a href="./2-dada2QAQC-Filter.html">DADA2 — Filter and Trim: parámetros y diagnóstico</a></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="aprendizaje-del-modelo-de-error" class="level3">
+<h3 class="anchored" data-anchor-id="aprendizaje-del-modelo-de-error">Aprendizaje del modelo de error</h3>
+<p><strong>14:00 – 15:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Estimar el modelo de error de secuenciación específico para cada corrida, base del método de denoising de DADA2.</p>
+</div>
+</div>
+<ul>
+<li>¿Por qué aprender el error mejora la inferencia frente a métodos de clustering?</li>
+<li>Estructura del modelo: 16 transiciones de nucleótidos × 41 valores de calidad Phred</li>
+<li>Función <code>learnErrors()</code>: requisitos, iteraciones y convergencia</li>
+<li>Diferencias entre lecturas forward y reverse</li>
+<li>Visualización e interpretación con <code>plotErrors()</code></li>
+<li>Rangos normales (0.1–5%) y señales de alerta (&gt;10–15%)</li>
+<li>¿Qué hacer si el modelo no converge?</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica paso a paso:</strong><br>
+→ <a href="./2-dada2QAQC-Error.html">DADA2 — Análisis de tasas de error</a></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="unión-de-lecturas-paired-end" class="level3">
+<h3 class="anchored" data-anchor-id="unión-de-lecturas-paired-end">Unión de lecturas paired-end</h3>
+<p><strong>11:20 – 13:00</strong> <em>(continuación del pipeline)</em></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Ensamblar las lecturas forward y reverse para obtener la secuencia completa del amplicón.</p>
+</div>
+</div>
+<ul>
+<li>¿Qué es la secuenciación paired-end y por qué se unen las lecturas?</li>
+<li>Función <code>mergePairs()</code>: parámetros <code>minOverlap</code> y <code>maxMismatch</code></li>
+<li>Verificación de eficiencia: porcentaje de lecturas unidas por muestra</li>
+<li>Problemas comunes: solapamiento insuficiente, baja calidad en extremos, baja recuperación</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> <a href="./2-dada2QAQC.html">DADA2 — Introducción y pipeline completo</a></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="remoción-de-quimeras" class="level3">
+<h3 class="anchored" data-anchor-id="remoción-de-quimeras">Remoción de quimeras</h3>
+<p><strong>14:00 – 15:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Detectar y eliminar secuencias quiméricas generadas durante la PCR para evitar falsos positivos en los análisis de biodiversidad.</p>
+</div>
+</div>
+<ul>
+<li>¿Cómo se forman las quimeras durante la PCR por recombinación de fragmentos?</li>
+<li>Función <code>removeBimeraDenovo()</code>: métodos <code>consensus</code> y <code>pooled</code></li>
+<li>Evaluación de resultados: proporción eliminada y su interpretación</li>
+<li>Señales de alerta: alta proporción de quimeras como indicador de calidad deficiente</li>
+<li>Mención breve a herramientas externas: UCHIME, VSEARCH</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> <a href="./2-dada2QAQC.html">DADA2 — Introducción y pipeline completo</a></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="asignación-taxonómica" class="level3">
+<h3 class="anchored" data-anchor-id="asignación-taxonómica">Asignación taxonómica</h3>
+<p><strong>15:10 – 17:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Asignar identidad taxonómica a los ASVs mediante bases de datos de referencia, obteniendo la tabla de taxonomía lista para el análisis ecológico.</p>
+</div>
+</div>
+<ul>
+<li>Función <code>assignTaxonomy()</code>: clasificador bayesiano naïve de RDP</li>
+<li>Función <code>addSpecies()</code>: asignación a especie por coincidencia exacta</li>
+<li>Bases de datos compatibles: <strong>SILVA</strong>, <strong>PR2</strong>, <strong>MIDORI</strong>, <strong>BOLD</strong>, <strong>RDP</strong></li>
+<li>Parámetro <code>minBoot</code>: confianza mínima para la asignación (recomendado ≥80)</li>
+<li>Asignación hasta especie vs niveles taxonómicos superiores</li>
+<li>Limpieza: secuencias no asignadas y asignaciones con baja confianza</li>
+<li>Introducción a bases de datos personalizadas (se retoma en Día 5)</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> <a href="./2-dada2QAQC.html">DADA2 — Introducción y pipeline completo</a></p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="día-4-análisis-ecológico-de-comunidades" class="level2">
+<h2 class="anchored" data-anchor-id="día-4-análisis-ecológico-de-comunidades">Día 4 — Análisis ecológico de comunidades</h2>
+<section id="tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq" class="level3">
+<h3 class="anchored" data-anchor-id="tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq">Tablas ASV y taxonomía — construcción del objeto phyloseq</h3>
+<p><strong>9:00 – 11:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Construir las tablas fundamentales para el análisis ecológico e integrarlas en un objeto phyloseq.</p>
+</div>
+</div>
+<ul>
+<li><code>makeSequenceTable()</code>: tabla de abundancia ASV × muestra</li>
+<li>Asociación de taxonomía a ASVs</li>
+<li>Filtrado de secuencias espurias: no asignadas, contaminantes, longitud atípica</li>
+<li>Creación del objeto <code>phyloseq</code>: ASV table + tax table + metadatos</li>
+<li>Inspección y verificación de coherencia de tablas</li>
+</ul>
+<hr>
+</section>
+<section id="exportación-y-análisis-con-phyloseq-vegan-y-ggplot2" class="level3">
+<h3 class="anchored" data-anchor-id="exportación-y-análisis-con-phyloseq-vegan-y-ggplot2">Exportación y análisis con phyloseq, vegan y ggplot2</h3>
+<p><strong>11:20 – 13:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Explorar y visualizar los datos de ASVs utilizando las herramientas de análisis ecológico más utilizadas en estudios de eDNA.</p>
+</div>
+</div>
+<p><strong>phyloseq:</strong></p>
+<ul>
+<li><code>plot_richness()</code>, <code>plot_bar()</code>, <code>ordinate()</code></li>
+<li>Subsetting y transformación de datos</li>
+</ul>
+<p><strong>vegan:</strong></p>
+<ul>
+<li>Matrices de comunidad y cálculo de índices de diversidad</li>
+<li>Transformación y rarefacción: <code>decostand()</code>, <code>rarefy()</code></li>
+</ul>
+<p><strong>ggplot2:</strong></p>
+<ul>
+<li>Construcción de gráficos personalizados: barras, cajas, puntos</li>
+<li>Combinación con phyloseq para resultados complejos</li>
+<li>Exportación en formatos CSV, PNG y PDF</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> Scripts <code>3-RDB-paso1</code> y <code>4-RDB-paso2</code> del repositorio</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="diversidad-α-y-β-visualización-e-interpretación" class="level3">
+<h3 class="anchored" data-anchor-id="diversidad-α-y-β-visualización-e-interpretación">Diversidad α y β — visualización e interpretación</h3>
+<p><strong>14:00 – 15:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Calcular e interpretar patrones de diversidad biológica y generar visualizaciones efectivas para comunicar resultados.</p>
+</div>
+</div>
+<p><strong>Diversidad alfa (α):</strong></p>
+<ul>
+<li>Índices: riqueza observada, Shannon, Simpson</li>
+<li>Rarefacción y cobertura de la muestra</li>
+<li>Comparación entre grupos con gráficos de caja</li>
+</ul>
+<p><strong>Diversidad beta (β):</strong></p>
+<ul>
+<li>Matrices de disimilitud: Jaccard, Bray-Curtis</li>
+<li>Análisis multivariados: nMDS, PCoA, PCA</li>
+<li>Visualización con flechas de variables ambientales</li>
+</ul>
+<p><strong>Barplots de abundancia relativa:</strong></p>
+<ul>
+<li>Composición taxonómica por grupo o condición</li>
+<li>Adaptación para presentaciones y publicaciones</li>
+</ul>
+<hr>
+</section>
+<section id="comparación-entre-marcadores-genéticos-barcodes" class="level3">
+<h3 class="anchored" data-anchor-id="comparación-entre-marcadores-genéticos-barcodes">Comparación entre marcadores genéticos (barcodes)</h3>
+<p><strong>15:30 – 17:00</strong></p>
+<ul>
+<li>Regiones génicas comunes en eucariontes: COI, 18S, 12S, ITS</li>
+<li>Características deseables de un marcador: universalidad, resolución, cobertura en bases de datos</li>
+<li>Diferencias en detección por grupos taxonómicos según el marcador</li>
+<li>Métodos de comparación: Venn diagrams, heatmaps, análisis multivariado</li>
+<li>¿Cuándo usar más de un marcador?</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="día-5-temas-avanzados-y-proyecto-final" class="level2">
+<h2 class="anchored" data-anchor-id="día-5-temas-avanzados-y-proyecto-final">Día 5 — Temas avanzados y proyecto final</h2>
+<section id="detección-y-remoción-de-contaminantes-con-decontam" class="level3">
+<h3 class="anchored" data-anchor-id="detección-y-remoción-de-contaminantes-con-decontam">Detección y remoción de contaminantes con <code>decontam</code></h3>
+<p><strong>9:00 – 11:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Aprender a identificar y remover secuencias contaminantes utilizando controles negativos y el paquete <code>decontam</code>, mejorando la calidad y confiabilidad de los resultados.</p>
+</div>
+</div>
+<ul>
+<li>Tipos de controles negativos: blanco de extracción, PCR y campo</li>
+<li>Fuentes comunes de contaminación y su impacto en resultados ecológicos</li>
+<li>Métodos del paquete <code>decontam</code>: <code>frequency</code>, <code>prevalence</code>, <code>combined</code></li>
+<li>Requisitos del input: tabla de ASVs + metadatos con identificación de controles</li>
+<li>Visualización y documentación de decisiones de filtrado</li>
+</ul>
+<hr>
+</section>
+<section id="otus-agrupamiento-por-similitud-con-vsearch" class="level3">
+<h3 class="anchored" data-anchor-id="otus-agrupamiento-por-similitud-con-vsearch">OTUs: agrupamiento por similitud con VSEARCH</h3>
+<p><strong>11:20 – 13:00</strong></p>
+<ul>
+<li>Diferencias entre OTUs y ASVs: definición, ventajas y limitaciones</li>
+<li>¿Cuándo y por qué seguir utilizando OTUs?</li>
+<li>Flujo de trabajo en VSEARCH: dereplicación, clustering, chimera checking</li>
+<li>Umbrales de identidad: 97%, 99%</li>
+<li>Introducción a <code>clustur</code> en R: integración con phyloseq</li>
+<li>Comparación práctica: número de OTUs vs ASVs, cambios en riqueza y composición</li>
+</ul>
+<hr>
+</section>
+<section id="bases-de-datos-de-referencia-personalizadas" class="level3">
+<h3 class="anchored" data-anchor-id="bases-de-datos-de-referencia-personalizadas">Bases de datos de referencia personalizadas</h3>
+<p><strong>14:00 – 15:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Aprender a construir una base de datos de referencia local para asignación taxonómica, desde la búsqueda en NCBI hasta la PCR virtual.</p>
+</div>
+</div>
+<p><strong>Paso 1 — Búsqueda en NCBI:</strong></p>
+<ul>
+<li>Construcción de queries para amplicones y mitogenomas completos</li>
+<li>Descarga paginada con <code>rentrez</code> respetando los límites de la API</li>
+<li>Parámetros: locus, longitud de amplicón, taxón objetivo</li>
+</ul>
+<p><strong>Paso 2 — PCR virtual:</strong></p>
+<ul>
+<li>Identificación de sitios de anillamiento de primers con tolerancia a errores</li>
+<li>Extracción de amplicones <em>in silico</em></li>
+<li>Renombrado de encabezados con anotación de NCBI</li>
+<li>Formato final: <code>Species|Accession</code></li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> Scripts <code>3-RDB-paso1</code> y <code>4-RDB-paso2</code> del repositorio</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="temas-auxiliares-y-dudas-del-curso" class="level3">
+<h3 class="anchored" data-anchor-id="temas-auxiliares-y-dudas-del-curso">Temas auxiliares y dudas del curso</h3>
+<p><strong>15:00 – 15:10 receso | 15:10 – 15:30</strong></p>
+<p>Espacio flexible para profundizar en temas de interés del grupo:</p>
+<ul>
+<li>Diseño de primers <em>in silico</em> (ecoPrimers, PrimerMiner)</li>
+<li>Reproducibilidad: estructura de proyectos, Quarto, Git/GitHub</li>
+<li>Errores comunes y soluciones prácticas en análisis de eDNA</li>
+<li>Oportunidades del metabarcoding en monitoreo ambiental y conservación</li>
+</ul>
+<hr>
+</section>
+<section id="presentación-de-proyectos-y-cierre-del-curso" class="level3">
+<h3 class="anchored" data-anchor-id="presentación-de-proyectos-y-cierre-del-curso">Presentación de proyectos y cierre del curso</h3>
+<p><strong>15:30 – 17:00</strong></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Objetivo:</strong> Integrar los conocimientos adquiridos durante la semana aplicándolos a una propuesta de proyecto, recibiendo retroalimentación de instructores y compañeros.</p>
+</div>
+</div>
+<ul>
+<li>Presentación de propuestas (5–7 min por persona o equipo)</li>
+<li>Formato libre: objetivo, datos, método, análisis esperado</li>
+<li>Retroalimentación de instructores y compañeros</li>
+<li>Síntesis de aprendizajes clave del curso</li>
+<li>Encuesta de evaluación y entrega de constancias</li>
+</ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Recursos:</strong> <a href="https://github.com/taniavaldiviac/metabarcoding-code">Proyecto final — guía e instrucciones</a></p>
+</div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

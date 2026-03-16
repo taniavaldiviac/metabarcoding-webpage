@@ -5,7 +5,7 @@ author: "Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)"
 format:
   html:
     toc: true
-    toc-depth: 4
+    toc-depth: 3
     toc-location: right
 execute:
   echo: false
@@ -13,10 +13,519 @@ execute:
   message: false
 ---
 
-| sesión | tema                                    | diapositivas           | código                                                                       |
-|-------:|:----------------------------------------|:-----------------------|:-----------------------------------------------------------------------------|
-| Día 1  | Introducción y teoría                   | [PDF](slides/Dia1.pdf) | [repo estudiantes](https://github.com/taniavaldiviac/metabarcoding-code)     |
-| Día 2  | Conexión al servidor y QAQC             |                        |                                                                              |
-| Día 3  | DADA2                                   |                        |                                                                              |
-| Día 4  | *phyloseq* y diversidad en comunidades  |                        |                                                                              |
-| Día 5  | Temas auxiliares                        |                        |                                                                              |
+## Resumen del curso
+
+El curso se desarrolla en **cinco días intensivos**, combinando sesiones teóricas por la mañana con prácticas computacionales por la tarde. La siguiente tabla muestra la distribución general de contenidos:
+
+| Día | Enfoque principal | Herramientas |
+|----:|:------------------|:-------------|
+| 1 | Fundamentos teóricos: eDNA, metabarcoding, diseño experimental y laboratorio | Diapositivas, discusión |
+| 2 | Entorno bioinformático, conexión al servidor, control de calidad y primers | Linux, R, FastQC, Cutadapt |
+| 3 | Pipeline DADA2: denoising, ASVs, quimeras y asignación taxonómica | R / DADA2 |
+| 4 | Análisis ecológico: tablas, diversidad y visualización | R / phyloseq, vegan, ggplot2 |
+| 5 | Temas avanzados: contaminantes, OTUs y proyecto final | R / decontam, VSEARCH |
+
+---
+
+## Día 1 — Introducción teórica y fundamentos
+
+### Bienvenida y presentación del curso
+
+**9:00 – 11:00**
+
+La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar claras las bases del curso: qué aprenderemos, cómo trabajaremos y quiénes participamos.
+
+- Presentación del equipo docente y los participantes
+- Objetivos de aprendizaje y estructura del programa
+- Herramientas que se utilizarán (R, RStudio, DADA2, servidor remoto)
+- Dinámica de trabajo: teoría + práctica computacional
+
+---
+
+### eDNA, metabarcoding, qPCR y ddPCR
+
+**11:20 – 13:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Comprender los fundamentos del ADN ambiental (eDNA) y las metodologías asociadas para el estudio de la biodiversidad, incluyendo metabarcoding y técnicas de detección dirigida.
+:::
+
+**Temas:**
+
+- ¿Qué es el ADN ambiental? Orígenes, tipos y persistencia en el ambiente
+- Metabarcoding: amplificación de genes marcadores universales y ventajas frente a métodos tradicionales
+- qPCR y ddPCR para detección de especies objetivo
+- Comparación entre métodos: ¿cuándo usar cada uno?
+- Aplicaciones reales en ecosistemas acuáticos y marinos
+
+📎 [Diapositivas Día 1](slides/Dia1.pdf)
+
+---
+
+### Diseño experimental
+
+**14:00 – 15:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Conocer los elementos clave para planear un proyecto basado en eDNA, desde la pregunta de investigación hasta la estrategia de muestreo y análisis.
+:::
+
+**Temas:**
+
+- Definición de objetivos y preguntas de investigación
+- Elección del enfoque: metabarcoding vs qPCR/ddPCR
+- Réplicas ecológicas y técnicas, controles negativos y blancos
+- Selección de marcadores genéticos y profundidad de secuenciación
+- Ejemplos de esquemas de diseño para distintos escenarios ecológicos
+
+---
+
+### Muestreo de ADN ambiental
+
+**15:10 – 15:30**
+
+- Tipos de muestras para eDNA: agua, sedimentos, biofilms, plancton
+- Métodos de recolección y volúmenes adecuados según el estudio
+- Pretratamiento en campo: filtración, preservación, congelamiento
+- Protocolos para evitar contaminación cruzada
+
+---
+
+### Extracción, primers, PCR y preparación de librerías
+
+**15:30 – 17:00**
+
+- Métodos de extracción de ADN y manejo de inhibidores
+- Marcadores genéticos comunes en eucariontes: COI, 18S, 12S, ITS
+- Etapas de la preparación de librerías de amplicones
+- Controles de laboratorio: blancos de extracción, negativos, positivos
+- Buenas prácticas para evitar contaminación
+
+---
+
+## Día 2 — Entorno bioinformático y control de calidad
+
+### Introducción a Linux y R
+
+**9:00 – 11:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Familiarizarse con la terminal Unix/Linux y con R como herramientas esenciales para el análisis bioinformático.
+:::
+
+**Línea de comandos (terminal):**
+
+- Estructura de directorios y navegación básica
+- Comandos esenciales: `ls`, `cd`, `mkdir`, `cp`, `mv`, `chmod`, `head`, `grep`
+- Gestión de archivos, permisos y organización de proyectos
+
+**R y RStudio:**
+
+- Variables, vectores, funciones y paquetes
+- Estructura de un script en R y uso de RMarkdown/Quarto
+- Carga e instalación de paquetes (`install.packages`, `library`)
+- Buenas prácticas de organización y documentación
+
+---
+
+### Conexión al servidor remoto
+
+**11:20 – 13:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Que todos los participantes puedan conectarse al servidor remoto, navegar su estructura y estar listos para ejecutar los análisis del curso.
+:::
+
+#### Paso 1 — Conexión VPN (desde fuera de la red CIBNOR)
+
+Para acceder al servidor desde fuera de las instalaciones del CIBNOR es necesario establecer primero una conexión VPN con **Hillstone Secure Connect**.
+
+::: {.callout-warning icon="false"}
+**Requisito previo:** Descarga e instala el cliente VPN desde:\
+<https://www.hillstonenet.com/more/services/product-downloads/>
+:::
+
+Una vez instalado, agrega una nueva conexión con los siguientes datos:
+
+| Campo | Valor |
+|:------|:------|
+| Connection name | `CIBNOR Bioinfo` |
+| Server | `200.23.161.197` |
+| Port | `4666` |
+| Authentication Type | Username |
+| Username | `BIO\tu_cuenta` |
+| Login Mode | TLS |
+
+> Reemplaza `tu_cuenta` con el nombre de usuario que te proporcionó el CIBNOR.
+> El campo username se escribe con diagonal invertida: `BIO\cuenta`.
+
+Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
+
+---
+
+#### Paso 2 — Acceso por SSH y configuración del entorno
+
+- ¿Qué es un servidor y por qué lo usamos en bioinformática?
+- Acceso al servidor por SSH: configuración y autenticación
+- Estructura de carpetas del servidor del curso
+- Transferencia de archivos: `scp`, `rsync` o FileZilla
+- Activación del entorno conda del curso (`conda activate metabarcoding`)
+- Clonación del repositorio con los scripts y datos
+
+::: {.callout-tip icon="false"}
+**Práctica:** [Conexión al servidor y clonación del repositorio](0-Conexion-clonacion.qmd)
+:::
+
+---
+
+### Archivos FASTQ: estructura y organización
+
+**14:00 – 15:00**
+
+- Estructura del formato FASTQ: encabezado, secuencia, calidad Phred
+- Paired-end vs single-end sequencing
+- Inspección de archivos en terminal: `head`, `less`, `grep`
+- Verificación de integridad con checksums (SHA256)
+- Conteo de lecturas y organización de archivos para DADA2
+
+---
+
+### Control de calidad con FastQC y Cutadapt
+
+**15:10 – 17:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Aprender a evaluar la calidad de las secuencias brutas y a remover primers y adaptadores con Cutadapt, dejando los datos listos para el pipeline de DADA2.
+:::
+
+**Control de calidad:**
+
+- Evaluación de calidad con FastQC y MultiQC
+- Interpretación de perfiles de calidad por ciclo (score Phred)
+- Degradación de calidad a lo largo de la lectura y contaminación con adaptadores
+
+**Recorte de primers con Cutadapt:**
+
+- Parámetros clave: `-g`, `-G`, `-e`, `-m`, `--discard-untrimmed`
+- Ejecución automatizada del script de Cutadapt
+- Generación de reportes de calidad post-recorte
+- Descarga de reportes al equipo local con `scp`
+
+::: {.callout-tip icon="false"}
+**Práctica:** [QAQC y recorte de primers con Cutadapt](1-qaqc-cutadapt.qmd)
+:::
+
+---
+
+## Día 3 — Pipeline DADA2
+
+### Introducción al pipeline DADA2 y denoising
+
+**9:00 – 11:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Comprender la lógica general del pipeline DADA2 y el enfoque de denoising para inferir variantes de secuencia (ASVs) con resolución de un solo nucleótido.
+:::
+
+- Visión general del pipeline: de FASTQ recortados a tabla de ASVs
+- ¿Qué es el denoising y en qué se diferencia del clustering?
+- Ventajas de los ASVs frente a OTUs: reproducibilidad, resolución, trazabilidad
+- Función `dada()`: conexión con el modelo de error
+- Parámetros clave y cómo evaluar que la inferencia fue exitosa
+
+::: {.callout-tip icon="false"}
+**Lectura recomendada:** [DADA2 — Introducción y pipeline completo](2-dada2QAQC.qmd)
+:::
+
+---
+
+### Preparación del entorno y filtrado de lecturas
+
+**11:20 – 13:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Configurar el entorno de análisis en R y aplicar el filtrado de calidad para eliminar lecturas problemáticas antes de la inferencia de ASVs.
+:::
+
+**Preparación del entorno:**
+
+- Activación de `renv` y carga de librerías: `dada2`, `tidyverse`, `ShortRead`, `here`
+- Definición de rutas con `here()` para reproducibilidad
+- Lectura de parámetros desde `primer_data.csv` (umbrales de calidad, base de datos)
+- Verificación y selección de archivos FASTQ por locus/primer
+- Inspección de perfiles de calidad con `plotQualityProfile()`
+
+**Filtrado y recorte (`filterAndTrim`):**
+
+- Cálculo del punto de truncación óptimo a partir de la caída de calidad mediana
+- Parámetros: `truncLen`, `maxEE` (errores esperados), `maxN`, `truncQ`, `rm.phix`
+- Limitación del recorte con `max_trim` para preservar el solapamiento F/R
+- Diagnóstico de retención global y detección de muestras problemáticas (<30%)
+
+::: {.callout-tip icon="false"}
+**Práctica paso a paso:**\
+→ [DADA2 — Preparación y filtrado inicial](2-dada2QAQC-Prep.qmd)\
+→ [DADA2 — Filter and Trim: parámetros y diagnóstico](2-dada2QAQC-Filter.qmd)
+:::
+
+---
+
+### Aprendizaje del modelo de error
+
+**14:00 – 15:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Estimar el modelo de error de secuenciación específico para cada corrida, base del método de denoising de DADA2.
+:::
+
+- ¿Por qué aprender el error mejora la inferencia frente a métodos de clustering?
+- Estructura del modelo: 16 transiciones de nucleótidos × 41 valores de calidad Phred
+- Función `learnErrors()`: requisitos, iteraciones y convergencia
+- Diferencias entre lecturas forward y reverse
+- Visualización e interpretación con `plotErrors()`
+- Rangos normales (0.1–5%) y señales de alerta (>10–15%)
+- ¿Qué hacer si el modelo no converge?
+
+::: {.callout-tip icon="false"}
+**Práctica paso a paso:**\
+→ [DADA2 — Análisis de tasas de error](2-dada2QAQC-Error.qmd)
+:::
+
+---
+
+### Unión de lecturas paired-end
+
+**11:20 – 13:00** *(continuación del pipeline)*
+
+::: {.callout-note icon="false"}
+**Objetivo:** Ensamblar las lecturas forward y reverse para obtener la secuencia completa del amplicón.
+:::
+
+- ¿Qué es la secuenciación paired-end y por qué se unen las lecturas?
+- Función `mergePairs()`: parámetros `minOverlap` y `maxMismatch`
+- Verificación de eficiencia: porcentaje de lecturas unidas por muestra
+- Problemas comunes: solapamiento insuficiente, baja calidad en extremos, baja recuperación
+
+::: {.callout-tip icon="false"}
+**Práctica:** [DADA2 — Introducción y pipeline completo](2-dada2QAQC.qmd)
+:::
+
+---
+
+### Remoción de quimeras
+
+**14:00 – 15:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Detectar y eliminar secuencias quiméricas generadas durante la PCR para evitar falsos positivos en los análisis de biodiversidad.
+:::
+
+- ¿Cómo se forman las quimeras durante la PCR por recombinación de fragmentos?
+- Función `removeBimeraDenovo()`: métodos `consensus` y `pooled`
+- Evaluación de resultados: proporción eliminada y su interpretación
+- Señales de alerta: alta proporción de quimeras como indicador de calidad deficiente
+- Mención breve a herramientas externas: UCHIME, VSEARCH
+
+::: {.callout-tip icon="false"}
+**Práctica:** [DADA2 — Introducción y pipeline completo](2-dada2QAQC.qmd)
+:::
+
+---
+
+### Asignación taxonómica
+
+**15:10 – 17:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Asignar identidad taxonómica a los ASVs mediante bases de datos de referencia, obteniendo la tabla de taxonomía lista para el análisis ecológico.
+:::
+
+- Función `assignTaxonomy()`: clasificador bayesiano naïve de RDP
+- Función `addSpecies()`: asignación a especie por coincidencia exacta
+- Bases de datos compatibles: **SILVA**, **PR2**, **MIDORI**, **BOLD**, **RDP**
+- Parámetro `minBoot`: confianza mínima para la asignación (recomendado ≥80)
+- Asignación hasta especie vs niveles taxonómicos superiores
+- Limpieza: secuencias no asignadas y asignaciones con baja confianza
+- Introducción a bases de datos personalizadas (se retoma en Día 5)
+
+::: {.callout-tip icon="false"}
+**Práctica:** [DADA2 — Introducción y pipeline completo](2-dada2QAQC.qmd)
+:::
+
+---
+
+## Día 4 — Análisis ecológico de comunidades
+
+### Tablas ASV y taxonomía — construcción del objeto phyloseq
+
+**9:00 – 11:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Construir las tablas fundamentales para el análisis ecológico e integrarlas en un objeto phyloseq.
+:::
+
+- `makeSequenceTable()`: tabla de abundancia ASV × muestra
+- Asociación de taxonomía a ASVs
+- Filtrado de secuencias espurias: no asignadas, contaminantes, longitud atípica
+- Creación del objeto `phyloseq`: ASV table + tax table + metadatos
+- Inspección y verificación de coherencia de tablas
+
+---
+
+### Exportación y análisis con phyloseq, vegan y ggplot2
+
+**11:20 – 13:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Explorar y visualizar los datos de ASVs utilizando las herramientas de análisis ecológico más utilizadas en estudios de eDNA.
+:::
+
+**phyloseq:**
+
+- `plot_richness()`, `plot_bar()`, `ordinate()`
+- Subsetting y transformación de datos
+
+**vegan:**
+
+- Matrices de comunidad y cálculo de índices de diversidad
+- Transformación y rarefacción: `decostand()`, `rarefy()`
+
+**ggplot2:**
+
+- Construcción de gráficos personalizados: barras, cajas, puntos
+- Combinación con phyloseq para resultados complejos
+- Exportación en formatos CSV, PNG y PDF
+
+::: {.callout-tip icon="false"}
+**Práctica:** Scripts `3-RDB-paso1` y `4-RDB-paso2` del repositorio
+:::
+
+---
+
+### Diversidad α y β — visualización e interpretación
+
+**14:00 – 15:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Calcular e interpretar patrones de diversidad biológica y generar visualizaciones efectivas para comunicar resultados.
+:::
+
+**Diversidad alfa (α):**
+
+- Índices: riqueza observada, Shannon, Simpson
+- Rarefacción y cobertura de la muestra
+- Comparación entre grupos con gráficos de caja
+
+**Diversidad beta (β):**
+
+- Matrices de disimilitud: Jaccard, Bray-Curtis
+- Análisis multivariados: nMDS, PCoA, PCA
+- Visualización con flechas de variables ambientales
+
+**Barplots de abundancia relativa:**
+
+- Composición taxonómica por grupo o condición
+- Adaptación para presentaciones y publicaciones
+
+---
+
+### Comparación entre marcadores genéticos (barcodes)
+
+**15:30 – 17:00**
+
+- Regiones génicas comunes en eucariontes: COI, 18S, 12S, ITS
+- Características deseables de un marcador: universalidad, resolución, cobertura en bases de datos
+- Diferencias en detección por grupos taxonómicos según el marcador
+- Métodos de comparación: Venn diagrams, heatmaps, análisis multivariado
+- ¿Cuándo usar más de un marcador?
+
+---
+
+## Día 5 — Temas avanzados y proyecto final
+
+### Detección y remoción de contaminantes con `decontam`
+
+**9:00 – 11:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Aprender a identificar y remover secuencias contaminantes utilizando controles negativos y el paquete `decontam`, mejorando la calidad y confiabilidad de los resultados.
+:::
+
+- Tipos de controles negativos: blanco de extracción, PCR y campo
+- Fuentes comunes de contaminación y su impacto en resultados ecológicos
+- Métodos del paquete `decontam`: `frequency`, `prevalence`, `combined`
+- Requisitos del input: tabla de ASVs + metadatos con identificación de controles
+- Visualización y documentación de decisiones de filtrado
+
+---
+
+### OTUs: agrupamiento por similitud con VSEARCH
+
+**11:20 – 13:00**
+
+- Diferencias entre OTUs y ASVs: definición, ventajas y limitaciones
+- ¿Cuándo y por qué seguir utilizando OTUs?
+- Flujo de trabajo en VSEARCH: dereplicación, clustering, chimera checking
+- Umbrales de identidad: 97%, 99%
+- Introducción a `clustur` en R: integración con phyloseq
+- Comparación práctica: número de OTUs vs ASVs, cambios en riqueza y composición
+
+---
+
+### Bases de datos de referencia personalizadas
+
+**14:00 – 15:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Aprender a construir una base de datos de referencia local para asignación taxonómica, desde la búsqueda en NCBI hasta la PCR virtual.
+:::
+
+**Paso 1 — Búsqueda en NCBI:**
+
+- Construcción de queries para amplicones y mitogenomas completos
+- Descarga paginada con `rentrez` respetando los límites de la API
+- Parámetros: locus, longitud de amplicón, taxón objetivo
+
+**Paso 2 — PCR virtual:**
+
+- Identificación de sitios de anillamiento de primers con tolerancia a errores
+- Extracción de amplicones *in silico*
+- Renombrado de encabezados con anotación de NCBI
+- Formato final: `Species|Accession`
+
+::: {.callout-tip icon="false"}
+**Práctica:** Scripts `3-RDB-paso1` y `4-RDB-paso2` del repositorio
+:::
+
+---
+
+### Temas auxiliares y dudas del curso
+
+**15:00 – 15:10 receso | 15:10 – 15:30**
+
+Espacio flexible para profundizar en temas de interés del grupo:
+
+- Diseño de primers *in silico* (ecoPrimers, PrimerMiner)
+- Reproducibilidad: estructura de proyectos, Quarto, Git/GitHub
+- Errores comunes y soluciones prácticas en análisis de eDNA
+- Oportunidades del metabarcoding en monitoreo ambiental y conservación
+
+---
+
+### Presentación de proyectos y cierre del curso
+
+**15:30 – 17:00**
+
+::: {.callout-note icon="false"}
+**Objetivo:** Integrar los conocimientos adquiridos durante la semana aplicándolos a una propuesta de proyecto, recibiendo retroalimentación de instructores y compañeros.
+:::
+
+- Presentación de propuestas (5–7 min por persona o equipo)
+- Formato libre: objetivo, datos, método, análisis esperado
+- Retroalimentación de instructores y compañeros
+- Síntesis de aprendizajes clave del curso
+- Encuesta de evaluación y entrega de constancias
+
+::: {.callout-tip icon="false"}
+**Recursos:** [Proyecto final — guía e instrucciones](https://github.com/taniavaldiviac/metabarcoding-code)
+:::
