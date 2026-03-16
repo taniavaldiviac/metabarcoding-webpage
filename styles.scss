@@ -88,34 +88,17 @@ tbody tr:hover { background: #cde8f2; transition: background 0.15s; }
 
 /* Código */
 pre.sourceCode {
-  background: #1c2b36;
+  background: #eef1f3;
   border-radius: 10px;
-  border: none;
+  border: 1px solid #d0d7de;
   padding: 1rem 1.25rem;
   font-size: 0.88rem;
 }
-code { color: #1a8c7a; font-size: 0.9em; }
-pre code { color: #d4e8ef; }
+code { color: $primary; font-size: 0.9em; }
+pre code { color: #24292f; }
 
-/* Resaltado de sintaxis dentro de bloques de código oscuro */
-pre.sourceCode span {
-  &.st { color: #ffcb6b; }   /* strings, rutas de archivos/carpetas → amarillo */
-  &.fu { color: #82aaff; }   /* funciones y comandos → azul claro */
-  &.bu { color: #89ddff; }   /* built-ins (cd, ls, echo) → cian */
-  &.ex { color: #89ddff; }   /* extensiones → cian */
-  &.co { color: #546e7a; }   /* comentarios → gris azulado */
-  &.in { color: #c3e88d; }   /* información / inline → verde claro */
-  &.ss { color: #c3e88d; }   /* special strings → verde claro */
-  &.sc { color: #f78c6c; }   /* special chars → naranja */
-  &.cn { color: #c792ea; }   /* constantes → lila */
-  &.cf { color: #c792ea; }   /* control flow → lila */
-  &.at { color: #ffcb6b; }   /* atributos → amarillo */
-  &.an { color: #546e7a; }   /* anotaciones → gris */
-  &.kw { color: #c792ea; }   /* keywords → lila */
-  &.dt { color: #f07178; }   /* data types → rojo suave */
-  &.op { color: #89ddff; }   /* operadores → cian */
-  &.va { color: #f07178; }   /* variables → rojo suave */
-}
+/* Sin colores de sintaxis personalizados: texto oscuro sobre fondo claro, legible */
+pre.sourceCode span { color: #24292f; }
 
 /* TOC lateral */
 .sidebar nav[role="doc-toc"] {
@@ -150,7 +133,8 @@ pre.sourceCode span {
   --bs-body-bg: #0f1e27;
   --bs-body-color: #c8dde6;
   h1, h2, h3 { color: #7fd4e8; }
-  pre.sourceCode { background: #050d12; }
+  pre.sourceCode { background: #1e2530; border-color: #30404d; }
+  pre code, pre.sourceCode span { color: #e0e8ef; }
   tbody tr:nth-child(odd) { background: #162430; }
   tbody tr:nth-child(even) { background: #1c2f3c; }
   thead th { background: #0f3d52; }
