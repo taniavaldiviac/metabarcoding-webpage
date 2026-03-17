@@ -8,7 +8,6 @@ format:
     code-tools: true
     #theme: cosmo
     highlight-style: github
-    embed-resources: true
 execute:
   echo: false
   warning: false

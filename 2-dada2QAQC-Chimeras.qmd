@@ -1,158 +1,175 @@
 ---
-title: "Dada2 - Remoción de quimeras"
-#subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+title: "Dada2 - Remoción de quimeras y seguimiento de lecturas"
 format:
   html:
     toc-depth: 3
     code-fold: true
     code-tools: true
     highlight-style: github
-    embed-resources: true
 execute:
   echo: true
   warning: false
 ---
 
-# Introducción a la remoción de quimeras en dada2
+# Remoción de quimeras y filtrado final
 
-Las **quimeras** son secuencias artificiales producidas durante la amplificación por PCR. No representan ningún organismo real, sino artefactos técnicos que, de no eliminarse, inflaman artificialmente la riqueza de especies observada y distorsionan los análisis ecológicos.
-
-dada2 detecta y elimina quimeras con la función `removeBimeraDenovo()`, comparando cada secuencia con combinaciones de secuencias más abundantes para determinar si podría haber sido generada por recombinación.
+Las **quimeras** son secuencias artificiales producidas durante la amplificación por PCR: una cadena parcialmente extendida se hibrida con otra molecula diferente y se extiende hasta el final, generando una secuencia hibrida que no existe en la naturaleza. Si no se eliminan, inflan artificialmente la riqueza de especies observada.
 
 ---
 
-## ¿Cómo se forman las quimeras?
-
-Durante la PCR, una cadena de ADN parcialmente extendida puede **hibridarse con una molécula diferente** en ciclos posteriores y ser extendida hasta el final, produciendo una secuencia "híbrida" que tiene la primera mitad de una secuencia y la segunda mitad de otra.
-
-```
-Secuencia A: ████████████░░░░░░░░░░░
-Secuencia B: ░░░░░░░░░░░░████████████
-Quimera AB:  ████████████████████████  ← no existe en la naturaleza
-```
-
-Las quimeras son más frecuentes cuando:
-
-- Se hacen muchos ciclos de PCR (>30)
-- Se amplifican muestras con comunidades muy diversas
-- Hay alta similitud entre las secuencias del amplicón
-
----
-
-## ¿Qué hace el código en este paso?
-
-### 1. Remoción con `removeBimeraDenovo()`
+## Paso 1 — Remover quimeras con `removeBimeraDenovo()`
 
 ```{r eval=FALSE}
 seqtab.nochim <- removeBimeraDenovo(
   seqtab,
-  method = "consensus",
+  method      = "consensus",
   multithread = TRUE,
-  verbose = TRUE
+  verbose     = TRUE
 )
 ```
 
-- **`seqtab`**: tabla de secuencias generada con `makeSequenceTable()`.
-- **`method = "consensus"`**: cada secuencia candidata a quimera es verificada de forma independiente en cada muestra; se elimina si es quimérica en la mayoría de muestras donde aparece.
-- **`method = "pooled"`**: evalúa todas las muestras en conjunto (más sensible pero más lento).
-- **`multithread`**: usa todos los núcleos disponibles para acelerar el proceso.
-
-### 2. Evaluación de resultados
+- `method = "consensus"`: cada secuencia candidata se verifica de forma independiente en cada muestra; se elimina si es quimérica en la mayoria de las muestras donde aparece. Es el método recomendado.
+- `method = "pooled"`: evalua todas las muestras en conjunto (mas sensible pero mas lento).
 
 ```{r eval=FALSE}
-# Proporción de lecturas que sobreviven la remoción
-sum(seqtab.nochim) / sum(seqtab)
+# Proporción de lecturas que sobreviven
+freq.nochim <- sum(seqtab.nochim) / sum(seqtab)
+message("Lecturas no quiméricas: ", round(freq.nochim * 100, 2), "%")
 
-# Proporción de secuencias únicas que sobreviven
-ncol(seqtab.nochim) / ncol(seqtab)
+# Proporción de ASVs únicos que sobreviven
+message("ASVs totales antes: ", ncol(seqtab))
+message("ASVs despues de quimeras: ", ncol(seqtab.nochim))
 ```
 
-Estas dos métricas dan información complementaria:
+Es común que una alta proporción de **secuencias únicas** sea quimérica, pero que la **abundancia** retenida sea alta. Las quimeras suelen ser raras (pocas lecturas).
 
-| Métrica | Qué mide | Valor típico |
-|---------|----------|-------------|
-| Lecturas retenidas | Abundancia total conservada | > 85–95% |
-| Secuencias únicas retenidas | Cuántas ASVs son quiméricas | Variable |
+### Interpretación
 
----
-
-## Interpretación de los resultados
-
-Es común que un porcentaje alto de **secuencias únicas** sea quimérico, pero que la **abundancia** retenida sea alta. Esto ocurre porque las quimeras suelen ser raras (pocas lecturas), mientras que las secuencias biológicas reales son abundantes.
-
-| Escenario | Interpretación |
-|-----------|---------------|
-| >95% lecturas retenidas | Normal — pocas quimeras abundantes |
-| 80–95% lecturas retenidas | Aceptable — revisar parámetros de PCR |
-| <80% lecturas retenidas | Preocupante — posible problema de calidad o PCR |
-| <50% lecturas retenidas | Grave — revisar diseño experimental y calidad del ADN |
-
-### Señales de alerta
-
-- **Alta proporción de quimeras** puede indicar: demasiados ciclos de PCR, baja calidad del ADN, o contaminación.
-- Si la remoción es muy agresiva, considera cambiar de `method = "consensus"` a `method = "pooled"`.
-- Amplicones muy cortos o con alta similitud entre especies son más propensos a generar quimeras.
+| % lecturas retenidas | Interpretación |
+|----------------------|---------------|
+| > 95% | Normal [OK] |
+| 80-95% | Aceptable  -  revisar parámetros de PCR |
+| < 80% | Preocupante  -  revisar calidad del ADN |
+| < 50% | Grave  -  revisar diseno experimental |
 
 ---
 
-## Parámetros clave
+## Paso 2 — Distribución de longitudes y filtrado
 
-| Parámetro | Descripción | Opciones |
-|-----------|-------------|---------|
-| `method` | Estrategia de detección | `"consensus"` (recomendado), `"pooled"`, `"per-sample"` |
-| `multithread` | Paralelización | `TRUE` en servidor |
-| `allowOneOf` | Permite un extremo no-quimérico | `FALSE` por defecto |
-| `minFoldParentOverAbundance` | Qué tan más abundante debe ser el pariente | 1 (default) |
+Antes de filtrar por longitud, visualizamos la distribución de ASVs para identificar el rango esperado del amplicón.
 
----
+```{r eval=FALSE}
+seq_lengths <- nchar(colnames(seqtab.nochim))
+median_len  <- median(seq_lengths)
+sd_len      <- sd(seq_lengths)
 
-## ¿Por qué es importante este paso?
+message("Longitud mediana: ", median_len, " bp")
+message("Desviación estándar: ", round(sd_len, 2), " bp")
 
-- Sin remoción de quimeras, se sobreestima la riqueza de especies.
-- Las quimeras pueden recibir asignaciones taxonómicas erróneas, introduciendo organismos inexistentes en el análisis.
-- Es un paso **estándar** en cualquier pipeline de metabarcoding.
-- dada2 elimina quimeras de forma más conservadora que otros métodos (UCHIME), reduciendo la pérdida de secuencias reales.
+# Distribución rápida
+table(seq_lengths)
+```
 
----
+El pipeline filtra automáticamente ASVs fuera del rango mediana +/- 1 DE:
 
-## Recomendaciones
+```{r eval=FALSE}
+min_len <- median_len - sd_len
+max_len <- median_len + sd_len
 
-- Siempre calcula la proporción de lecturas retenidas antes y después.
-- Si pierdes >20% de las lecturas, investiga si el problema está en la PCR o en la calidad del ADN.
-- Compara `ncol(seqtab)` vs `ncol(seqtab.nochim)` para saber cuántas ASVs eran quiméricas.
-- Reporta siempre el porcentaje de remoción en la sección de métodos de tus publicaciones.
+indexes.to.keep <- which(
+  nchar(colnames(seqtab.nochim)) <= max_len &
+  nchar(colnames(seqtab.nochim)) >= min_len
+)
 
----
+cleaned.seqtab.nochim   <- seqtab.nochim[,  indexes.to.keep, drop = FALSE]
+filteredout.seqtab.nochim <- seqtab.nochim[, -indexes.to.keep, drop = FALSE]
 
-## Resumen
+message("ASVs antes del filtro: ",  ncol(seqtab.nochim))
+message("ASVs despues del filtro: ", ncol(cleaned.seqtab.nochim))
+message("ASVs filtrados por longitud: ", ncol(filteredout.seqtab.nochim))
+```
 
-| Aspecto | Explicación |
-|---------|-------------|
-| **Qué es** | Eliminación de secuencias artificiales producidas durante la PCR |
-| **Función** | `removeBimeraDenovo()` |
-| **Método recomendado** | `"consensus"` |
-| **Valores normales** | > 85–95% de lecturas retenidas |
-| **Por qué importa** | Evita falsos positivos y sobreestimación de la diversidad |
+Las ASVs filtradas se guardan en `final_data/logs/` para revisión posterior.
 
 ---
 
-## Ejercicios prácticos
+## Paso 3 — Tabla de seguimiento de lecturas (read tracking)
 
-1. **Calcula la proporción de lecturas retenidas** antes y después de la remoción. ¿Está dentro del rango esperado?
-2. **Compara el número de ASVs** antes (`ncol(seqtab)`) y después (`ncol(seqtab.nochim)`). ¿Qué porcentaje eran quiméricas?
-3. **Prueba ambos métodos** (`consensus` vs `pooled`): ¿cambia el resultado? ¿Cuál es más conservador?
+Esta tabla resume cuantas lecturas sobrevivieron cada paso del pipeline. Es la herramienta principal para diagnosticar donde se pierden lecturas.
+
+```{r eval=FALSE}
+getN <- function(x) sum(getUniques(x))
+
+track <- cbind(
+  out[exists, ],
+  sapply(dadaFs,  getN),
+  sapply(dadaRs,  getN),
+  sapply(mergers, getN),
+  rowSums(seqtab.nochim),
+  rowSums(cleaned.seqtab.nochim)
+)
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR",
+                     "merged", "nonchim", "length_filter")
+rownames(track) <- sample.names
+
+head(track)
+```
+
+```{r eval=FALSE}
+# Retenciónes globales por paso
+message("Input -> filtered:     ", round(mean(track[,"filtered"]      / track[,"input"]    * 100), 1), "%")
+message("Filtered -> merged:    ", round(mean(track[,"merged"]        / track[,"filtered"] * 100), 1), "%")
+message("Merged -> nonchim:     ", round(mean(track[,"nonchim"]       / track[,"merged"]   * 100), 1), "%")
+message("Nonchim -> length flt: ", round(mean(track[,"length_filter"] / track[,"nonchim"]  * 100), 1), "%")
+
+# Guardar tabla
+write.csv(track,
+  file.path(output_location, "logs",
+            paste0(run_name, "_", primer.data$locus_shorthand[i], "_read_tracking.csv")),
+  row.names = TRUE)
+```
+
+### Valores de referencia
+
+| Transicion | Normal | Revisar si |
+|-----------|--------|------------|
+| Input -> filtered | > 70% | < 50% |
+| Filtered -> merged | > 70% | < 50% (truncLen muy agresivo) |
+| Merged -> nonchim | > 85% | < 75% (muchas quimeras) |
+| Total (input -> final) | > 50% | < 30% |
+
+---
+
+## Paso 4 — Generar tabla ASV en formato largo
+
+```{r eval=FALSE}
+ASV_file <- file.path(output_location, "csv_output",
+                      paste0(run_name, "_", primer.data$locus_shorthand[i], "_ASV_table.csv"))
+
+current_asv <- as.data.frame(cleaned.seqtab.nochim) %>%
+  tibble::rownames_to_column("Sample_name") %>%
+  tidyr::pivot_longer(cols = -Sample_name, names_to = "Sequence", values_to = "nReads") %>%
+  dplyr::filter(nReads > 0) %>%
+  dplyr::mutate(Label = primer.data$locus_shorthand[i]) %>%
+  dplyr::relocate(Label, .after = Sample_name)
+
+readr::write_csv(current_asv, ASV_file)
+message("Tabla ASV guardada en: ", ASV_file)
+```
+
+El archivo resultante tiene una fila por muestra x ASV con lecturas > 0, listo para análisis downstream con phyloseq.
 
 ---
 
 :::{.callout-note}
 ## Recuerda
-Las quimeras son artefactos de PCR, no errores de secuenciación. Por eso dada2 las elimina **después** del denoising (que corrige errores de secuenciación) y del merge (que ensambla los pares). Este orden importa.
+Las quimeras son artefactos de PCR, no errores de secuenciación. Por eso dada2 las elimina **despues** del denoising (que corrige errores de secuenciación) y del merge (que ensambla los pares). Este orden importa.
 :::
 
 :::{.callout-tip}
-## Para el curso — revisar en clase
-1. Proporción de lecturas y ASVs retenidas.
-2. Diferencia entre `consensus` y `pooled`.
-3. Cómo interpretar una remoción alta vs baja.
-4. Relación entre el diseño de PCR y la aparición de quimeras.
+## Para el curso
+1. ¿Que porcentaje de lecturas se retienen despues de remover quimeras?
+2. ¿Cuantos ASVs quedan antes y despues del filtro de longitud?
+3. Revisa la tabla de tracking  -  ?en que paso se pierde mas lectura?
+4. ¿Hay muestras con retención < 30% en algun paso?
 :::

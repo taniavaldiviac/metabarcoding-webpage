@@ -93,7 +93,7 @@ La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar 
 
 - Presentación del equipo docente y los participantes
 - Objetivos de aprendizaje y estructura del programa
-- Herramientas que se utilizarán (R, RStudio, DADA2, servidor remoto)
+- Herramientas que se útilizarán (R, RStudio, DADA2, servidor remoto)
 - Dinámica de trabajo: teoría + práctica computacional
 
 ---
@@ -153,7 +153,7 @@ La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar 
 
 - Métodos de extracción de ADN y manejo de inhibidores
 - Marcadores genéticos comunes en eucariontes: COI, 18S, 12S, ITS
-- Etapas de la preparación de librerías de amplicones
+- Etapas de la preparación de librerías de amplicónes
 - Controles de laboratorio: blancos de extracción, negativos, positivos
 - Buenas prácticas para evitar contaminación
 
@@ -194,7 +194,7 @@ La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar 
 
 #### Paso 1 — Conexión VPN (desde fuera de la red CIBNOR)
 
-Para acceder al servidor desde fuera de las instalaciones del CIBNOR es necesario establecer primero una conexión VPN con **Hillstone Secure Connect**.
+Para acceder al servidor desde fuera de las instalaciónes del CIBNOR es necesario establecer primero una conexión VPN con **Hillstone Secure Connect**.
 
 ::: {.callout-warning icon="false"}
 **Requisito previo:** Descarga e instala el cliente VPN desde:\
@@ -229,7 +229,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 - Clonación del repositorio con los scripts y datos
 
 ::: {.callout-tip icon="false"}
-**Práctica:** [Conexión al servidor y clonación del repositorio](0-Conexion-clonacion.qmd)
+**Práctica:** [Conexión al servidor y clonación del repositorio](0-Conexión-clonación.qmd)
 :::
 
 ---
@@ -439,7 +439,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **11:20 – 13:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Explorar y visualizar los datos de ASVs utilizando las herramientas de análisis ecológico más utilizadas en estudios de eDNA.
+**Objetivo:** Explorar y visualizar los datos de ASVs útilizando las herramientas de análisis ecológico más útilizadas en estudios de eDNA.
 :::
 
 **phyloseq:**
@@ -469,7 +469,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **14:00 – 15:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Calcular e interpretar patrones de diversidad biológica y generar visualizaciones efectivas para comunicar resultados.
+**Objetivo:** Calcular e interpretar patrones de diversidad biológica y generar visualizaciones efectivas para comúnicar resultados.
 :::
 
 **Diversidad alfa (α):**
@@ -487,7 +487,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **Barplots de abundancia relativa:**
 
 - Composición taxonómica por grupo o condición
-- Adaptación para presentaciones y publicaciones
+- Adaptación para presentaciones y publicaciónes
 
 ---
 
@@ -510,7 +510,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **9:00 – 11:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Aprender a identificar y remover secuencias contaminantes utilizando controles negativos y el paquete `decontam`, mejorando la calidad y confiabilidad de los resultados.
+**Objetivo:** Aprender a identificar y remover secuencias contaminantes útilizando controles negativos y el paquete `decontam`, mejorando la calidad y confiabilidad de los resultados.
 :::
 
 - Tipos de controles negativos: blanco de extracción, PCR y campo
@@ -526,7 +526,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **11:20 – 13:00**
 
 - Diferencias entre OTUs y ASVs: definición, ventajas y limitaciones
-- ¿Cuándo y por qué seguir utilizando OTUs?
+- ¿Cuándo y por qué seguir útilizando OTUs?
 - Flujo de trabajo en VSEARCH: dereplicación, clustering, chimera checking
 - Umbrales de identidad: 97%, 99%
 - Introducción a `clustur` en R: integración con phyloseq
@@ -544,14 +544,14 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 
 **Paso 1 — Búsqueda en NCBI:**
 
-- Construcción de queries para amplicones y mitogenomas completos
-- Descarga paginada con `rentrez` respetando los límites de la API
+- Construcción de queries para amplicónes y mitogenomas completos
+- Descarga páginada con `rentrez` respetando los límites de la API
 - Parámetros: locus, longitud de amplicón, taxón objetivo
 
 **Paso 2 — PCR virtual:**
 
 - Identificación de sitios de anillamiento de primers con tolerancia a errores
-- Extracción de amplicones *in silico*
+- Extracción de amplicónes *in silico*
 - Renombrado de encabezados con anotación de NCBI
 - Formato final: `Species|Accession`
 

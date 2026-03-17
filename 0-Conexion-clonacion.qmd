@@ -6,7 +6,6 @@ format:
     code-fold: true
     code-tools: true
     highlight-style: github
-    embed-resources: true
 execute:
   echo: false
   warning: false

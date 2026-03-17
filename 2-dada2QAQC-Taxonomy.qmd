@@ -1,211 +1,171 @@
 ---
-title: "Dada2 - Asignación taxonómica"
-#subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+title: "Dada2 - Asignación taxonómica y guardado de resultados"
 format:
   html:
     toc-depth: 3
     code-fold: true
     code-tools: true
     highlight-style: github
-    embed-resources: true
 execute:
   echo: true
   warning: false
 ---
 
-# Introducción a la asignación taxonómica en dada2
+# Asignación taxonómica
 
-La **asignación taxonómica** es el paso que convierte secuencias anónimas (ASVs) en información biológica interpretable: géneros, familias, órdenes y, cuando es posible, especies. Es el puente entre el análisis bioinformático y la ecología de comunidades.
+La **asignación taxonómica** convierte secuencias anonimas (ASVs) en información biológica: generos, familias, ordenes y, cuando es posible, especies. Es el puente entre el análisis bioinformatico y la ecologia de comúnidades.
 
-dada2 utiliza dos funciones complementarias para esto:
-
-- **`assignTaxonomy()`** — clasifica cada ASV comparándola con una base de datos de referencia usando un clasificador bayesiano naïve.
-- **`addSpecies()`** — agrega asignación a nivel de especie por coincidencia exacta de secuencia.
+dada2 usa `assignTaxonomy()`, que implementa el clasificador bayesiano naive del RDP (Ribosomal Database Project): divide la secuencia en fragmentos de 8 nucleótidos (k-mers) y calcula la probabilidad de que pertenezcan a cada grupo taxonómico, asignando hasta el nivel donde la confianza (bootstrap) supera el umbral definido.
 
 ---
 
-## El método: clasificador bayesiano naïve (RDP)
-
-`assignTaxonomy()` implementa el clasificador del **Ribosomal Database Project (RDP)**. En lugar de buscar la secuencia más similar en la base de datos, este método:
-
-1. Divide la secuencia en fragmentos cortos de 8 nucleótidos (*k-mers*).
-2. Calcula la probabilidad de que esos k-mers pertenezcan a cada grupo taxonómico.
-3. Asigna la taxonomía al nivel jerárquico donde la confianza (bootstrap) supera el umbral definido.
-
-Esto lo hace **más robusto que BLAST** frente a secuencias nuevas o grupos poco representados en la base de datos.
-
----
-
-## ¿Qué hace el código en este paso?
-
-### 1. Asignación hasta género con `assignTaxonomy()`
+## Paso 1 — Asignar taxonomía con `assignTaxonomy()`
 
 ```{r eval=FALSE}
-taxa <- assignTaxonomy(
-  seqtab.nochim,
-  refFasta = "path/to/database.fasta.gz",
-  minBoot = 80,
-  multithread = TRUE,
-  verbose = TRUE
+tax_location <- file.path(metadata_location, primer.data$db_name[i])
+
+if (!file.exists(tax_location)) {
+  stop("No se encuentra la base de taxonomía: ", tax_location)
+}
+
+at <- assignTaxonomy(
+  colnames(cleaned.seqtab.nochim),
+  tax_location,
+  tryRC            = TRUE,
+  multithread      = TRUE,
+  outputBootstraps = TRUE,
+  verbose          = TRUE
 )
 ```
 
-| Parámetro | Descripción | Valor recomendado |
-|-----------|-------------|-----------------|
-| `seqtab.nochim` | Tabla de ASVs sin quimeras | — |
-| `refFasta` | Ruta a la base de datos de referencia | Depende del marcador |
-| `minBoot` | Confianza mínima (bootstrap) para asignar | 80 |
-| `multithread` | Paralelización | `TRUE` |
+- `tryRC = TRUE`: prueba tambien el complemento reverso de cada ASV (útil si el amplicón puede estar en cualquier orientacion)
+- `outputBootstraps = TRUE`: devuelve los valores de confianza por nivel taxonómico
+- La base de datos esta definida en `primer_data.csv` (columna `db_name`)
 
-### 2. Asignación a especie con `addSpecies()`
+Este paso puede tardar varios minutos dependiendo del número de ASVs y la base de datos.
+
+---
+
+## Paso 2 — Verificar el resultado
 
 ```{r eval=FALSE}
-taxa <- addSpecies(
-  taxa,
-  refFasta = "path/to/species_database.fasta.gz",
-  allowMultiple = FALSE
-)
+# Separar taxonomía y bootstraps
+tax_mat  <- at$tax
+boot_mat <- at$boot
+
+tax_df <- as.data.frame(tax_mat) %>%
+  tibble::rownames_to_column("Sequence")
+
+head(tax_df)
 ```
 
-- Busca coincidencia **exacta** de la secuencia completa del ASV con la base de datos.
-- Solo asigna especie si hay una única coincidencia (`allowMultiple = FALSE`). Si hay varias especies igualmente similares, no asigna ninguna para evitar errores.
+```{r eval=FALSE}
+# Porcentaje de ASVs asignados por nivel taxonómico
+ranks <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+pct_assigned <- colSums(!is.na(tax_mat)) / nrow(tax_mat) * 100
+round(pct_assigned, 1)
+```
 
-### 3. Inspección del resultado
+### Valores típicos segun nivel
+
+| Nivel | % asignado (típico) |
+|-------|---------------------|
+| Reino | 95-100% |
+| Filo | 80-95% |
+| Clase | 70-90% |
+| Orden | 60-85% |
+| Familia | 50-80% |
+| Genero | 30-70% |
+| Especie | 10-50% |
+
+La proporción baja a nivel de especie es normal: requiere coincidencia exacta con la base de datos.
+
+---
+
+## Paso 3 — Guardar archivos de taxonomía
 
 ```{r eval=FALSE}
-# Ver primeras asignaciones
-head(taxa)
+taxonomy_file  <- file.path(output_location, "csv_output",
+                            paste0(run_name, "_", primer.data$locus_shorthand[i], "_taxonomy_output.csv"))
+bootstrap_file <- file.path(output_location, "csv_output",
+                            paste0(run_name, "_", primer.data$locus_shorthand[i], "_tax_bootstrap.csv"))
 
-# Proporción de ASVs asignados por nivel taxonómico
-colSums(!is.na(taxa)) / nrow(taxa)
+# Tabla de taxonomía
+joined_old_new_taxa <- tax_df %>%
+  dplyr::select(dplyr::any_of(c("Sequence", ranks)))
+readr::write_csv(joined_old_new_taxa, taxonomy_file)
+
+# Tabla de bootstraps unida a taxonomía
+boot_df <- as.data.frame(boot_mat) %>%
+  tibble::rownames_to_column("Sequence")
+names(boot_df)[-1] <- paste0("boot.", names(boot_df)[-1])
+ready_new_taxa <- dplyr::left_join(boot_df, joined_old_new_taxa, by = "Sequence")
+readr::write_csv(ready_new_taxa, bootstrap_file)
+
+message("Taxonomía guardada en: ", taxonomy_file)
+message("Bootstraps guardados en: ", bootstrap_file)
 ```
 
 ---
 
-## Bases de datos de referencia
+## Paso 4 — Guardar insumos para phyloseq (.RData)
 
-La elección de la base de datos es **crítica** y depende del marcador genético utilizado:
-
-| Base de datos | Marcadores | Cobertura taxonómica | Notas |
-|--------------|------------|----------------------|-------|
-| **SILVA** | 16S, 18S | Bacterias, Arqueas, Eucariontes | Muy completa, actualizaciones frecuentes |
-| **PR2** | 18S V4/V9 | Protistas | Especializada en eucariontes unicelulares |
-| **MIDORI** | COI, 12S, 18S | Eucariontes, marinos | Ideal para metabarcoding de fauna |
-| **BOLD** | COI | Metazoos | Código de barras de animales |
-| **RDP** | 16S, 18S, ITS | Hongos, Bacterias | Referencia clásica |
-
-> Para el curso de metabarcoding de **eucariontes marinos**, las bases de datos más utilizadas son **PR2** (protistas y microalgas) y **MIDORI** (metazoos, peces, invertebrados).
-
----
-
-## Interpretación de los valores de bootstrap
-
-El valor de bootstrap indica la **confianza** en la asignación en cada nivel taxonómico:
-
-| Bootstrap | Interpretación |
-|-----------|---------------|
-| ≥ 80 | Asignación confiable (recomendado) |
-| 60–79 | Moderada — usar con precaución |
-| < 60 | Baja confianza — mejor no asignar |
-
-Cuando la confianza cae por debajo del umbral `minBoot`, dada2 devuelve `NA` en ese nivel y los inferiores. Esto es **correcto y esperado**: es mejor no asignar que asignar mal.
-
-```
-Ejemplo:
-Filo: Chordata     (boot = 100) ✅
-Clase: Actinopteri (boot = 98)  ✅
-Orden: NA          (boot = 55)  → no asignado
-```
-
----
-
-## Evaluación de la calidad de la asignación
+El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo `.RData`. Esto permite continuar el análisis en otra sesion sin repetir los pasos anteriores.
 
 ```{r eval=FALSE}
-# Porcentaje asignado por nivel
-round(colSums(!is.na(taxa)) / nrow(taxa) * 100, 1)
+# Preparar matrices para phyloseq
+otu_mat <- cleaned.seqtab.nochim
+storage.mode(otu_mat) <- "integer"
 
-# ASVs sin asignación a ningún nivel
-sum(is.na(taxa[,1]))
+tax_mat_ps <- joined_old_new_taxa %>%
+  tibble::column_to_rownames("Sequence") %>%
+  as.matrix()
+
+# Cargar metadatos de muestra
+sample_meta <- readr::read_csv(
+  file.path(metadata_location, "metadata.csv"),
+  show_col_types = FALSE
+) %>%
+  dplyr::rename(SampleID = sample_id) %>%
+  tibble::column_to_rownames("SampleID")
+
+sample_meta <- sample_meta[rownames(otu_mat), , drop = FALSE]
+
+# Guardar todo en un .RData
+rdata_path <- file.path(output_location, "rdata_output",
+                        paste0(run_name, "_", primer.data$locus_shorthand[i], "_phyloseq_inputs.RData"))
+
+save(otu_mat, tax_mat_ps, sample_meta, track,
+     joined_old_new_taxa, ready_new_taxa,
+     file = rdata_path, compress = "xz")
+
+message("RData guardado en: ", rdata_path)
 ```
 
-### ¿Qué es normal?
-
-| Nivel taxonómico | % asignado (típico) |
-|------------------|---------------------|
-| Reino | 95–100% |
-| Filo | 80–95% |
-| Clase | 70–90% |
-| Orden | 60–85% |
-| Familia | 50–80% |
-| Género | 30–70% |
-| Especie | 10–50% |
-
-La proporción baja a nivel de especie es normal: requiere coincidencia exacta y una buena representación en la base de datos.
+Con estos tres objetos (`otu_mat`, `tax_mat_ps`, `sample_meta`) y el archivo `.RData`, el siguiente paso es construir el objeto phyloseq para análisis de diversidad (Dia 4).
 
 ---
 
 ## Causas de baja asignación taxonómica
 
-| Causa | Síntoma | Solución |
+| Causa | Sintoma | Solucion |
 |-------|---------|---------|
-| Base de datos desactualizada | Muchos NA a nivel de filo | Usar versión más reciente de la BD |
-| Marcador poco representado | Bajos % en todos los niveles | Considerar BD más específica |
-| `minBoot` muy alto | Muchos NA en niveles medios | Bajar a 50–60 (con precaución) |
-| Comunidad muy diversa o poco estudiada | Muchos NA en niveles bajos | Normal para protistas o invertebrados raros |
-| Quimeras no removidas | Asignaciones inconsistentes | Verificar paso anterior |
-
----
-
-## ¿Por qué es importante este paso?
-
-- Transforma las secuencias en **nombres biológicos** interpretables ecológicamente.
-- Permite filtrar contaminantes, organismos no objetivo o secuencias espurias.
-- Es la base para todos los análisis posteriores: diversidad, abundancia relativa, redes tróficas.
-- La calidad de la asignación define directamente la calidad de las conclusiones ecológicas.
-
----
-
-## Recomendaciones
-
-- Usa la base de datos más específica para tu marcador y grupo taxonómico objetivo.
-- Mantén `minBoot = 80` como mínimo; bajar a 50 aumenta la cobertura pero reduce la confianza.
-- Reporta siempre el porcentaje de ASVs asignados por nivel en tu sección de métodos.
-- Considera construir una base de datos local personalizada si trabajas con grupos taxonómicos poco representados (ver Día 5).
-
----
-
-## Resumen
-
-| Aspecto | Explicación |
-|---------|-------------|
-| **Qué es** | Identificación taxonómica de ASVs contra una base de datos de referencia |
-| **Función principal** | `assignTaxonomy()` + `addSpecies()` |
-| **Método** | Clasificador bayesiano naïve (RDP) |
-| **Parámetro clave** | `minBoot = 80` (confianza mínima) |
-| **Por qué importa** | Convierte secuencias en información biológica para análisis ecológico |
-
----
-
-## Ejercicios prácticos
-
-1. **Evalúa el porcentaje de asignación** por nivel taxonómico. ¿Coincide con los rangos esperados?
-2. **Filtra los ASVs sin asignación** a reino o filo: ¿cuántos son? ¿Podrían ser contaminantes?
-3. **Compara dos bases de datos** (ej. SILVA vs PR2 para 18S): ¿cambia la composición de la comunidad?
-4. **Ajusta `minBoot`**: prueba con 60 y con 90. ¿Cómo cambia el número de NA?
+| Base de datos desactualizada | Muchos NA en filo | Usar versión mas reciente |
+| Marcador poco representado | % bajos en todos los niveles | Considerar BD mas especifica |
+| `minBoot` muy alto | Muchos NA en niveles medios | Bajar a 60 con precaucion |
+| Quimeras no removidas | Asignaciónes inconsistentes | Verificar paso anterior |
 
 ---
 
 :::{.callout-note}
 ## Recuerda
-La asignación taxonómica depende completamente de la calidad y cobertura de la base de datos. Ningún método puede asignar correctamente un organismo que no está representado en la referencia. Siempre cita la versión de la base de datos que usaste.
+La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningun método puede asignar correctamente un organismo que no esta representado en la referencia. Siempre reporta la versión de la base de datos que usaste en la sección de métodos.
 :::
 
 :::{.callout-tip}
-## Para el curso — revisar en clase
-1. Porcentaje de asignación por nivel taxonómico.
-2. Diferencia entre `assignTaxonomy()` y `addSpecies()`.
-3. Elección de la base de datos según el marcador.
-4. Interpretación de los valores de bootstrap.
-5. Cómo filtrar resultados con baja confianza.
+## Para el curso
+1. ¿Que porcentaje de ASVs se asignan a nivel de filo? ?Y a nivel de genero?
+2. ¿Hay ASVs sin asignación a ningun nivel? ¿Cuantos son?
+3. Revisa los valores de bootstrap en `ready_new_taxa`  -  ¿Hay asignaciónes con baja confianza?
+4. ¿El `.RData` fue creado correctamente en `final_data/rdata_output/`?
 :::
