@@ -51,8 +51,19 @@ i        <- 1          # fila de primer_data.csv a procesar (cambiar por locus)
 run_name <- format(Sys.time(), "%Y%m%d_%H%M") # fecha y hora de inicio (ej. "20250326_1430")
 ```
 
+**`here::here()`** detecta automáticamente la raíz del proyecto (la carpeta donde está el archivo `.Rproj`), sin importar desde dónde se ejecute el script. Esto evita rutas absolutas del tipo `/home/usr01/metabarcoding-code/...` que cambian en cada computadora o usuario.
+
+**`file.path()`** construye rutas de forma segura uniendo componentes con el separador correcto del sistema operativo (`/` en Linux/Mac, `\` en Windows). Por ejemplo:
+
+```
+file.path(proj_root, "for_dada2")
+# resultado: "/home/usr01/metabarcoding-code/for_dada2"
+```
+
+Es equivalente a pegar strings con `paste0()`, pero portable entre sistemas.
+
 - `i` selecciona el locus a procesar (fila en `primer_data.csv`)
-- `run_name` se genera automáticamente con la fecha y hora de inicio y se usa como prefijo en todos los archivos de salida
+- `run_name` se genera automáticamente con la fecha y hora de inicio y se usa como prefijo en todos los archivos de salida — así cada corrida produce archivos con nombre único
 
 ---
 
