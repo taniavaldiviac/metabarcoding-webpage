@@ -166,9 +166,26 @@ sample.names <- sample.names[!empty_files]
 
 ## Paso 7 — Inspeccion de calidad
 
+En el servidor no hay pantalla, por lo que las gráficas deben guardarse explícitamente con `png()`/`dev.off()`:
+
 ```{r eval=FALSE}
-plotQualityProfile(fnFs[1:4])  # Forward
-plotQualityProfile(fnRs[1:4])  # Reverse
+png(file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_qualityF.png")),
+    width = 1200, height = 800, res = 150)
+plotQualityProfile(fnFs[1:4])
+dev.off()
+
+png(file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_qualityR.png")),
+    width = 1200, height = 800, res = 150)
+plotQualityProfile(fnRs[1:4])
+dev.off()
+```
+
+Las gráficas quedan en `final_data/logs/`. Para descargarlas a tu computadora **desde tu terminal local**:
+
+```bash
+scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/logs/*quality*.png ~/Downloads/
 ```
 
 - El eje Y muestra la calidad Phred (Q), el eje X el ciclo (posición en la lectura)
