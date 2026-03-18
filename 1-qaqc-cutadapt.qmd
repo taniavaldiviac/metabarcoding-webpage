@@ -236,8 +236,14 @@ Descarga el reporte:
 scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/
 ```
 
-| **Notas del script**
-| - Usa FWD (forward) y el RC del REV para -G (paired-end).
-| - No dependas de cambiar de carpeta; el script ya usa rutas claras.
-| - Crea directorios de salida antes de escribir.
-| - Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/.
+:::{.callout-note}
+## Notas del script
+
+- **Primers paired-end:** El script busca el primer forward al inicio de R1 (`-g`) y el complemento reverso del primer reverse al inicio de R2 (`-G`). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.
+
+- **Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (`raw_fastqs/`, `for_dada2/`, etc.), por lo que debe ejecutarse desde `~/metabarcoding-code`. Si lo corres desde otra carpeta, no encontrará los archivos.
+
+- **Los directorios de salida se crean automáticamente:** El script hace `mkdir -p` de `for_dada2/` y `cutadapt_reports/` antes de escribir, así que no necesitas crearlos manualmente.
+
+- **Convención de nombres requerida:** El script espera archivos con el patrón `*_R1_001.fastq` y `*_R2_001.fastq` en `raw_fastqs/`. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.
+:::

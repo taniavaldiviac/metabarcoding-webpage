@@ -407,11 +407,24 @@ Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar pará
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Descarga el reporte:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="line-block"><strong>Notas del script</strong><br>
-- Usa FWD (forward) y el RC del REV para -G (paired-end).<br>
-- No dependas de cambiar de carpeta; el script ya usa rutas claras.<br>
-- Crea directorios de salida antes de escribir.<br>
-- Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/.</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notas del script
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><strong>Primers paired-end:</strong> El script busca el primer forward al inicio de R1 (<code>-g</code>) y el complemento reverso del primer reverse al inicio de R2 (<code>-G</code>). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.</p></li>
+<li><p><strong>Corre siempre desde la raíz del proyecto:</strong> El script usa rutas relativas (<code>raw_fastqs/</code>, <code>for_dada2/</code>, etc.), por lo que debe ejecutarse desde <code>~/metabarcoding-code</code>. Si lo corres desde otra carpeta, no encontrará los archivos.</p></li>
+<li><p><strong>Los directorios de salida se crean automáticamente:</strong> El script hace <code>mkdir -p</code> de <code>for_dada2/</code> y <code>cutadapt_reports/</code> antes de escribir, así que no necesitas crearlos manualmente.</p></li>
+<li><p><strong>Convención de nombres requerida:</strong> El script espera archivos con el patrón <code>*_R1_001.fastq</code> y <code>*_R2_001.fastq</code> en <code>raw_fastqs/</code>. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.</p></li>
+</ul>
+</div>
+</div>
 
 
 <!-- -->
@@ -1126,11 +1139,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb17-236"><a href="#cb17-236" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span>
 <span id="cb17-237"><a href="#cb17-237" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb17-238"><a href="#cb17-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-239"><a href="#cb17-239" aria-hidden="true" tabindex="-1"></a>| **Notas del script**</span>
-<span id="cb17-240"><a href="#cb17-240" aria-hidden="true" tabindex="-1"></a>| - Usa FWD (forward) y el RC del REV para -G (paired-end).</span>
-<span id="cb17-241"><a href="#cb17-241" aria-hidden="true" tabindex="-1"></a>| - No dependas de cambiar de carpeta; el script ya usa rutas claras.</span>
-<span id="cb17-242"><a href="#cb17-242" aria-hidden="true" tabindex="-1"></a>| - Crea directorios de salida antes de escribir.</span>
-<span id="cb17-243"><a href="#cb17-243" aria-hidden="true" tabindex="-1"></a>| - Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/.</span></code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb17-239"><a href="#cb17-239" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb17-240"><a href="#cb17-240" aria-hidden="true" tabindex="-1"></a><span class="fu">## Notas del script</span></span>
+<span id="cb17-241"><a href="#cb17-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-242"><a href="#cb17-242" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Primers paired-end:** El script busca el primer forward al inicio de R1 (<span class="in">`-g`</span>) y el complemento reverso del primer reverse al inicio de R2 (<span class="in">`-G`</span>). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.</span>
+<span id="cb17-243"><a href="#cb17-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-244"><a href="#cb17-244" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (<span class="in">`raw_fastqs/`</span>, <span class="in">`for_dada2/`</span>, etc.), por lo que debe ejecutarse desde <span class="in">`~/metabarcoding-code`</span>. Si lo corres desde otra carpeta, no encontrará los archivos.</span>
+<span id="cb17-245"><a href="#cb17-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-246"><a href="#cb17-246" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Los directorios de salida se crean automáticamente:** El script hace <span class="in">`mkdir -p`</span> de <span class="in">`for_dada2/`</span> y <span class="in">`cutadapt_reports/`</span> antes de escribir, así que no necesitas crearlos manualmente.</span>
+<span id="cb17-247"><a href="#cb17-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-248"><a href="#cb17-248" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Convención de nombres requerida:** El script espera archivos con el patrón <span class="in">`*_R1_001.fastq`</span> y <span class="in">`*_R2_001.fastq`</span> en <span class="in">`raw_fastqs/`</span>. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.</span>
+<span id="cb17-249"><a href="#cb17-249" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
