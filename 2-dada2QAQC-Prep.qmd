@@ -69,6 +69,18 @@ Es equivalente a pegar strings con `paste0()`, pero portable entre sistemas.
 
 ## Paso 3 — Leer parámetros del locus
 
+`primer_data.csv` es el archivo de configuración central del pipeline. Contiene una fila por cada locus/marcador que quieres analizar, con toda la información que el script necesita para procesar ese marcador:
+
+| Columna | Qué contiene |
+|---------|-------------|
+| `locus_shorthand` | Identificador corto del marcador (ej. `12S`) — se usa para filtrar los archivos FASTQ y nombrar los outputs |
+| `F_qual` | Secuencia del primer forward |
+| `R_qual` | Secuencia del primer reverse |
+| `db_name` | Nombre del archivo de base de datos de taxonomía en `metadata/` |
+| `max_trim` | Longitud máxima de truncamiento permitida — evita cortar tanto que se pierda el solapamiento F/R |
+
+Si el curso tiene más de un marcador (ej. 12S y COI), cada uno tiene su propia fila y se procesan cambiando el valor de `i`.
+
 ```{r eval=FALSE}
 primer_cols <- readr::read_csv(primer_csv, n_max = 0, show_col_types = FALSE) %>% names()
 
@@ -88,7 +100,7 @@ if (length(missing_cols) > 0) stop("Faltan columnas: ", paste(missing_cols, coll
 primer.data
 ```
 
-Deberías ver la tabla con los parámetros de cada locus/primer. Verifica que la fila `i` corresponde al locus que quieres analizar.
+Deberías ver la tabla completa. Verifica que la fila `i` corresponde al locus que quieres analizar — el pipeline usará `primer.data$locus_shorthand[i]`, `primer.data$db_name[i]`, etc. en todos los pasos siguientes.
 
 ---
 
