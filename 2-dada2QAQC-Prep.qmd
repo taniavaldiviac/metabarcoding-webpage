@@ -1,0 +1,233 @@
+---
+title: "Dada2 - Preparación y Filtrado Inicial"
+format:
+  html:
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    highlight-style: github
+execute:
+  echo: true
+  warning: false
+---
+
+# Preparación del entorno y filtrado inicial
+
+Antes de correr cualquier análisis, configuramos el entorno, definimos rutas y válidamos los datos de entrada.
+
+---
+
+## Paso 1 — Cargar librerias
+
+```{r eval=FALSE}
+library(dada2, quietly = TRUE)     # pipeline principal
+library(tidyverse, quietly = TRUE) # manipulacion de datos
+library(seqinr)                    # útilidades FASTA
+library(ShortRead)                 # lectura/QA de FASTQ
+library(digest)                    # hashes SHA1 para ASVs
+library(here)                      # rutas relativas al proyecto
+library(fs)                        # operaciónes con archivos
+library(readr)                     # lectura/escritura de CSVs
+
+set.seed(42)  # reproducibilidad
+```
+
+Si no hay errores, todas las librerias estan disponibles en el servidor.
+
+---
+
+## Paso 2 — Definir rutas y parámetros
+
+```{r eval=FALSE}
+proj_root <- here::here()
+setwd(proj_root)
+
+fastq_location    <- file.path(proj_root, "for_dada2")
+output_location   <- file.path(proj_root, "final_data")
+metadata_location <- file.path(proj_root, "metadata")
+primer_csv        <- file.path(metadata_location, "primer_data.csv")
+
+i        <- 1          # fila de primer_data.csv a procesar (cambiar por locus)
+run_name <- format(Sys.time(), "%Y%m%d_%H%M") # fecha y hora de inicio (ej. "20250326_1430")
+```
+
+- `i` selecciona el locus a procesar (fila en `primer_data.csv`)
+- `run_name` se genera automáticamente con la fecha y hora de inicio y se usa como prefijo en todos los archivos de salida
+
+---
+
+## Paso 3 — Leer parámetros del locus
+
+```{r eval=FALSE}
+primer_cols <- readr::read_csv(primer_csv, n_max = 0, show_col_types = FALSE) %>% names()
+
+primer.data <- readr::read_csv(
+  primer_csv,
+  col_types = readr::cols(
+    !!primer_cols[1] := readr::col_character(),
+    !!primer_cols[2] := readr::col_character(),
+    .default = readr::col_guess()
+  )
+)
+
+required_cols <- c("locus_shorthand", "F_qual", "R_qual", "db_name", "max_trim")
+missing_cols  <- setdiff(required_cols, colnames(primer.data))
+if (length(missing_cols) > 0) stop("Faltan columnas: ", paste(missing_cols, collapse = ", "))
+
+primer.data
+```
+
+Deberías ver la tabla con los parámetros de cada locus/primer. Verifica que la fila `i` corresponde al locus que quieres analizar.
+
+---
+
+## Paso 4 — Guardar información de sesion
+
+```{r eval=FALSE}
+writeLines(
+  capture.output(sessionInfo()),
+  file.path(output_location, "logs", "sessionInfo.txt")
+)
+```
+
+Este archivo queda en `final_data/logs/` y permite reproducir el mismo entorno en el futuro.
+
+---
+
+## Paso 5 — Localizar archivos FASTQ
+
+```{r eval=FALSE}
+fnFs <- grep(primer.data$locus_shorthand[i],
+             sort(list.files(fastq_location, pattern = "R1_001.fastq", full.names = TRUE)),
+             value = TRUE)
+fnRs <- grep(primer.data$locus_shorthand[i],
+             sort(list.files(fastq_location, pattern = "R2_001.fastq", full.names = TRUE)),
+             value = TRUE)
+
+sample.names <- paste(
+  sapply(strsplit(basename(fnFs), "_"), `[`, 1),
+  sapply(strsplit(basename(fnFs), "_"), `[`, 3),
+  sep = "_"
+)
+
+stopifnot(length(fnFs) == length(fnRs))
+stopifnot(!any(duplicated(sample.names)))
+
+length(fnFs)
+head(sample.names)
+```
+
+Deberías ver el número de muestras y los primeros nombres. Si el número no coincide con lo esperado, revisa que los archivos esten en `for_dada2/` y que el `locus_shorthand` en `primer_data.csv` sea correcto.
+
+---
+
+## Paso 6 — Preparar rutas de archivos filtrados
+
+```{r eval=FALSE}
+filtFs <- file.path(fastq_location, "filtered", paste0(sample.names, "_F_filt.fastq"))
+filtRs <- file.path(fastq_location, "filtered", paste0(sample.names, "_R_filt.fastq"))
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+
+# Eliminar archivos vacios o corruptos
+file.empty   <- function(filenames) file.info(filenames)$size == 20
+empty_files  <- file.empty(fnFs) | file.empty(fnRs)
+fnFs         <- fnFs[!empty_files]
+fnRs         <- fnRs[!empty_files]
+filtFs       <- filtFs[!empty_files]
+filtRs       <- filtRs[!empty_files]
+sample.names <- sample.names[!empty_files]
+```
+
+---
+
+## Paso 7 — Inspeccion de calidad
+
+```{r eval=FALSE}
+plotQualityProfile(fnFs[1:4])  # Forward
+plotQualityProfile(fnRs[1:4])  # Reverse
+```
+
+- El eje Y muestra la calidad Phred (Q), el eje X el ciclo (posición en la lectura)
+- Busca donde la **linea verde** (mediana) cae por debajo de **Q30**  -  ese es el punto de truncamiento ideal
+- Las lecturas Reverse (R2) típicamente degradan mas rápido que las Forward (R1)
+
+---
+
+## Paso 8 — Cálculo automatico del punto de truncamiento
+
+El script calcula el punto de truncamiento usando una ventana movil sobre la calidad mediana, limitado por `max_trim` de `primer_data.csv` para preservar el solapamiento F/R.
+
+```{r eval=FALSE}
+n <- 500000; window_size <- 10
+
+trimsF <- numeric(length(fnFs))
+for (f in seq_along(fnFs)) {
+  srqa   <- qa(fnFs[f], n = n)
+  df     <- srqa[["perCycle"]]$quality
+  means  <- rowsum(df$Score * df$Count, df$Cycle) / rowsum(df$Count, df$Cycle)
+  window_values <- vapply(1:(length(means) - window_size),
+                          function(j) mean(means[j:(j + window_size)]), numeric(1))
+  trimsF[f] <- min(which(window_values < 30))
+}
+where_trim_all_Fs <- median(trimsF, na.rm = TRUE)
+if (where_trim_all_Fs > primer.data$max_trim[i]) where_trim_all_Fs <- primer.data$max_trim[i]
+
+# Idem para Reverse -> where_trim_all_Rs
+
+message("Puntos de truncamiento: F=", where_trim_all_Fs, " | R=", where_trim_all_Rs)
+```
+
+---
+
+## Paso 9 — Filtrado y trimming
+
+```{r eval=FALSE}
+out <- filterAndTrim(
+  fnFs, filtFs, fnRs, filtRs,
+  truncLen    = c(where_trim_all_Fs, where_trim_all_Rs),
+  maxN        = 0,        # elimina lecturas con Ns
+  maxEE       = c(2, 2),  # máximo 2 errores esperados por lectura
+  rm.phix     = TRUE,     # remueve contaminación PhiX de Illumina
+  compress    = TRUE,
+  multithread = 4,
+  matchIDs    = TRUE      # asegura pareado correcto F/R
+)
+```
+
+---
+
+## Paso 10 — Verificar retención
+
+```{r eval=FALSE}
+pct_retained <- round(sum(out[,"reads.out"]) / sum(out[,"reads.in"]) * 100, 2)
+message("Retención global: ", pct_retained, "%")
+
+# Muestras con retención muy baja
+low_retention <- out[,"reads.out"] / out[,"reads.in"] < 0.3
+if (any(low_retention)) warning("Muestras < 30%: ", paste(rownames(out)[low_retention], collapse=", "))
+
+# Guardar tabla
+write.csv(out,
+  file.path(output_location, "logs",
+            paste0(run_name, "_", primer.data$locus_shorthand[i], "_filterAndTrim_stats.csv")),
+  row.names = TRUE)
+
+head(out)
+```
+
+| Retención global | Interpretación |
+|-----------------|----------------|
+| > 70% | Normal |
+| 50-70% | Aceptable  -  revisar parámetros |
+| < 50% | Bajo  -  relajar `maxEE` o `truncLen` |
+| < 30% en una muestra | Muestra problematica  -  revisar QC |
+
+---
+
+:::{.callout-tip}
+## Para el curso
+1. Comparar los gráficos de calidad Forward vs Reverse  -  ?donde cae la calidad?
+2. Verificar los puntos de truncamiento calculados  -  ?son razonables?
+3. Revisar la tabla de retención  -  ¿Hay muestras problematicas?
+:::

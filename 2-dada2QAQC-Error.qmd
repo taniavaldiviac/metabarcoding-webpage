@@ -1,0 +1,157 @@
+---
+title: "Dada2 - Dereplicación e Inferencia de Errores"
+format:
+  html:
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    highlight-style: github
+execute:
+  echo: true
+  warning: false
+---
+
+# Dereplicación y aprendizaje del modelo de error
+
+Este paso tiene dos partes: primero **dereplicamos** las lecturas (eliminamos duplicados y contamos abundancias), luego **aprendemos el modelo de error** de la secuenciadora para poder distinguir errores técnicos de variantes biológicas reales.
+
+---
+
+## Paso 1 — Dereplicación
+
+La dereplicación colapsa lecturas identicas en secuencias únicas y registra cuantas veces aparece cada una. Esto reduce el volumen de datos sin perder información biológica.
+
+```{r eval=FALSE}
+exists <- file.exists(filtFs) & file.exists(filtRs)
+filtFs <- filtFs[exists]
+filtRs <- filtRs[exists]
+sample.names <- sample.names[exists]
+
+derepFs <- derepFastq(filtFs, verbose = TRUE)
+derepRs <- derepFastq(filtRs, verbose = TRUE)
+names(derepFs) <- sample.names
+names(derepRs) <- sample.names
+```
+
+Deberías ver para cada muestra: cuantas lecturas únicas quedaron. Un ratio alto de secuencias únicas / total puede indicar alta diversidad o contaminación; un ratio muy bajo es normal en muestras con taxones dominantes.
+
+```{r eval=FALSE}
+# Diagnóstico rápido de la primera muestra
+n_unique_F  <- length(derepFs[[1]]$uniques)
+total_reads <- sum(derepFs[[1]]$uniques)
+message("Secuencias únicas Forward: ", n_unique_F)
+message("Ratio compresión: ", round(n_unique_F / total_reads * 100, 2), "%")
+```
+
+---
+
+## Paso 2 — Aprender el modelo de error
+
+La secuenciadora Illumina comete errores al leer las bases (una A real puede leerse como C, G o T). `learnErrors()` estima estas tasas para cada tipo de transicion (A->C, A->G, etc.) en función de la calidad Phred de cada posición.
+
+```{r eval=FALSE}
+nbases_target <- 1e8   # 100 millones de bases
+max_consist   <- 25    # iteraciónes máximas para convergencia
+
+errF <- learnErrors(
+  filtFs,
+  nbases      = nbases_target,
+  randomize   = TRUE,
+  multithread = TRUE,
+  MAX_CONSIST = max_consist,
+  verbose     = TRUE
+)
+
+errR <- learnErrors(
+  filtRs,
+  nbases      = nbases_target,
+  randomize   = TRUE,
+  multithread = TRUE,
+  MAX_CONSIST = max_consist,
+  verbose     = TRUE
+)
+```
+
+Este paso puede tardar varios minutos. En la salida verás el número de bases usadas y como convergen las tasas de error iteración a iteración.
+
+---
+
+## Paso 3 — Visualizar el modelo de error
+
+El gráfico de errores muestra las 12 posibles transiciones (A->C, A->G, etc.). Los **puntos rojos** son las tasas observadas; la **linea negra** es el modelo ajustado. Deben seguir el mismo patrón: la tasa de error cae conforme aumenta la calidad (Q-score).
+
+```{r eval=FALSE}
+plotErrors(errF, nominalQ = TRUE)
+plotErrors(errR, nominalQ = TRUE)
+```
+
+El pipeline guarda estas gráficas automáticamente en `final_data/logs/`:
+
+```{r eval=FALSE}
+png(file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_errF.png")),
+    width = 1200, height = 1200, res = 150)
+print(plotErrors(errF, nominalQ = TRUE))
+dev.off()
+
+png(file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_errR.png")),
+    width = 1200, height = 1200, res = 150)
+print(plotErrors(errR, nominalQ = TRUE))
+dev.off()
+```
+
+### ¿Que buscar en el gráfico?
+
+| Senal | Interpretación |
+|-------|---------------|
+| Puntos rojos cerca de la linea negra | Buen ajuste del modelo [OK] |
+| Puntos muy dispersos | Datos insuficientes o calidad variable |
+| Tasas de error > 10% (A->C, etc.) | Posible problema de calidad del run |
+| Transiciones correctas (A->A) cerca de 1.0 | Normal |
+
+---
+
+## Paso 4 — Inferencia de ASVs con `dada()`
+
+Con el modelo de error aprendido, `dada()` infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.
+
+```{r eval=FALSE}
+dadaFs <- dada(derepFs, err = errF, multithread = TRUE)
+dadaRs <- dada(derepRs, err = errR, multithread = TRUE)
+```
+
+Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo:
+`Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.`
+
+```{r eval=FALSE}
+# Cuantos ASVs se infirieron en la primera muestra
+dadaFs[[1]]
+```
+
+Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto "colapso" el denoising.
+
+---
+
+## Retención esperada en este paso
+
+| Paso | Lectura típica |
+|------|---------------|
+| Lecturas únicas tras dereplicación | 5-30% del total (normal) |
+| ASVs inferidos vs únicos entrada | 1-10% (alta compresión es buena senal) |
+
+---
+
+:::{.callout-note}
+## Recuerda
+- `learnErrors()` necesita suficientes datos (al menos varios MB de FASTQ filtrados) para estimar tasas confiables.
+- Si el modelo no converge, aumenta `MAX_CONSIST` a 50 o `nbases_target` a `2e8`.
+- Los modelos `errF` y `errR` son independientes: las lecturas Reverse suelen tener tasas de error ligeramente mayores que las Forward, y eso es normal.
+:::
+
+:::{.callout-tip}
+## Para el curso
+1. Revisa `plotErrors()`  -  ¿Los puntos rojos siguen la linea negra?
+2. Compara el número de ASVs inferidos con el número de secuencias únicas de entrada.
+3. ¿Hay alguna muestra con muy pocos ASVs? ¿Coincide con las que tenian baja retención en filterAndTrim?
+:::

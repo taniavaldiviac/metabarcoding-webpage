@@ -278,12 +278,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>primer_csv        <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, <span class="st">"primer_data.csv"</span>)</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>i        <span class="ot">&lt;-</span> <span class="dv">1</span>          <span class="co"># fila de primer_data.csv a procesar (cambiar por locus)</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>run_name <span class="ot">&lt;-</span> <span class="st">"26112025"</span> <span class="co"># identificador de la corrida (usar fecha o ID único)</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>run_name <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">"%Y%m%d_%H%M"</span>) <span class="co"># fecha y hora de inicio (ej. "20250326_1430")</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <ul>
-<li><code>i</code> seleccióna el locus a procesar (fila en <code>primer_data.csv</code>)</li>
-<li><code>run_name</code> se usa como prefijo en todos los archivos de salida - cambialo a la fecha del análisis</li>
+<li><code>i</code> selecciona el locus a procesar (fila en <code>primer_data.csv</code>)</li>
+<li><code>run_name</code> se genera automáticamente con la fecha y hora de inicio y se usa como prefijo en todos los archivos de salida</li>
 </ul>
 <hr>
 </section>
@@ -1030,11 +1030,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a><span class="in">primer_csv        &lt;- file.path(metadata_location, "primer_data.csv")</span></span>
 <span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a><span class="in">i        &lt;- 1          # fila de primer_data.csv a procesar (cambiar por locus)</span></span>
-<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a><span class="in">run_name &lt;- "26112025" # identificador de la corrida (usar fecha o ID único)</span></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a><span class="in">run_name &lt;- format(Sys.time(), "%Y%m%d_%H%M") # fecha y hora de inicio (ej. "20250326_1430")</span></span>
 <span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`i`</span> seleccióna el locus a procesar (fila en <span class="in">`primer_data.csv`</span>)</span>
-<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`run_name`</span> se usa como prefijo en todos los archivos de salida  -  cambialo a la fecha del análisis</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`i`</span> selecciona el locus a procesar (fila en <span class="in">`primer_data.csv`</span>)</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`run_name`</span> se genera automáticamente con la fecha y hora de inicio y se usa como prefijo en todos los archivos de salida</span>
 <span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a></span>
