@@ -364,7 +364,6 @@ Notas del script
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><p><strong>Primers paired-end:</strong> El script busca el primer forward al inicio de R1 (<code>-g</code>) y el complemento reverso del primer reverse al inicio de R2 (<code>-G</code>). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.</p></li>
 <li><p><strong>Corre siempre desde la raíz del proyecto:</strong> El script usa rutas relativas (<code>raw_fastqs/</code>, <code>for_dada2/</code>, etc.), por lo que debe ejecutarse desde <code>~/metabarcoding-code</code>. Si lo corres desde otra carpeta, no encontrará los archivos.</p></li>
 <li><p><strong>Los directorios de salida se crean automáticamente:</strong> El script hace <code>mkdir -p</code> de <code>for_dada2/</code> y <code>cutadapt_reports/</code> antes de escribir, así que no necesitas crearlos manualmente.</p></li>
 <li><p><strong>Convención de nombres requerida:</strong> El script espera archivos con el patrón <code>*_R1_001.fastq</code> y <code>*_R2_001.fastq</code> en <code>raw_fastqs/</code>. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.</p></li>
@@ -1220,124 +1219,122 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb19-167"><a href="#cb19-167" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
 <span id="cb19-168"><a href="#cb19-168" aria-hidden="true" tabindex="-1"></a><span class="fu">## Notas del script</span></span>
 <span id="cb19-169"><a href="#cb19-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Primers paired-end:** El script busca el primer forward al inicio de R1 (<span class="in">`-g`</span>) y el complemento reverso del primer reverse al inicio de R2 (<span class="in">`-G`</span>). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.</span>
+<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (<span class="in">`raw_fastqs/`</span>, <span class="in">`for_dada2/`</span>, etc.), por lo que debe ejecutarse desde <span class="in">`~/metabarcoding-code`</span>. Si lo corres desde otra carpeta, no encontrará los archivos.</span>
 <span id="cb19-171"><a href="#cb19-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-172"><a href="#cb19-172" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (<span class="in">`raw_fastqs/`</span>, <span class="in">`for_dada2/`</span>, etc.), por lo que debe ejecutarse desde <span class="in">`~/metabarcoding-code`</span>. Si lo corres desde otra carpeta, no encontrará los archivos.</span>
+<span id="cb19-172"><a href="#cb19-172" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Los directorios de salida se crean automáticamente:** El script hace <span class="in">`mkdir -p`</span> de <span class="in">`for_dada2/`</span> y <span class="in">`cutadapt_reports/`</span> antes de escribir, así que no necesitas crearlos manualmente.</span>
 <span id="cb19-173"><a href="#cb19-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Los directorios de salida se crean automáticamente:** El script hace <span class="in">`mkdir -p`</span> de <span class="in">`for_dada2/`</span> y <span class="in">`cutadapt_reports/`</span> antes de escribir, así que no necesitas crearlos manualmente.</span>
-<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Convención de nombres requerida:** El script espera archivos con el patrón <span class="in">`*_R1_001.fastq`</span> y <span class="in">`*_R2_001.fastq`</span> en <span class="in">`raw_fastqs/`</span>. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.</span>
-<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Convención de nombres requerida:** El script espera archivos con el patrón <span class="in">`*_R1_001.fastq`</span> y <span class="in">`*_R2_001.fastq`</span> en <span class="in">`raw_fastqs/`</span>. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.</span>
+<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a><span class="fu">### Obtendrás</span></span>
 <span id="cb19-178"><a href="#cb19-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a><span class="fu">### Obtendrás</span></span>
-<span id="cb19-180"><a href="#cb19-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-181"><a href="#cb19-181" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FASTQ recortados: for_dada2/</span>
-<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reportes por muestra: cutadapt_reports/<span class="sc">\*\_</span>cutadapt.txt</span>
-<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Resumen: cutadapt_reports/overall_report.txt</span>
+<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FASTQ recortados: for_dada2/</span>
+<span id="cb19-180"><a href="#cb19-180" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reportes por muestra: cutadapt_reports/<span class="sc">\*\_</span>cutadapt.txt</span>
+<span id="cb19-181"><a href="#cb19-181" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Resumen: cutadapt_reports/overall_report.txt</span>
+<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb19-184"><a href="#cb19-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-185"><a href="#cb19-185" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-185"><a href="#cb19-185" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ¿Por qué hay que remover los primers?</span></span>
 <span id="cb19-186"><a href="#cb19-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-187"><a href="#cb19-187" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ¿Por qué hay que remover los primers?</span></span>
+<span id="cb19-187"><a href="#cb19-187" aria-hidden="true" tabindex="-1"></a>Los primers son secuencias artificiales que se añaden durante la PCR para amplificar la región de interés. **No forman parte del amplicón biológico** y deben eliminarse antes de correr DADA2 porque:</span>
 <span id="cb19-188"><a href="#cb19-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-189"><a href="#cb19-189" aria-hidden="true" tabindex="-1"></a>Los primers son secuencias artificiales que se añaden durante la PCR para amplificar la región de interés. **No forman parte del amplicón biológico** y deben eliminarse antes de correr DADA2 porque:</span>
-<span id="cb19-190"><a href="#cb19-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-191"><a href="#cb19-191" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>DADA2 modela los errores de secuenciación base por base. Si los primers están presentes, introduce bases con un perfil de error diferente al resto de la lectura, lo que confunde el modelo.</span>
-<span id="cb19-192"><a href="#cb19-192" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las secuencias de primers son idénticas en todas las muestras — si no se remueven, DADA2 las trata como variantes biológicas reales.</span>
-<span id="cb19-193"><a href="#cb19-193" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>La longitud del amplicón real queda definida solo después del recorte.</span>
+<span id="cb19-189"><a href="#cb19-189" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>DADA2 modela los errores de secuenciación base por base. Si los primers están presentes, introduce bases con un perfil de error diferente al resto de la lectura, lo que confunde el modelo.</span>
+<span id="cb19-190"><a href="#cb19-190" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las secuencias de primers son idénticas en todas las muestras — si no se remueven, DADA2 las trata como variantes biológicas reales.</span>
+<span id="cb19-191"><a href="#cb19-191" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>La longitud del amplicón real queda definida solo después del recorte.</span>
+<span id="cb19-192"><a href="#cb19-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-193"><a href="#cb19-193" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ¿Cómo funciona la búsqueda de primers?</span></span>
 <span id="cb19-194"><a href="#cb19-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-195"><a href="#cb19-195" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ¿Cómo funciona la búsqueda de primers?</span></span>
+<span id="cb19-195"><a href="#cb19-195" aria-hidden="true" tabindex="-1"></a>Cutadapt busca la secuencia del primer dentro de cada lectura y recorta todo lo que está antes de ella (incluyendo el primer mismo). Dos conceptos clave:</span>
 <span id="cb19-196"><a href="#cb19-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-197"><a href="#cb19-197" aria-hidden="true" tabindex="-1"></a>Cutadapt busca la secuencia del primer dentro de cada lectura y recorta todo lo que está antes de ella (incluyendo el primer mismo). Dos conceptos clave:</span>
-<span id="cb19-198"><a href="#cb19-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Anchoring (`^`):** El símbolo <span class="in">`^`</span> antes del primer le indica a cutadapt que el primer debe estar exactamente al inicio de la lectura. Sin <span class="in">`^`</span>, buscaría el primer en cualquier posición, lo que puede producir recortes incorrectos.</span>
-<span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Complemento reverso en R2:** En secuenciación paired-end, R1 empieza con el primer forward y R2 empieza con el primer reverse. El script usa <span class="in">`-g “^${FWD}”`</span> para R1 y <span class="in">`-G “^${RC_REV}”`</span> para R2, donde <span class="in">`RC_REV`</span> es el complemento reverso del primer reverse — que es lo que realmente aparece al inicio de R2.</span>
-<span id="cb19-201"><a href="#cb19-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-202"><a href="#cb19-202" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb19-203"><a href="#cb19-203" aria-hidden="true" tabindex="-1"></a><span class="in">R1: [FWD primer]----amplicón----►</span></span>
-<span id="cb19-204"><a href="#cb19-204" aria-hidden="true" tabindex="-1"></a><span class="in">R2:                 ◄----amplicón----[RC del REV primer]</span></span>
-<span id="cb19-205"><a href="#cb19-205" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-197"><a href="#cb19-197" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Anchoring (`^`):** El símbolo <span class="in">`^`</span> antes del primer le indica a cutadapt que el primer debe estar exactamente al inicio de la lectura. Sin <span class="in">`^`</span>, buscaría el primer en cualquier posición, lo que puede producir recortes incorrectos.</span>
+<span id="cb19-198"><a href="#cb19-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Complemento reverso en R2:** En secuenciación paired-end, R1 empieza con el primer forward y R2 empieza con el primer reverse. El script usa <span class="in">`-g “^${FWD}”`</span> para R1 y <span class="in">`-G “^${RC_REV}”`</span> para R2, donde <span class="in">`RC_REV`</span> es el complemento reverso del primer reverse — que es lo que realmente aparece al inicio de R2.</span>
+<span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-201"><a href="#cb19-201" aria-hidden="true" tabindex="-1"></a><span class="in">R1: [FWD primer]----amplicón----►</span></span>
+<span id="cb19-202"><a href="#cb19-202" aria-hidden="true" tabindex="-1"></a><span class="in">R2:                 ◄----amplicón----[RC del REV primer]</span></span>
+<span id="cb19-203"><a href="#cb19-203" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-204"><a href="#cb19-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-205"><a href="#cb19-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Tasa de error (`-e`):** Permite hasta un 10% de mismatches al buscar el primer. Esto es necesario porque los primers a veces tienen pequeñas variaciones entre muestras o errores de síntesis.</span>
 <span id="cb19-206"><a href="#cb19-206" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-207"><a href="#cb19-207" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Tasa de error (`-e`):** Permite hasta un 10% de mismatches al buscar el primer. Esto es necesario porque los primers a veces tienen pequeñas variaciones entre muestras o errores de síntesis.</span>
+<span id="cb19-207"><a href="#cb19-207" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ¿Qué pasa con lecturas donde no se encontró el primer?</span></span>
 <span id="cb19-208"><a href="#cb19-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-209"><a href="#cb19-209" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ¿Qué pasa con lecturas donde no se encontró el primer?</span></span>
+<span id="cb19-209"><a href="#cb19-209" aria-hidden="true" tabindex="-1"></a>Por defecto, si cutadapt no encuentra el primer en una lectura, la conserva sin modificar. Con <span class="in">`--discard-untrimmed`</span> esas lecturas se descartan completamente.</span>
 <span id="cb19-210"><a href="#cb19-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-211"><a href="#cb19-211" aria-hidden="true" tabindex="-1"></a>Por defecto, si cutadapt no encuentra el primer en una lectura, la conserva sin modificar. Con <span class="in">`--discard-untrimmed`</span> esas lecturas se descartan completamente.</span>
-<span id="cb19-212"><a href="#cb19-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-213"><a href="#cb19-213" aria-hidden="true" tabindex="-1"></a>| Opción | Cuándo usarla |</span>
-<span id="cb19-214"><a href="#cb19-214" aria-hidden="true" tabindex="-1"></a>|--------|--------------|</span>
-<span id="cb19-215"><a href="#cb19-215" aria-hidden="true" tabindex="-1"></a>| Sin <span class="in">`--discard-untrimmed`</span> (default) | Cuando quieres conservar todas las lecturas y revisar después |</span>
-<span id="cb19-216"><a href="#cb19-216" aria-hidden="true" tabindex="-1"></a>| Con <span class="in">`--discard-untrimmed`</span> | Cuando tienes certeza de que todas las lecturas deben tener primer — lecturas sin primer son contaminación o artefactos |</span>
+<span id="cb19-211"><a href="#cb19-211" aria-hidden="true" tabindex="-1"></a>| Opción | Cuándo usarla |</span>
+<span id="cb19-212"><a href="#cb19-212" aria-hidden="true" tabindex="-1"></a>|--------|--------------|</span>
+<span id="cb19-213"><a href="#cb19-213" aria-hidden="true" tabindex="-1"></a>| Sin <span class="in">`--discard-untrimmed`</span> (default) | Cuando quieres conservar todas las lecturas y revisar después |</span>
+<span id="cb19-214"><a href="#cb19-214" aria-hidden="true" tabindex="-1"></a>| Con <span class="in">`--discard-untrimmed`</span> | Cuando tienes certeza de que todas las lecturas deben tener primer — lecturas sin primer son contaminación o artefactos |</span>
+<span id="cb19-215"><a href="#cb19-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-216"><a href="#cb19-216" aria-hidden="true" tabindex="-1"></a>Para metabarcoding con primers específicos se recomienda usar <span class="in">`--discard-untrimmed`</span>: lecturas sin primer no corresponden al amplicón objetivo.</span>
 <span id="cb19-217"><a href="#cb19-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-218"><a href="#cb19-218" aria-hidden="true" tabindex="-1"></a>Para metabarcoding con primers específicos se recomienda usar <span class="in">`--discard-untrimmed`</span>: lecturas sin primer no corresponden al amplicón objetivo.</span>
+<span id="cb19-218"><a href="#cb19-218" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Lo que hace el script `02b-cutadapt.sh`</span></span>
 <span id="cb19-219"><a href="#cb19-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-220"><a href="#cb19-220" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Lo que hace el script `02b-cutadapt.sh`</span></span>
-<span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-222"><a href="#cb19-222" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Define rutas, primers y parámetros configurables.</span>
-<span id="cb19-223"><a href="#cb19-223" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Verifica que cutadapt esté instalado y que existan los archivos de entrada.</span>
-<span id="cb19-224"><a href="#cb19-224" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Localiza todos los pares <span class="in">`*_R1_001.fastq`</span> / <span class="in">`*_R2_001.fastq`</span> en <span class="in">`raw_fastqs/`</span>.</span>
-<span id="cb19-225"><a href="#cb19-225" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Para cada muestra: recorta primers, guarda FASTQs en <span class="in">`for_dada2/`</span> y un reporte individual en <span class="in">`cutadapt_reports/`</span>.</span>
-<span id="cb19-226"><a href="#cb19-226" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Resume las estadísticas de todas las muestras en <span class="in">`cutadapt_reports/overall_report.txt`</span> y <span class="in">`overall_summary.tsv`</span>.</span>
+<span id="cb19-220"><a href="#cb19-220" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Define rutas, primers y parámetros configurables.</span>
+<span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Verifica que cutadapt esté instalado y que existan los archivos de entrada.</span>
+<span id="cb19-222"><a href="#cb19-222" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Localiza todos los pares <span class="in">`*_R1_001.fastq`</span> / <span class="in">`*_R2_001.fastq`</span> en <span class="in">`raw_fastqs/`</span>.</span>
+<span id="cb19-223"><a href="#cb19-223" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Para cada muestra: recorta primers, guarda FASTQs en <span class="in">`for_dada2/`</span> y un reporte individual en <span class="in">`cutadapt_reports/`</span>.</span>
+<span id="cb19-224"><a href="#cb19-224" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Resume las estadísticas de todas las muestras en <span class="in">`cutadapt_reports/overall_report.txt`</span> y <span class="in">`overall_summary.tsv`</span>.</span>
+<span id="cb19-225"><a href="#cb19-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-226"><a href="#cb19-226" aria-hidden="true" tabindex="-1"></a>Visualiza el contenido del script:</span>
 <span id="cb19-227"><a href="#cb19-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-228"><a href="#cb19-228" aria-hidden="true" tabindex="-1"></a>Visualiza el contenido del script:</span>
-<span id="cb19-229"><a href="#cb19-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-230"><a href="#cb19-230" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb19-231"><a href="#cb19-231" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span>
-<span id="cb19-232"><a href="#cb19-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-228"><a href="#cb19-228" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb19-229"><a href="#cb19-229" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span>
+<span id="cb19-230"><a href="#cb19-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-231"><a href="#cb19-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-232"><a href="#cb19-232" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Parámetros principales</span></span>
 <span id="cb19-233"><a href="#cb19-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-234"><a href="#cb19-234" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Parámetros principales</span></span>
-<span id="cb19-235"><a href="#cb19-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-236"><a href="#cb19-236" aria-hidden="true" tabindex="-1"></a>| Parámetro | Descripción | Valor por defecto |</span>
-<span id="cb19-237"><a href="#cb19-237" aria-hidden="true" tabindex="-1"></a>|-----------|-------------|------------------|</span>
-<span id="cb19-238"><a href="#cb19-238" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-j`</span> | Hilos en paralelo | 4 |</span>
-<span id="cb19-239"><a href="#cb19-239" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-g “^${FWD}”`</span> | Primer forward anclado al inicio de R1 | — |</span>
-<span id="cb19-240"><a href="#cb19-240" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-G “^${RC_REV}”`</span> | RC del primer reverse anclado al inicio de R2 | — |</span>
-<span id="cb19-241"><a href="#cb19-241" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-e`</span> | Tasa máxima de error al buscar el primer | 0.10 (10%) |</span>
-<span id="cb19-242"><a href="#cb19-242" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-m`</span> | Longitud mínima de la lectura tras el recorte | 40 bp |</span>
-<span id="cb19-243"><a href="#cb19-243" aria-hidden="true" tabindex="-1"></a>| <span class="in">`--discard-untrimmed`</span> | Descarta lecturas sin primer | Opcional |</span>
-<span id="cb19-244"><a href="#cb19-244" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-o`</span> / <span class="in">`-p`</span> | Archivos de salida R1 y R2 recortados | — |</span>
+<span id="cb19-234"><a href="#cb19-234" aria-hidden="true" tabindex="-1"></a>| Parámetro | Descripción | Valor por defecto |</span>
+<span id="cb19-235"><a href="#cb19-235" aria-hidden="true" tabindex="-1"></a>|-----------|-------------|------------------|</span>
+<span id="cb19-236"><a href="#cb19-236" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-j`</span> | Hilos en paralelo | 4 |</span>
+<span id="cb19-237"><a href="#cb19-237" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-g “^${FWD}”`</span> | Primer forward anclado al inicio de R1 | — |</span>
+<span id="cb19-238"><a href="#cb19-238" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-G “^${RC_REV}”`</span> | RC del primer reverse anclado al inicio de R2 | — |</span>
+<span id="cb19-239"><a href="#cb19-239" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-e`</span> | Tasa máxima de error al buscar el primer | 0.10 (10%) |</span>
+<span id="cb19-240"><a href="#cb19-240" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-m`</span> | Longitud mínima de la lectura tras el recorte | 40 bp |</span>
+<span id="cb19-241"><a href="#cb19-241" aria-hidden="true" tabindex="-1"></a>| <span class="in">`--discard-untrimmed`</span> | Descarta lecturas sin primer | Opcional |</span>
+<span id="cb19-242"><a href="#cb19-242" aria-hidden="true" tabindex="-1"></a>| <span class="in">`-o`</span> / <span class="in">`-p`</span> | Archivos de salida R1 y R2 recortados | — |</span>
+<span id="cb19-243"><a href="#cb19-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-244"><a href="#cb19-244" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Interpretación del reporte</span></span>
 <span id="cb19-245"><a href="#cb19-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-246"><a href="#cb19-246" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Interpretación del reporte</span></span>
+<span id="cb19-246"><a href="#cb19-246" aria-hidden="true" tabindex="-1"></a>Al terminar, revisa el resumen:</span>
 <span id="cb19-247"><a href="#cb19-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-248"><a href="#cb19-248" aria-hidden="true" tabindex="-1"></a>Al terminar, revisa el resumen:</span>
-<span id="cb19-249"><a href="#cb19-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-250"><a href="#cb19-250" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb19-251"><a href="#cb19-251" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> cutadapt_reports/overall_report.txt</span>
-<span id="cb19-252"><a href="#cb19-252" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-248"><a href="#cb19-248" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb19-249"><a href="#cb19-249" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> cutadapt_reports/overall_report.txt</span>
+<span id="cb19-250"><a href="#cb19-250" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-251"><a href="#cb19-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-252"><a href="#cb19-252" aria-hidden="true" tabindex="-1"></a>El reporte por muestra tiene tres métricas clave:</span>
 <span id="cb19-253"><a href="#cb19-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-254"><a href="#cb19-254" aria-hidden="true" tabindex="-1"></a>El reporte por muestra tiene tres métricas clave:</span>
-<span id="cb19-255"><a href="#cb19-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-256"><a href="#cb19-256" aria-hidden="true" tabindex="-1"></a>| Métrica | Qué indica | Valor esperado |</span>
-<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a>|---------|-----------|----------------|</span>
-<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1 with adapter`</span> | % de lecturas R1 donde se encontró el primer forward | &gt; 90% |</span>
-<span id="cb19-259"><a href="#cb19-259" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 2 with adapter`</span> | % de lecturas R2 donde se encontró el primer reverse | &gt; 90% |</span>
-<span id="cb19-260"><a href="#cb19-260" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Pairs written (passing filters)`</span> | % de pares que pasaron el recorte **y** el filtro de longitud mínima (<span class="in">`-m`</span>) | &gt; 60% |</span>
+<span id="cb19-254"><a href="#cb19-254" aria-hidden="true" tabindex="-1"></a>| Métrica | Qué indica | Valor esperado |</span>
+<span id="cb19-255"><a href="#cb19-255" aria-hidden="true" tabindex="-1"></a>|---------|-----------|----------------|</span>
+<span id="cb19-256"><a href="#cb19-256" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1 with adapter`</span> | % de lecturas R1 donde se encontró el primer forward | &gt; 90% |</span>
+<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 2 with adapter`</span> | % de lecturas R2 donde se encontró el primer reverse | &gt; 90% |</span>
+<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Pairs written (passing filters)`</span> | % de pares que pasaron el recorte **y** el filtro de longitud mínima (<span class="in">`-m`</span>) | &gt; 60% |</span>
+<span id="cb19-259"><a href="#cb19-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-260"><a href="#cb19-260" aria-hidden="true" tabindex="-1"></a>**Diferencia importante entre “reads with adapter” y “pairs written”:**</span>
 <span id="cb19-261"><a href="#cb19-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-262"><a href="#cb19-262" aria-hidden="true" tabindex="-1"></a>**Diferencia importante entre “reads with adapter” y “pairs written”:**</span>
-<span id="cb19-263"><a href="#cb19-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**”Reads with adapter”** alto (~95%) significa que el primer se encontró correctamente — los primers están bien definidos.</span>
-<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**”Pairs written”** más bajo significa que después de recortar el primer, muchas lecturas quedaron por debajo de la longitud mínima (<span class="in">`-m 40`</span> por defecto) y fueron descartadas. Esto es normal en amplicones cortos donde el solapamiento entre R1 y R2 es grande.</span>
+<span id="cb19-262"><a href="#cb19-262" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**”Reads with adapter”** alto (~95%) significa que el primer se encontró correctamente — los primers están bien definidos.</span>
+<span id="cb19-263"><a href="#cb19-263" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**”Pairs written”** más bajo significa que después de recortar el primer, muchas lecturas quedaron por debajo de la longitud mínima (<span class="in">`-m 40`</span> por defecto) y fueron descartadas. Esto es normal en amplicones cortos donde el solapamiento entre R1 y R2 es grande.</span>
+<span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a>**Señales de alerta:**</span>
 <span id="cb19-266"><a href="#cb19-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a>**Señales de alerta:**</span>
-<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-269"><a href="#cb19-269" aria-hidden="true" tabindex="-1"></a>| Patrón | Interpretación |</span>
-<span id="cb19-270"><a href="#cb19-270" aria-hidden="true" tabindex="-1"></a>|--------|---------------|</span>
-<span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1/2 with adapter`</span> &lt; 80% | El primer no se encuentra — verificar secuencia del primer en el script |</span>
-<span id="cb19-272"><a href="#cb19-272" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1 with adapter`</span> alto pero <span class="in">`Read 2`</span> bajo (o viceversa) | Posible inversión de orientación en R1/R2 |</span>
-<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Pairs written`</span> &lt; 30% | Muchas lecturas demasiado cortas tras el recorte — revisar <span class="in">`-m`</span> o longitud del amplicón |</span>
-<span id="cb19-274"><a href="#cb19-274" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1/2 with adapter`</span> ≈ 0% | La muestra probablemente no contiene el amplicón objetivo — posible blanco, contaminación cruzada o muestra incorrecta |</span>
+<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a>| Patrón | Interpretación |</span>
+<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a>|--------|---------------|</span>
+<span id="cb19-269"><a href="#cb19-269" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1/2 with adapter`</span> &lt; 80% | El primer no se encuentra — verificar secuencia del primer en el script |</span>
+<span id="cb19-270"><a href="#cb19-270" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1 with adapter`</span> alto pero <span class="in">`Read 2`</span> bajo (o viceversa) | Posible inversión de orientación en R1/R2 |</span>
+<span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Pairs written`</span> &lt; 30% | Muchas lecturas demasiado cortas tras el recorte — revisar <span class="in">`-m`</span> o longitud del amplicón |</span>
+<span id="cb19-272"><a href="#cb19-272" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Read 1/2 with adapter`</span> ≈ 0% | La muestra probablemente no contiene el amplicón objetivo — posible blanco, contaminación cruzada o muestra incorrecta |</span>
+<span id="cb19-273"><a href="#cb19-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-274"><a href="#cb19-274" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. Revisión de resultados</span></span>
 <span id="cb19-275"><a href="#cb19-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-276"><a href="#cb19-276" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. Revisión de resultados</span></span>
-<span id="cb19-277"><a href="#cb19-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-278"><a href="#cb19-278" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb19-279"><a href="#cb19-279" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
-<span id="cb19-280"><a href="#cb19-280" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span>
-<span id="cb19-281"><a href="#cb19-281" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-276"><a href="#cb19-276" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb19-277"><a href="#cb19-277" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
+<span id="cb19-278"><a href="#cb19-278" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span>
+<span id="cb19-279"><a href="#cb19-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-280"><a href="#cb19-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-281"><a href="#cb19-281" aria-hidden="true" tabindex="-1"></a>Descarga el reporte:</span>
 <span id="cb19-282"><a href="#cb19-282" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-283"><a href="#cb19-283" aria-hidden="true" tabindex="-1"></a>Descarga el reporte:</span>
-<span id="cb19-284"><a href="#cb19-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-285"><a href="#cb19-285" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb19-286"><a href="#cb19-286" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span>
-<span id="cb19-287"><a href="#cb19-287" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb19-283"><a href="#cb19-283" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb19-284"><a href="#cb19-284" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span>
+<span id="cb19-285"><a href="#cb19-285" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

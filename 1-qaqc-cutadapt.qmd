@@ -167,8 +167,6 @@ bash scripts/02b-cutadapt.sh
 :::{.callout-note}
 ## Notas del script
 
-- **Primers paired-end:** El script busca el primer forward al inicio de R1 (`-g`) y el complemento reverso del primer reverse al inicio de R2 (`-G`). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.
-
 - **Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (`raw_fastqs/`, `for_dada2/`, etc.), por lo que debe ejecutarse desde `~/metabarcoding-code`. Si lo corres desde otra carpeta, no encontrará los archivos.
 
 - **Los directorios de salida se crean automáticamente:** El script hace `mkdir -p` de `for_dada2/` y `cutadapt_reports/` antes de escribir, así que no necesitas crearlos manualmente.
