@@ -121,7 +121,7 @@ fastqc -q -t 4 -o final_data/fastqc raw_fastqs/*.fastq
 ### Verificar conteo de reportes
 
 ``` bash
-ls -1 final_data/fastqc/*_fastqc.html | wc -l
+ls -1 final_data/fastqc/*_fastqc.html | wc -l && echo "FastQC OK"
 ```
 
 ### Ejecutar MultiQC (resume todos los FastQC)

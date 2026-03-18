@@ -327,7 +327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="verificar-conteo-de-reportes" class="level3">
 <h3 class="anchored" data-anchor-id="verificar-conteo-de-reportes">Verificar conteo de reportes</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"FastQC OK"</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="ejecutar-multiqc-resume-todos-los-fastqc" class="level3">
 <h3 class="anchored" data-anchor-id="ejecutar-multiqc-resume-todos-los-fastqc">Ejecutar MultiQC (resume todos los FastQC)</h3>
@@ -1011,7 +1011,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb17-121"><a href="#cb17-121" aria-hidden="true" tabindex="-1"></a><span class="fu">### Verificar conteo de reportes</span></span>
 <span id="cb17-122"><a href="#cb17-122" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-123"><a href="#cb17-123" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb17-124"><a href="#cb17-124" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb17-124"><a href="#cb17-124" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"FastQC OK"</span></span>
 <span id="cb17-125"><a href="#cb17-125" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb17-126"><a href="#cb17-126" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-127"><a href="#cb17-127" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecutar MultiQC (resume todos los FastQC)</span></span>
