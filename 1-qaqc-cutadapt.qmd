@@ -56,7 +56,7 @@ shasum -a 256 -c checksums.sha256
 Cada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:
 
 ``` bash
-for f in raw_fastqs/*.fastq; do echo -n "$(basename "$f")   "; expr $(wc -l < "$f") / 4; done > final_data/conteo_lecturas.tsv
+for f in raw_fastqs/*.fastq; do printf "%s\t%s\n" "$(basename "$f")" "$(expr $(wc -l < "$f") / 4)"; done > final_data/conteo_lecturas.tsv
 ```
 
 ### Visualizar en terminal
