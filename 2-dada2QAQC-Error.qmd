@@ -112,7 +112,26 @@ dev.off()
 
 ---
 
-## Paso 4 — Inferencia de ASVs con `dada()`
+## Paso 4 — Guardar checkpoint después de learnErrors
+
+El pipeline guarda automáticamente un checkpoint `.RData` después de `learnErrors()`. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el paso más lento.
+
+```{r eval=FALSE}
+# El pipeline guarda:
+# final_data/rdata_output/<run_name>_<locus>_checkpoint2_learnErrors.RData
+# Contiene: errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out
+```
+
+Para reanudar desde este punto en otra sesión:
+
+```{r eval=FALSE}
+load(file.path(output_location, "rdata_output",
+               paste0(run_name, "_", primer.data$locus_shorthand[i], "_checkpoint2_learnErrors.RData")))
+```
+
+---
+
+## Paso 5 — Inferencia de ASVs con `dada()`
 
 Con el modelo de error aprendido, `dada()` infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.
 
@@ -130,6 +149,23 @@ dadaFs[[1]]
 ```
 
 Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto "colapso" el denoising.
+
+---
+
+## Paso 6 — Guardar checkpoint después de dada()
+
+```{r eval=FALSE}
+# El pipeline guarda:
+# final_data/rdata_output/<run_name>_<locus>_checkpoint3_dada.RData
+# Contiene: dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out
+```
+
+Para reanudar desde este punto antes de `mergePairs()`:
+
+```{r eval=FALSE}
+load(file.path(output_location, "rdata_output",
+               paste0(run_name, "_", primer.data$locus_shorthand[i], "_checkpoint3_dada.RData")))
+```
 
 ---
 
