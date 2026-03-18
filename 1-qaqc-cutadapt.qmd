@@ -69,7 +69,13 @@ column -t final_data/conteo_lecturas.tsv | sort -k2 -rn | head -20
 
 ### Visualización opcional en R
 
-Si quieres una gráfica para explorar el conteo por muestra:
+Si quieres una gráfica para explorar el conteo por muestra, abre R en la terminal:
+
+``` bash
+R
+```
+
+Dentro de R, corre:
 
 ``` r
 library(tidyverse)
@@ -95,6 +101,13 @@ ggplot(conteo, aes(x = reorder(muestra, lecturas), y = lecturas, fill = sentido)
 ```
 
 La línea roja marca 10,000 lecturas — muestras por debajo merecen revisión antes de continuar.
+
+Para guardar la gráfica como PNG:
+
+``` r
+ggsave("final_data/conteo_lecturas.png", width = 8, height = 6)
+q()
+```
 
 ### 3. Evaluación de calidad: FastQC y MultiQC
 

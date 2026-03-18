@@ -284,43 +284,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="visualización-opcional-en-r" class="level3">
 <h3 class="anchored" data-anchor-id="visualización-opcional-en-r">Visualización opcional en R</h3>
-<p>Si quieres una gráfica para explorar el conteo por muestra:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"final_data/conteo_lecturas.tsv"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"archivo"</span>, <span class="st">"lecturas"</span>))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> conteo <span class="sc">%&gt;%</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">muestra =</span> <span class="fu">str_remove</span>(archivo, <span class="st">"_R[12]_001</span><span class="sc">\\</span><span class="st">.fastq.*"</span>),</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentido =</span> <span class="fu">str_extract</span>(archivo, <span class="st">"R[12]"</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(conteo, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(muestra, lecturas), <span class="at">y =</span> lecturas, <span class="at">fill =</span> sentido)) <span class="sc">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">10000</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Lecturas por muestra (crudas)"</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Numero de lecturas"</span>, <span class="at">fill =</span> <span class="st">"Sentido"</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Si quieres una gráfica para explorar el conteo por muestra, abre R en la terminal:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Dentro de R, corre:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"final_data/conteo_lecturas.tsv"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"archivo"</span>, <span class="st">"lecturas"</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> conteo <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">muestra =</span> <span class="fu">str_remove</span>(archivo, <span class="st">"_R[12]_001</span><span class="sc">\\</span><span class="st">.fastq.*"</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentido =</span> <span class="fu">str_extract</span>(archivo, <span class="st">"R[12]"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(conteo, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(muestra, lecturas), <span class="at">y =</span> lecturas, <span class="at">fill =</span> sentido)) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">10000</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Lecturas por muestra (crudas)"</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Numero de lecturas"</span>, <span class="at">fill =</span> <span class="st">"Sentido"</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>La línea roja marca 10,000 lecturas — muestras por debajo merecen revisión antes de continuar.</p>
+<p>Para guardar la gráfica como PNG:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/conteo_lecturas.png"</span>, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">6</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">q</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="evaluación-de-calidad-fastqc-y-multiqc" class="level3">
 <h3 class="anchored" data-anchor-id="evaluación-de-calidad-fastqc-y-multiqc">3. Evaluación de calidad: FastQC y MultiQC</h3>
 </section>
 <section id="crear-directorios-y-correr-fastqc" class="level3">
 <h3 class="anchored" data-anchor-id="crear-directorios-y-correr-fastqc">Crear directorios y correr fastqc</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc raw_fastqs/<span class="pp">*</span>.fastq</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc raw_fastqs/<span class="pp">*</span>.fastq</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="verificar-conteo-de-reportes" class="level3">
 <h3 class="anchored" data-anchor-id="verificar-conteo-de-reportes">Verificar conteo de reportes</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="ejecutar-multiqc-resume-todos-los-fastqc" class="level3">
 <h3 class="anchored" data-anchor-id="ejecutar-multiqc-resume-todos-los-fastqc">Ejecutar MultiQC (resume todos los FastQC)</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc <span class="at">-o</span> final_data/multiqc</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc <span class="at">-o</span> final_data/multiqc</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="revisión-de-resultados" class="level3">
 <h3 class="anchored" data-anchor-id="revisión-de-resultados">4. Revisión de resultados</h3>
@@ -328,10 +333,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="transferir-el-html-a-la-computadora-local-usando-scp" class="level3">
 <h3 class="anchored" data-anchor-id="transferir-el-html-a-la-computadora-local-usando-scp">Transferir el HTML a la computadora local usando scp</h3>
 <p><strong>Desde tu terminal local:</strong></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>Transferir toda la carpeta FastQC:</strong></p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="line-block"><strong>Tips de revisión en MultiQC:</strong><br>
 - Per base sequence quality: define zonas de truncado (Q≥25–30).<br>
 - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.<br>
@@ -359,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="line-block"><strong>¿Por qué es útil?</strong><br>
 Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.</div>
 <p>Visualiza el contenido del script:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="parámetros-principales-usados" class="level3">
 <h3 class="anchored" data-anchor-id="parámetros-principales-usados">Parámetros principales usados</h3>
@@ -376,7 +381,7 @@ Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar pará
 </section>
 <section id="ejecuta" class="level3">
 <h3 class="anchored" data-anchor-id="ejecuta">Ejecuta</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="obtendrás" class="level3">
 <h3 class="anchored" data-anchor-id="obtendrás">Obtendrás</h3>
@@ -388,10 +393,10 @@ Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar pará
 </section>
 <section id="revisión-de-resultados-1" class="level3">
 <h3 class="anchored" data-anchor-id="revisión-de-resultados-1">6. Revisión de resultados</h3>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Descarga el reporte:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="line-block"><strong>Notas del script</strong><br>
 - Usa FWD (forward) y el RC del REV para -G (paired-end).<br>
 - No dependas de cambiar de carpeta; el script ya usa rutas claras.<br>
@@ -873,229 +878,242 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb15" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "QAQC y recorte de primers con Cutadapt"</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#subtitle: "24–28 de noviembre de 2025&lt;br&gt;Instituto de Ciencias del Mar y Limnología (UNAM)"</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">    #theme: cosmo</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">    highlight-style: github</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Objetivo</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>En esta clase aprenderemos a realizar control de calidad (QA/QC) en</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>archivos FASTQ usando herramientas bioinformáticas.</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pasos principales</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Verificación de integridad de archivos**</span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Conteo de lecturas**</span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Análisis de calidad con FastQC y MultiQC**</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Revisión de resultados**</span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Cortar primers con cutadapt**</span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Revisión de resultados**</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### **1. Verificación de integridad**</span></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>Es una **verificación de integridad** por *checksum*:</span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Para cada archivo .fastq, generas un hash (una “huella” única de sus</span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    bytes).</span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Guardas esas huellas en un manifiesto (checksums.sha256).</span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Luego shasum -a 256 -c checksums.sha256 recalcula la huella de cada</span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>    archivo presente y la compara con la esperada.</span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> raw_fastqs <span class="at">-type</span> f <span class="at">-name</span> <span class="st">'*.fastq*'</span> <span class="at">-print0</span> <span class="dt">\</span></span>
-<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-z</span> <span class="dt">\</span></span>
-<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-0</span> shasum <span class="at">-a</span> 256 <span class="op">&gt;</span> checksums.sha256</span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>Para verificar:</span>
-<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="ex">shasum</span> <span class="at">-a</span> 256 <span class="at">-c</span> checksums.sha256</span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Conteo de lecturas</span></span>
-<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>Cada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:</span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> raw_fastqs/<span class="pp">*</span>.fastq<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="at">-n</span> <span class="st">"</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">"</span><span class="va">$f</span><span class="st">"</span><span class="va">)</span><span class="st">   "</span><span class="kw">;</span> <span class="fu">expr</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> <span class="st">"</span><span class="va">$f</span><span class="st">"</span><span class="va">)</span> / 4<span class="kw">;</span> <span class="cf">done</span> <span class="op">&gt;</span> final_data/conteo_lecturas.tsv</span>
-<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a><span class="fu">### Visualizar en terminal</span></span>
-<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a>Ordena las muestras por número de lecturas (de mayor a menor) para detectar rápidamente cuáles tienen pocas lecturas:</span>
-<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a><span class="ex">column</span> <span class="at">-t</span> final_data/conteo_lecturas.tsv <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-k2</span> <span class="at">-rn</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-20</span></span>
-<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a><span class="fu">### Visualización opcional en R</span></span>
-<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>Si quieres una gráfica para explorar el conteo por muestra:</span>
-<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a><span class="in">``` r</span></span>
-<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"final_data/conteo_lecturas.tsv"</span>,</span>
-<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"archivo"</span>, <span class="st">"lecturas"</span>))</span>
-<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> conteo <span class="sc">%&gt;%</span></span>
-<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">muestra =</span> <span class="fu">str_remove</span>(archivo, <span class="st">"_R[12]_001</span><span class="sc">\\</span><span class="st">.fastq.*"</span>),</span>
-<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentido =</span> <span class="fu">str_extract</span>(archivo, <span class="st">"R[12]"</span>)</span>
-<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(conteo, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(muestra, lecturas), <span class="at">y =</span> lecturas, <span class="at">fill =</span> sentido)) <span class="sc">+</span></span>
-<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">10000</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Lecturas por muestra (crudas)"</span>,</span>
-<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Numero de lecturas"</span>, <span class="at">fill =</span> <span class="st">"Sentido"</span></span>
-<span id="cb15-93"><a href="#cb15-93" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb15-94"><a href="#cb15-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>)</span>
-<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-96"><a href="#cb15-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-97"><a href="#cb15-97" aria-hidden="true" tabindex="-1"></a>La línea roja marca 10,000 lecturas — muestras por debajo merecen revisión antes de continuar.</span>
-<span id="cb15-98"><a href="#cb15-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-99"><a href="#cb15-99" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Evaluación de calidad: FastQC y MultiQC</span></span>
-<span id="cb15-100"><a href="#cb15-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-101"><a href="#cb15-101" aria-hidden="true" tabindex="-1"></a><span class="fu">### Crear directorios y correr fastqc</span></span>
-<span id="cb15-102"><a href="#cb15-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-103"><a href="#cb15-103" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-104"><a href="#cb15-104" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc raw_fastqs/<span class="pp">*</span>.fastq</span>
-<span id="cb15-105"><a href="#cb15-105" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-106"><a href="#cb15-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-107"><a href="#cb15-107" aria-hidden="true" tabindex="-1"></a><span class="fu">### Verificar conteo de reportes</span></span>
-<span id="cb15-108"><a href="#cb15-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-109"><a href="#cb15-109" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-110"><a href="#cb15-110" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
-<span id="cb15-111"><a href="#cb15-111" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-112"><a href="#cb15-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-113"><a href="#cb15-113" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecutar MultiQC (resume todos los FastQC)</span></span>
-<span id="cb15-114"><a href="#cb15-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-115"><a href="#cb15-115" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-116"><a href="#cb15-116" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc <span class="at">-o</span> final_data/multiqc</span>
-<span id="cb15-117"><a href="#cb15-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-118"><a href="#cb15-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-119"><a href="#cb15-119" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. Revisión de resultados</span></span>
-<span id="cb15-120"><a href="#cb15-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-121"><a href="#cb15-121" aria-hidden="true" tabindex="-1"></a><span class="fu">### Transferir el HTML a la computadora local usando scp</span></span>
-<span id="cb15-122"><a href="#cb15-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-123"><a href="#cb15-123" aria-hidden="true" tabindex="-1"></a>**Desde tu terminal local:**</span>
-<span id="cb15-124"><a href="#cb15-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-125"><a href="#cb15-125" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-126"><a href="#cb15-126" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/</span>
-<span id="cb15-127"><a href="#cb15-127" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span>
-<span id="cb15-128"><a href="#cb15-128" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-129"><a href="#cb15-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-130"><a href="#cb15-130" aria-hidden="true" tabindex="-1"></a>**Transferir toda la carpeta FastQC:**</span>
-<span id="cb15-131"><a href="#cb15-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-132"><a href="#cb15-132" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-133"><a href="#cb15-133" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/</span>
-<span id="cb15-134"><a href="#cb15-134" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-135"><a href="#cb15-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-136"><a href="#cb15-136" aria-hidden="true" tabindex="-1"></a>| **Tips de revisión en MultiQC:**</span>
-<span id="cb15-137"><a href="#cb15-137" aria-hidden="true" tabindex="-1"></a>| - Per base sequence quality: define zonas de truncado (Q≥25–30).</span>
-<span id="cb15-138"><a href="#cb15-138" aria-hidden="true" tabindex="-1"></a>| - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.</span>
-<span id="cb15-139"><a href="#cb15-139" aria-hidden="true" tabindex="-1"></a>| - Length distribution: válida rango del amplicón esperado.</span>
-<span id="cb15-140"><a href="#cb15-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-141"><a href="#cb15-141" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. Cortar primers con Cutadapt</span></span>
-<span id="cb15-142"><a href="#cb15-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-143"><a href="#cb15-143" aria-hidden="true" tabindex="-1"></a>Este script <span class="in">`cutadapt.sh`</span> es un pipeline automatizado en bash para</span>
-<span id="cb15-144"><a href="#cb15-144" aria-hidden="true" tabindex="-1"></a>recortar los primers de archivos de secuenciación paired-end usando la</span>
-<span id="cb15-145"><a href="#cb15-145" aria-hidden="true" tabindex="-1"></a>herramienta cutadapt.</span>
-<span id="cb15-146"><a href="#cb15-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-147"><a href="#cb15-147" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Configura rutas y variables:** Define dónde están los archivos</span>
-<span id="cb15-148"><a href="#cb15-148" aria-hidden="true" tabindex="-1"></a>    originales (raw_fastqs), dónde guardar los archivos recortados</span>
-<span id="cb15-149"><a href="#cb15-149" aria-hidden="true" tabindex="-1"></a>    (for_dada2) y los reportes (cutadapt_reports). También define los</span>
-<span id="cb15-150"><a href="#cb15-150" aria-hidden="true" tabindex="-1"></a>    primers a recortar y otros parámetros (pueden modificarse).</span>
-<span id="cb15-151"><a href="#cb15-151" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Verifica dependencias:** Busca que cutadapt esté instalado y que</span>
-<span id="cb15-152"><a href="#cb15-152" aria-hidden="true" tabindex="-1"></a>    existan los archivos necesarios.</span>
-<span id="cb15-153"><a href="#cb15-153" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Busca los archivos FASTQ:** Localiza todos los archivos</span>
-<span id="cb15-154"><a href="#cb15-154" aria-hidden="true" tabindex="-1"></a>    <span class="sc">\*\_</span>R1_001.fastq y sus pares <span class="sc">\*\_</span>R2_001.fastq.</span>
-<span id="cb15-155"><a href="#cb15-155" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Procesa cada muestra:**</span>
-<span id="cb15-156"><a href="#cb15-156" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Ejecuta cutadapt para recortar los primers de cada par de</span>
-<span id="cb15-157"><a href="#cb15-157" aria-hidden="true" tabindex="-1"></a>        archivos (R1 y R2).</span>
-<span id="cb15-158"><a href="#cb15-158" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Guarda los archivos recortados y un reporte individual para cada</span>
-<span id="cb15-159"><a href="#cb15-159" aria-hidden="true" tabindex="-1"></a>        muestra.</span>
-<span id="cb15-160"><a href="#cb15-160" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Extrae estadísticas clave del reporte (pares procesados, reads</span>
-<span id="cb15-161"><a href="#cb15-161" aria-hidden="true" tabindex="-1"></a>        con adaptador, reads escritos, porcentaje de éxito) y las resume</span>
-<span id="cb15-162"><a href="#cb15-162" aria-hidden="true" tabindex="-1"></a>        en archivos TXT y TSV.</span>
-<span id="cb15-163"><a href="#cb15-163" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Resultados:**</span>
-<span id="cb15-164"><a href="#cb15-164" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Los archivos recortados quedan listos para análisis posteriores</span>
-<span id="cb15-165"><a href="#cb15-165" aria-hidden="true" tabindex="-1"></a>        (por ejemplo, DADA2).</span>
-<span id="cb15-166"><a href="#cb15-166" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Los reportes permiten revisar cuántas lecturas fueron recortadas</span>
-<span id="cb15-167"><a href="#cb15-167" aria-hidden="true" tabindex="-1"></a>        correctamente.</span>
-<span id="cb15-168"><a href="#cb15-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-169"><a href="#cb15-169" aria-hidden="true" tabindex="-1"></a>| **¿Por qué es útil?**</span>
-<span id="cb15-170"><a href="#cb15-170" aria-hidden="true" tabindex="-1"></a>| Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.</span>
-<span id="cb15-171"><a href="#cb15-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-172"><a href="#cb15-172" aria-hidden="true" tabindex="-1"></a>Visualiza el contenido del script:</span>
-<span id="cb15-173"><a href="#cb15-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-174"><a href="#cb15-174" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-175"><a href="#cb15-175" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span>
-<span id="cb15-176"><a href="#cb15-176" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-177"><a href="#cb15-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-178"><a href="#cb15-178" aria-hidden="true" tabindex="-1"></a><span class="fu">### Parámetros principales usados</span></span>
-<span id="cb15-179"><a href="#cb15-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-180"><a href="#cb15-180" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-j ${THREADS}`</span>: Número de hilos (procesos en paralelo) para</span>
-<span id="cb15-181"><a href="#cb15-181" aria-hidden="true" tabindex="-1"></a>    acelerar el procesamiento.</span>
-<span id="cb15-182"><a href="#cb15-182" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-g "^${FWD}"`</span>: Primer a buscar al inicio de las lecturas R1 (el</span>
-<span id="cb15-183"><a href="#cb15-183" aria-hidden="true" tabindex="-1"></a>    símbolo \^ indica “al inicio”).</span>
-<span id="cb15-184"><a href="#cb15-184" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-G "^${ADAPTER_R2}"`</span>: Primer a buscar al inicio de las lecturas R2.</span>
-<span id="cb15-185"><a href="#cb15-185" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-e ${ERROR_RATE}`</span>: Tasa máxima de error permitida al buscar el</span>
-<span id="cb15-186"><a href="#cb15-186" aria-hidden="true" tabindex="-1"></a>    primer (por defecto 0.10, es decir, 10% de errores permitidos).</span>
-<span id="cb15-187"><a href="#cb15-187" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-m ${MIN_LEN}`</span>: Longitud mínima de las lecturas después del recorte</span>
-<span id="cb15-188"><a href="#cb15-188" aria-hidden="true" tabindex="-1"></a>    (por defecto 40 bases).</span>
-<span id="cb15-189"><a href="#cb15-189" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`--discard-untrimmed`</span>: (Opcional) Si se activa, descarta las</span>
-<span id="cb15-190"><a href="#cb15-190" aria-hidden="true" tabindex="-1"></a>    lecturas donde no se encontró el primer.</span>
-<span id="cb15-191"><a href="#cb15-191" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-o ${out_R1}`</span>: Archivo de salida para las lecturas R1 recortadas.</span>
-<span id="cb15-192"><a href="#cb15-192" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-p ${out_R2}`</span>: Archivo de salida para las lecturas R2 recortadas.</span>
-<span id="cb15-193"><a href="#cb15-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-194"><a href="#cb15-194" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecuta</span></span>
-<span id="cb15-195"><a href="#cb15-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-196"><a href="#cb15-196" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-197"><a href="#cb15-197" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span>
-<span id="cb15-198"><a href="#cb15-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-199"><a href="#cb15-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-200"><a href="#cb15-200" aria-hidden="true" tabindex="-1"></a><span class="fu">### Obtendrás</span></span>
-<span id="cb15-201"><a href="#cb15-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-202"><a href="#cb15-202" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FASTQ recortados: for_dada2/</span>
-<span id="cb15-203"><a href="#cb15-203" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reportes por muestra: cutadapt_reports/<span class="sc">\*\_</span>cutadapt.txt</span>
-<span id="cb15-204"><a href="#cb15-204" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Resumen: cutadapt_reports/overall_report.txt</span>
-<span id="cb15-205"><a href="#cb15-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-206"><a href="#cb15-206" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. Revisión de resultados</span></span>
-<span id="cb15-207"><a href="#cb15-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-208"><a href="#cb15-208" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-209"><a href="#cb15-209" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
-<span id="cb15-210"><a href="#cb15-210" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span>
-<span id="cb15-211"><a href="#cb15-211" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-212"><a href="#cb15-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-213"><a href="#cb15-213" aria-hidden="true" tabindex="-1"></a>Descarga el reporte:</span>
-<span id="cb15-214"><a href="#cb15-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-215"><a href="#cb15-215" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb15-216"><a href="#cb15-216" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span>
-<span id="cb15-217"><a href="#cb15-217" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb15-218"><a href="#cb15-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-219"><a href="#cb15-219" aria-hidden="true" tabindex="-1"></a>| **Notas del script**</span>
-<span id="cb15-220"><a href="#cb15-220" aria-hidden="true" tabindex="-1"></a>| - Usa FWD (forward) y el RC del REV para -G (paired-end).</span>
-<span id="cb15-221"><a href="#cb15-221" aria-hidden="true" tabindex="-1"></a>| - No dependas de cambiar de carpeta; el script ya usa rutas claras.</span>
-<span id="cb15-222"><a href="#cb15-222" aria-hidden="true" tabindex="-1"></a>| - Crea directorios de salida antes de escribir.</span>
-<span id="cb15-223"><a href="#cb15-223" aria-hidden="true" tabindex="-1"></a>| - Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/.</span></code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "QAQC y recorte de primers con Cutadapt"</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#subtitle: "24–28 de noviembre de 2025&lt;br&gt;Instituto de Ciencias del Mar y Limnología (UNAM)"</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co">    #theme: cosmo</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">    highlight-style: github</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Objetivo</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>En esta clase aprenderemos a realizar control de calidad (QA/QC) en</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>archivos FASTQ usando herramientas bioinformáticas.</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pasos principales</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Verificación de integridad de archivos**</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Conteo de lecturas**</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Análisis de calidad con FastQC y MultiQC**</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Revisión de resultados**</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Cortar primers con cutadapt**</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Revisión de resultados**</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### **1. Verificación de integridad**</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>Es una **verificación de integridad** por *checksum*:</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Para cada archivo .fastq, generas un hash (una “huella” única de sus</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>    bytes).</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Guardas esas huellas en un manifiesto (checksums.sha256).</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Luego shasum -a 256 -c checksums.sha256 recalcula la huella de cada</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>    archivo presente y la compara con la esperada.</span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> raw_fastqs <span class="at">-type</span> f <span class="at">-name</span> <span class="st">'*.fastq*'</span> <span class="at">-print0</span> <span class="dt">\</span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-z</span> <span class="dt">\</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-0</span> shasum <span class="at">-a</span> 256 <span class="op">&gt;</span> checksums.sha256</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>Para verificar:</span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a><span class="ex">shasum</span> <span class="at">-a</span> 256 <span class="at">-c</span> checksums.sha256</span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Conteo de lecturas</span></span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a>Cada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:</span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> raw_fastqs/<span class="pp">*</span>.fastq<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="at">-n</span> <span class="st">"</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">"</span><span class="va">$f</span><span class="st">"</span><span class="va">)</span><span class="st">   "</span><span class="kw">;</span> <span class="fu">expr</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> <span class="st">"</span><span class="va">$f</span><span class="st">"</span><span class="va">)</span> / 4<span class="kw">;</span> <span class="cf">done</span> <span class="op">&gt;</span> final_data/conteo_lecturas.tsv</span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a><span class="fu">### Visualizar en terminal</span></span>
+<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>Ordena las muestras por número de lecturas (de mayor a menor) para detectar rápidamente cuáles tienen pocas lecturas:</span>
+<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-66"><a href="#cb17-66" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a><span class="ex">column</span> <span class="at">-t</span> final_data/conteo_lecturas.tsv <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-k2</span> <span class="at">-rn</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-20</span></span>
+<span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-69"><a href="#cb17-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-70"><a href="#cb17-70" aria-hidden="true" tabindex="-1"></a><span class="fu">### Visualización opcional en R</span></span>
+<span id="cb17-71"><a href="#cb17-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a>Si quieres una gráfica para explorar el conteo por muestra, abre R en la terminal:</span>
+<span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span></span>
+<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-77"><a href="#cb17-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-78"><a href="#cb17-78" aria-hidden="true" tabindex="-1"></a>Dentro de R, corre:</span>
+<span id="cb17-79"><a href="#cb17-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-80"><a href="#cb17-80" aria-hidden="true" tabindex="-1"></a><span class="in">``` r</span></span>
+<span id="cb17-81"><a href="#cb17-81" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb17-82"><a href="#cb17-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-83"><a href="#cb17-83" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"final_data/conteo_lecturas.tsv"</span>,</span>
+<span id="cb17-84"><a href="#cb17-84" aria-hidden="true" tabindex="-1"></a>                   <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"archivo"</span>, <span class="st">"lecturas"</span>))</span>
+<span id="cb17-85"><a href="#cb17-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-86"><a href="#cb17-86" aria-hidden="true" tabindex="-1"></a>conteo <span class="ot">&lt;-</span> conteo <span class="sc">%&gt;%</span></span>
+<span id="cb17-87"><a href="#cb17-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-88"><a href="#cb17-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">muestra =</span> <span class="fu">str_remove</span>(archivo, <span class="st">"_R[12]_001</span><span class="sc">\\</span><span class="st">.fastq.*"</span>),</span>
+<span id="cb17-89"><a href="#cb17-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentido =</span> <span class="fu">str_extract</span>(archivo, <span class="st">"R[12]"</span>)</span>
+<span id="cb17-90"><a href="#cb17-90" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-91"><a href="#cb17-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-92"><a href="#cb17-92" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(conteo, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(muestra, lecturas), <span class="at">y =</span> lecturas, <span class="at">fill =</span> sentido)) <span class="sc">+</span></span>
+<span id="cb17-93"><a href="#cb17-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb17-94"><a href="#cb17-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">10000</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb17-95"><a href="#cb17-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb17-96"><a href="#cb17-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-97"><a href="#cb17-97" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Lecturas por muestra (crudas)"</span>,</span>
+<span id="cb17-98"><a href="#cb17-98" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Numero de lecturas"</span>, <span class="at">fill =</span> <span class="st">"Sentido"</span></span>
+<span id="cb17-99"><a href="#cb17-99" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-100"><a href="#cb17-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>)</span>
+<span id="cb17-101"><a href="#cb17-101" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-102"><a href="#cb17-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-103"><a href="#cb17-103" aria-hidden="true" tabindex="-1"></a>La línea roja marca 10,000 lecturas — muestras por debajo merecen revisión antes de continuar.</span>
+<span id="cb17-104"><a href="#cb17-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-105"><a href="#cb17-105" aria-hidden="true" tabindex="-1"></a>Para guardar la gráfica como PNG:</span>
+<span id="cb17-106"><a href="#cb17-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-107"><a href="#cb17-107" aria-hidden="true" tabindex="-1"></a><span class="in">``` r</span></span>
+<span id="cb17-108"><a href="#cb17-108" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/conteo_lecturas.png"</span>, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">6</span>)</span>
+<span id="cb17-109"><a href="#cb17-109" aria-hidden="true" tabindex="-1"></a><span class="fu">q</span>()</span>
+<span id="cb17-110"><a href="#cb17-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-111"><a href="#cb17-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-112"><a href="#cb17-112" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Evaluación de calidad: FastQC y MultiQC</span></span>
+<span id="cb17-113"><a href="#cb17-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-114"><a href="#cb17-114" aria-hidden="true" tabindex="-1"></a><span class="fu">### Crear directorios y correr fastqc</span></span>
+<span id="cb17-115"><a href="#cb17-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-116"><a href="#cb17-116" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-117"><a href="#cb17-117" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc raw_fastqs/<span class="pp">*</span>.fastq</span>
+<span id="cb17-118"><a href="#cb17-118" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-119"><a href="#cb17-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-120"><a href="#cb17-120" aria-hidden="true" tabindex="-1"></a><span class="fu">### Verificar conteo de reportes</span></span>
+<span id="cb17-121"><a href="#cb17-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-122"><a href="#cb17-122" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-123"><a href="#cb17-123" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb17-124"><a href="#cb17-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-125"><a href="#cb17-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-126"><a href="#cb17-126" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecutar MultiQC (resume todos los FastQC)</span></span>
+<span id="cb17-127"><a href="#cb17-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-128"><a href="#cb17-128" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-129"><a href="#cb17-129" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc <span class="at">-o</span> final_data/multiqc</span>
+<span id="cb17-130"><a href="#cb17-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-131"><a href="#cb17-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-132"><a href="#cb17-132" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. Revisión de resultados</span></span>
+<span id="cb17-133"><a href="#cb17-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-134"><a href="#cb17-134" aria-hidden="true" tabindex="-1"></a><span class="fu">### Transferir el HTML a la computadora local usando scp</span></span>
+<span id="cb17-135"><a href="#cb17-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-136"><a href="#cb17-136" aria-hidden="true" tabindex="-1"></a>**Desde tu terminal local:**</span>
+<span id="cb17-137"><a href="#cb17-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-138"><a href="#cb17-138" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-139"><a href="#cb17-139" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/</span>
+<span id="cb17-140"><a href="#cb17-140" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span>
+<span id="cb17-141"><a href="#cb17-141" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-142"><a href="#cb17-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-143"><a href="#cb17-143" aria-hidden="true" tabindex="-1"></a>**Transferir toda la carpeta FastQC:**</span>
+<span id="cb17-144"><a href="#cb17-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-145"><a href="#cb17-145" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-146"><a href="#cb17-146" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/</span>
+<span id="cb17-147"><a href="#cb17-147" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-148"><a href="#cb17-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-149"><a href="#cb17-149" aria-hidden="true" tabindex="-1"></a>| **Tips de revisión en MultiQC:**</span>
+<span id="cb17-150"><a href="#cb17-150" aria-hidden="true" tabindex="-1"></a>| - Per base sequence quality: define zonas de truncado (Q≥25–30).</span>
+<span id="cb17-151"><a href="#cb17-151" aria-hidden="true" tabindex="-1"></a>| - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.</span>
+<span id="cb17-152"><a href="#cb17-152" aria-hidden="true" tabindex="-1"></a>| - Length distribution: válida rango del amplicón esperado.</span>
+<span id="cb17-153"><a href="#cb17-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-154"><a href="#cb17-154" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. Cortar primers con Cutadapt</span></span>
+<span id="cb17-155"><a href="#cb17-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-156"><a href="#cb17-156" aria-hidden="true" tabindex="-1"></a>Este script <span class="in">`cutadapt.sh`</span> es un pipeline automatizado en bash para</span>
+<span id="cb17-157"><a href="#cb17-157" aria-hidden="true" tabindex="-1"></a>recortar los primers de archivos de secuenciación paired-end usando la</span>
+<span id="cb17-158"><a href="#cb17-158" aria-hidden="true" tabindex="-1"></a>herramienta cutadapt.</span>
+<span id="cb17-159"><a href="#cb17-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-160"><a href="#cb17-160" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Configura rutas y variables:** Define dónde están los archivos</span>
+<span id="cb17-161"><a href="#cb17-161" aria-hidden="true" tabindex="-1"></a>    originales (raw_fastqs), dónde guardar los archivos recortados</span>
+<span id="cb17-162"><a href="#cb17-162" aria-hidden="true" tabindex="-1"></a>    (for_dada2) y los reportes (cutadapt_reports). También define los</span>
+<span id="cb17-163"><a href="#cb17-163" aria-hidden="true" tabindex="-1"></a>    primers a recortar y otros parámetros (pueden modificarse).</span>
+<span id="cb17-164"><a href="#cb17-164" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Verifica dependencias:** Busca que cutadapt esté instalado y que</span>
+<span id="cb17-165"><a href="#cb17-165" aria-hidden="true" tabindex="-1"></a>    existan los archivos necesarios.</span>
+<span id="cb17-166"><a href="#cb17-166" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Busca los archivos FASTQ:** Localiza todos los archivos</span>
+<span id="cb17-167"><a href="#cb17-167" aria-hidden="true" tabindex="-1"></a>    <span class="sc">\*\_</span>R1_001.fastq y sus pares <span class="sc">\*\_</span>R2_001.fastq.</span>
+<span id="cb17-168"><a href="#cb17-168" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Procesa cada muestra:**</span>
+<span id="cb17-169"><a href="#cb17-169" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Ejecuta cutadapt para recortar los primers de cada par de</span>
+<span id="cb17-170"><a href="#cb17-170" aria-hidden="true" tabindex="-1"></a>        archivos (R1 y R2).</span>
+<span id="cb17-171"><a href="#cb17-171" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Guarda los archivos recortados y un reporte individual para cada</span>
+<span id="cb17-172"><a href="#cb17-172" aria-hidden="true" tabindex="-1"></a>        muestra.</span>
+<span id="cb17-173"><a href="#cb17-173" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Extrae estadísticas clave del reporte (pares procesados, reads</span>
+<span id="cb17-174"><a href="#cb17-174" aria-hidden="true" tabindex="-1"></a>        con adaptador, reads escritos, porcentaje de éxito) y las resume</span>
+<span id="cb17-175"><a href="#cb17-175" aria-hidden="true" tabindex="-1"></a>        en archivos TXT y TSV.</span>
+<span id="cb17-176"><a href="#cb17-176" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Resultados:**</span>
+<span id="cb17-177"><a href="#cb17-177" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Los archivos recortados quedan listos para análisis posteriores</span>
+<span id="cb17-178"><a href="#cb17-178" aria-hidden="true" tabindex="-1"></a>        (por ejemplo, DADA2).</span>
+<span id="cb17-179"><a href="#cb17-179" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Los reportes permiten revisar cuántas lecturas fueron recortadas</span>
+<span id="cb17-180"><a href="#cb17-180" aria-hidden="true" tabindex="-1"></a>        correctamente.</span>
+<span id="cb17-181"><a href="#cb17-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-182"><a href="#cb17-182" aria-hidden="true" tabindex="-1"></a>| **¿Por qué es útil?**</span>
+<span id="cb17-183"><a href="#cb17-183" aria-hidden="true" tabindex="-1"></a>| Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.</span>
+<span id="cb17-184"><a href="#cb17-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-185"><a href="#cb17-185" aria-hidden="true" tabindex="-1"></a>Visualiza el contenido del script:</span>
+<span id="cb17-186"><a href="#cb17-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-187"><a href="#cb17-187" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-188"><a href="#cb17-188" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span>
+<span id="cb17-189"><a href="#cb17-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-190"><a href="#cb17-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-191"><a href="#cb17-191" aria-hidden="true" tabindex="-1"></a><span class="fu">### Parámetros principales usados</span></span>
+<span id="cb17-192"><a href="#cb17-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-193"><a href="#cb17-193" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-j ${THREADS}`</span>: Número de hilos (procesos en paralelo) para</span>
+<span id="cb17-194"><a href="#cb17-194" aria-hidden="true" tabindex="-1"></a>    acelerar el procesamiento.</span>
+<span id="cb17-195"><a href="#cb17-195" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-g "^${FWD}"`</span>: Primer a buscar al inicio de las lecturas R1 (el</span>
+<span id="cb17-196"><a href="#cb17-196" aria-hidden="true" tabindex="-1"></a>    símbolo \^ indica “al inicio”).</span>
+<span id="cb17-197"><a href="#cb17-197" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-G "^${ADAPTER_R2}"`</span>: Primer a buscar al inicio de las lecturas R2.</span>
+<span id="cb17-198"><a href="#cb17-198" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-e ${ERROR_RATE}`</span>: Tasa máxima de error permitida al buscar el</span>
+<span id="cb17-199"><a href="#cb17-199" aria-hidden="true" tabindex="-1"></a>    primer (por defecto 0.10, es decir, 10% de errores permitidos).</span>
+<span id="cb17-200"><a href="#cb17-200" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-m ${MIN_LEN}`</span>: Longitud mínima de las lecturas después del recorte</span>
+<span id="cb17-201"><a href="#cb17-201" aria-hidden="true" tabindex="-1"></a>    (por defecto 40 bases).</span>
+<span id="cb17-202"><a href="#cb17-202" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`--discard-untrimmed`</span>: (Opcional) Si se activa, descarta las</span>
+<span id="cb17-203"><a href="#cb17-203" aria-hidden="true" tabindex="-1"></a>    lecturas donde no se encontró el primer.</span>
+<span id="cb17-204"><a href="#cb17-204" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-o ${out_R1}`</span>: Archivo de salida para las lecturas R1 recortadas.</span>
+<span id="cb17-205"><a href="#cb17-205" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`-p ${out_R2}`</span>: Archivo de salida para las lecturas R2 recortadas.</span>
+<span id="cb17-206"><a href="#cb17-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-207"><a href="#cb17-207" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecuta</span></span>
+<span id="cb17-208"><a href="#cb17-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-209"><a href="#cb17-209" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-210"><a href="#cb17-210" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span>
+<span id="cb17-211"><a href="#cb17-211" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-212"><a href="#cb17-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-213"><a href="#cb17-213" aria-hidden="true" tabindex="-1"></a><span class="fu">### Obtendrás</span></span>
+<span id="cb17-214"><a href="#cb17-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-215"><a href="#cb17-215" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FASTQ recortados: for_dada2/</span>
+<span id="cb17-216"><a href="#cb17-216" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reportes por muestra: cutadapt_reports/<span class="sc">\*\_</span>cutadapt.txt</span>
+<span id="cb17-217"><a href="#cb17-217" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Resumen: cutadapt_reports/overall_report.txt</span>
+<span id="cb17-218"><a href="#cb17-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-219"><a href="#cb17-219" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. Revisión de resultados</span></span>
+<span id="cb17-220"><a href="#cb17-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-221"><a href="#cb17-221" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-222"><a href="#cb17-222" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
+<span id="cb17-223"><a href="#cb17-223" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span>
+<span id="cb17-224"><a href="#cb17-224" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-225"><a href="#cb17-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-226"><a href="#cb17-226" aria-hidden="true" tabindex="-1"></a>Descarga el reporte:</span>
+<span id="cb17-227"><a href="#cb17-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-228"><a href="#cb17-228" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb17-229"><a href="#cb17-229" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span>
+<span id="cb17-230"><a href="#cb17-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb17-231"><a href="#cb17-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-232"><a href="#cb17-232" aria-hidden="true" tabindex="-1"></a>| **Notas del script**</span>
+<span id="cb17-233"><a href="#cb17-233" aria-hidden="true" tabindex="-1"></a>| - Usa FWD (forward) y el RC del REV para -G (paired-end).</span>
+<span id="cb17-234"><a href="#cb17-234" aria-hidden="true" tabindex="-1"></a>| - No dependas de cambiar de carpeta; el script ya usa rutas claras.</span>
+<span id="cb17-235"><a href="#cb17-235" aria-hidden="true" tabindex="-1"></a>| - Crea directorios de salida antes de escribir.</span>
+<span id="cb17-236"><a href="#cb17-236" aria-hidden="true" tabindex="-1"></a>| - Convención requerida: Sample_R1.fastq y Sample_R2.fastq en raw_fastqs/.</span></code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
