@@ -160,34 +160,46 @@ scp -r usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/f
 
 ### 5. Cortar primers con Cutadapt
 
-Este script `cutadapt.sh` es un pipeline automatizado en bash para
-recortar los primers de archivos de secuenciación paired-end usando la
-herramienta cutadapt.
+#### ¿Por qué hay que remover los primers?
 
-1.  **Configura rutas y variables:** Define dónde están los archivos
-    originales (raw_fastqs), dónde guardar los archivos recortados
-    (for_dada2) y los reportes (cutadapt_reports). También define los
-    primers a recortar y otros parámetros (pueden modificarse).
-2.  **Verifica dependencias:** Busca que cutadapt esté instalado y que
-    existan los archivos necesarios.
-3.  **Busca los archivos FASTQ:** Localiza todos los archivos
-    \*\_R1_001.fastq y sus pares \*\_R2_001.fastq.
-4.  **Procesa cada muestra:**
-    -   Ejecuta cutadapt para recortar los primers de cada par de
-        archivos (R1 y R2).
-    -   Guarda los archivos recortados y un reporte individual para cada
-        muestra.
-    -   Extrae estadísticas clave del reporte (pares procesados, reads
-        con adaptador, reads escritos, porcentaje de éxito) y las resume
-        en archivos TXT y TSV.
-5.  **Resultados:**
-    -   Los archivos recortados quedan listos para análisis posteriores
-        (por ejemplo, DADA2).
-    -   Los reportes permiten revisar cuántas lecturas fueron recortadas
-        correctamente.
+Los primers son secuencias artificiales que se añaden durante la PCR para amplificar la región de interés. **No forman parte del amplicón biológico** y deben eliminarse antes de correr DADA2 porque:
 
-| **¿Por qué es útil?**
-| Automatiza el preprocesamiento de datos de secuenciación. Permite ajustar parámetros fácilmente. Genera reportes claros para control de calidad.
+- DADA2 modela los errores de secuenciación base por base. Si los primers están presentes, introduce bases con un perfil de error diferente al resto de la lectura, lo que confunde el modelo.
+- Las secuencias de primers son idénticas en todas las muestras — si no se remueven, DADA2 las trata como variantes biológicas reales.
+- La longitud del amplicón real queda definida solo después del recorte.
+
+#### ¿Cómo funciona la búsqueda de primers?
+
+Cutadapt busca la secuencia del primer dentro de cada lectura y recorta todo lo que está antes de ella (incluyendo el primer mismo). Dos conceptos clave:
+
+- **Anchoring (`^`):** El símbolo `^` antes del primer le indica a cutadapt que el primer debe estar exactamente al inicio de la lectura. Sin `^`, buscaría el primer en cualquier posición, lo que puede producir recortes incorrectos.
+- **Complemento reverso en R2:** En secuenciación paired-end, R1 empieza con el primer forward y R2 empieza con el primer reverse. El script usa `-g “^${FWD}”` para R1 y `-G “^${RC_REV}”` para R2, donde `RC_REV` es el complemento reverso del primer reverse — que es lo que realmente aparece al inicio de R2.
+
+```
+R1: [FWD primer]----amplicón----►
+R2:                 ◄----amplicón----[RC del REV primer]
+```
+
+- **Tasa de error (`-e`):** Permite hasta un 10% de mismatches al buscar el primer. Esto es necesario porque los primers a veces tienen pequeñas variaciones entre muestras o errores de síntesis.
+
+#### ¿Qué pasa con lecturas donde no se encontró el primer?
+
+Por defecto, si cutadapt no encuentra el primer en una lectura, la conserva sin modificar. Con `--discard-untrimmed` esas lecturas se descartan completamente.
+
+| Opción | Cuándo usarla |
+|--------|--------------|
+| Sin `--discard-untrimmed` (default) | Cuando quieres conservar todas las lecturas y revisar después |
+| Con `--discard-untrimmed` | Cuando tienes certeza de que todas las lecturas deben tener primer — lecturas sin primer son contaminación o artefactos |
+
+Para metabarcoding con primers específicos se recomienda usar `--discard-untrimmed`: lecturas sin primer no corresponden al amplicón objetivo.
+
+#### Lo que hace el script `02b-cutadapt.sh`
+
+1. Define rutas, primers y parámetros configurables.
+2. Verifica que cutadapt esté instalado y que existan los archivos de entrada.
+3. Localiza todos los pares `*_R1_001.fastq` / `*_R2_001.fastq` en `raw_fastqs/`.
+4. Para cada muestra: recorta primers, guarda FASTQs en `for_dada2/` y un reporte individual en `cutadapt_reports/`.
+5. Resume las estadísticas de todas las muestras en `cutadapt_reports/overall_report.txt` y `overall_summary.tsv`.
 
 Visualiza el contenido del script:
 
@@ -195,23 +207,54 @@ Visualiza el contenido del script:
 cat scripts/02b-cutadapt.sh
 ```
 
-### Parámetros principales usados
+#### Parámetros principales
 
--   `-j ${THREADS}`: Número de hilos (procesos en paralelo) para
-    acelerar el procesamiento.
--   `-g "^${FWD}"`: Primer a buscar al inicio de las lecturas R1 (el
-    símbolo \^ indica “al inicio”).
--   `-G "^${ADAPTER_R2}"`: Primer a buscar al inicio de las lecturas R2.
--   `-e ${ERROR_RATE}`: Tasa máxima de error permitida al buscar el
-    primer (por defecto 0.10, es decir, 10% de errores permitidos).
--   `-m ${MIN_LEN}`: Longitud mínima de las lecturas después del recorte
-    (por defecto 40 bases).
--   `--discard-untrimmed`: (Opcional) Si se activa, descarta las
-    lecturas donde no se encontró el primer.
--   `-o ${out_R1}`: Archivo de salida para las lecturas R1 recortadas.
--   `-p ${out_R2}`: Archivo de salida para las lecturas R2 recortadas.
+| Parámetro | Descripción | Valor por defecto |
+|-----------|-------------|------------------|
+| `-j` | Hilos en paralelo | 4 |
+| `-g “^${FWD}”` | Primer forward anclado al inicio de R1 | — |
+| `-G “^${RC_REV}”` | RC del primer reverse anclado al inicio de R2 | — |
+| `-e` | Tasa máxima de error al buscar el primer | 0.10 (10%) |
+| `-m` | Longitud mínima de la lectura tras el recorte | 40 bp |
+| `--discard-untrimmed` | Descarta lecturas sin primer | Opcional |
+| `-o` / `-p` | Archivos de salida R1 y R2 recortados | — |
+
+#### Interpretación del reporte
+
+Al terminar, revisa el resumen:
+
+``` bash
+cat cutadapt_reports/overall_report.txt
+```
+
+Las columnas más importantes de `overall_summary.tsv`:
+
+| Columna | Qué indica | Valor aceptable |
+|---------|-----------|----------------|
+| `pairs_processed` | Total de pares de lecturas procesados | — |
+| `reads_with_adapter` | Pares donde se encontró el primer | > 80% |
+| `reads_written` | Pares que pasaron todos los filtros | > 80% |
+| `pct_success` | Porcentaje de éxito global | > 80% |
+
+Si `pct_success` es menor al 80% en varias muestras, posibles causas:
+
+- La secuencia del primer en el script no coincide con el primer real usado en el laboratorio.
+- Los archivos FASTQ están en orientación opuesta a la esperada.
+- La tasa de error (`-e`) es muy baja para la calidad de esos datos.
 
 ### Ejecuta
+
+:::{.callout-note}
+## Notas del script
+
+- **Primers paired-end:** El script busca el primer forward al inicio de R1 (`-g`) y el complemento reverso del primer reverse al inicio de R2 (`-G`). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.
+
+- **Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (`raw_fastqs/`, `for_dada2/`, etc.), por lo que debe ejecutarse desde `~/metabarcoding-code`. Si lo corres desde otra carpeta, no encontrará los archivos.
+
+- **Los directorios de salida se crean automáticamente:** El script hace `mkdir -p` de `for_dada2/` y `cutadapt_reports/` antes de escribir, así que no necesitas crearlos manualmente.
+
+- **Convención de nombres requerida:** El script espera archivos con el patrón `*_R1_001.fastq` y `*_R2_001.fastq` en `raw_fastqs/`. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.
+:::
 
 ``` bash
 bash scripts/02b-cutadapt.sh
@@ -235,15 +278,3 @@ Descarga el reporte:
 ``` bash
 scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/
 ```
-
-:::{.callout-note}
-## Notas del script
-
-- **Primers paired-end:** El script busca el primer forward al inicio de R1 (`-g`) y el complemento reverso del primer reverse al inicio de R2 (`-G`). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.
-
-- **Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (`raw_fastqs/`, `for_dada2/`, etc.), por lo que debe ejecutarse desde `~/metabarcoding-code`. Si lo corres desde otra carpeta, no encontrará los archivos.
-
-- **Los directorios de salida se crean automáticamente:** El script hace `mkdir -p` de `for_dada2/` y `cutadapt_reports/` antes de escribir, así que no necesitas crearlos manualmente.
-
-- **Convención de nombres requerida:** El script espera archivos con el patrón `*_R1_001.fastq` y `*_R2_001.fastq` en `raw_fastqs/`. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.
-:::
