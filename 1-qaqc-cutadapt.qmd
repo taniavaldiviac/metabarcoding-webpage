@@ -227,20 +227,27 @@ Al terminar, revisa el resumen:
 cat cutadapt_reports/overall_report.txt
 ```
 
-Las columnas más importantes de `overall_summary.tsv`:
+El reporte por muestra tiene tres métricas clave:
 
-| Columna | Qué indica | Valor aceptable |
+| Métrica | Qué indica | Valor esperado |
 |---------|-----------|----------------|
-| `pairs_processed` | Total de pares de lecturas procesados | — |
-| `reads_with_adapter` | Pares donde se encontró el primer | > 80% |
-| `reads_written` | Pares que pasaron todos los filtros | > 80% |
-| `pct_success` | Porcentaje de éxito global | > 80% |
+| `Read 1 with adapter` | % de lecturas R1 donde se encontró el primer forward | > 90% |
+| `Read 2 with adapter` | % de lecturas R2 donde se encontró el primer reverse | > 90% |
+| `Pairs written (passing filters)` | % de pares que pasaron el recorte **y** el filtro de longitud mínima (`-m`) | > 60% |
 
-Si `pct_success` es menor al 80% en varias muestras, posibles causas:
+**Diferencia importante entre "reads with adapter" y "pairs written":**
 
-- La secuencia del primer en el script no coincide con el primer real usado en el laboratorio.
-- Los archivos FASTQ están en orientación opuesta a la esperada.
-- La tasa de error (`-e`) es muy baja para la calidad de esos datos.
+- **"Reads with adapter"** alto (~95%) significa que el primer se encontró correctamente — los primers están bien definidos.
+- **"Pairs written"** más bajo significa que después de recortar el primer, muchas lecturas quedaron por debajo de la longitud mínima (`-m 40` por defecto) y fueron descartadas. Esto es normal en amplicones cortos donde el solapamiento entre R1 y R2 es grande.
+
+**Señales de alerta:**
+
+| Patrón | Interpretación |
+|--------|---------------|
+| `Read 1/2 with adapter` < 80% | El primer no se encuentra — verificar secuencia del primer en el script |
+| `Read 1 with adapter` alto pero `Read 2` bajo (o viceversa) | Posible inversión de orientación en R1/R2 |
+| `Pairs written` < 30% | Muchas lecturas demasiado cortas tras el recorte — revisar `-m` o longitud del amplicón |
+| `Read 1/2 with adapter` ≈ 0% | La muestra probablemente no contiene el amplicón objetivo — posible blanco, contaminación cruzada o muestra incorrecta |
 
 ### Ejecuta
 
