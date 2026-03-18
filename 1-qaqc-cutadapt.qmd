@@ -160,6 +160,30 @@ scp -r usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/f
 
 ### 5. Cortar primers con Cutadapt
 
+``` bash
+bash scripts/02b-cutadapt.sh
+```
+
+:::{.callout-note}
+## Notas del script
+
+- **Primers paired-end:** El script busca el primer forward al inicio de R1 (`-g`) y el complemento reverso del primer reverse al inicio de R2 (`-G`). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.
+
+- **Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (`raw_fastqs/`, `for_dada2/`, etc.), por lo que debe ejecutarse desde `~/metabarcoding-code`. Si lo corres desde otra carpeta, no encontrará los archivos.
+
+- **Los directorios de salida se crean automáticamente:** El script hace `mkdir -p` de `for_dada2/` y `cutadapt_reports/` antes de escribir, así que no necesitas crearlos manualmente.
+
+- **Convención de nombres requerida:** El script espera archivos con el patrón `*_R1_001.fastq` y `*_R2_001.fastq` en `raw_fastqs/`. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.
+:::
+
+### Obtendrás
+
+-   FASTQ recortados: for_dada2/
+-   Reportes por muestra: cutadapt_reports/\*\_cutadapt.txt
+-   Resumen: cutadapt_reports/overall_report.txt
+
+---
+
 #### ¿Por qué hay que remover los primers?
 
 Los primers son secuencias artificiales que se añaden durante la PCR para amplificar la región de interés. **No forman parte del amplicón biológico** y deben eliminarse antes de correr DADA2 porque:
@@ -235,10 +259,10 @@ El reporte por muestra tiene tres métricas clave:
 | `Read 2 with adapter` | % de lecturas R2 donde se encontró el primer reverse | > 90% |
 | `Pairs written (passing filters)` | % de pares que pasaron el recorte **y** el filtro de longitud mínima (`-m`) | > 60% |
 
-**Diferencia importante entre "reads with adapter" y "pairs written":**
+**Diferencia importante entre “reads with adapter” y “pairs written”:**
 
-- **"Reads with adapter"** alto (~95%) significa que el primer se encontró correctamente — los primers están bien definidos.
-- **"Pairs written"** más bajo significa que después de recortar el primer, muchas lecturas quedaron por debajo de la longitud mínima (`-m 40` por defecto) y fueron descartadas. Esto es normal en amplicones cortos donde el solapamiento entre R1 y R2 es grande.
+- **”Reads with adapter”** alto (~95%) significa que el primer se encontró correctamente — los primers están bien definidos.
+- **”Pairs written”** más bajo significa que después de recortar el primer, muchas lecturas quedaron por debajo de la longitud mínima (`-m 40` por defecto) y fueron descartadas. Esto es normal en amplicones cortos donde el solapamiento entre R1 y R2 es grande.
 
 **Señales de alerta:**
 
@@ -248,30 +272,6 @@ El reporte por muestra tiene tres métricas clave:
 | `Read 1 with adapter` alto pero `Read 2` bajo (o viceversa) | Posible inversión de orientación en R1/R2 |
 | `Pairs written` < 30% | Muchas lecturas demasiado cortas tras el recorte — revisar `-m` o longitud del amplicón |
 | `Read 1/2 with adapter` ≈ 0% | La muestra probablemente no contiene el amplicón objetivo — posible blanco, contaminación cruzada o muestra incorrecta |
-
-### Ejecuta
-
-``` bash
-bash scripts/02b-cutadapt.sh
-```
-
-:::{.callout-note}
-## Notas del script
-
-- **Primers paired-end:** El script busca el primer forward al inicio de R1 (`-g`) y el complemento reverso del primer reverse al inicio de R2 (`-G`). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.
-
-- **Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (`raw_fastqs/`, `for_dada2/`, etc.), por lo que debe ejecutarse desde `~/metabarcoding-code`. Si lo corres desde otra carpeta, no encontrará los archivos.
-
-- **Los directorios de salida se crean automáticamente:** El script hace `mkdir -p` de `for_dada2/` y `cutadapt_reports/` antes de escribir, así que no necesitas crearlos manualmente.
-
-- **Convención de nombres requerida:** El script espera archivos con el patrón `*_R1_001.fastq` y `*_R2_001.fastq` en `raw_fastqs/`. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.
-:::
-
-### Obtendrás
-
--   FASTQ recortados: for_dada2/
--   Reportes por muestra: cutadapt_reports/\*\_cutadapt.txt
--   Resumen: cutadapt_reports/overall_report.txt
 
 ### 6. Revisión de resultados
 
