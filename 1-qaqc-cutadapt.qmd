@@ -251,6 +251,10 @@ El reporte por muestra tiene tres métricas clave:
 
 ### Ejecuta
 
+``` bash
+bash scripts/02b-cutadapt.sh
+```
+
 :::{.callout-note}
 ## Notas del script
 
@@ -262,10 +266,6 @@ El reporte por muestra tiene tres métricas clave:
 
 - **Convención de nombres requerida:** El script espera archivos con el patrón `*_R1_001.fastq` y `*_R2_001.fastq` en `raw_fastqs/`. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.
 :::
-
-``` bash
-bash scripts/02b-cutadapt.sh
-```
 
 ### Obtendrás
 

@@ -544,6 +544,7 @@ R2:                 ◄----amplicón----[RC del REV primer]</code></pre>
 </section>
 <section id="ejecuta" class="level3">
 <h3 class="anchored" data-anchor-id="ejecuta">Ejecuta</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -562,7 +563,6 @@ Notas del script
 </ul>
 </div>
 </div>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="obtendrás" class="level3">
 <h3 class="anchored" data-anchor-id="obtendrás">Obtendrás</h3>
@@ -1307,21 +1307,21 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb19-251"><a href="#cb19-251" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-252"><a href="#cb19-252" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ejecuta</span></span>
 <span id="cb19-253"><a href="#cb19-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-254"><a href="#cb19-254" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
-<span id="cb19-255"><a href="#cb19-255" aria-hidden="true" tabindex="-1"></a><span class="fu">## Notas del script</span></span>
-<span id="cb19-256"><a href="#cb19-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Primers paired-end:** El script busca el primer forward al inicio de R1 (<span class="in">`-g`</span>) y el complemento reverso del primer reverse al inicio de R2 (<span class="in">`-G`</span>). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.</span>
-<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-259"><a href="#cb19-259" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (<span class="in">`raw_fastqs/`</span>, <span class="in">`for_dada2/`</span>, etc.), por lo que debe ejecutarse desde <span class="in">`~/metabarcoding-code`</span>. Si lo corres desde otra carpeta, no encontrará los archivos.</span>
+<span id="cb19-254"><a href="#cb19-254" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
+<span id="cb19-255"><a href="#cb19-255" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span>
+<span id="cb19-256"><a href="#cb19-256" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-257"><a href="#cb19-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-258"><a href="#cb19-258" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb19-259"><a href="#cb19-259" aria-hidden="true" tabindex="-1"></a><span class="fu">## Notas del script</span></span>
 <span id="cb19-260"><a href="#cb19-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-261"><a href="#cb19-261" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Los directorios de salida se crean automáticamente:** El script hace <span class="in">`mkdir -p`</span> de <span class="in">`for_dada2/`</span> y <span class="in">`cutadapt_reports/`</span> antes de escribir, así que no necesitas crearlos manualmente.</span>
+<span id="cb19-261"><a href="#cb19-261" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Primers paired-end:** El script busca el primer forward al inicio de R1 (<span class="in">`-g`</span>) y el complemento reverso del primer reverse al inicio de R2 (<span class="in">`-G`</span>). Esta es la configuración correcta para amplicones paired-end — no uses el mismo primer en ambas direcciones.</span>
 <span id="cb19-262"><a href="#cb19-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-263"><a href="#cb19-263" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Convención de nombres requerida:** El script espera archivos con el patrón <span class="in">`*_R1_001.fastq`</span> y <span class="in">`*_R2_001.fastq`</span> en <span class="in">`raw_fastqs/`</span>. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.</span>
-<span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-266"><a href="#cb19-266" aria-hidden="true" tabindex="-1"></a><span class="in">``` bash</span></span>
-<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span>
-<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-263"><a href="#cb19-263" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Corre siempre desde la raíz del proyecto:** El script usa rutas relativas (<span class="in">`raw_fastqs/`</span>, <span class="in">`for_dada2/`</span>, etc.), por lo que debe ejecutarse desde <span class="in">`~/metabarcoding-code`</span>. Si lo corres desde otra carpeta, no encontrará los archivos.</span>
+<span id="cb19-264"><a href="#cb19-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-265"><a href="#cb19-265" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Los directorios de salida se crean automáticamente:** El script hace <span class="in">`mkdir -p`</span> de <span class="in">`for_dada2/`</span> y <span class="in">`cutadapt_reports/`</span> antes de escribir, así que no necesitas crearlos manualmente.</span>
+<span id="cb19-266"><a href="#cb19-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-267"><a href="#cb19-267" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Convención de nombres requerida:** El script espera archivos con el patrón <span class="in">`*_R1_001.fastq`</span> y <span class="in">`*_R2_001.fastq`</span> en <span class="in">`raw_fastqs/`</span>. Si tus archivos tienen otro formato de nombre, hay que ajustar el script.</span>
+<span id="cb19-268"><a href="#cb19-268" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb19-269"><a href="#cb19-269" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-270"><a href="#cb19-270" aria-hidden="true" tabindex="-1"></a><span class="fu">### Obtendrás</span></span>
 <span id="cb19-271"><a href="#cb19-271" aria-hidden="true" tabindex="-1"></a></span>
