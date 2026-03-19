@@ -245,7 +245,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 - Clonación del repositorio con los scripts y datos
 
 ::: {.callout-tip icon="false"}
-**Práctica:** [Conexión al servidor y clonación del repositorio](0-Conexión-clonación.qmd)
+**Práctica:** [Conexión al servidor y clonación del repositorio](0-Conexion-clonacion.qmd)
 :::
 
 ---
