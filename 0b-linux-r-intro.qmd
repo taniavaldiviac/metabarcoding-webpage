@@ -67,8 +67,6 @@ pwd
 ls
 ls -lh    # con detalles (tamaño, permisos, fecha)
 ls -a     # incluye archivos ocultos (empiezan con .)
-ls -lha   # combinar opciones: detalles + ocultos
-ls -lt    # ordenar por fecha de modificación (más reciente primero)
 ls -lhS   # ordenar por tamaño (más grande primero)
 ```
 
@@ -90,6 +88,8 @@ cutadapt --help
 ```
 
 `man` (de *manual*) es la forma estándar en Linux. `--help` suele ser más corto y directo. Para herramientas bioinformáticas como `cutadapt` o `fastqc`, `--help` es la opción más común.
+
+
 
 ```bash
 # Moverte entre carpetas
@@ -142,22 +142,47 @@ wc -c archivo.fastq          # número de bytes (tamaño)
 
 ---
 
-### Permisos y gestión de archivos
+### Permisos y gestión de archivos — `chmod`
 
-Cada archivo en Linux tiene permisos para el dueño, el grupo y otros usuarios. Se ven con `ls -l`:
+`chmod` significa **ch**ange **mod**e y cambia los permisos de un archivo o carpeta. En Linux, cada archivo tiene tres tipos de permisos y se aplican a tres grupos distintos:
+
+| Permiso | Letra | Número |
+|---------|-------|--------|
+| Leer (*read*) | `r` | 4 |
+| Escribir (*write*) | `w` | 2 |
+| Ejecutar (*execute*) | `x` | 1 |
+
+Cuando haces `ls -l`, los permisos aparecen como una cadena de 9 letras divididas en tres grupos:
 
 ```
--rw-r--r-- 1 usr01 metabarcoding 4096 mar 23 09:00 script.R
+-rw-r--r--  1  tvaldivia  metabarcoding  4096  script.R
+  │││ │││ │││
+  │││ │││ └──── otros usuarios
+  │││ └──────── grupo
+  └──────────── dueño del archivo
 ```
 
-Los tres grupos de letras (`rw-`, `r--`, `r--`) son: dueño, grupo, otros. `r`=leer, `w`=escribir, `x`=ejecutar.
+Entonces `-rw-r--r--` significa:
+
+- **dueño** puede leer y escribir (`rw-`)
+- **grupo** solo puede leer (`r--`)
+- **otros** solo pueden leer (`r--`)
+
+Los scripts de bash necesitan permiso de ejecución para poder correrlos directamente. Sin `+x` verías el error `Permission denied`:
 
 ```bash
-# Cambiar permisos
-chmod +x script.sh           # hacer ejecutable
+# Dar permiso de ejecución a un script
+chmod +x scripts/02b-cutadapt.sh
+bash scripts/02b-cutadapt.sh
+
+# Otras combinaciones comunes
 chmod 644 archivo.txt        # rw-r--r-- (lectura para todos, escritura solo dueño)
 chmod 755 carpeta/           # rwxr-xr-x (carpeta accesible por todos)
 ```
+
+:::{.callout-note}
+En el curso usarás `chmod +x` antes de ejecutar cualquier script `.sh` por primera vez.
+:::
 
 ---
 
