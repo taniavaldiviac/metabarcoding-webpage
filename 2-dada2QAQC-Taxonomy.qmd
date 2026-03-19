@@ -73,19 +73,25 @@ readr::write_csv(
 )
 ```
 
-### Valores típicos segun nivel
+### ¿Cómo funciona `assignTaxonomy()`? — El clasificador Naive Bayesian
 
-| Nivel | % asignado (típico) |
-|-------|---------------------|
-| Reino | 95-100% |
-| Filo | 80-95% |
-| Clase | 70-90% |
-| Orden | 60-85% |
-| Familia | 50-80% |
-| Genero | 30-70% |
-| Especie | 10-50% |
+`assignTaxonomy()` implementa el clasificador bayesiano ingenuo (*Naive Bayesian Classifier*) del RDP (*Ribosomal Database Project*), adaptado por el equipo de DADA2.
 
-La proporción baja a nivel de especie es normal: requiere coincidencia exacta con la base de datos.
+El proceso funciona así:
+
+1. **Fragmentación en k-mers** — Cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (*8-mers*). Por ejemplo, la secuencia `ATCGGCTA` genera los 8-mers `ATCGGCTA`, `TCGGCTAG`, etc.
+
+2. **Comparación con la base de datos** — La base de datos de referencia (por ejemplo, una base de 12S o 18S) también está indexada en 8-mers por cada grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo.
+
+3. **Por qué "ingenuo"** — Se llama "naive" porque asume que cada 8-mer es *independiente* de los demás, lo cual no es biológicamente cierto (las posiciones en una secuencia no son independientes), pero hace el cálculo computacionalmente muy eficiente y funciona bien en la práctica.
+
+4. **Asignación jerárquica** — La clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de **bootstrap** (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como `NA`.
+
+5. **Por qué bajan las asignaciones en niveles finos** — A nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado (o no está del todo), la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.
+
+:::{.callout-note}
+El parámetro `tryRC = TRUE` hace que el clasificador también pruebe el complemento reverso de cada ASV antes de asignar. Esto es importante para marcadores que pueden amplificarse en cualquier orientación.
+:::
 
 ---
 
