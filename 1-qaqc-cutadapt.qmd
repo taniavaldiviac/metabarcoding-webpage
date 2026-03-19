@@ -1,13 +1,6 @@
 ---
 title: "QAQC y recorte de primers con Cutadapt"
 #subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
-format:
-  html:
-    toc-depth: 3
-    code-fold: true
-    code-tools: true
-    #theme: cosmo
-    highlight-style: github
 execute:
   echo: false
   warning: false

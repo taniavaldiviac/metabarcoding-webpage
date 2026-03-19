@@ -1,11 +1,5 @@
 ---
 title: "Dada2 - Asignación taxonómica y guardado de resultados"
-format:
-  html:
-    toc-depth: 3
-    code-fold: true
-    code-tools: true
-    highlight-style: github
 execute:
   echo: true
   warning: false

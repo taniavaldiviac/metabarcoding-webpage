@@ -1,11 +1,5 @@
 ---
 title: "Dada2 - Remoción de quimeras y seguimiento de lecturas"
-format:
-  html:
-    toc-depth: 3
-    code-fold: true
-    code-tools: true
-    highlight-style: github
 execute:
   echo: true
   warning: false

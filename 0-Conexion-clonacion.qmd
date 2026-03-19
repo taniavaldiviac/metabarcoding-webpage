@@ -1,11 +1,5 @@
 ---
 title: "Conexión al servidor y clonación de repositorio Github"
-format:
-  html:
-    toc-depth: 3
-    code-fold: true
-    code-tools: true
-    highlight-style: github
 execute:
   echo: false
   warning: false

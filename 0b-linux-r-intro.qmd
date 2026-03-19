@@ -1,11 +1,5 @@
 ---
 title: "Introducción a Linux y R"
-format:
-  html:
-    toc-depth: 3
-    code-fold: true
-    code-tools: true
-    highlight-style: github
 execute:
   echo: true
   warning: false
@@ -83,13 +77,10 @@ ls --help
 
 # También funciona con cualquier otro comando
 man grep
-man chmod
 cutadapt --help
 ```
 
 `man` (de *manual*) es la forma estándar en Linux. `--help` suele ser más corto y directo. Para herramientas bioinformáticas como `cutadapt` o `fastqc`, `--help` es la opción más común.
-
-
 
 ```bash
 # Moverte entre carpetas
@@ -179,10 +170,6 @@ bash scripts/02b-cutadapt.sh
 chmod 644 archivo.txt        # rw-r--r-- (lectura para todos, escritura solo dueño)
 chmod 755 carpeta/           # rwxr-xr-x (carpeta accesible por todos)
 ```
-
-:::{.callout-note}
-En el curso usarás `chmod +x` antes de ejecutar cualquier script `.sh` por primera vez.
-:::
 
 ---
 
@@ -429,6 +416,5 @@ metabarcoding-code/
 :::{.callout-tip}
 ## Para el curso
 1. Abre la terminal y practica: ¿en qué directorio estás? (`pwd`), ¿qué archivos hay en `raw_fastqs/`? (`ls -lh raw_fastqs/`)
-2. En R: crea un vector con los nombres de tus muestras y calcula cuántas hay (`length()`).
-3. Revisa la estructura de carpetas de `metabarcoding-code/` — ¿coincide con el esquema de arriba?
+2. Revisa la estructura de carpetas de `metabarcoding-code/` — ¿coincide con el esquema de arriba?
 :::

@@ -18,22 +18,20 @@ execute:
 ## Introducción
 
 Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo.
-Sus aplicaciones potenciales incluyen análisis de la calidad del agua, evaluación de la biodiversidad de suelos, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado.
+Sus aplicaciones potenciales incluyen análisis de manera general la evaluación de la biodiversidad en diferentes ecosistemas acuáticos y terrestres, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado.
 
 ## Descripción del curso
 
 El curso "**Metabarcoding de comunidades de eucariontes**" está diseñado para introducir a estudiantes de posgrado, investigadores y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad mediante técnicas basadas en ADN ambiental (eDNA).
 A lo largo de cinco días intensivos, los participantes adquirirán conocimientos teóricos y habilidades prácticas para implementar proyectos de metabarcoding, desde el diseño experimental y la recolección de muestras, hasta el procesamiento bioinformático y el análisis ecológico de datos.
 El curso se centrará en el uso de la herramienta DADA2 para la inferencia de variantes de secuencia (ASVs), control de calidad, remoción de errores y asignación taxonómica.
-También se incluirán sesiones sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación.
+También se incluirán sesiones breves sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación.
 Se fomentará un ambiente colaborativo y participativo, con sesiones prácticas guiadas que permitirán a los asistentes aplicar lo aprendido a proyectos reales.
-El curso culmina con la presentación de proyectos diseñados por los participantes, promoviendo la integración de los conceptos y herramientas adquiridos.
 
 ## A quién va dirigido
 
 Este taller está dirigido principalmente a estudiantes de posgrado, investigadores y técnicos con conocimientos previos en ecología, biodiversidad o biología de comunidades que quieran aprender nuevas herramientas moleculares y bioinformáticas para estudiar la biodiversidad y a los investigadores en otras áreas de la bioinformática que quieran aprender métodos genéticos para la evaluación de la biodiversidad y otras aplicaciones ecológicas.
 En general, es adecuado para todo investigador que quiera unirse a la creciente comunidad internacional de usuarios del metabarcoding.
-En este taller se tratarán principalmente técnicas y software útiles para el metabarcoding de eucariontes.
 
 ## Visión
 
@@ -52,7 +50,7 @@ A través de este curso, promovemos la formación de una comunidad interdiscipli
 
 ## Objetivo
 
-El objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding y qPCR para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos.
+El objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding para el análisis de ADN ambiental y de comunidades, para la detección y monitoreo de especies y comunidades en ecosistemas marinos.
 A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2.
 Este curso busca proporcionar las habilidades necesarias para:
 
@@ -73,4 +71,6 @@ Al finalizar el curso, los participantes estarán preparados para integrar el me
 Dra.
 Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI
 
-Dr. Fausto Valenzuela Quiñonez, Investigador Titular B CIBNOR
+Dr. Miguel A. Martínez Mercado, Investigador postdoctoral CIBNOR SECIHTI
+
+Dr. Fausto Valenzuela Quiñonez, Investigador Titular CIBNOR
