@@ -24,7 +24,44 @@ Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las 
 
 - Se compara el punto de truncamiento calculado con el valor máximo permitido (`max_trim`) para evitar perder el solapamiento necesario entre lecturas forward y reverse.
 
-### 3. Filtrado y trimming
+### 3. Verificación de primers
+
+Antes de filtrar, el pipeline verifica que los primers esperados estén presentes en las lecturas. Esto detecta errores de configuración (por ejemplo, si `locus_shorthand` no corresponde al locus real):
+
+```{r eval=FALSE}
+library(Biostrings)
+
+check_primers <- function(fastq_file, primer_seq, n = 1000) {
+  streamer <- ShortRead::FastqStreamer(fastq_file, n = n)
+  on.exit(close(streamer))
+  chunk <- ShortRead::yield(streamer)
+  seqs <- as.character(ShortRead::sread(chunk))
+  exact_match <- sum(grepl(paste0("^", primer_seq), seqs))
+  substr_seqs  <- substr(seqs, 1, 50)
+  anywhere_match <- sum(grepl(primer_seq, substr_seqs))
+  list(exact = exact_match, anywhere = anywhere_match, total = length(seqs))
+}
+
+# Ajusta estas secuencias al locus del curso
+primer_F <- "TTAGATACCCCACTATGC"  # ejemplo 12S
+primer_R <- "TAGAACAGGCTCCTCTAG"  # ejemplo 12S
+
+check_F_in_R1   <- check_primers(fnFs[1], primer_F)
+check_R_RC_in_R1 <- check_primers(fnFs[1], as.character(
+                      Biostrings::reverseComplement(Biostrings::DNAString(primer_R))))
+check_R_in_R2   <- check_primers(fnRs[1], primer_R)
+check_F_RC_in_R2 <- check_primers(fnRs[1], as.character(
+                      Biostrings::reverseComplement(Biostrings::DNAString(primer_F))))
+
+message("R1 — Primer F al inicio: ", check_F_in_R1$exact, "/", check_F_in_R1$total)
+message("R1 — Primer R-RC al inicio: ", check_R_RC_in_R1$exact, "/", check_R_RC_in_R1$total)
+message("R2 — Primer R al inicio: ", check_R_in_R2$exact, "/", check_R_in_R2$total)
+message("R2 — Primer F-RC al inicio: ", check_F_RC_in_R2$exact, "/", check_F_RC_in_R2$total)
+```
+
+Si el primer F **no** aparece al inicio de R1, probablemente los primers ya fueron removidos por cutadapt (lo esperado) o hay un error en la secuencia del primer.
+
+### 4. Filtrado y trimming
 
 - Se ejecuta el filtrado usando los parámetros:
   - **`truncLen`**: recorta las lecturas en los puntos calculados.

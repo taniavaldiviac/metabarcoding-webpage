@@ -162,16 +162,14 @@ sample.names <- sample.names[!empty_files]
 En el servidor no hay pantalla, por lo que las gráficas deben guardarse explícitamente con `png()`/`dev.off()`:
 
 ```{r eval=FALSE}
-png(file.path(output_location, "logs",
-              paste0(run_name, "_", primer.data$locus_shorthand[i], "_qualityF.png")),
-    width = 1200, height = 800, res = 150)
-plotQualityProfile(fnFs[1:4])
+png(filename = file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_forward.png")))
+plotQualityProfile(fnFs[seq_len(min(10, length(fnFs)))])
 dev.off()
 
-png(file.path(output_location, "logs",
-              paste0(run_name, "_", primer.data$locus_shorthand[i], "_qualityR.png")),
-    width = 1200, height = 800, res = 150)
-plotQualityProfile(fnRs[1:4])
+png(filename = file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_reverse.png")))
+plotQualityProfile(fnRs[seq_len(min(10, length(fnRs)))])
 dev.off()
 ```
 
@@ -213,24 +211,84 @@ message("Puntos de truncamiento: F=", where_trim_all_Fs, " | R=", where_trim_all
 
 ---
 
-## Paso 9 — Filtrado y trimming
+## Paso 9 — Distribución de longitudes de lecturas crudas (opcional)
+
+Este paso es un diagnóstico previo al filtrado: muestra la distribución de longitudes de las lecturas crudas por tipo (Forward / Reverse). Es útil para detectar problemas de secuenciación o mezclas inesperadas de longitudes. Puedes cambiarlo a `FALSE` si tienes muchas muestras y quieres acelerar el análisis.
 
 ```{r eval=FALSE}
-out <- filterAndTrim(
-  fnFs, filtFs, fnRs, filtRs,
-  truncLen    = c(where_trim_all_Fs, where_trim_all_Rs),
-  maxN        = 0,        # elimina lecturas con Ns
-  maxEE       = c(2, 2),  # máximo 2 errores esperados por lectura
-  rm.phix     = TRUE,     # remueve contaminación PhiX de Illumina
-  compress    = TRUE,
-  multithread = 4,
-  matchIDs    = TRUE      # asegura pareado correcto F/R
-)
+PLOT_RAW_LENGTHS <- TRUE  # cambiar a FALSE para saltar este paso
+
+if (PLOT_RAW_LENGTHS) {
+  sample_n_reads <- 100000
+  get_lengths <- function(fq_file, n = sample_n_reads) {
+    streamer <- ShortRead::FastqStreamer(fq_file, n = n)
+    on.exit(close(streamer))
+    chunk <- ShortRead::yield(streamer)
+    if (length(chunk) == 0) return(integer(0))
+    ShortRead::width(ShortRead::sread(chunk))
+  }
+
+  lengths_F <- purrr::map_df(fnFs, ~ tibble::tibble(ReadType = "Forward",
+                                                     File = basename(.x),
+                                                     Length = get_lengths(.x)))
+  lengths_R <- purrr::map_df(fnRs, ~ tibble::tibble(ReadType = "Reverse",
+                                                     File = basename(.x),
+                                                     Length = get_lengths(.x)))
+  lengths_all <- dplyr::bind_rows(lengths_F, lengths_R)
+
+  png(file.path(output_location, "logs",
+                paste0(run_name, "_", primer.data$locus_shorthand[i], "_raw_read_lengths.png")),
+      width = 2000, height = 1200, res = 300)
+  print(
+    ggplot2::ggplot(lengths_all, ggplot2::aes(x = Length, fill = ReadType)) +
+      ggplot2::geom_histogram(alpha = 0.6, position = "identity", binwidth = 1, color = "black") +
+      ggplot2::facet_wrap(~ ReadType, ncol = 1, scales = "free_y") +
+      ggplot2::labs(title = "Distribución de longitudes de lecturas crudas (primeras 100k por archivo)",
+                    x = "Longitud (bp)", y = "Frecuencia") +
+      ggplot2::theme_minimal()
+  )
+  dev.off()
+}
+```
+
+La gráfica se guarda en `final_data/logs/` con el sufijo `_raw_read_lengths.png`.
+
+---
+
+## Paso 11 — Filtrado y trimming
+
+El pipeline valida primero que los puntos de truncamiento sean razonables (mínimo 50 bp) y luego ejecuta el filtrado dentro de un `tryCatch` para dar un mensaje claro si algo falla. El `truncLen` está definido en el script — ajústalo si tus perfiles de calidad indican un punto diferente:
+
+```{r eval=FALSE}
+# Validar que los puntos de truncamiento son razonables
+if (is.na(where_trim_all_Fs) || where_trim_all_Fs < 50) {
+  stop("truncLen_F muy bajo o NA (", where_trim_all_Fs, "). Revisa calidad de Forward.")
+}
+if (is.na(where_trim_all_Rs) || where_trim_all_Rs < 50) {
+  stop("truncLen_R muy bajo o NA (", where_trim_all_Rs, "). Revisa calidad de Reverse.")
+}
+
+out <- tryCatch({
+  filterAndTrim(
+    fnFs, filtFs, fnRs, filtRs,
+    truncLen    = c(65, 65),   # ajustar según perfiles de calidad del run
+    maxN        = 0,           # elimina lecturas con Ns
+    maxEE       = c(2, 2),     # máximo 2 errores esperados por lectura
+    truncQ      = 2,           # trunca si encuentra base con calidad < 2
+    rm.phix     = TRUE,        # remueve contaminación PhiX de Illumina
+    compress    = TRUE,
+    multithread = 4,
+    matchIDs    = TRUE         # asegura pareado correcto F/R
+  )
+}, error = function(e) {
+  stop("Error en filterAndTrim: ", conditionMessage(e),
+       "\nRevisa que los archivos FASTQ existan y no estén corruptos.")
+})
 ```
 
 ---
 
-## Paso 10 — Verificar retención
+## Paso 12 — Verificar retención
 
 ```{r eval=FALSE}
 pct_retained <- round(sum(out[,"reads.out"]) / sum(out[,"reads.in"]) * 100, 2)
@@ -258,7 +316,7 @@ head(out)
 
 ---
 
-## Paso 11 — Guardar checkpoint después de filterAndTrim
+## Paso 13 — Guardar checkpoint después de filterAndTrim
 
 El pipeline guarda automáticamente un checkpoint `.RData` después de `filterAndTrim()`. Si necesitas reanudar el análisis desde este punto (por ejemplo, para ajustar parámetros de denoising sin repetir el filtrado), puedes cargar este archivo:
 

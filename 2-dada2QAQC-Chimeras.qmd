@@ -63,7 +63,30 @@ message("Desviación estándar: ", round(sd_len, 2), " bp")
 table(seq_lengths)
 ```
 
-El pipeline filtra automáticamente ASVs fuera del rango mediana +/- 1 DE:
+El pipeline guarda una gráfica de la distribución **antes** del filtro:
+
+```{r eval=FALSE}
+png(file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_seq_lengths_distribution.png")),
+    width = 1800, height = 1200, res = 300)
+print(
+  ggplot2::ggplot(data = data.frame(Length = seq_lengths), ggplot2::aes(x = Length)) +
+    ggplot2::geom_histogram(binwidth = 1, fill = "#69b3a2", color = "#2d5f4f", alpha = 0.8) +
+    ggplot2::geom_vline(aes(xintercept = median_len),
+                        color = "#e63946", linetype = "dashed", linewidth = 1) +
+    ggplot2::geom_vline(aes(xintercept = median_len - sd_len),
+                        color = "#f77f00", linetype = "dotted", linewidth = 0.8) +
+    ggplot2::geom_vline(aes(xintercept = median_len + sd_len),
+                        color = "#f77f00", linetype = "dotted", linewidth = 0.8) +
+    ggplot2::labs(title = "Distribución de Longitudes de Secuencias ASV (Sin Filtrar)",
+                  subtitle = paste0("n = ", length(seq_lengths), " secuencias"),
+                  x = "Longitud (bp)", y = "Frecuencia") +
+    ggplot2::theme_minimal()
+)
+dev.off()
+```
+
+Luego filtra automáticamente ASVs fuera del rango mediana ± 1 DE:
 
 ```{r eval=FALSE}
 min_len <- median_len - sd_len
@@ -74,15 +97,39 @@ indexes.to.keep <- which(
   nchar(colnames(seqtab.nochim)) >= min_len
 )
 
-cleaned.seqtab.nochim   <- seqtab.nochim[,  indexes.to.keep, drop = FALSE]
+cleaned.seqtab.nochim    <- seqtab.nochim[,  indexes.to.keep, drop = FALSE]
 filteredout.seqtab.nochim <- seqtab.nochim[, -indexes.to.keep, drop = FALSE]
 
-message("ASVs antes del filtro: ",  ncol(seqtab.nochim))
-message("ASVs despues del filtro: ", ncol(cleaned.seqtab.nochim))
-message("ASVs filtrados por longitud: ", ncol(filteredout.seqtab.nochim))
+message("ASVs antes del filtro: ",   ncol(seqtab.nochim))
+message("ASVs después del filtro: ", ncol(cleaned.seqtab.nochim))
+message("ASVs filtradas por longitud: ", ncol(filteredout.seqtab.nochim))
 ```
 
-Las ASVs filtradas se guardan en `final_data/logs/` para revisión posterior.
+Y guarda una segunda gráfica **después** del filtro:
+
+```{r eval=FALSE}
+seq_lengths_clean <- nchar(colnames(cleaned.seqtab.nochim))
+median_len_clean  <- median(seq_lengths_clean)
+sd_len_clean      <- sd(seq_lengths_clean)
+
+png(file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_cleaned_seq_lengths_distribution.png")),
+    width = 1800, height = 1200, res = 300)
+print(
+  ggplot2::ggplot(data = data.frame(Length = seq_lengths_clean), ggplot2::aes(x = Length)) +
+    ggplot2::geom_histogram(binwidth = 1, fill = "#06d6a0", color = "#118ab2", alpha = 0.8) +
+    ggplot2::geom_vline(aes(xintercept = median_len_clean),
+                        color = "#ef476f", linetype = "dashed", linewidth = 1) +
+    ggplot2::labs(title = "Distribución de Longitudes de Secuencias ASV (Filtradas)",
+                  subtitle = paste0("n = ", length(seq_lengths_clean), " secuencias | ",
+                                    ncol(filteredout.seqtab.nochim), " ASVs removidas"),
+                  x = "Longitud (bp)", y = "Frecuencia") +
+    ggplot2::theme_minimal()
+)
+dev.off()
+```
+
+Las ASVs filtradas también se guardan en `final_data/logs/` para revisión posterior.
 
 ---
 

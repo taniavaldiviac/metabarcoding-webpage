@@ -59,6 +59,20 @@ pct_assigned <- colSums(!is.na(tax_mat)) / nrow(tax_mat) * 100
 round(pct_assigned, 1)
 ```
 
+El pipeline guarda automáticamente el porcentaje de ASVs **sin** asignación por nivel en `final_data/logs/`:
+
+```{r eval=FALSE}
+pct_unassigned <- vapply(ranks, function(rk) {
+  mean(is.na(joined_old_new_taxa[[rk]]) | joined_old_new_taxa[[rk]] == "")
+}, numeric(1))
+
+readr::write_csv(
+  tibble::tibble(level = ranks, pct_unassigned = pct_unassigned),
+  file.path(output_location, "logs",
+            paste0(run_name, "_", primer.data$locus_shorthand[i], "_pct_unassigned.csv"))
+)
+```
+
 ### Valores típicos segun nivel
 
 | Nivel | % asignado (típico) |
@@ -110,32 +124,60 @@ El pipeline guarda todos los objetos necesarios para construir el objeto phylose
 otu_mat <- cleaned.seqtab.nochim
 storage.mode(otu_mat) <- "integer"
 
-tax_mat_ps <- joined_old_new_taxa %>%
+tax_mat <- joined_old_new_taxa %>%
   tibble::column_to_rownames("Sequence") %>%
   as.matrix()
 
-# Cargar metadatos de muestra
-sample_meta <- readr::read_csv(
-  file.path(metadata_location, "metadata.csv"),
-  show_col_types = FALSE
-) %>%
-  dplyr::rename(SampleID = sample_id) %>%
+# Cargar metadatos — detecta automáticamente columna sample_id o Sample_name
+meta_path <- file.path(metadata_location, "metadata.csv")
+if (!file.exists(meta_path)) stop("No se encontró metadata.csv en: ", meta_path)
+
+sample_meta <- readr::read_csv(meta_path, show_col_types = FALSE)
+
+id_col <- dplyr::case_when(
+  "sample_id"   %in% names(sample_meta) ~ "sample_id",
+  "Sample_name" %in% names(sample_meta) ~ "Sample_name",
+  TRUE ~ NA_character_
+)
+if (is.na(id_col)) stop("metadata.csv debe tener columna 'sample_id' o 'Sample_name'.")
+
+sample_meta <- sample_meta %>%
+  dplyr::mutate(!!id_col := trimws(as.character(.data[[id_col]]))) %>%
+  dplyr::rename(SampleID = !!id_col) %>%
   tibble::column_to_rownames("SampleID")
 
+# Alinear con otu_mat y advertir si hay muestras sin metadata
+faltan    <- setdiff(rownames(otu_mat), rownames(sample_meta))
+sobrantes <- setdiff(rownames(sample_meta), rownames(otu_mat))
+if (length(faltan))    warning("Faltan en metadata: ", paste(faltan, collapse = ", "))
+if (length(sobrantes)) message("En metadata pero no en datos: ", paste(sobrantes, collapse = ", "))
 sample_meta <- sample_meta[rownames(otu_mat), , drop = FALSE]
+
+# Parámetros del run (para trazabilidad)
+params <- list(
+  run_name   = run_name,
+  locus      = primer.data$locus_shorthand[i],
+  truncLen_F = where_trim_all_Fs,
+  truncLen_R = where_trim_all_Rs,
+  min_len    = min_len,
+  max_len    = max_len,
+  date       = as.character(Sys.time())
+)
 
 # Guardar todo en un .RData
 rdata_path <- file.path(output_location, "rdata_output",
                         paste0(run_name, "_", primer.data$locus_shorthand[i], "_phyloseq_inputs.RData"))
 
-save(otu_mat, tax_mat_ps, sample_meta, track,
-     joined_old_new_taxa, ready_new_taxa,
+save(otu_mat, tax_mat, sample_meta, track,
+     seqtab_raw = seqtab.nochim, seqtab_clean = cleaned.seqtab.nochim,
+     taxonomy_df = joined_old_new_taxa, bootstrap_df = ready_new_taxa,
+     params,
      file = rdata_path, compress = "xz")
 
 message("RData guardado en: ", rdata_path)
 ```
 
-Con estos tres objetos (`otu_mat`, `tax_mat_ps`, `sample_meta`) y el archivo `.RData`, el siguiente paso es construir el objeto phyloseq para análisis de diversidad (Dia 4).
+El `.RData` contiene los tres objetos principales para phyloseq (`otu_mat`, `tax_mat`, `sample_meta`) más objetos adicionales para reproducibilidad: `track`, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).
 
 ---
 

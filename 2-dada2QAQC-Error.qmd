@@ -30,10 +30,39 @@ Deberías ver para cada muestra: cuantas lecturas únicas quedaron. Un ratio alt
 
 ```{r eval=FALSE}
 # Diagnóstico rápido de la primera muestra
-n_unique_F  <- length(derepFs[[1]]$uniques)
-total_reads <- sum(derepFs[[1]]$uniques)
+n_unique_F     <- length(derepFs[[1]]$uniques)
+total_reads_F  <- sum(derepFs[[1]]$uniques)
+compression_ratio <- round(n_unique_F / total_reads_F * 100, 2)
+
 message("Secuencias únicas Forward: ", n_unique_F)
-message("Ratio compresión: ", round(n_unique_F / total_reads * 100, 2), "%")
+message("Ratio de compresión: ", compression_ratio, "%")
+message("Top 5 abundancias: ", paste(head(sort(derepFs[[1]]$uniques, decreasing = TRUE), 5), collapse = ", "))
+
+if (compression_ratio < 1)
+  message("INFO: Baja diversidad (< 1% únicas). Normal en muestras con especies dominantes.")
+if (compression_ratio > 50)
+  warning("Alta diversidad inusual (> 50% únicas). Revisa calidad del filtrado o contaminación.")
+```
+
+El pipeline guarda las estadísticas de dereplicación para todas las muestras en `final_data/logs/`:
+
+```{r eval=FALSE}
+derep_stats <- data.frame(
+  Sample        = sample.names,
+  Unique_seqs_F = sapply(derepFs, function(x) length(x$uniques)),
+  Total_reads_F = sapply(derepFs, function(x) sum(x$uniques)),
+  Unique_seqs_R = sapply(derepRs, function(x) length(x$uniques)),
+  Total_reads_R = sapply(derepRs, function(x) sum(x$uniques))
+)
+derep_stats$Compression_ratio_F <- with(derep_stats,
+  round(Unique_seqs_F / Total_reads_F * 100, 2))
+derep_stats$Compression_ratio_R <- with(derep_stats,
+  round(Unique_seqs_R / Total_reads_R * 100, 2))
+
+write.csv(derep_stats,
+  file.path(output_location, "logs",
+            paste0(run_name, "_", primer.data$locus_shorthand[i], "_derep_stats.csv")),
+  row.names = FALSE)
 ```
 
 ---
@@ -42,30 +71,53 @@ message("Ratio compresión: ", round(n_unique_F / total_reads * 100, 2), "%")
 
 La secuenciadora Illumina comete errores al leer las bases (una A real puede leerse como C, G o T). `learnErrors()` estima estas tasas para cada tipo de transicion (A->C, A->G, etc.) en función de la calidad Phred de cada posición.
 
+El pipeline primero verifica que haya suficientes datos para estimar el modelo:
+
 ```{r eval=FALSE}
-nbases_target <- 1e8   # 100 millones de bases
-max_consist   <- 25    # iteraciónes máximas para convergencia
+nbases_target <- 1e8   # 100 millones de bases (aumentar si tienes > 50 muestras)
+max_consist   <- 25    # más iteraciones que el default (10) para forzar convergencia
 
-errF <- learnErrors(
-  filtFs,
-  nbases      = nbases_target,
-  randomize   = TRUE,
-  multithread = TRUE,
-  MAX_CONSIST = max_consist,
-  verbose     = TRUE
-)
+# Validar datos disponibles
+total_bases_F <- sum(sapply(filtFs, function(f) if (file.exists(f)) file.info(f)$size else 0))
+total_bases_R <- sum(sapply(filtRs, function(r) if (file.exists(r)) file.info(r)$size else 0))
+message("Forward disponible: ~", round(total_bases_F / 1e6, 1), " MB")
+message("Reverse disponible: ~", round(total_bases_R / 1e6, 1), " MB")
 
-errR <- learnErrors(
-  filtRs,
-  nbases      = nbases_target,
-  randomize   = TRUE,
-  multithread = TRUE,
-  MAX_CONSIST = max_consist,
-  verbose     = TRUE
-)
+if (total_bases_F < 1e6 || total_bases_R < 1e6)
+  warning("Datos muy limitados (< 1 MB). El modelo puede ser inestable.")
 ```
 
-Este paso puede tardar varios minutos. En la salida verás el número de bases usadas y como convergen las tasas de error iteración a iteración.
+```{r eval=FALSE}
+errF <- tryCatch({
+  learnErrors(filtFs, nbases = nbases_target, randomize = TRUE,
+              multithread = TRUE, MAX_CONSIST = max_consist, verbose = TRUE)
+}, error = function(e) {
+  stop("Error al aprender modelo Forward: ", conditionMessage(e))
+})
+
+errR <- tryCatch({
+  learnErrors(filtRs, nbases = nbases_target, randomize = TRUE,
+              multithread = TRUE, MAX_CONSIST = max_consist, verbose = TRUE)
+}, error = function(e) {
+  stop("Error al aprender modelo Reverse: ", conditionMessage(e))
+})
+```
+
+Este paso puede tardar varios minutos. En la salida verás el número de bases usadas y cómo convergen las tasas de error iteración a iteración.
+
+Después de aprender los modelos, el pipeline los valida automáticamente:
+
+```{r eval=FALSE}
+# Validar modelo Forward
+if (!is.null(errF$trans) && !is.null(errF$err_out)) {
+  message("Transiciones aprendidas: ", length(unique(errF$trans)))
+  message("Rango de tasas de error: ",
+          round(min(errF$err_out, na.rm = TRUE), 5), " — ",
+          round(max(errF$err_out, na.rm = TRUE), 5))
+  if (any(errF$err_out > 0.1, na.rm = TRUE))
+    warning("Tasas de error > 10%. Revisa calidad de datos.")
+}
+```
 
 ---
 
