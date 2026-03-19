@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -38,10 +73,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-b02cdf4c184b6a3b751b36e3f021b11d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-01064692ba6c0d00793ba8f624f51392.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5199d1e70cb0681d651009707fab7d5f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-90b580e70de2af8d96342981a35552ba.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -188,7 +223,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Metabarcoding de comunidades de eucariontes</h1>
+<div class="quarto-title-block"><div><h1 class="title">Metabarcoding de comunidades de eucariontes</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Código</button></div></div>
 </div>
 
 
@@ -213,15 +248,15 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="introducción" class="level2">
 <h2 class="anchored" data-anchor-id="introducción">Introducción</h2>
-<p>Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo. Sus aplicaciones potenciales incluyen análisis de la calidad del agua, evaluación de la biodiversidad de suelos, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado.</p>
+<p>Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo. Sus aplicaciones potenciales incluyen análisis de manera general la evaluación de la biodiversidad en diferentes ecosistemas acuáticos y terrestres, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado.</p>
 </section>
 <section id="descripción-del-curso" class="level2">
 <h2 class="anchored" data-anchor-id="descripción-del-curso">Descripción del curso</h2>
-<p>El curso “<strong>Metabarcoding de comunidades de eucariontes</strong>” está diseñado para introducir a estudiantes de posgrado, investigadores y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad mediante técnicas basadas en ADN ambiental (eDNA). A lo largo de cinco días intensivos, los participantes adquirirán conocimientos teóricos y habilidades prácticas para implementar proyectos de metabarcoding, desde el diseño experimental y la recolección de muestras, hasta el procesamiento bioinformático y el análisis ecológico de datos. El curso se centrará en el uso de la herramienta DADA2 para la inferencia de variantes de secuencia (ASVs), control de calidad, remoción de errores y asignación taxonómica. También se incluirán sesiones sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación. Se fomentará un ambiente colaborativo y participativo, con sesiones prácticas guiadas que permitirán a los asistentes aplicar lo aprendido a proyectos reales. El curso culmina con la presentación de proyectos diseñados por los participantes, promoviendo la integración de los conceptos y herramientas adquiridos.</p>
+<p>El curso “<strong>Metabarcoding de comunidades de eucariontes</strong>” está diseñado para introducir a estudiantes de posgrado, investigadores y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad mediante técnicas basadas en ADN ambiental (eDNA). A lo largo de cinco días intensivos, los participantes adquirirán conocimientos teóricos y habilidades prácticas para implementar proyectos de metabarcoding, desde el diseño experimental y la recolección de muestras, hasta el procesamiento bioinformático y el análisis ecológico de datos. El curso se centrará en el uso de la herramienta DADA2 para la inferencia de variantes de secuencia (ASVs), control de calidad, remoción de errores y asignación taxonómica. También se incluirán sesiones breves sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación. Se fomentará un ambiente colaborativo y participativo, con sesiones prácticas guiadas que permitirán a los asistentes aplicar lo aprendido a proyectos reales.</p>
 </section>
 <section id="a-quién-va-dirigido" class="level2">
 <h2 class="anchored" data-anchor-id="a-quién-va-dirigido">A quién va dirigido</h2>
-<p>Este taller está dirigido principalmente a estudiantes de posgrado, investigadores y técnicos con conocimientos previos en ecología, biodiversidad o biología de comunidades que quieran aprender nuevas herramientas moleculares y bioinformáticas para estudiar la biodiversidad y a los investigadores en otras áreas de la bioinformática que quieran aprender métodos genéticos para la evaluación de la biodiversidad y otras aplicaciones ecológicas. En general, es adecuado para todo investigador que quiera unirse a la creciente comunidad internacional de usuarios del metabarcoding. En este taller se tratarán principalmente técnicas y software útiles para el metabarcoding de eucariontes.</p>
+<p>Este taller está dirigido principalmente a estudiantes de posgrado, investigadores y técnicos con conocimientos previos en ecología, biodiversidad o biología de comunidades que quieran aprender nuevas herramientas moleculares y bioinformáticas para estudiar la biodiversidad y a los investigadores en otras áreas de la bioinformática que quieran aprender métodos genéticos para la evaluación de la biodiversidad y otras aplicaciones ecológicas. En general, es adecuado para todo investigador que quiera unirse a la creciente comunidad internacional de usuarios del metabarcoding.</p>
 </section>
 <section id="visión" class="level2">
 <h2 class="anchored" data-anchor-id="visión">Visión</h2>
@@ -233,7 +268,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="objetivo" class="level2">
 <h2 class="anchored" data-anchor-id="objetivo">Objetivo</h2>
-<p>El objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding y qPCR para el análisis de ADN ambiental para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2. Este curso busca proporcionar las habilidades necesarias para:</p>
+<p>El objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding para el análisis de ADN ambiental y de comunidades, para la detección y monitoreo de especies y comunidades en ecosistemas marinos. A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2. Este curso busca proporcionar las habilidades necesarias para:</p>
 <ul>
 <li><p>Comprender los fundamentos teóricos del metabarcoding aplicado a muestras ambientales en estudios ecológicos.</p></li>
 <li><p>Aplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.</p></li>
@@ -246,8 +281,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="instructores-participantesinstitución" class="level2">
 <h2 class="anchored" data-anchor-id="instructores-participantesinstitución">Instructores participantes/Institución</h2>
 <p>Dra. Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI</p>
-<p>Dr.&nbsp;Fausto Valenzuela Quiñonez, Investigador Titular B CIBNOR</p>
+<p>Dr.&nbsp;Miguel A. Martínez Mercado, Investigador postdoctoral CIBNOR SECIHTI</p>
+<p>Dr.&nbsp;Fausto Valenzuela Quiñonez, Investigador Titular CIBNOR</p>
 
+
+<!-- -->
 
 </section>
 
@@ -322,6 +360,57 @@ ul.task-list li input[type="checkbox"] {
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -651,7 +740,84 @@ ul.task-list li input[type="checkbox"] {
       }
     }
   });
-  </script>
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Metabarcoding de comunidades de eucariontes"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#subtitle: "24–28 de noviembre de 2025&lt;br&gt;Instituto de Ciencias del Mar y Limnología (UNAM)"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#page-layout: article</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 4</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: right</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">  message: false</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introducción</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>Las técnicas de metabarcoding son un conjunto de herramientas genéticas para evaluar la biodiversidad presente en las comunidades, desde un punto de vista cualitativo y/o cuantitativo.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>Sus aplicaciones potenciales incluyen análisis de manera general la evaluación de la biodiversidad en diferentes ecosistemas acuáticos y terrestres, análisis tróficos o de contenidos digestivos, evaluación de recursos pesqueros, diagnóstico del estado de salud de instalaciones de acuicultura, detección temprana de la presencia de especies no autóctonas, estudios de patrones ecológicos globales, evaluación de impactos antropogénicos (biomonitoreo genético) o reconstrucción de comunidades paleoecológicas con el fin de estudiar cambios ecológicos ocurridos en el pasado.</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Descripción del curso</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>El curso "**Metabarcoding de comunidades de eucariontes**" está diseñado para introducir a estudiantes de posgrado, investigadores y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad mediante técnicas basadas en ADN ambiental (eDNA).</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>A lo largo de cinco días intensivos, los participantes adquirirán conocimientos teóricos y habilidades prácticas para implementar proyectos de metabarcoding, desde el diseño experimental y la recolección de muestras, hasta el procesamiento bioinformático y el análisis ecológico de datos.</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>El curso se centrará en el uso de la herramienta DADA2 para la inferencia de variantes de secuencia (ASVs), control de calidad, remoción de errores y asignación taxonómica.</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>También se incluirán sesiones breves sobre detección de especies específicas mediante qPCR y ddPCR, análisis de diversidad con R (usando paquetes como phyloseq, vegan y ggplot2), así como buenas prácticas de laboratorio y control de contaminación.</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>Se fomentará un ambiente colaborativo y participativo, con sesiones prácticas guiadas que permitirán a los asistentes aplicar lo aprendido a proyectos reales.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## A quién va dirigido</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>Este taller está dirigido principalmente a estudiantes de posgrado, investigadores y técnicos con conocimientos previos en ecología, biodiversidad o biología de comunidades que quieran aprender nuevas herramientas moleculares y bioinformáticas para estudiar la biodiversidad y a los investigadores en otras áreas de la bioinformática que quieran aprender métodos genéticos para la evaluación de la biodiversidad y otras aplicaciones ecológicas.</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>En general, es adecuado para todo investigador que quiera unirse a la creciente comunidad internacional de usuarios del metabarcoding.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visión</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>Contribuir a la formación continua e interdisciplinaria, capaz de aplicar de manera crítica y efectiva herramientas moleculares y bioinformáticas para el estudio y monitoreo de la biodiversidad en ecosistemas marinos con la técnica de metabarcoding.</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>Buscamos empoderar a investigadores, estudiantes y técnicos con los conocimientos y habilidades necesarias para incorporar el ADN ambiental y el metabarcoding en sus proyectos de investigación, evaluación ambiental y conservación biológica.</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>Aspiramos a que los participantes no solo dominen los aspectos técnicos del procesamiento y análisis de datos de eDNA, sino que también comprendan el potencial transformador de estas metodologías para generar conocimiento útil, reproducible y de alto impacto en la gestión de la biodiversidad.</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>Promovemos una visión integradora, donde la ciencia molecular se pone al servicio de la ecología, la conservación y la toma de decisiones basada en evidencia.</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">## Misión</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>El curso tiene como misión capacitar a investigadores, estudiantes y técnicos en el uso de herramientas moleculares y bioinformáticas para el estudio de la biodiversidad.</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>A través de una combinación de teoría y práctica, buscamos proporcionar conocimientos sólidos sobre el metabarcoding, desde la recolección y procesamiento de muestras hasta el análisis e interpretación de datos con enfoques bioinformáticos.</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>Nuestro objetivo es empoderar a los participantes con habilidades técnicas y analíticas que les permitan diseñar e implementar estudios basados en ADN ambiental, optimizando la detección de especies y la evaluación de comunidades biológicas.</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>Fomentamos la adopción de metodologías estandarizadas y reproducibles que faciliten la generación de datos confiables y comparables a nivel global.</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>A través de este curso, promovemos la formación de una comunidad interdisciplinaria comprometida con la aplicación de la genética y la bioinformática en la conservación y monitoreo de la biodiversidad marina, impulsando el uso de tecnologías innovadoras para la toma de decisiones informadas en investigación y gestión ambiental.</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## Objetivo</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>El objetivo de este curso es capacitar a los participantes en el uso de técnicas de metabarcoding para el análisis de ADN ambiental y de comunidades, para la detección y monitoreo de especies y comunidades en ecosistemas marinos.</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>A través de un enfoque teórico-práctico, los asistentes aprenderán a diseñar y ejecutar estudios de metabarcoding, desde la recolección de muestras y procesamiento en laboratorio, hasta el análisis bioinformático e interpretación de datos utilizando DADA2.</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>Este curso busca proporcionar las habilidades necesarias para:</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Comprender los fundamentos teóricos del metabarcoding aplicado a muestras ambientales en estudios ecológicos.</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Aplicar buenas prácticas en la toma de muestras y manejo de ADN en laboratorio, minimizando riesgos de contaminación.</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Implementar pipelines bioinformáticos para el procesamiento y análisis de secuencias, con énfasis en control de calidad, asignación taxonómica y análisis de diversidad.</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Interpretar resultados ecológicos y generar visualizaciones efectivas para estudios de biodiversidad.</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Diseñar estudios de metabarcoding adaptados a distintas preguntas ecológicas y de conservación.</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>Al finalizar el curso, los participantes estarán preparados para integrar el metabarcoding en sus proyectos de investigación y contribuir al desarrollo de estrategias de monitoreo de biodiversidad en ecosistemas marinos.</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="fu">## Instructores participantes/Institución</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>Dra.</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>Dr. Miguel A. Martínez Mercado, Investigador postdoctoral CIBNOR SECIHTI</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>Dr. Fausto Valenzuela Quiñonez, Investigador Titular CIBNOR</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
