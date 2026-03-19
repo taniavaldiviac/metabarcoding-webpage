@@ -1,10 +1,15 @@
 /*-- scss:defaults --*/
 
-$font-family-monospace: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+$font-family-sans-serif: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-family-monospace:  "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+$headings-font-weight: 600;
 
 /*-- scss:rules --*/
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+body, p, li, td, th { font-family: $font-family-sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: $font-family-sans-serif; font-weight: $headings-font-weight; }
 
 /* Código */
 pre.sourceCode {
