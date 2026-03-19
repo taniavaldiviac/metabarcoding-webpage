@@ -13,9 +13,7 @@ execute:
 
 # Introducción a Linux, Unix y R
 
-**Expositor:** Dr. Miguel A. Martínez Delgado
-
-En bioinformática trabajamos directamente con la terminal (línea de comandos) y con R porque nos permiten automatizar tareas repetitivas, manejar archivos grandes y ejecutar pipelines reproducibles. En esta sesión aprenderemos los comandos esenciales para movernos con confianza en el servidor y las bases de R para correr nuestros análisis.
+En bioinformática trabajamos directamente con la terminal (línea de comandos) y con R porque nos permiten automatizar tareas repetitivas, manejar archivos grandes y ejecutar pipelines reproducibles. En esta sesión aprenderemos los comandos esenciales para movernos en el servidor y las bases de R para correr nuestros análisis.
 
 ---
 
@@ -24,6 +22,34 @@ En bioinformática trabajamos directamente con la terminal (línea de comandos) 
 ### ¿Por qué usamos Linux en bioinformática?
 
 La mayoría de las herramientas bioinformáticas (DADA2, cutadapt, FastQC, VSEARCH) están diseñadas para correr en sistemas tipo Unix/Linux. Los servidores de cómputo institucionales casi siempre tienen Linux, lo que hace indispensable saber moverse en la terminal.
+
+---
+
+### Unix, Linux y Bash — ¿qué son y en qué se diferencian?
+
+- **Unix** es un sistema operativo desarrollado en los años 70 en los laboratorios Bell de AT&T. Es el ancestro común de muchos sistemas modernos y estableció la filosofía de "pequeñas herramientas que hacen una sola cosa bien".
+
+- **Linux** es un sistema operativo libre y de código abierto inspirado en Unix, creado por Linus Torvalds en 1991. Es el sistema que corre en la gran mayoría de servidores de cómputo científico en el mundo, incluido el servidor del curso.
+
+- **Bash** (*Bourne Again SHell*) es el intérprete de comandos — el programa que lee lo que escribes en la terminal y lo ejecuta. Cuando abres una terminal en Linux, casi siempre estás usando Bash.
+
+En la práctica: **Linux** es el sistema operativo, **Bash** es el idioma que usas para hablar con él, y **Unix** es el origen histórico de ambos.
+
+| Término | Qué es | Ejemplo |
+|---------|--------|---------|
+| Unix | Sistema operativo original (1969) | Solaris, macOS |
+| Linux | Sistema operativo libre inspirado en Unix | Ubuntu, CentOS |
+| Bash | Intérprete de comandos | `ls`, `cd`, `grep` |
+| Terminal | La ventana donde escribes comandos | iTerm2, GNOME Terminal |
+| Shell | Término genérico para el intérprete | Bash, Zsh, Fish |
+
+```bash
+# Ver qué shell estás usando
+echo $SHELL
+
+# Ver la versión de Bash
+bash --version
+```
 
 ---
 
@@ -116,6 +142,71 @@ chmod 755 carpeta/           # rwxr-xr-x (carpeta accesible por todos)
 ```bash
 nano script.sh               # editor simple (Ctrl+O guardar, Ctrl+X salir)
 ```
+
+---
+
+### Pipes y redirección
+
+Los **pipes** (`|`) conectan la salida de un comando con la entrada del siguiente. La **redirección** (`>`, `>>`) guarda la salida en un archivo. Son herramientas fundamentales en bioinformática.
+
+```bash
+# Pipe: encadenar comandos
+ls -lh raw_fastqs/ | head -10          # listar y ver solo las primeras 10 líneas
+grep "^@" archivo.fastq | wc -l        # contar lecturas en un FASTQ
+
+# Redirección: guardar salida en archivo
+ls raw_fastqs/ > lista_archivos.txt    # crea el archivo (sobreescribe si existe)
+echo "nueva línea" >> lista_archivos.txt  # agrega al final sin sobreescribir
+
+# Combinar pipe y redirección
+grep "error" logs/*.txt | sort > errores.txt
+```
+
+---
+
+### Trabajos largos en el servidor — `screen`
+
+Cuando corres un análisis largo (como `learnErrors()` o `assignTaxonomy()`), si cierras la terminal el proceso se interrumpe. `screen` crea una sesión persistente que sigue corriendo aunque te desconectes.
+
+```bash
+# Crear una sesión nueva con nombre
+screen -S dada2
+
+# Dentro de screen: correr el pipeline
+Rscript scripts/03-dada2-pipeline.R
+
+# Desconectarse sin matar el proceso (el análisis sigue corriendo)
+# Ctrl + A, luego D
+
+# Reconectarse a la sesión más tarde
+screen -r dada2
+
+# Ver todas las sesiones activas
+screen -ls
+```
+
+:::{.callout-tip}
+Siempre usa `screen` antes de correr el pipeline completo de DADA2. Si la conexión al servidor se cae o cierras la terminal por accidente, tu análisis no se pierde.
+:::
+
+---
+
+### Atajos de productividad en la terminal
+
+Estos atajos ahorran mucho tiempo:
+
+| Atajo | Función |
+|-------|---------|
+| `Tab` | Autocompletar nombre de archivo o comando |
+| `Tab Tab` | Mostrar todas las opciones posibles |
+| `↑` / `↓` | Navegar el historial de comandos |
+| `Ctrl + C` | Cancelar el comando que está corriendo |
+| `Ctrl + L` | Limpiar la pantalla (equivale a `clear`) |
+| `Ctrl + A` | Ir al inicio de la línea |
+| `Ctrl + E` | Ir al final de la línea |
+| `!!` | Repetir el último comando |
+| `history` | Ver historial de comandos |
+| `history | grep Rscript` | Buscar un comando en el historial |
 
 ---
 
