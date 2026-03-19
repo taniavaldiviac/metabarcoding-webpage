@@ -146,6 +146,19 @@ El curso se desarrolla en **cinco días intensivos**, combinando sesiones teóri
 
 ---
 
+### Marcadores genéticos en metabarcoding
+
+**15:10 – 15:30**
+
+- ¿Qué es un marcador genético (barcode) y para qué sirve?
+- Regiones génicas comunes en eucariontes: COI, 18S, 12S, ITS
+- Características deseables: universalidad, resolución taxonómica, cobertura en bases de datos
+- ¿Cuándo conviene usar más de un marcador?
+
+📎 [Diapositivas Día 1](slides/Dia1.pdf)
+
+---
+
 ### Extracción, primers, PCR y preparación de librerías
 
 **15:30 – 17:00**
@@ -254,7 +267,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 **15:10 – 17:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Aprender a evaluar la calidad de las secuencias brutas y a remover primers y adaptadores con Cutadapt, dejando los datos listos para el pipeline de DADA2.
+**Objetivo:** Aprender a evaluar la calidad de las secuencias crudas y a remover primers y adaptadores con Cutadapt, dejando los datos listos para el pipeline de DADA2.
 :::
 
 **Control de calidad:**
@@ -494,18 +507,6 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 
 ---
 
-### Comparación entre marcadores genéticos (barcodes)
-
-**15:30 – 17:00**
-
-- Regiones génicas comunes en eucariontes: COI, 18S, 12S, ITS
-- Características deseables de un marcador: universalidad, resolución, cobertura en bases de datos
-- Diferencias en detección por grupos taxonómicos según el marcador
-- Métodos de comparación: Venn diagrams, heatmaps, análisis multivariado
-- ¿Cuándo usar más de un marcador?
-
----
-
 ## Día 5 — Temas avanzados y proyecto final
 
 ### Detección y remoción de contaminantes con `decontam`
@@ -566,7 +567,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 
 ### Temas auxiliares y dudas del curso
 
-**15:00 – 15:10 receso | 15:10 – 15:30**
+**15:00 – 15:10 receso | 15:10 – 17:00**
 
 Espacio flexible para profundizar en temas de interés del grupo:
 
@@ -577,20 +578,3 @@ Espacio flexible para profundizar en temas de interés del grupo:
 
 ---
 
-### Presentación de proyectos y cierre del curso
-
-**15:30 – 17:00**
-
-::: {.callout-note icon="false"}
-**Objetivo:** Integrar los conocimientos adquiridos durante la semana aplicándolos a una propuesta de proyecto, recibiendo retroalimentación de instructores y compañeros.
-:::
-
-- Presentación de propuestas (5–7 min por persona o equipo)
-- Formato libre: objetivo, datos, método, análisis esperado
-- Retroalimentación de instructores y compañeros
-- Síntesis de aprendizajes clave del curso
-- Encuesta de evaluación y entrega de constancias
-
-::: {.callout-tip icon="false"}
-**Recursos:** [Proyecto final — guía e instrucciones](https://github.com/taniavaldiviac/metabarcoding-code)
-:::
