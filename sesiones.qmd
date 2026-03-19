@@ -443,6 +443,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 - Filtrado de secuencias espurias: no asignadas, contaminantes, longitud atípica
 - Creación del objeto `phyloseq`: ASV table + tax table + metadatos
 - Inspección y verificación de coherencia de tablas
+- Exportación y análisis con phyloseq, vegan y ggplot2
 
 ---
 
@@ -471,7 +472,7 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 - Exportación en formatos CSV, PNG y PDF
 
 ::: {.callout-tip icon="false"}
-**Práctica:** Scripts `3-RDB-paso1` y `4-RDB-paso2` del repositorio
+**Práctica:** [Reporte de análisis — Comunidades de peces del Golfo de California](3-reporte.qmd)
 :::
 
 ---
