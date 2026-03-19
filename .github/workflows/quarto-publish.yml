@@ -19,7 +19,7 @@ jobs:
         with:
           use-public-rspm: true
       - name: Install R packages
-        run: Rscript -e 'install.packages("knitr")'
+        run: Rscript -e 'install.packages(c("knitr", "rmarkdown"))'
       - name: Render site
         run: quarto render
       - name: Deploy to GitHub Pages
