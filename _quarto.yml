@@ -17,8 +17,6 @@ website:
     background: primary
     foreground: light
     left:
-      - href: index.qmd
-        text: Sobre el curso
       - href: sesiones.qmd
         text: Sesiones
       - text: Materiales
