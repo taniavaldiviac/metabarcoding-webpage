@@ -1,5 +1,5 @@
 ---
-title: "Introduccion a Linux y R"
+title: "Introducción a Linux y R"
 format:
   html:
     toc-depth: 3
@@ -11,28 +11,28 @@ execute:
   warning: false
 ---
 
-# Introduccion a Linux, Unix y R
+# Introducción a Linux, Unix y R
 
-**Expositor:** Dr. Miguel A. Martinez Delgado
+**Expositor:** Dr. Miguel A. Martínez Delgado
 
-En bioinformatica trabajamos directamente con la terminal (linea de comandos) y con R porque nos permiten automatizar tareas repetitivas, manejar archivos grandes y ejecutar pipelines reproducibles. En esta sesion aprenderemos los comandos esenciales para movernos con confianza en el servidor y las bases de R para correr nuestros analisis.
+En bioinformática trabajamos directamente con la terminal (línea de comandos) y con R porque nos permiten automatizar tareas repetitivas, manejar archivos grandes y ejecutar pipelines reproducibles. En esta sesión aprenderemos los comandos esenciales para movernos con confianza en el servidor y las bases de R para correr nuestros análisis.
 
 ---
 
 ## Parte 1 — Terminal Linux/Unix
 
-### ¿Por que usamos Linux en bioinformatica?
+### ¿Por qué usamos Linux en bioinformática?
 
-La mayoria de las herramientas bioinformaticas (DADA2, cutadapt, FastQC, VSEARCH) estan disenadas para correr en sistemas tipo Unix/Linux. Los servidores de computo institucionales casi siempre tienen Linux, lo que hace indispensable saber moverse en la terminal.
+La mayoría de las herramientas bioinformáticas (DADA2, cutadapt, FastQC, VSEARCH) están diseñadas para correr en sistemas tipo Unix/Linux. Los servidores de cómputo institucionales casi siempre tienen Linux, lo que hace indispensable saber moverse en la terminal.
 
 ---
 
-### Navegacion basica
+### Navegación básica
 
-La terminal muestra tu ubicacion actual como el **directorio de trabajo**. Estos son los comandos mas usados:
+La terminal muestra tu ubicación actual como el **directorio de trabajo**. Estos son los comandos más usados:
 
 ```bash
-# Ver en que carpeta estas
+# Ver en qué carpeta estás
 pwd
 
 # Listar archivos y carpetas
@@ -71,41 +71,41 @@ rm -r carpeta/               # eliminar carpeta y contenido
 
 ```bash
 # Ver contenido de archivos de texto
-head -5 archivo.fastq        # primeras 5 lineas
-tail -5 archivo.fastq        # ultimas 5 lineas
+head -5 archivo.fastq        # primeras 5 líneas
+tail -5 archivo.fastq        # últimas 5 líneas
 less archivo.fastq           # navegar (q para salir)
 cat archivo.txt              # mostrar todo el contenido
 ```
 
 ```bash
 # Buscar texto dentro de archivos
-grep "ATCG" secuencias.fastq          # lineas que contienen el patron
-grep -c "^@" archivo.fastq            # contar lineas que empiezan con @
-grep -i "error" log.txt               # busqueda sin distinguir mayusculas
+grep "ATCG" secuencias.fastq          # líneas que contienen el patrón
+grep -c "^@" archivo.fastq            # contar líneas que empiezan con @
+grep -i "error" log.txt               # búsqueda sin distinguir mayúsculas
 ```
 
 ```bash
-# Contar lineas, palabras y caracteres
-wc -l archivo.txt            # numero de lineas
-wc -c archivo.fastq          # numero de bytes (tamaño)
+# Contar líneas, palabras y caracteres
+wc -l archivo.txt            # número de líneas
+wc -c archivo.fastq          # número de bytes (tamaño)
 ```
 
 ---
 
-### Permisos y gestion de archivos
+### Permisos y gestión de archivos
 
-Cada archivo en Linux tiene permisos para el dueno, el grupo y otros usuarios. Se ven con `ls -l`:
+Cada archivo en Linux tiene permisos para el dueño, el grupo y otros usuarios. Se ven con `ls -l`:
 
 ```
 -rw-r--r-- 1 usr01 metabarcoding 4096 mar 23 09:00 script.R
 ```
 
-Los tres grupos de letras (`rw-`, `r--`, `r--`) son: dueno, grupo, otros. `r`=leer, `w`=escribir, `x`=ejecutar.
+Los tres grupos de letras (`rw-`, `r--`, `r--`) son: dueño, grupo, otros. `r`=leer, `w`=escribir, `x`=ejecutar.
 
 ```bash
 # Cambiar permisos
 chmod +x script.sh           # hacer ejecutable
-chmod 644 archivo.txt        # rw-r--r-- (lectura para todos, escritura solo dueno)
+chmod 644 archivo.txt        # rw-r--r-- (lectura para todos, escritura solo dueño)
 chmod 755 carpeta/           # rwxr-xr-x (carpeta accesible por todos)
 ```
 
@@ -119,9 +119,9 @@ nano script.sh               # editor simple (Ctrl+O guardar, Ctrl+X salir)
 
 ---
 
-### Hoja de referencia rapida
+### Hoja de referencia rápida
 
-| Comando | Funcion |
+| Comando | Función |
 |---------|---------|
 | `pwd` | Mostrar directorio actual |
 | `ls -lh` | Listar con detalles |
@@ -132,22 +132,22 @@ nano script.sh               # editor simple (Ctrl+O guardar, Ctrl+X salir)
 | `rm -r` | Eliminar (irreversible) |
 | `head / tail` | Ver inicio/fin de archivo |
 | `less` | Navegar archivo (q = salir) |
-| `grep` | Buscar patron en texto |
-| `wc -l` | Contar lineas |
-| `chmod +x` | Dar permiso de ejecucion |
+| `grep` | Buscar patrón en texto |
+| `wc -l` | Contar líneas |
+| `chmod +x` | Dar permiso de ejecución |
 | `nano` | Editar archivo en terminal |
 
 ---
 
-## Parte 2 — Introduccion a R
+## Parte 2 — Introducción a R
 
-### ¿Por que usamos R en metabarcoding?
+### ¿Por qué usamos R en metabarcoding?
 
-R tiene los paquetes especializados que usamos en el curso: `dada2`, `phyloseq`, `vegan`, `ggplot2`. Ademas, los scripts en R son reproducibles y documentables con Quarto o R Markdown.
+R tiene los paquetes especializados que usamos en el curso: `dada2`, `phyloseq`, `vegan`, `ggplot2`. Además, los scripts en R son reproducibles y documentables con Quarto o R Markdown.
 
 ---
 
-### Conceptos basicos
+### Conceptos básicos
 
 ```{r eval=FALSE}
 # Variables
@@ -160,9 +160,9 @@ lecturas <- c(15000, 22000, 8500)
 
 # Acceder a elementos
 muestras[1]        # primer elemento
-lecturas[lecturas > 10000]  # filtrar por condicion
+lecturas[lecturas > 10000]  # filtrar por condición
 
-# Operaciones basicas
+# Operaciones básicas
 mean(lecturas)
 sum(lecturas)
 length(muestras)
@@ -173,16 +173,16 @@ length(muestras)
 ### Funciones y paquetes
 
 ```{r eval=FALSE}
-# Una funcion toma argumentos y devuelve un resultado
+# Una función toma argumentos y devuelve un resultado
 resultado <- sum(c(1, 2, 3))
 
 # Instalar paquetes (solo una vez)
 install.packages("tidyverse")
 
-# Cargar paquetes (cada sesion)
+# Cargar paquetes (cada sesión)
 library(tidyverse)
 
-# Ver ayuda de una funcion
+# Ver ayuda de una función
 ?mean
 help("filter")
 ```
@@ -196,12 +196,12 @@ Un script bien organizado tiene estas secciones:
 ```{r eval=FALSE}
 # ============================================================
 # Nombre del script: 03-dada2-pipeline.R
-# Descripcion: Pipeline DADA2 para metabarcoding
-# Autor: Dr. Miguel A. Martinez / Dra. Tania Valdivia
+# Descripción: Pipeline DADA2 para metabarcoding
+# Autor: Dr. Miguel A. Martínez / Dra. Tania Valdivia
 # Fecha: 2025-10-28
 # ============================================================
 
-# 1. Cargar librerias ----------------------------------------
+# 1. Cargar librerías ----------------------------------------
 library(dada2)
 library(tidyverse)
 
@@ -209,13 +209,13 @@ library(tidyverse)
 proj_root <- here::here()
 fastq_location <- file.path(proj_root, "for_dada2")
 
-# 3. Analisis ------------------------------------------------
-# ... codigo del pipeline ...
+# 3. Análisis ------------------------------------------------
+# ... código del pipeline ...
 ```
 
 ---
 
-### Tipos de objetos mas usados en DADA2
+### Tipos de objetos más usados en DADA2
 
 | Objeto | Tipo en R | Ejemplo |
 |--------|-----------|---------|
@@ -223,11 +223,11 @@ fastq_location <- file.path(proj_root, "for_dada2")
 | Rutas de archivos | `character vector` | `list.files(...)` |
 | Tabla de lecturas | `matrix` | `out` de `filterAndTrim()` |
 | Tabla de ASVs | `matrix` | `seqtab` |
-| Taxonomia | `data.frame` | `tax_df` |
+| Taxonomía | `data.frame` | `tax_df` |
 
 ---
 
-### Buenas practicas para proyectos bioinformaticos
+### Buenas prácticas para proyectos bioinformáticos
 
 Una estructura de carpetas consistente ahorra tiempo y evita errores:
 
@@ -237,11 +237,11 @@ metabarcoding-code/
 ├── for_dada2/           # FASTQs recortados con cutadapt
 │   └── filtered/        # FASTQs filtrados por DADA2
 ├── final_data/
-│   ├── csv_output/      # tablas de ASVs y taxonomia
+│   ├── csv_output/      # tablas de ASVs y taxonomía
 │   ├── rdata_output/    # checkpoints .RData
-│   └── logs/            # sessionInfo, errores, graficas
-├── metadata/            # primer_data.csv, metadata.csv, BD taxonomia
-└── scripts/             # scripts numerados en orden de ejecucion
+│   └── logs/            # sessionInfo, errores, gráficas
+├── metadata/            # primer_data.csv, metadata.csv, BD taxonomía
+└── scripts/             # scripts numerados en orden de ejecución
 ```
 
 **Reglas de nombres de archivos:**
@@ -254,7 +254,7 @@ metabarcoding-code/
 
 :::{.callout-tip}
 ## Para el curso
-1. Abre la terminal y practica: ¿en que directorio estas? (`pwd`), ¿que archivos hay en `raw_fastqs/`? (`ls -lh raw_fastqs/`)
-2. En R: crea un vector con los nombres de tus muestras y calcula cuantas hay (`length()`).
+1. Abre la terminal y practica: ¿en qué directorio estás? (`pwd`), ¿qué archivos hay en `raw_fastqs/`? (`ls -lh raw_fastqs/`)
+2. En R: crea un vector con los nombres de tus muestras y calcula cuántas hay (`length()`).
 3. Revisa la estructura de carpetas de `metabarcoding-code/` — ¿coincide con el esquema de arriba?
 :::
