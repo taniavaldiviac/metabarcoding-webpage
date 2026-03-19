@@ -112,8 +112,6 @@ El curso se desarrolla en **cinco días intensivos**, combinando sesiones teóri
 - Comparación entre métodos: ¿cuándo usar cada uno?
 - Aplicaciones reales en ecosistemas acuáticos y marinos
 
-📎 [Diapositivas Día 1](slides/Dia1.pdf)
-
 ---
 
 ### Diseño experimental
@@ -154,8 +152,6 @@ El curso se desarrolla en **cinco días intensivos**, combinando sesiones teóri
 - Regiones génicas comunes en eucariontes: COI, 18S, 12S, ITS
 - Características deseables: universalidad, resolución taxonómica, cobertura en bases de datos
 - ¿Cuándo conviene usar más de un marcador?
-
-📎 [Diapositivas Día 1](slides/Dia1.pdf)
 
 ---
 
