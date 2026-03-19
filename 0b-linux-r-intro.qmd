@@ -31,9 +31,9 @@ La mayoría de las herramientas bioinformáticas (DADA2, cutadapt, FastQC, VSEAR
 
 - **Linux** es un sistema operativo libre y de código abierto inspirado en Unix, creado por Linus Torvalds en 1991. Es el sistema que corre en la gran mayoría de servidores de cómputo científico en el mundo, incluido el servidor del curso.
 
-- **Bash** (*Bourne Again SHell*) es el intérprete de comandos — el programa que lee lo que escribes en la terminal y lo ejecuta. Cuando abres una terminal en Linux, casi siempre estás usando Bash.
+- **Bash** (*Bourne Again SHell*) es el intérprete de comandos y el programa que lee lo que escribes en la terminal y lo ejecuta. Cuando abres una terminal en Linux, casi siempre estás usando Bash.
 
-En la práctica: **Linux** es el sistema operativo, **Bash** es el idioma que usas para hablar con él, y **Unix** es el origen histórico de ambos.
+En el servidor: **Linux** es el sistema operativo, **Bash** es el idioma que usas para hablar con él, y **Unix** es el origen histórico de ambos.
 
 | Término | Qué es | Ejemplo |
 |---------|--------|---------|
@@ -46,10 +46,23 @@ En la práctica: **Linux** es el sistema operativo, **Bash** es el idioma que us
 ```bash
 # Ver qué shell estás usando
 echo $SHELL
+# /bin/bash
 
 # Ver la versión de Bash
 bash --version
+# GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)
 ```
+
+En el servidor del curso verás algo como:
+
+```
+(base) tvaldivia@a240:~$
+```
+
+- `(base)` — entorno conda activo (el base por defecto; hay que cambiarlo a `metabarcoding`)
+- `tvaldivia` — tu nombre de usuario
+- `a240` — nombre del servidor
+- `~` — estás en tu directorio home
 
 ---
 
@@ -254,7 +267,8 @@ conda deactivate
 Cuando el entorno está activo, verás su nombre entre paréntesis al inicio del prompt:
 
 ```
-(metabarcoding) usr01@servidor:~$
+(base) usrXX@a240:~$             # antes de activar
+(metabarcoding) usrXX@a240:~$   # después de conda activate metabarcoding
 ```
 
 :::{.callout-warning}
