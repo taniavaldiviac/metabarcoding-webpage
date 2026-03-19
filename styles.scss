@@ -62,7 +62,7 @@ h1, h2, h3 { scroll-margin-top: 80px; }
 #refs {
   counter-reset: ref-counter;
 }
-#refs > div {
+div.csl-entry {
   counter-increment: ref-counter;
   display: flex;
   gap: 0.6rem;
