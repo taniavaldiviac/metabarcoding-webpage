@@ -5,7 +5,6 @@ execute:
   warning: false
 ---
 
-# Asignación taxonómica
 
 La **asignación taxonómica** convierte secuencias anonimas (ASVs) en información biológica: generos, familias, ordenes y, cuando es posible, especies. Es el puente entre el análisis bioinformatico y la ecologia de comúnidades.
 

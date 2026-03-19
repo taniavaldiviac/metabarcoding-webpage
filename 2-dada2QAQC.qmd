@@ -6,7 +6,6 @@ execute:
   warning: false
 ---
 
-# Introducción al Pipeline de Análisis de Metabarcoding con dada2
 
 ## ¿Qué hace este pipeline?
 

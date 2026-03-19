@@ -5,7 +5,6 @@ execute:
   warning: false
 ---
 
-# Preparación del entorno y filtrado inicial
 
 Antes de correr cualquier análisis, configuramos el entorno, definimos rutas y válidamos los datos de entrada.
 

@@ -5,7 +5,6 @@ execute:
   warning: false
 ---
 
-# Introducción a Linux, Unix y R
 
 En bioinformática trabajamos directamente con la terminal (línea de comandos) y con R porque nos permiten automatizar tareas repetitivas, manejar archivos grandes y ejecutar pipelines reproducibles. En esta sesión aprenderemos los comandos esenciales para movernos en el servidor y las bases de R para correr nuestros análisis.
 

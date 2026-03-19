@@ -5,7 +5,6 @@ execute:
   warning: false
 ---
 
-# Dereplicación y aprendizaje del modelo de error
 
 Este paso tiene dos partes: primero **dereplicamos** las lecturas (eliminamos duplicados y contamos abundancias), luego **aprendemos el modelo de error** de la secuenciadora para poder distinguir errores técnicos de variantes biológicas reales.
 

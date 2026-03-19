@@ -5,7 +5,6 @@ execute:
   warning: false
 ---
 
-# Remoción de quimeras y filtrado final
 
 Las **quimeras** son secuencias artificiales producidas durante la amplificación por PCR: una cadena parcialmente extendida se hibrida con otra molecula diferente y se extiende hasta el final, generando una secuencia hibrida que no existe en la naturaleza. Si no se eliminan, inflan artificialmente la riqueza de especies observada.
 

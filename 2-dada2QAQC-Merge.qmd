@@ -5,7 +5,6 @@ execute:
   warning: false
 ---
 
-# Unión de lecturas y construcción de la tabla de ASVs
 
 En secuenciación paired-end cada fragmento de ADN se lee desde ambos extremos: una lectura **forward** (R1) y una **reverse** (R2). Para obtener la secuencia completa del amplicón, ambas lecturas deben ensamblarse aprovechando la región de solapamiento que comparten en el centro.
 

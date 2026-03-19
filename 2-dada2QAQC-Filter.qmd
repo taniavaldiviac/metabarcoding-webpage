@@ -6,7 +6,6 @@ execute:
   warning: false
 ---
 
-# Introducción al paso Filter and Trim en dada2
 
 El paso **Filter and Trim** es el primer gran filtro de calidad en el pipeline de dada2.  
 Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.
