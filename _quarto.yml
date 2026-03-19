@@ -25,6 +25,8 @@ website:
         menu:
           - href: 0-Conexion-clonacion.qmd
             text: "Conexión al servidor"
+          - href: 0b-linux-r-intro.qmd
+            text: "Linux y R — Introducción"
           - href: 1-qaqc-cutadapt.qmd
             text: "QAQC y Cutadapt"
           - text: "---"
