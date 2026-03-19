@@ -212,7 +212,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#paso-1-asignar-taxonomía-con-assigntaxonomy" id="toc-paso-1-asignar-taxonomía-con-assigntaxonomy" class="nav-link active" data-scroll-target="#paso-1-asignar-taxonomía-con-assigntaxonomy">Paso 1 — Asignar taxonomía con <code>assignTaxonomy()</code></a></li>
   <li><a href="#paso-2-verificar-el-resultado" id="toc-paso-2-verificar-el-resultado" class="nav-link" data-scroll-target="#paso-2-verificar-el-resultado">Paso 2 — Verificar el resultado</a>
   <ul class="collapse">
-  <li><a href="#valores-típicos-segun-nivel" id="toc-valores-típicos-segun-nivel" class="nav-link" data-scroll-target="#valores-típicos-segun-nivel">Valores típicos segun nivel</a></li>
+  <li><a href="#cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian" id="toc-cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian" class="nav-link" data-scroll-target="#cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian">¿Cómo funciona <code>assignTaxonomy()</code>? — El clasificador Naive Bayesian</a></li>
   </ul></li>
   <li><a href="#paso-3-guardar-archivos-de-taxonomía" id="toc-paso-3-guardar-archivos-de-taxonomía" class="nav-link" data-scroll-target="#paso-3-guardar-archivos-de-taxonomía">Paso 3 — Guardar archivos de taxonomía</a></li>
   <li><a href="#paso-4-guardar-insumos-para-phyloseq-.rdata" id="toc-paso-4-guardar-insumos-para-phyloseq-.rdata" class="nav-link" data-scroll-target="#paso-4-guardar-insumos-para-phyloseq-.rdata">Paso 4 — Guardar insumos para phyloseq (.RData)</a></li>
@@ -313,47 +313,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<section id="valores-típicos-segun-nivel" class="level3">
-<h3 class="anchored" data-anchor-id="valores-típicos-segun-nivel">Valores típicos segun nivel</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Nivel</th>
-<th>% asignado (típico)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Reino</td>
-<td>95-100%</td>
-</tr>
-<tr class="even">
-<td>Filo</td>
-<td>80-95%</td>
-</tr>
-<tr class="odd">
-<td>Clase</td>
-<td>70-90%</td>
-</tr>
-<tr class="even">
-<td>Orden</td>
-<td>60-85%</td>
-</tr>
-<tr class="odd">
-<td>Familia</td>
-<td>50-80%</td>
-</tr>
-<tr class="even">
-<td>Genero</td>
-<td>30-70%</td>
-</tr>
-<tr class="odd">
-<td>Especie</td>
-<td>10-50%</td>
-</tr>
-</tbody>
-</table>
-<p>La proporción baja a nivel de especie es normal: requiere coincidencia exacta con la base de datos.</p>
+<section id="cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian">¿Cómo funciona <code>assignTaxonomy()</code>? — El clasificador Naive Bayesian</h3>
+<p><code>assignTaxonomy()</code> implementa el clasificador bayesiano ingenuo (<em>Naive Bayesian Classifier</em>) del RDP (<em>Ribosomal Database Project</em>), adaptado por el equipo de DADA2.</p>
+<p>El proceso funciona así:</p>
+<ol type="1">
+<li><p><strong>Fragmentación en k-mers</strong> — Cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (<em>8-mers</em>). Por ejemplo, la secuencia <code>ATCGGCTA</code> genera los 8-mers <code>ATCGGCTA</code>, <code>TCGGCTAG</code>, etc.</p></li>
+<li><p><strong>Comparación con la base de datos</strong> — La base de datos de referencia (por ejemplo, una base de 12S o 18S) también está indexada en 8-mers por cada grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo.</p></li>
+<li><p><strong>Por qué “ingenuo”</strong> — Se llama “naive” porque asume que cada 8-mer es <em>independiente</em> de los demás, lo cual no es biológicamente cierto (las posiciones en una secuencia no son independientes), pero hace el cálculo computacionalmente muy eficiente y funciona bien en la práctica.</p></li>
+<li><p><strong>Asignación jerárquica</strong> — La clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de <strong>bootstrap</strong> (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como <code>NA</code>.</p></li>
+<li><p><strong>Por qué bajan las asignaciones en niveles finos</strong> — A nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado (o no está del todo), la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El parámetro <code>tryRC = TRUE</code> hace que el clasificador también pruebe el complemento reverso de cada ASV antes de asignar. Esto es importante para marcadores que pueden amplificarse en cualquier orientación.</p>
+</div>
+</div>
 <hr>
 </section>
 </section>
@@ -1054,137 +1037,143 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a><span class="fu">### Valores típicos segun nivel</span></span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a><span class="fu">### ¿Cómo funciona `assignTaxonomy()`? — El clasificador Naive Bayesian</span></span>
 <span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Nivel <span class="pp">|</span> % asignado (típico) <span class="pp">|</span></span>
-<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------|---------------------|</span></span>
-<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Reino <span class="pp">|</span> 95-100% <span class="pp">|</span></span>
-<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Filo <span class="pp">|</span> 80-95% <span class="pp">|</span></span>
-<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Clase <span class="pp">|</span> 70-90% <span class="pp">|</span></span>
-<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Orden <span class="pp">|</span> 60-85% <span class="pp">|</span></span>
-<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Familia <span class="pp">|</span> 50-80% <span class="pp">|</span></span>
-<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Genero <span class="pp">|</span> 30-70% <span class="pp">|</span></span>
-<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Especie <span class="pp">|</span> 10-50% <span class="pp">|</span></span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a><span class="in">`assignTaxonomy()`</span> implementa el clasificador bayesiano ingenuo (*Naive Bayesian Classifier*) del RDP (*Ribosomal Database Project*), adaptado por el equipo de DADA2.</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>El proceso funciona así:</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Fragmentación en k-mers** — Cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (*8-mers*). Por ejemplo, la secuencia <span class="in">`ATCGGCTA`</span> genera los 8-mers <span class="in">`ATCGGCTA`</span>, <span class="in">`TCGGCTAG`</span>, etc.</span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Comparación con la base de datos** — La base de datos de referencia (por ejemplo, una base de 12S o 18S) también está indexada en 8-mers por cada grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo.</span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Por qué "ingenuo"** — Se llama "naive" porque asume que cada 8-mer es *independiente* de los demás, lo cual no es biológicamente cierto (las posiciones en una secuencia no son independientes), pero hace el cálculo computacionalmente muy eficiente y funciona bien en la práctica.</span>
 <span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>La proporción baja a nivel de especie es normal: requiere coincidencia exacta con la base de datos.</span>
+<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Asignación jerárquica** — La clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de **bootstrap** (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como <span class="in">`NA`</span>.</span>
 <span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Por qué bajan las asignaciones en niveles finos** — A nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado (o no está del todo), la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.</span>
 <span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 3 — Guardar archivos de taxonomía</span></span>
-<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a>taxonomy_file  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
-<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_taxonomy_output.csv"</span>))</span>
-<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a>bootstrap_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
-<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_tax_bootstrap.csv"</span>))</span>
+<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a>El parámetro <span class="in">`tryRC = TRUE`</span> hace que el clasificador también pruebe el complemento reverso de cada ASV antes de asignar. Esto es importante para marcadores que pueden amplificarse en cualquier orientación.</span>
+<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 3 — Guardar archivos de taxonomía</span></span>
 <span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de taxonomía</span></span>
-<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a>joined_old_new_taxa <span class="ot">&lt;-</span> tax_df <span class="sc">%&gt;%</span></span>
-<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(dplyr<span class="sc">::</span><span class="fu">any_of</span>(<span class="fu">c</span>(<span class="st">"Sequence"</span>, ranks)))</span>
-<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(joined_old_new_taxa, taxonomy_file)</span>
-<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de bootstraps unida a taxonomía</span></span>
-<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a>boot_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(boot_mat) <span class="sc">%&gt;%</span></span>
-<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"Sequence"</span>)</span>
-<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(boot_df)[<span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"boot."</span>, <span class="fu">names</span>(boot_df)[<span class="sc">-</span><span class="dv">1</span>])</span>
-<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a>ready_new_taxa <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(boot_df, joined_old_new_taxa, <span class="at">by =</span> <span class="st">"Sequence"</span>)</span>
-<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(ready_new_taxa, bootstrap_file)</span>
-<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Taxonomía guardada en: "</span>, taxonomy_file)</span>
-<span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Bootstraps guardados en: "</span>, bootstrap_file)</span>
-<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a>taxonomy_file  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
+<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_taxonomy_output.csv"</span>))</span>
+<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a>bootstrap_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
+<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_tax_bootstrap.csv"</span>))</span>
+<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de taxonomía</span></span>
+<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>joined_old_new_taxa <span class="ot">&lt;-</span> tax_df <span class="sc">%&gt;%</span></span>
+<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(dplyr<span class="sc">::</span><span class="fu">any_of</span>(<span class="fu">c</span>(<span class="st">"Sequence"</span>, ranks)))</span>
+<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(joined_old_new_taxa, taxonomy_file)</span>
+<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de bootstraps unida a taxonomía</span></span>
+<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a>boot_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(boot_mat) <span class="sc">%&gt;%</span></span>
+<span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"Sequence"</span>)</span>
+<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(boot_df)[<span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"boot."</span>, <span class="fu">names</span>(boot_df)[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a>ready_new_taxa <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(boot_df, joined_old_new_taxa, <span class="at">by =</span> <span class="st">"Sequence"</span>)</span>
+<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(ready_new_taxa, bootstrap_file)</span>
 <span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 4 — Guardar insumos para phyloseq (.RData)</span></span>
-<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a>El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo <span class="in">`.RData`</span>. Esto permite continuar el análisis en otra sesion sin repetir los pasos anteriores.</span>
+<span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Taxonomía guardada en: "</span>, taxonomy_file)</span>
+<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Bootstraps guardados en: "</span>, bootstrap_file)</span>
+<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparar matrices para phyloseq</span></span>
-<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a>otu_mat <span class="ot">&lt;-</span> cleaned.seqtab.nochim</span>
-<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a><span class="fu">storage.mode</span>(otu_mat) <span class="ot">&lt;-</span> <span class="st">"integer"</span></span>
-<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a>tax_mat <span class="ot">&lt;-</span> joined_old_new_taxa <span class="sc">%&gt;%</span></span>
-<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"Sequence"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
-<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar metadatos — detecta automáticamente columna sample_id o Sample_name</span></span>
-<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a>meta_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, <span class="st">"metadata.csv"</span>)</span>
-<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(meta_path)) <span class="fu">stop</span>(<span class="st">"No se encontró metadata.csv en: "</span>, meta_path)</span>
-<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(meta_path, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 4 — Guardar insumos para phyloseq (.RData)</span></span>
+<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a>El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo <span class="in">`.RData`</span>. Esto permite continuar el análisis en otra sesion sin repetir los pasos anteriores.</span>
+<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparar matrices para phyloseq</span></span>
+<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>otu_mat <span class="ot">&lt;-</span> cleaned.seqtab.nochim</span>
+<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a><span class="fu">storage.mode</span>(otu_mat) <span class="ot">&lt;-</span> <span class="st">"integer"</span></span>
+<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a>tax_mat <span class="ot">&lt;-</span> joined_old_new_taxa <span class="sc">%&gt;%</span></span>
+<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"Sequence"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
 <span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-137"><a href="#cb7-137" aria-hidden="true" tabindex="-1"></a>id_col <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb7-138"><a href="#cb7-138" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sample_id"</span>   <span class="sc">%in%</span> <span class="fu">names</span>(sample_meta) <span class="sc">~</span> <span class="st">"sample_id"</span>,</span>
-<span id="cb7-139"><a href="#cb7-139" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Sample_name"</span> <span class="sc">%in%</span> <span class="fu">names</span>(sample_meta) <span class="sc">~</span> <span class="st">"Sample_name"</span>,</span>
-<span id="cb7-140"><a href="#cb7-140" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
-<span id="cb7-141"><a href="#cb7-141" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-142"><a href="#cb7-142" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(id_col)) <span class="fu">stop</span>(<span class="st">"metadata.csv debe tener columna 'sample_id' o 'Sample_name'."</span>)</span>
-<span id="cb7-143"><a href="#cb7-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-144"><a href="#cb7-144" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta <span class="sc">%&gt;%</span></span>
-<span id="cb7-145"><a href="#cb7-145" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="sc">!!</span><span class="at">id_col :=</span> <span class="fu">trimws</span>(<span class="fu">as.character</span>(.data[[id_col]]))) <span class="sc">%&gt;%</span></span>
-<span id="cb7-146"><a href="#cb7-146" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">SampleID =</span> <span class="sc">!!</span>id_col) <span class="sc">%&gt;%</span></span>
-<span id="cb7-147"><a href="#cb7-147" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"SampleID"</span>)</span>
-<span id="cb7-148"><a href="#cb7-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-149"><a href="#cb7-149" aria-hidden="true" tabindex="-1"></a><span class="co"># Alinear con otu_mat y advertir si hay muestras sin metadata</span></span>
-<span id="cb7-150"><a href="#cb7-150" aria-hidden="true" tabindex="-1"></a>faltan    <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(otu_mat), <span class="fu">rownames</span>(sample_meta))</span>
-<span id="cb7-151"><a href="#cb7-151" aria-hidden="true" tabindex="-1"></a>sobrantes <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(sample_meta), <span class="fu">rownames</span>(otu_mat))</span>
-<span id="cb7-152"><a href="#cb7-152" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(faltan))    <span class="fu">warning</span>(<span class="st">"Faltan en metadata: "</span>, <span class="fu">paste</span>(faltan, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb7-153"><a href="#cb7-153" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(sobrantes)) <span class="fu">message</span>(<span class="st">"En metadata pero no en datos: "</span>, <span class="fu">paste</span>(sobrantes, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta[<span class="fu">rownames</span>(otu_mat), , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a><span class="co"># Parámetros del run (para trazabilidad)</span></span>
-<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a>  <span class="at">run_name   =</span> run_name,</span>
-<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a>  <span class="at">locus      =</span> primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen_F =</span> where_trim_all_Fs,</span>
-<span id="cb7-161"><a href="#cb7-161" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen_R =</span> where_trim_all_Rs,</span>
-<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_len    =</span> min_len,</span>
-<span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_len    =</span> max_len,</span>
-<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>  <span class="at">date       =</span> <span class="fu">as.character</span>(<span class="fu">Sys.time</span>())</span>
-<span id="cb7-165"><a href="#cb7-165" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-166"><a href="#cb7-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-167"><a href="#cb7-167" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar todo en un .RData</span></span>
-<span id="cb7-168"><a href="#cb7-168" aria-hidden="true" tabindex="-1"></a>rdata_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_phyloseq_inputs.RData"</span>))</span>
-<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-171"><a href="#cb7-171" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(otu_mat, tax_mat, sample_meta, track,</span>
-<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a>     <span class="at">seqtab_raw =</span> seqtab.nochim, <span class="at">seqtab_clean =</span> cleaned.seqtab.nochim,</span>
-<span id="cb7-173"><a href="#cb7-173" aria-hidden="true" tabindex="-1"></a>     <span class="at">taxonomy_df =</span> joined_old_new_taxa, <span class="at">bootstrap_df =</span> ready_new_taxa,</span>
-<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a>     params,</span>
-<span id="cb7-175"><a href="#cb7-175" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> rdata_path, <span class="at">compress =</span> <span class="st">"xz"</span>)</span>
+<span id="cb7-137"><a href="#cb7-137" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar metadatos — detecta automáticamente columna sample_id o Sample_name</span></span>
+<span id="cb7-138"><a href="#cb7-138" aria-hidden="true" tabindex="-1"></a>meta_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, <span class="st">"metadata.csv"</span>)</span>
+<span id="cb7-139"><a href="#cb7-139" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(meta_path)) <span class="fu">stop</span>(<span class="st">"No se encontró metadata.csv en: "</span>, meta_path)</span>
+<span id="cb7-140"><a href="#cb7-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-141"><a href="#cb7-141" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(meta_path, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-142"><a href="#cb7-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-143"><a href="#cb7-143" aria-hidden="true" tabindex="-1"></a>id_col <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb7-144"><a href="#cb7-144" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sample_id"</span>   <span class="sc">%in%</span> <span class="fu">names</span>(sample_meta) <span class="sc">~</span> <span class="st">"sample_id"</span>,</span>
+<span id="cb7-145"><a href="#cb7-145" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Sample_name"</span> <span class="sc">%in%</span> <span class="fu">names</span>(sample_meta) <span class="sc">~</span> <span class="st">"Sample_name"</span>,</span>
+<span id="cb7-146"><a href="#cb7-146" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb7-147"><a href="#cb7-147" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-148"><a href="#cb7-148" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(id_col)) <span class="fu">stop</span>(<span class="st">"metadata.csv debe tener columna 'sample_id' o 'Sample_name'."</span>)</span>
+<span id="cb7-149"><a href="#cb7-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-150"><a href="#cb7-150" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta <span class="sc">%&gt;%</span></span>
+<span id="cb7-151"><a href="#cb7-151" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="sc">!!</span><span class="at">id_col :=</span> <span class="fu">trimws</span>(<span class="fu">as.character</span>(.data[[id_col]]))) <span class="sc">%&gt;%</span></span>
+<span id="cb7-152"><a href="#cb7-152" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">SampleID =</span> <span class="sc">!!</span>id_col) <span class="sc">%&gt;%</span></span>
+<span id="cb7-153"><a href="#cb7-153" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"SampleID"</span>)</span>
+<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a><span class="co"># Alinear con otu_mat y advertir si hay muestras sin metadata</span></span>
+<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a>faltan    <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(otu_mat), <span class="fu">rownames</span>(sample_meta))</span>
+<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a>sobrantes <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(sample_meta), <span class="fu">rownames</span>(otu_mat))</span>
+<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(faltan))    <span class="fu">warning</span>(<span class="st">"Faltan en metadata: "</span>, <span class="fu">paste</span>(faltan, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(sobrantes)) <span class="fu">message</span>(<span class="st">"En metadata pero no en datos: "</span>, <span class="fu">paste</span>(sobrantes, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta[<span class="fu">rownames</span>(otu_mat), , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb7-161"><a href="#cb7-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a><span class="co"># Parámetros del run (para trazabilidad)</span></span>
+<span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>  <span class="at">run_name   =</span> run_name,</span>
+<span id="cb7-165"><a href="#cb7-165" aria-hidden="true" tabindex="-1"></a>  <span class="at">locus      =</span> primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb7-166"><a href="#cb7-166" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen_F =</span> where_trim_all_Fs,</span>
+<span id="cb7-167"><a href="#cb7-167" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen_R =</span> where_trim_all_Rs,</span>
+<span id="cb7-168"><a href="#cb7-168" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_len    =</span> min_len,</span>
+<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_len    =</span> max_len,</span>
+<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a>  <span class="at">date       =</span> <span class="fu">as.character</span>(<span class="fu">Sys.time</span>())</span>
+<span id="cb7-171"><a href="#cb7-171" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-173"><a href="#cb7-173" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar todo en un .RData</span></span>
+<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a>rdata_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb7-175"><a href="#cb7-175" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_phyloseq_inputs.RData"</span>))</span>
 <span id="cb7-176"><a href="#cb7-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-177"><a href="#cb7-177" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"RData guardado en: "</span>, rdata_path)</span>
-<span id="cb7-178"><a href="#cb7-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-179"><a href="#cb7-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-180"><a href="#cb7-180" aria-hidden="true" tabindex="-1"></a>El <span class="in">`.RData`</span> contiene los tres objetos principales para phyloseq (<span class="in">`otu_mat`</span>, <span class="in">`tax_mat`</span>, <span class="in">`sample_meta`</span>) más objetos adicionales para reproducibilidad: <span class="in">`track`</span>, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).</span>
-<span id="cb7-181"><a href="#cb7-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-182"><a href="#cb7-182" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb7-183"><a href="#cb7-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-184"><a href="#cb7-184" aria-hidden="true" tabindex="-1"></a><span class="fu">## Causas de baja asignación taxonómica</span></span>
+<span id="cb7-177"><a href="#cb7-177" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(otu_mat, tax_mat, sample_meta, track,</span>
+<span id="cb7-178"><a href="#cb7-178" aria-hidden="true" tabindex="-1"></a>     <span class="at">seqtab_raw =</span> seqtab.nochim, <span class="at">seqtab_clean =</span> cleaned.seqtab.nochim,</span>
+<span id="cb7-179"><a href="#cb7-179" aria-hidden="true" tabindex="-1"></a>     <span class="at">taxonomy_df =</span> joined_old_new_taxa, <span class="at">bootstrap_df =</span> ready_new_taxa,</span>
+<span id="cb7-180"><a href="#cb7-180" aria-hidden="true" tabindex="-1"></a>     params,</span>
+<span id="cb7-181"><a href="#cb7-181" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> rdata_path, <span class="at">compress =</span> <span class="st">"xz"</span>)</span>
+<span id="cb7-182"><a href="#cb7-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-183"><a href="#cb7-183" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"RData guardado en: "</span>, rdata_path)</span>
+<span id="cb7-184"><a href="#cb7-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-185"><a href="#cb7-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-186"><a href="#cb7-186" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Causa <span class="pp">|</span> Sintoma <span class="pp">|</span> Solucion <span class="pp">|</span></span>
-<span id="cb7-187"><a href="#cb7-187" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------|---------|---------|</span></span>
-<span id="cb7-188"><a href="#cb7-188" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Base de datos desactualizada <span class="pp">|</span> Muchos NA en filo <span class="pp">|</span> Usar versión mas reciente <span class="pp">|</span></span>
-<span id="cb7-189"><a href="#cb7-189" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Marcador poco representado <span class="pp">|</span> % bajos en todos los niveles <span class="pp">|</span> Considerar BD mas especifica <span class="pp">|</span></span>
-<span id="cb7-190"><a href="#cb7-190" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`minBoot`</span> muy alto <span class="pp">|</span> Muchos NA en niveles medios <span class="pp">|</span> Bajar a 60 con precaucion <span class="pp">|</span></span>
-<span id="cb7-191"><a href="#cb7-191" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Quimeras no removidas <span class="pp">|</span> Asignaciónes inconsistentes <span class="pp">|</span> Verificar paso anterior <span class="pp">|</span></span>
-<span id="cb7-192"><a href="#cb7-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-193"><a href="#cb7-193" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb7-194"><a href="#cb7-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-195"><a href="#cb7-195" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
-<span id="cb7-196"><a href="#cb7-196" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
-<span id="cb7-197"><a href="#cb7-197" aria-hidden="true" tabindex="-1"></a>La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningun método puede asignar correctamente un organismo que no esta representado en la referencia. Siempre reporta la versión de la base de datos que usaste en la sección de métodos.</span>
-<span id="cb7-198"><a href="#cb7-198" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb7-199"><a href="#cb7-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-200"><a href="#cb7-200" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
-<span id="cb7-201"><a href="#cb7-201" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
-<span id="cb7-202"><a href="#cb7-202" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>¿Que porcentaje de ASVs se asignan a nivel de filo? ?Y a nivel de genero?</span>
-<span id="cb7-203"><a href="#cb7-203" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>¿Hay ASVs sin asignación a ningun nivel? ¿Cuantos son?</span>
-<span id="cb7-204"><a href="#cb7-204" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Revisa los valores de bootstrap en <span class="in">`ready_new_taxa`</span>  -  ¿Hay asignaciónes con baja confianza?</span>
-<span id="cb7-205"><a href="#cb7-205" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>¿El <span class="in">`.RData`</span> fue creado correctamente en <span class="in">`final_data/rdata_output/`</span>?</span>
-<span id="cb7-206"><a href="#cb7-206" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb7-186"><a href="#cb7-186" aria-hidden="true" tabindex="-1"></a>El <span class="in">`.RData`</span> contiene los tres objetos principales para phyloseq (<span class="in">`otu_mat`</span>, <span class="in">`tax_mat`</span>, <span class="in">`sample_meta`</span>) más objetos adicionales para reproducibilidad: <span class="in">`track`</span>, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).</span>
+<span id="cb7-187"><a href="#cb7-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-188"><a href="#cb7-188" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb7-189"><a href="#cb7-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-190"><a href="#cb7-190" aria-hidden="true" tabindex="-1"></a><span class="fu">## Causas de baja asignación taxonómica</span></span>
+<span id="cb7-191"><a href="#cb7-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-192"><a href="#cb7-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Causa <span class="pp">|</span> Sintoma <span class="pp">|</span> Solucion <span class="pp">|</span></span>
+<span id="cb7-193"><a href="#cb7-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------|---------|---------|</span></span>
+<span id="cb7-194"><a href="#cb7-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Base de datos desactualizada <span class="pp">|</span> Muchos NA en filo <span class="pp">|</span> Usar versión mas reciente <span class="pp">|</span></span>
+<span id="cb7-195"><a href="#cb7-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Marcador poco representado <span class="pp">|</span> % bajos en todos los niveles <span class="pp">|</span> Considerar BD mas especifica <span class="pp">|</span></span>
+<span id="cb7-196"><a href="#cb7-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`minBoot`</span> muy alto <span class="pp">|</span> Muchos NA en niveles medios <span class="pp">|</span> Bajar a 60 con precaucion <span class="pp">|</span></span>
+<span id="cb7-197"><a href="#cb7-197" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Quimeras no removidas <span class="pp">|</span> Asignaciónes inconsistentes <span class="pp">|</span> Verificar paso anterior <span class="pp">|</span></span>
+<span id="cb7-198"><a href="#cb7-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-199"><a href="#cb7-199" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb7-200"><a href="#cb7-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-201"><a href="#cb7-201" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb7-202"><a href="#cb7-202" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
+<span id="cb7-203"><a href="#cb7-203" aria-hidden="true" tabindex="-1"></a>La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningun método puede asignar correctamente un organismo que no esta representado en la referencia. Siempre reporta la versión de la base de datos que usaste en la sección de métodos.</span>
+<span id="cb7-204"><a href="#cb7-204" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb7-205"><a href="#cb7-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-206"><a href="#cb7-206" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
+<span id="cb7-207"><a href="#cb7-207" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
+<span id="cb7-208"><a href="#cb7-208" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>¿Que porcentaje de ASVs se asignan a nivel de filo? ?Y a nivel de genero?</span>
+<span id="cb7-209"><a href="#cb7-209" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>¿Hay ASVs sin asignación a ningun nivel? ¿Cuantos son?</span>
+<span id="cb7-210"><a href="#cb7-210" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Revisa los valores de bootstrap en <span class="in">`ready_new_taxa`</span>  -  ¿Hay asignaciónes con baja confianza?</span>
+<span id="cb7-211"><a href="#cb7-211" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>¿El <span class="in">`.RData`</span> fue creado correctamente en <span class="in">`final_data/rdata_output/`</span>?</span>
+<span id="cb7-212"><a href="#cb7-212" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
