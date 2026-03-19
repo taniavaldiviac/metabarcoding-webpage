@@ -52,7 +52,7 @@ website:
 
 format:
   html:
-    theme: [flatly, styles.scss]
+    theme: [solar, styles.scss]
     toc: true
     number-sections: false
     lang: es
