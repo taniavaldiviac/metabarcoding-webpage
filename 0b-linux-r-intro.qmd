@@ -53,17 +53,6 @@ bash --version
 # GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)
 ```
 
-En el servidor del curso verás algo como:
-
-```
-(base) tvaldivia@a240:~$
-```
-
-- `(base)` — entorno conda activo (el base por defecto; hay que cambiarlo a `metabarcoding`)
-- `tvaldivia` — tu nombre de usuario
-- `a240` — nombre del servidor
-- `~` — estás en tu directorio home
-
 ---
 
 ### Navegación básica
@@ -78,7 +67,29 @@ pwd
 ls
 ls -lh    # con detalles (tamaño, permisos, fecha)
 ls -a     # incluye archivos ocultos (empiezan con .)
+ls -lha   # combinar opciones: detalles + ocultos
+ls -lt    # ordenar por fecha de modificación (más reciente primero)
+ls -lhS   # ordenar por tamaño (más grande primero)
 ```
+
+#### Ver la ayuda de cualquier comando
+
+Hay dos formas de consultar todas las opciones disponibles de un comando:
+
+```bash
+# Manual completo (navegable con flechas, q para salir)
+man ls
+
+# Ayuda rápida (lista todas las opciones en pantalla)
+ls --help
+
+# También funciona con cualquier otro comando
+man grep
+man chmod
+cutadapt --help
+```
+
+`man` (de *manual*) es la forma estándar en Linux. `--help` suele ser más corto y directo. Para herramientas bioinformáticas como `cutadapt` o `fastqc`, `--help` es la opción más común.
 
 ```bash
 # Moverte entre carpetas
