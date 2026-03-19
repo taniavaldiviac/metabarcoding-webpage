@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Curso: Metabarcoding de comunidades de eucariontes
 
 Sitio del curso construido con **Quarto** y publicado con **GitHub Pages**.
@@ -31,8 +30,3 @@ Sitio del curso construido con **Quarto** y publicado con **GitHub Pages**.
 
 ---
 
-> Basado conceptualmente en sitios de cursos académicos (p. ej., QERM 514 de UW). Este repositorio es un esqueleto que puedes adaptar libremente.
-=======
-# metabarcoding-webpage
-Webpage del curso metabardocing en eucariontes
->>>>>>> 461ee07bc9b76710c77fa6147d05bc56ec1cab95
