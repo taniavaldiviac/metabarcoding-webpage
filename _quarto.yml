@@ -26,16 +26,16 @@ website:
           - href: 0-Conexion-clonacion.qmd
             text: "Conexión al servidor"
           - href: 1-qaqc-cutadapt.qmd
-            text: "QAQC y Cutadapt"
+            text: "FastQC y Cutadapt"
           - text: "---"
           - href: 2-dada2QAQC.qmd
-            text: "DADA2 — Pipeline completo"
+            text: "DADA2 — Visión general"
           - href: 2-dada2QAQC-Prep.qmd
             text: "DADA2 — Preparación"
           - href: 2-dada2QAQC-Filter.qmd
             text: "DADA2 — Filter and Trim"
           - href: 2-dada2QAQC-Error.qmd
-            text: "DADA2 — Tasas de error"
+            text: "DADA2 — Dereplicación e inferencia"
           - href: 2-dada2QAQC-Merge.qmd
             text: "DADA2 — Unión paired-end"
           - href: 2-dada2QAQC-Chimeras.qmd
