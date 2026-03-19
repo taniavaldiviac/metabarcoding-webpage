@@ -71,7 +71,7 @@ El curso se desarrolla en **cinco días intensivos**, combinando sesiones teóri
 ::: {.card .border-secondary}
 ::: {.card-body}
 ### [Día 5]{.text-secondary} — Temas avanzados
-**Temas:** Contaminantes con `decontam`, OTUs con VSEARCH, bases de datos personalizadas, proyecto final.
+**Temas:** Contaminantes con `decontam`, OTUs con VSEARCH, bases de datos personalizadas.
 
 **Herramientas:** `decontam` · `VSEARCH` · `rentrez`
 [→ Ver sesión](#día-5-temas-avanzados-y-proyecto-final)
@@ -88,8 +88,6 @@ El curso se desarrolla en **cinco días intensivos**, combinando sesiones teóri
 ### Bienvenida y presentación del curso
 
 **9:00 – 11:00**
-
-La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar claras las bases del curso: qué aprenderemos, cómo trabajaremos y quiénes participamos.
 
 - Presentación del equipo docente y los participantes
 - Objetivos de aprendizaje y estructura del programa
@@ -133,6 +131,7 @@ La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar 
 - Réplicas ecológicas y técnicas, controles negativos y blancos
 - Selección de marcadores genéticos y profundidad de secuenciación
 - Ejemplos de esquemas de diseño para distintos escenarios ecológicos
+- Diseño experimental
 
 ---
 
@@ -142,7 +141,7 @@ La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar 
 
 - Tipos de muestras para eDNA: agua, sedimentos, biofilms, plancton
 - Métodos de recolección y volúmenes adecuados según el estudio
-- Pretratamiento en campo: filtración, preservación, congelamiento
+- Pretratamiento en campo: filtración, preservación, desecación, congelamiento
 - Protocolos para evitar contaminación cruzada
 
 ---
@@ -153,7 +152,7 @@ La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar 
 
 - Métodos de extracción de ADN y manejo de inhibidores
 - Marcadores genéticos comunes en eucariontes: COI, 18S, 12S, ITS
-- Etapas de la preparación de librerías de amplicónes
+- Etapas de la preparación de librerías de amplicones
 - Controles de laboratorio: blancos de extracción, negativos, positivos
 - Buenas prácticas para evitar contaminación
 
@@ -181,6 +180,10 @@ La sesión inaugural tiene como objetivo crear un ambiente colaborativo y dejar 
 - Estructura de un script en R y uso de RMarkdown/Quarto
 - Carga e instalación de paquetes (`install.packages`, `library`)
 - Buenas prácticas de organización y documentación
+
+::: {.callout-tip icon="false"}
+**Práctica:** [Linux y R — Introducción](0b-linux-r-intro.qmd)
+:::
 
 ---
 
