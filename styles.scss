@@ -1,163 +1,47 @@
 /*-- scss:defaults --*/
 
-/* Paleta: océano profundo + bioluminiscencia */
-$primary:   #1a6b8a;
-$secondary: #2cb5a0;
-$success:   #3a9e6e;
-$info:      #5bc4d4;
-$warning:   #e8a838;
-$danger:    #d95f5f;
-$light:     #f4f8fb;
-$dark:      #1c2b36;
-
-$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-$font-family-monospace:  "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-$headings-font-weight:   600;
-
-$navbar-bg: $primary;
-$navbar-fg: #ffffff;
-$link-color:       $primary;
-$link-hover-color: $secondary;
-$body-bg:    #f7fafb;
-$body-color: #2d3b45;
+$font-family-monospace: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
 /*-- scss:rules --*/
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-/* Navbar */
-.navbar {
-  box-shadow: 0 2px 16px rgba(26, 107, 138, 0.2);
-  border-bottom: 2px solid $secondary;
-}
-.navbar-brand { font-weight: 700; letter-spacing: 0.01em; }
-
-/* Hero / título de página */
-.quarto-title-block {
-  background: linear-gradient(135deg, #1a6b8a 0%, #2cb5a0 100%);
-  color: white;
-  padding: 2.5rem 2rem 2rem;
-  border-radius: 0 0 18px 18px;
-  margin-bottom: 2rem;
-  .title    { color: white; font-size: 2rem; font-weight: 700; }
-  .subtitle { color: rgba(255,255,255,0.88); font-size: 1.1rem; }
-  .quarto-title-meta { color: rgba(255,255,255,0.72); font-size: 0.9rem; }
-}
-
-/* Encabezados */
-h1 {
-  font-size: 1.85rem;
-  color: $primary;
-  border-bottom: 2px solid $secondary;
-  padding-bottom: 0.3rem;
-  margin-top: 2rem;
-  scroll-margin-top: 80px;
-}
-h2 { font-size: 1.45rem; color: $dark; margin-top: 1.75rem; scroll-margin-top: 80px; }
-h3 { font-size: 1.2rem; color: $primary; margin-top: 1.4rem; scroll-margin-top: 80px; }
-
-/* Links */
-a { text-decoration: none; transition: color 0.2s; }
-a:hover { text-decoration: underline; color: $secondary; }
-
-/* Callouts */
-.callout { border-radius: 10px; border-left-width: 4px; }
-
-/* Tarjetas para contenido destacado */
-.section-card {
-  background: white;
-  border-radius: 14px;
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 2px 12px rgba(26, 107, 138, 0.08);
-  margin-bottom: 1.25rem;
-  border-left: 4px solid $secondary;
-}
-
-/* Tablas */
-table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
-thead th {
-  background: $primary;
-  color: white;
-  padding: 0.6rem 0.9rem;
-  text-align: left;
-}
-tbody tr:nth-child(odd)  { background: #eef5f8; }
-tbody tr:nth-child(even) { background: white; }
-tbody td { padding: 0.55rem 0.9rem; }
-tbody tr:hover { background: #cde8f2; transition: background 0.15s; }
-
-/* Código — tema Eclipse (igual que RStudio Eclipse) */
+/* Código */
 pre.sourceCode {
-  background: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #d0d7de;
-  padding: 1rem 1.25rem;
+  border-radius: 8px;
   font-size: 0.88rem;
 }
-code { color: $primary; font-size: 0.9em; }
-pre code { color: #000000; }
+code { font-size: 0.9em; }
 
 /* Sintaxis Eclipse */
 pre.sourceCode span {
-  color: #000000;                          /* texto base */
-  &.kw { color: #7f0055; font-weight: bold; }  /* keywords → magenta oscuro */
-  &.cf { color: #7f0055; font-weight: bold; }  /* control flow → magenta oscuro */
-  &.dt { color: #7f0055; font-weight: bold; }  /* data types → magenta oscuro */
-  &.st { color: #2a00ff; }                     /* strings → azul */
-  &.vs { color: #2a00ff; }                     /* verbatim strings → azul */
-  &.co { color: #3f7f5f; font-style: italic; } /* comentarios → verde */
-  &.an { color: #3f7f5f; font-style: italic; } /* anotaciones → verde */
-  &.do { color: #3f7f5f; font-style: italic; } /* doc comments → verde */
-  &.dv { color: #0000c0; }                     /* números → azul oscuro */
-  &.bn { color: #0000c0; }                     /* base N → azul oscuro */
-  &.fl { color: #0000c0; }                     /* floats → azul oscuro */
-  &.fu { color: #000000; }                     /* funciones → negro */
-  &.bu { color: #000000; }                     /* built-ins → negro */
-  &.op { color: #000000; }                     /* operadores → negro */
-  &.sc { color: #2a00ff; }                     /* special chars → azul */
-  &.ss { color: #000000; }                     /* special strings → negro */
-  &.at { color: #7f0055; }                     /* atributos → magenta */
-  &.va { color: #000000; }                     /* variables → negro */
-  &.in { color: #000000; }                     /* inline → negro */
-  &.pp { color: #7f0055; }                     /* preprocesador → magenta */
+  color: #000000;
+  &.kw { color: #7f0055; font-weight: bold; }
+  &.cf { color: #7f0055; font-weight: bold; }
+  &.dt { color: #7f0055; font-weight: bold; }
+  &.st { color: #2a00ff; }
+  &.vs { color: #2a00ff; }
+  &.co { color: #3f7f5f; font-style: italic; }
+  &.an { color: #3f7f5f; font-style: italic; }
+  &.do { color: #3f7f5f; font-style: italic; }
+  &.dv { color: #0000c0; }
+  &.bn { color: #0000c0; }
+  &.fl { color: #0000c0; }
+  &.fu { color: #000000; }
+  &.bu { color: #000000; }
+  &.op { color: #000000; }
+  &.sc { color: #2a00ff; }
+  &.at { color: #7f0055; }
+  &.va { color: #000000; }
+  &.pp { color: #7f0055; }
 }
 
-/* TOC lateral */
-.sidebar nav[role="doc-toc"] {
-  border-left: 3px solid $secondary;
-  padding-left: 0.75rem;
-  a { color: $primary; font-size: 0.88rem; }
-  a:hover { color: $secondary; text-decoration: none; }
-  li { margin-bottom: 0.3rem; }
-  .active > a { color: $secondary; font-weight: 600; }
-}
+/* Tablas */
+thead th { padding: 0.6rem 0.9rem; text-align: left; }
+tbody td  { padding: 0.55rem 0.9rem; }
 
-/* Footer */
-.quarto-page-footer {
-  background: $dark;
-  color: rgba(255,255,255,0.6);
-  font-size: 0.88rem;
-  padding: 0.75rem 1.5rem;
-  a { color: $secondary; }
-}
+/* Callouts */
+.callout { border-radius: 8px; }
 
-/* Botones */
-.btn-primary {
-  background-color: $primary;
-  border-color: $primary;
-  border-radius: 8px;
-  font-weight: 600;
-}
-.btn-primary:hover { background-color: #155a75; border-color: #155a75; }
-
-/* Modo oscuro */
-[data-bs-theme="dark"] {
-  --bs-body-bg: #0f1e27;
-  --bs-body-color: #c8dde6;
-  h1, h2, h3 { color: #7fd4e8; }
-  pre.sourceCode { background: #1e2530; border-color: #30404d; }
-  pre code, pre.sourceCode span { color: #e0e8ef; }
-  tbody tr:nth-child(odd) { background: #162430; }
-  tbody tr:nth-child(even) { background: #1c2f3c; }
-  thead th { background: #0f3d52; }
-}
+/* Scroll margin para anclas */
+h1, h2, h3 { scroll-margin-top: 80px; }
