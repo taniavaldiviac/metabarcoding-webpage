@@ -13,7 +13,10 @@ h1, h2, h3, h4, h5, h6 { font-family: $font-family-sans-serif; font-weight: $hea
 
 /* Código */
 pre.sourceCode {
-  border-radius: 8px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #d0d7de;
+  padding: 1rem 1.25rem;
   font-size: 0.88rem;
 }
 code { font-size: 0.9em; }
