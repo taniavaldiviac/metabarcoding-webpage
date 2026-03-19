@@ -58,24 +58,6 @@ tbody td  { padding: 0.55rem 0.9rem; }
 /* Scroll margin para anclas */
 h1, h2, h3 { scroll-margin-top: 80px; }
 
-/* Referencias bibliográficas numeradas */
-#refs {
-  counter-reset: ref-counter;
-}
-div.csl-entry {
-  counter-increment: ref-counter;
-  display: flex;
-  gap: 0.6rem;
-  margin-bottom: 0.75rem;
-  &::before {
-    content: counter(ref-counter) ".";
-    min-width: 1.8rem;
-    font-weight: 600;
-    color: #555;
-    flex-shrink: 0;
-  }
-}
-
 /* Título de la barra de navegación */
 .navbar-brand {
   font-size: 0.95rem;
