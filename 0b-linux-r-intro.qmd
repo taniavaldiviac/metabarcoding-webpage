@@ -230,6 +230,39 @@ Estos atajos ahorran mucho tiempo:
 
 ---
 
+### Entornos conda
+
+**Conda** es un gestor de paquetes y entornos que permite instalar herramientas bioinformáticas (cutadapt, FastQC, VSEARCH) de forma aislada, sin que entren en conflicto entre sí. Un **entorno** es una carpeta con una versión específica de cada herramienta — como una "burbuja" independiente del resto del sistema.
+
+En el curso todas las herramientas están preinstaladas en el entorno `metabarcoding`. Debes activarlo al inicio de cada sesión antes de correr cualquier análisis:
+
+```bash
+# Ver los entornos disponibles
+conda env list
+
+# Activar el entorno del curso
+conda activate metabarcoding
+
+# Verificar que las herramientas están disponibles
+cutadapt --version
+fastqc --version
+
+# Desactivar el entorno al terminar
+conda deactivate
+```
+
+Cuando el entorno está activo, verás su nombre entre paréntesis al inicio del prompt:
+
+```
+(metabarcoding) usr01@servidor:~$
+```
+
+:::{.callout-warning}
+Si olvidas activar el entorno, los comandos como `cutadapt` o `fastqc` no serán encontrados y verás el error `command not found`.
+:::
+
+---
+
 ## Parte 2 — Introducción a R
 
 ### ¿Por qué usamos R en metabarcoding?
