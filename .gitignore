@@ -3,3 +3,8 @@
 **/*.quarto_ipynb
 
 *.pkg
+
+# Outputs generados por 3-reporte.qmd (no necesitan estar en git)
+final_data/csv_output/
+final_data/figs_families_stacked/
+final_data/figs_species_stacked/

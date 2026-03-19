@@ -42,6 +42,9 @@ website:
             text: "DADA2 — Quimeras"
           - href: 2-dada2QAQC-Taxonomy.qmd
             text: "DADA2 — Asignación taxonómica"
+          - text: "---"
+          - href: 3-reporte.qmd
+            text: "Reporte de análisis"
       - href: Referencias.qmd
         text: Referencias
     right:
