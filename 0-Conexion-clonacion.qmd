@@ -33,7 +33,7 @@ Reemplaza `usrXX` por tu usuario (por ejemplo, `usr01`). Escribe tu contraseña 
 ## 3. Clona el repositorio del curso
 
 ``` sh
-git clone https://github.com/taniavaldiviac/metabarcoding-code.git ~/metabarcoding-code
+git clone https://github.com/taniavaldiviac/metabarcoding-code.git
 cd ~/metabarcoding-code
 ```
 
