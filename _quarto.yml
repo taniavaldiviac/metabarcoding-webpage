@@ -57,6 +57,7 @@ format:
     toc: true
     toc-depth: 3
     number-sections: false
+    page-navigation: true
     lang: es
     code-fold: true
     code-tools: true
