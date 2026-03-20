@@ -135,21 +135,27 @@ Después de aprender los modelos, el pipeline los valida automáticamente:
 
 ```{r eval=FALSE}
 # Validar modelo Forward
-# err_out es una matriz 16×41: filas = 16 posibles transiciones (A2A, A2C, …, T2T)
-# Las transiciones "correctas" (A2A, C2C, G2G, T2T) tienen probabilidad ≈ 1.0 y no
-# son errores — hay que excluirlas al evaluar tasas de error reales.
+# err_out: matriz 16×41 — filas = transiciones (A2A, A2C, …), columnas = Q-scores (0–40)
+# Las transiciones correctas (A2A, C2C, G2G, T2T) tienen probabilidad ≈ 1.0 → excluir.
+# Las tasas altas en Q<20 son normales (bases de baja calidad son intrínsecamente inciertas).
+# Solo se evalúa Q≥20, donde vive la mayoría de las lecturas filtradas.
 if (!is.null(errF$err_out)) {
-  rn          <- rownames(errF$err_out)              # ej. "A2A", "A2C", …
-  error_rows  <- rn[substr(rn, 1, 1) != substr(rn, 3, 3)]  # solo A2C, A2G, etc.
-  err_rates   <- errF$err_out[error_rows, , drop = FALSE]
-  max_err     <- max(err_rates, na.rm = TRUE)
+  rn         <- rownames(errF$err_out)
+  error_rows <- rn[substr(rn, 1, 1) != substr(rn, 3, 3)]   # A2C, A2G, etc.
+  q_cols     <- as.integer(colnames(errF$err_out))
+  hq_cols    <- which(q_cols >= 20)                          # columnas Q≥20
+
+  err_hq  <- errF$err_out[error_rows, hq_cols, drop = FALSE]
+  max_err <- max(err_hq, na.rm = TRUE)
 
   message("Tipos de transición de error: ", length(error_rows), " (de 16 posibles)")
-  message("Rango de tasas de error (transiciones incorrectas): ",
-          round(min(err_rates, na.rm = TRUE), 5), " — ", round(max_err, 5))
+  message("Tasa de error máxima en Q≥20: ", round(max_err, 5),
+          " (normal si < 0.05; preocupante si > 0.10)")
 
   if (max_err > 0.1)
-    warning("Tasa de error máxima > 10% en alguna transición. Revisa calidad de datos.")
+    warning("Tasa de error > 10% en Q≥20. Revisa el perfil de calidad del run.")
+  else
+    message("Modelo de error OK.")
 }
 ```
 
