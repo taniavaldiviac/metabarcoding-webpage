@@ -375,7 +375,7 @@
     "href": "0-Conexion-clonacion.html#clona-el-repositorio-del-curso",
     "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "3. Clona el repositorio del curso",
-    "text": "3. Clona el repositorio del curso\ngit clone https://github.com/taniavaldiviac/metabarcoding-code.git ~/metabarcoding-code\ncd ~/metabarcoding-code"
+    "text": "3. Clona el repositorio del curso\ngit clone https://github.com/taniavaldiviac/metabarcoding-code.git\ncd ~/metabarcoding-code"
   },
   {
     "objectID": "0-Conexion-clonacion.html#copia-los-archivos-fastq",
