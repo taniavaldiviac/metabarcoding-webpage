@@ -103,6 +103,18 @@ conda deactivate
 - `final_data/`: Resultados del análisis (tablas, figuras, RData).
 - `metadata/`: Archivos de configuración (primers, metadatos).
 
+Para explorar el contenido del repositorio:
+
+``` sh
+ls -l ~/metabarcoding-code/
+```
+
+Y para ver los archivos FASTQ disponibles:
+
+``` sh
+ls -lh ~/metabarcoding-code/raw_fastqs/
+```
+
 ---
 
 :::{.callout-note}
