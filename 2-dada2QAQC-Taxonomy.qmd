@@ -79,7 +79,8 @@ El pipeline guarda automáticamente el porcentaje de ASVs **sin** asignación po
 
 ```{r eval=FALSE}
 pct_unassigned <- vapply(ranks, function(rk) {
-  mean(is.na(joined_old_new_taxa[[rk]]) | joined_old_new_taxa[[rk]] == "")
+  col <- tax_df[[rk]]
+  mean(is.na(col) | col == "")
 }, numeric(1))
 
 readr::write_csv(
