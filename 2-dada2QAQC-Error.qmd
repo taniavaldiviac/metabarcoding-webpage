@@ -87,6 +87,15 @@ if (total_bases_F < 1e6 || total_bases_R < 1e6)
   warning("Datos muy limitados (< 1 MB). El modelo puede ser inestable.")
 ```
 
+Los parámetros clave son:
+
+| Parámetro | Valor | Qué hace |
+|:---|:---|:---|
+| `nbases` | `1e8` (100M) | Número de bases a usar para aprender el modelo. DADA2 toma tantas muestras como necesite para alcanzar ese total. Aumentar a `2e8` si tienes > 50 muestras |
+| `randomize` | `TRUE` | Selecciona lecturas al azar en lugar de tomar siempre las primeras. Produce un modelo más representativo |
+| `multithread` | `TRUE` | Usa todos los núcleos disponibles del servidor para acelerar el cálculo |
+| `MAX_CONSIST` | `25` | Número máximo de iteraciones del algoritmo. El default de DADA2 es 10; aquí se aumenta a 25 para garantizar convergencia |
+
 ```{r eval=FALSE}
 errF <- tryCatch({
   learnErrors(filtFs, nbases = nbases_target, randomize = TRUE,
@@ -103,7 +112,24 @@ errR <- tryCatch({
 })
 ```
 
-Este paso puede tardar varios minutos. En la salida verás el número de bases usadas y cómo convergen las tasas de error iteración a iteración.
+Este paso puede tardar varios minutos. La salida indica cuántas bases y muestras se usaron, y cuántas rondas necesitó el algoritmo para converger. Por ejemplo:
+
+```
+103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.
+Initializing error rates to maximum possible estimate.
+selfConsist step 1 ............
+   selfConsist step 2
+   ...
+Convergence after 10 rounds.
+```
+
+**¿Qué significa "convergencia"?**
+
+`learnErrors()` trabaja de forma iterativa: en cada ronda estima las tasas de error → infiere ASVs con esas tasas → re-estima los errores con las ASVs inferidas. Cuando las estimaciones dejan de cambiar entre rondas, el modelo **convergió**. Convergencia en menos de 10 rondas es ideal; si no converge en 25 hay un problema con los datos o los parámetros.
+
+::: {.callout-tip icon="false"}
+**Resultado esperado:** convergencia en 5–15 rondas para Forward y Reverse. Es normal que Reverse necesite una o dos rondas más que Forward, ya que sus lecturas tienen mayor tasa de error.
+:::
 
 Después de aprender los modelos, el pipeline los valida automáticamente:
 
