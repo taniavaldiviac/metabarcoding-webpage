@@ -176,7 +176,7 @@ El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs.
 ### Formato esperado
 
 ```
-{locus}_{sample_id}_S{N}_L{lane}_R{1|2}_001.fastq
+{locus_shorthand}-{sample_id}-{dilution}_{replicate}_{site}_{sequencing_lane}_R{1|2}_001.fastq
 ```
 
 **Ejemplo real de este curso:**
@@ -190,10 +190,12 @@ El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs.
 
 | Campo | Ejemplo | Descripción |
 |:------|:--------|:------------|
-| `{locus}` | `12S` | Debe coincidir exactamente con `locus_shorthand` en `primer_data.csv` |
-| `{sample_id}` | `GC-001-d1` | Identificador único de la muestra — debe estar en `metadata.csv` |
-| `S{N}` | `S1` | Número de muestra asignado por el secuenciador |
-| `L{lane}` | `L001` | Carril de secuenciación |
+| `{locus_shorthand}` | `12S` | Columna `locus_shorthand` en `primer_data.csv` — debe coincidir exactamente |
+| `{sample_id}` | `GC-001` | Columna `sample_id` en `metadata.csv` |
+| `{dilution}` | `d1` | Columna `dilution` en `metadata.csv` |
+| `{replicate}` | `1` | Columna `replicate` en `metadata.csv` |
+| `{site}` | `S1` | Columna `site` en `metadata.csv` — número de muestra del MiSeq |
+| `{sequencing_lane}` | `L001` | Columna `sequencing_lane` en `metadata.csv` |
 | `R{1\|2}` | `R1` / `R2` | Dirección de la lectura (forward / reverse) |
 | `_001.fastq` | — | Sufijo estándar de Illumina |
 
