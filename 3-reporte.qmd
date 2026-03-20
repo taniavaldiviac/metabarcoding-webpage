@@ -7,7 +7,7 @@ format:
     toc-depth: 2
     toc-location: left
 execute:
-  echo: false
+  echo: true
   warning: false
   message: false
 ---
