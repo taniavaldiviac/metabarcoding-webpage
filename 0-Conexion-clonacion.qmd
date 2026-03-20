@@ -44,7 +44,7 @@ cd ~/metabarcoding-code
 Los archivos de secuenciación están en el directorio del instructor:
 
 ``` sh
-cp /home/tvaldivia/metabarcoding-code/raw_fastqs/* ~/metabarcoding-code/raw_fastqs/
+cp /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/* ~/metabarcoding-code/raw_fastqs/
 ```
 
 ---
