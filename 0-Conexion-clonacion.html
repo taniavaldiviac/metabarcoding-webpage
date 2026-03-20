@@ -215,6 +215,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#verifica-los-paquetes-de-r" id="toc-verifica-los-paquetes-de-r" class="nav-link" data-scroll-target="#verifica-los-paquetes-de-r">5. Verifica los paquetes de R</a></li>
   <li><a href="#ambiente-conda-para-herramientas-de-línea-de-comandos" id="toc-ambiente-conda-para-herramientas-de-línea-de-comandos" class="nav-link" data-scroll-target="#ambiente-conda-para-herramientas-de-línea-de-comandos">6. Ambiente conda para herramientas de línea de comandos</a></li>
   <li><a href="#qué-contiene-este-repositorio" id="toc-qué-contiene-este-repositorio" class="nav-link" data-scroll-target="#qué-contiene-este-repositorio">¿Qué contiene este repositorio?</a></li>
+  <li><a href="#archivos-de-configuración-en-metadata" id="toc-archivos-de-configuración-en-metadata" class="nav-link" data-scroll-target="#archivos-de-configuración-en-metadata">Archivos de configuración en <code>metadata/</code></a>
+  <ul class="collapse">
+  <li><a href="#primer_data.csv-configuración-del-locus" id="toc-primer_data.csv-configuración-del-locus" class="nav-link" data-scroll-target="#primer_data.csv-configuración-del-locus"><code>primer_data.csv</code> — Configuración del locus</a></li>
+  <li><a href="#metadata.csv-información-de-las-muestras" id="toc-metadata.csv-información-de-las-muestras" class="nav-link" data-scroll-target="#metadata.csv-información-de-las-muestras"><code>metadata.csv</code> — Información de las muestras</a></li>
+  </ul></li>
+  <li><a href="#nomenclatura-de-los-archivos-fastq" id="toc-nomenclatura-de-los-archivos-fastq" class="nav-link" data-scroll-target="#nomenclatura-de-los-archivos-fastq">Nomenclatura de los archivos FASTQ</a>
+  <ul class="collapse">
+  <li><a href="#formato-esperado" id="toc-formato-esperado" class="nav-link" data-scroll-target="#formato-esperado">Formato esperado</a></li>
+  <li><a href="#descripción-de-cada-campo" id="toc-descripción-de-cada-campo" class="nav-link" data-scroll-target="#descripción-de-cada-campo">Descripción de cada campo</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -331,6 +341,201 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Y para ver los archivos FASTQ disponibles:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/metabarcoding-code/raw_fastqs/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
+</section>
+<section id="archivos-de-configuración-en-metadata" class="level2">
+<h2 class="anchored" data-anchor-id="archivos-de-configuración-en-metadata">Archivos de configuración en <code>metadata/</code></h2>
+<p>La carpeta <code>metadata/</code> contiene dos archivos esenciales que el pipeline lee al inicio de cada análisis.</p>
+<section id="primer_data.csv-configuración-del-locus" class="level3">
+<h3 class="anchored" data-anchor-id="primer_data.csv-configuración-del-locus"><code>primer_data.csv</code> — Configuración del locus</h3>
+<p>Este archivo define los parámetros del marcador genético que se va a analizar. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice <code>i</code> al inicio del script.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/metabarcoding-code/metadata/primer_data.csv</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 39%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Columna</th>
+<th style="text-align: left;">Qué contiene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>locus_shorthand</code></td>
+<td style="text-align: left;">Identificador corto del marcador (ej. <code>12S</code>) — se usa para filtrar los archivos FASTQ y nombrar los outputs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>seq_f</code> / <code>seq_r</code></td>
+<td style="text-align: left;">Secuencia completa de los primers forward y reverse</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>F_qual</code> / <code>R_qual</code></td>
+<td style="text-align: left;">Longitud del primer usada por Cutadapt para el recorte</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>amplicon_length</code></td>
+<td style="text-align: left;">Longitud esperada del amplicón (bp)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>max_trim</code></td>
+<td style="text-align: left;">Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>overlap</code></td>
+<td style="text-align: left;">Solapamiento mínimo requerido entre lecturas F y R para el merge</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>db_name</code></td>
+<td style="text-align: left;">Nombre del archivo FASTA de la base de datos taxonómica en <code>metadata/</code></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>En el script</strong>, el locus a analizar se selecciona con <code>i &lt;- 1</code> (primera fila). Si tienes múltiples marcadores, cambia el valor de <code>i</code> para procesar el locus correspondiente.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="metadata.csv-información-de-las-muestras" class="level3">
+<h3 class="anchored" data-anchor-id="metadata.csv-información-de-las-muestras"><code>metadata.csv</code> — Información de las muestras</h3>
+<p>Este archivo conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto <em>phyloseq</em> en la etapa de análisis.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> ~/metabarcoding-code/metadata/metadata.csv</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 39%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Columna</th>
+<th style="text-align: left;">Qué contiene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>sample_id</code></td>
+<td style="text-align: left;">Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>site_id</code></td>
+<td style="text-align: left;">Código del sitio de muestreo (ej. <code>POR</code>, <code>BSS</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;">Nombre completo del sitio</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>date</code></td>
+<td style="text-align: left;">Fecha de colecta</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>lat</code> / <code>lon</code></td>
+<td style="text-align: left;">Coordenadas geográficas</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>region</code></td>
+<td style="text-align: left;">Región geográfica del estudio</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>locus_shorthand</code></td>
+<td style="text-align: left;">Marcador al que corresponde la muestra</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>sequencing_lane</code></td>
+<td style="text-align: left;">Carril de secuenciación (para estudios multi-lane)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="nomenclatura-de-los-archivos-fastq" class="level2">
+<h2 class="anchored" data-anchor-id="nomenclatura-de-los-archivos-fastq">Nomenclatura de los archivos FASTQ</h2>
+<p>El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.</p>
+<section id="formato-esperado" class="level3">
+<h3 class="anchored" data-anchor-id="formato-esperado">Formato esperado</h3>
+<pre><code>{locus}_{sample_id}_S{N}_L{lane}_R{1|2}_001.fastq</code></pre>
+<p><strong>Ejemplo real de este curso:</strong></p>
+<pre><code>12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward
+12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse</code></pre>
+</section>
+<section id="descripción-de-cada-campo" class="level3">
+<h3 class="anchored" data-anchor-id="descripción-de-cada-campo">Descripción de cada campo</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 31%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Campo</th>
+<th style="text-align: left;">Ejemplo</th>
+<th style="text-align: left;">Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>{locus}</code></td>
+<td style="text-align: left;"><code>12S</code></td>
+<td style="text-align: left;">Debe coincidir exactamente con <code>locus_shorthand</code> en <code>primer_data.csv</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>{sample_id}</code></td>
+<td style="text-align: left;"><code>GC-001-d1</code></td>
+<td style="text-align: left;">Identificador único de la muestra — debe estar en <code>metadata.csv</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>S{N}</code></td>
+<td style="text-align: left;"><code>S1</code></td>
+<td style="text-align: left;">Número de muestra asignado por el secuenciador</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>L{lane}</code></td>
+<td style="text-align: left;"><code>L001</code></td>
+<td style="text-align: left;">Carril de secuenciación</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>R{1\|2}</code></td>
+<td style="text-align: left;"><code>R1</code> / <code>R2</code></td>
+<td style="text-align: left;">Dirección de la lectura (forward / reverse)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>_001.fastq</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Sufijo estándar de Illumina</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Errores comunes:</strong></p>
+<ul>
+<li>El <code>locus_shorthand</code> en el nombre del archivo no coincide con el de <code>primer_data.csv</code> → el script no encontrará ningún archivo</li>
+<li>El <code>sample_id</code> no existe en <code>metadata.csv</code> → la muestra no tendrá metadatos en el análisis final</li>
+<li>Archivos con extensión <code>.fastq.gz</code> en lugar de <code>.fastq</code> → verifica si necesitas descomprimirlos primero con <code>gunzip</code></li>
+</ul>
+</div>
+</div>
+<hr>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -352,6 +557,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <!-- -->
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -806,131 +1012,218 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Conexión al servidor y clonación de repositorio Github"</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Conéctate a la VPN</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>Antes de conectarte al servidor necesitas activar la VPN con el cliente **Hillstone Secure Connect**:</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Servidor VPN**: <span class="in">`200.23.161.197`</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Puerto**: <span class="in">`4666`</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Usuario**: <span class="in">`BIO\tu_usuario`</span> (por ejemplo, <span class="in">`BIO\usr01`</span>)</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Contraseña**: la que te proporcionó el instructor</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Conéctate al servidor por SSH</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>Abre la terminal en tu computadora y escribe:</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> usrXX@200.23.162.240</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>Reemplaza <span class="in">`usrXX`</span> por tu usuario (por ejemplo, <span class="in">`usr01`</span>). Escribe tu contraseña cuando se te pida.</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe <span class="in">`yes`</span> y presiona Enter.</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Clona el repositorio del curso</span></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/taniavaldiviac/metabarcoding-code.git</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/metabarcoding-code</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Copia los archivos FASTQ</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>Los archivos de secuenciación están en el directorio del instructor:</span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/<span class="pp">*</span> ~/metabarcoding-code/raw_fastqs/</span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Verifica los paquetes de R</span></span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>Los paquetes necesarios ya están instalados en el servidor. Tu cuenta está configurada para encontrarlos automáticamente. Verifica abriendo R:</span>
-<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span></span>
-<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>Dentro de R:</span>
-<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a><span class="in">``` r</span></span>
-<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dada2)</span>
-<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phyloseq)</span>
-<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a><span class="fu">q</span>()</span>
-<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>Si no hay errores, está todo listo.</span>
-<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6. Ambiente conda para herramientas de línea de comandos</span></span>
-<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>Para los pasos de control de calidad y remoción de adaptadores, activa el ambiente <span class="in">`metabarcoding`</span>:</span>
-<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding</span>
-<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a>Este ambiente contiene:</span>
-<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-83"><a href="#cb10-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Herramienta <span class="pp">|</span> Uso <span class="pp">|</span></span>
-<span id="cb10-84"><a href="#cb10-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------------|-----|</span></span>
-<span id="cb10-85"><a href="#cb10-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`cutadapt`</span> <span class="pp">|</span> Remoción de adaptadores y primers <span class="pp">|</span></span>
-<span id="cb10-86"><a href="#cb10-86" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`fastqc`</span> <span class="pp">|</span> Control de calidad de lecturas <span class="pp">|</span></span>
-<span id="cb10-87"><a href="#cb10-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`multiqc`</span> <span class="pp">|</span> Reporte agregado de calidad <span class="pp">|</span></span>
-<span id="cb10-88"><a href="#cb10-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-89"><a href="#cb10-89" aria-hidden="true" tabindex="-1"></a>Para desactivarlo cuando termines:</span>
-<span id="cb10-90"><a href="#cb10-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-92"><a href="#cb10-92" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
-<span id="cb10-93"><a href="#cb10-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-94"><a href="#cb10-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-95"><a href="#cb10-95" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb10-96"><a href="#cb10-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-97"><a href="#cb10-97" aria-hidden="true" tabindex="-1"></a><span class="fu">## ¿Qué contiene este repositorio?</span></span>
-<span id="cb10-98"><a href="#cb10-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-99"><a href="#cb10-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`scripts/`</span>: Scripts numerados en orden de ejecución (bash, R, Quarto).</span>
-<span id="cb10-100"><a href="#cb10-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`raw_fastqs/`</span>: Archivos FASTQ originales.</span>
-<span id="cb10-101"><a href="#cb10-101" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`for_dada2/`</span>: Archivos procesados listos para DADA2.</span>
-<span id="cb10-102"><a href="#cb10-102" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`cutadapt_reports/`</span>: Reportes del preprocesamiento con Cutadapt.</span>
-<span id="cb10-103"><a href="#cb10-103" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`final_data/`</span>: Resultados del análisis (tablas, figuras, RData).</span>
-<span id="cb10-104"><a href="#cb10-104" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`metadata/`</span>: Archivos de configuración (primers, metadatos).</span>
-<span id="cb10-105"><a href="#cb10-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-106"><a href="#cb10-106" aria-hidden="true" tabindex="-1"></a>Para explorar el contenido del repositorio:</span>
-<span id="cb10-107"><a href="#cb10-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-108"><a href="#cb10-108" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-109"><a href="#cb10-109" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> ~/metabarcoding-code/</span>
-<span id="cb10-110"><a href="#cb10-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-111"><a href="#cb10-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-112"><a href="#cb10-112" aria-hidden="true" tabindex="-1"></a>Y para ver los archivos FASTQ disponibles:</span>
-<span id="cb10-113"><a href="#cb10-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-114"><a href="#cb10-114" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb10-115"><a href="#cb10-115" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/metabarcoding-code/raw_fastqs/</span>
-<span id="cb10-116"><a href="#cb10-116" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb10-117"><a href="#cb10-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-118"><a href="#cb10-118" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb10-119"><a href="#cb10-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-120"><a href="#cb10-120" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
-<span id="cb10-121"><a href="#cb10-121" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
-<span id="cb10-122"><a href="#cb10-122" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usa siempre <span class="in">`~/metabarcoding-code`</span> como tu directorio de proyecto.</span>
-<span id="cb10-123"><a href="#cb10-123" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.</span>
-<span id="cb10-124"><a href="#cb10-124" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Activa <span class="in">`conda activate metabarcoding`</span> solo para los pasos de QC y Cutadapt.</span>
-<span id="cb10-125"><a href="#cb10-125" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Conexión al servidor y clonación de repositorio Github"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Conéctate a la VPN</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>Antes de conectarte al servidor necesitas activar la VPN con el cliente **Hillstone Secure Connect**:</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Servidor VPN**: <span class="in">`200.23.161.197`</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Puerto**: <span class="in">`4666`</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Usuario**: <span class="in">`BIO\tu_usuario`</span> (por ejemplo, <span class="in">`BIO\usr01`</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Contraseña**: la que te proporcionó el instructor</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Conéctate al servidor por SSH</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>Abre la terminal en tu computadora y escribe:</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> usrXX@200.23.162.240</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>Reemplaza <span class="in">`usrXX`</span> por tu usuario (por ejemplo, <span class="in">`usr01`</span>). Escribe tu contraseña cuando se te pida.</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe <span class="in">`yes`</span> y presiona Enter.</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Clona el repositorio del curso</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/taniavaldiviac/metabarcoding-code.git</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/metabarcoding-code</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Copia los archivos FASTQ</span></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>Los archivos de secuenciación están en el directorio del instructor:</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/<span class="pp">*</span> ~/metabarcoding-code/raw_fastqs/</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Verifica los paquetes de R</span></span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>Los paquetes necesarios ya están instalados en el servidor. Tu cuenta está configurada para encontrarlos automáticamente. Verifica abriendo R:</span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span></span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>Dentro de R:</span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a><span class="in">``` r</span></span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dada2)</span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phyloseq)</span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a><span class="fu">q</span>()</span>
+<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a>Si no hay errores, está todo listo.</span>
+<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6. Ambiente conda para herramientas de línea de comandos</span></span>
+<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a>Para los pasos de control de calidad y remoción de adaptadores, activa el ambiente <span class="in">`metabarcoding`</span>:</span>
+<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate metabarcoding</span>
+<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a>Este ambiente contiene:</span>
+<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Herramienta <span class="pp">|</span> Uso <span class="pp">|</span></span>
+<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------------|-----|</span></span>
+<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`cutadapt`</span> <span class="pp">|</span> Remoción de adaptadores y primers <span class="pp">|</span></span>
+<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`fastqc`</span> <span class="pp">|</span> Control de calidad de lecturas <span class="pp">|</span></span>
+<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`multiqc`</span> <span class="pp">|</span> Reporte agregado de calidad <span class="pp">|</span></span>
+<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a>Para desactivarlo cuando termines:</span>
+<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
+<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="fu">## ¿Qué contiene este repositorio?</span></span>
+<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`scripts/`</span>: Scripts numerados en orden de ejecución (bash, R, Quarto).</span>
+<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`raw_fastqs/`</span>: Archivos FASTQ originales.</span>
+<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`for_dada2/`</span>: Archivos procesados listos para DADA2.</span>
+<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`cutadapt_reports/`</span>: Reportes del preprocesamiento con Cutadapt.</span>
+<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`final_data/`</span>: Resultados del análisis (tablas, figuras, RData).</span>
+<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`metadata/`</span>: Archivos de configuración (primers, metadatos).</span>
+<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a>Para explorar el contenido del repositorio:</span>
+<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> ~/metabarcoding-code/</span>
+<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a>Y para ver los archivos FASTQ disponibles:</span>
+<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/metabarcoding-code/raw_fastqs/</span>
+<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a><span class="fu">## Archivos de configuración en `metadata/`</span></span>
+<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a>La carpeta <span class="in">`metadata/`</span> contiene dos archivos esenciales que el pipeline lee al inicio de cada análisis.</span>
+<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a><span class="fu">### `primer_data.csv` — Configuración del locus</span></span>
+<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a>Este archivo define los parámetros del marcador genético que se va a analizar. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice <span class="in">`i`</span> al inicio del script.</span>
+<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/metabarcoding-code/metadata/primer_data.csv</span>
+<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-131"><a href="#cb14-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-132"><a href="#cb14-132" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Columna <span class="pp">|</span> Qué contiene <span class="pp">|</span></span>
+<span id="cb14-133"><a href="#cb14-133" aria-hidden="true" tabindex="-1"></a><span class="pp">|:--------|:-------------|</span></span>
+<span id="cb14-134"><a href="#cb14-134" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`locus_shorthand`</span> <span class="pp">|</span> Identificador corto del marcador (ej. <span class="in">`12S`</span>) — se usa para filtrar los archivos FASTQ y nombrar los outputs <span class="pp">|</span></span>
+<span id="cb14-135"><a href="#cb14-135" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`seq_f`</span> / <span class="in">`seq_r`</span> <span class="pp">|</span> Secuencia completa de los primers forward y reverse <span class="pp">|</span></span>
+<span id="cb14-136"><a href="#cb14-136" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`F_qual`</span> / <span class="in">`R_qual`</span> <span class="pp">|</span> Longitud del primer usada por Cutadapt para el recorte <span class="pp">|</span></span>
+<span id="cb14-137"><a href="#cb14-137" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`amplicon_length`</span> <span class="pp">|</span> Longitud esperada del amplicón (bp) <span class="pp">|</span></span>
+<span id="cb14-138"><a href="#cb14-138" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`max_trim`</span> <span class="pp">|</span> Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R <span class="pp">|</span></span>
+<span id="cb14-139"><a href="#cb14-139" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`overlap`</span> <span class="pp">|</span> Solapamiento mínimo requerido entre lecturas F y R para el merge <span class="pp">|</span></span>
+<span id="cb14-140"><a href="#cb14-140" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`db_name`</span> <span class="pp">|</span> Nombre del archivo FASTA de la base de datos taxonómica en <span class="in">`metadata/`</span> <span class="pp">|</span></span>
+<span id="cb14-141"><a href="#cb14-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-142"><a href="#cb14-142" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb14-143"><a href="#cb14-143" aria-hidden="true" tabindex="-1"></a>**En el script**, el locus a analizar se selecciona con <span class="in">`i &lt;- 1`</span> (primera fila). Si tienes múltiples marcadores, cambia el valor de <span class="in">`i`</span> para procesar el locus correspondiente.</span>
+<span id="cb14-144"><a href="#cb14-144" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-145"><a href="#cb14-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-146"><a href="#cb14-146" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-147"><a href="#cb14-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-148"><a href="#cb14-148" aria-hidden="true" tabindex="-1"></a><span class="fu">### `metadata.csv` — Información de las muestras</span></span>
+<span id="cb14-149"><a href="#cb14-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-150"><a href="#cb14-150" aria-hidden="true" tabindex="-1"></a>Este archivo conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq* en la etapa de análisis.</span>
+<span id="cb14-151"><a href="#cb14-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-152"><a href="#cb14-152" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb14-153"><a href="#cb14-153" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> ~/metabarcoding-code/metadata/metadata.csv</span>
+<span id="cb14-154"><a href="#cb14-154" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-155"><a href="#cb14-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-156"><a href="#cb14-156" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Columna <span class="pp">|</span> Qué contiene <span class="pp">|</span></span>
+<span id="cb14-157"><a href="#cb14-157" aria-hidden="true" tabindex="-1"></a><span class="pp">|:--------|:-------------|</span></span>
+<span id="cb14-158"><a href="#cb14-158" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sample_id`</span> <span class="pp">|</span> Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ <span class="pp">|</span></span>
+<span id="cb14-159"><a href="#cb14-159" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`site_id`</span> <span class="pp">|</span> Código del sitio de muestreo (ej. <span class="in">`POR`</span>, <span class="in">`BSS`</span>) <span class="pp">|</span></span>
+<span id="cb14-160"><a href="#cb14-160" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`name`</span> <span class="pp">|</span> Nombre completo del sitio <span class="pp">|</span></span>
+<span id="cb14-161"><a href="#cb14-161" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`date`</span> <span class="pp">|</span> Fecha de colecta <span class="pp">|</span></span>
+<span id="cb14-162"><a href="#cb14-162" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`lat`</span> / <span class="in">`lon`</span> <span class="pp">|</span> Coordenadas geográficas <span class="pp">|</span></span>
+<span id="cb14-163"><a href="#cb14-163" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`region`</span> <span class="pp">|</span> Región geográfica del estudio <span class="pp">|</span></span>
+<span id="cb14-164"><a href="#cb14-164" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`locus_shorthand`</span> <span class="pp">|</span> Marcador al que corresponde la muestra <span class="pp">|</span></span>
+<span id="cb14-165"><a href="#cb14-165" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sequencing_lane`</span> <span class="pp">|</span> Carril de secuenciación (para estudios multi-lane) <span class="pp">|</span></span>
+<span id="cb14-166"><a href="#cb14-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-167"><a href="#cb14-167" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-168"><a href="#cb14-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-169"><a href="#cb14-169" aria-hidden="true" tabindex="-1"></a><span class="fu">## Nomenclatura de los archivos FASTQ</span></span>
+<span id="cb14-170"><a href="#cb14-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-171"><a href="#cb14-171" aria-hidden="true" tabindex="-1"></a>El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.</span>
+<span id="cb14-172"><a href="#cb14-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-173"><a href="#cb14-173" aria-hidden="true" tabindex="-1"></a><span class="fu">### Formato esperado</span></span>
+<span id="cb14-174"><a href="#cb14-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-175"><a href="#cb14-175" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-176"><a href="#cb14-176" aria-hidden="true" tabindex="-1"></a><span class="in">{locus}_{sample_id}_S{N}_L{lane}_R{1|2}_001.fastq</span></span>
+<span id="cb14-177"><a href="#cb14-177" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-178"><a href="#cb14-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-179"><a href="#cb14-179" aria-hidden="true" tabindex="-1"></a>**Ejemplo real de este curso:**</span>
+<span id="cb14-180"><a href="#cb14-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-181"><a href="#cb14-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-182"><a href="#cb14-182" aria-hidden="true" tabindex="-1"></a><span class="in">12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward</span></span>
+<span id="cb14-183"><a href="#cb14-183" aria-hidden="true" tabindex="-1"></a><span class="in">12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse</span></span>
+<span id="cb14-184"><a href="#cb14-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-185"><a href="#cb14-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-186"><a href="#cb14-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### Descripción de cada campo</span></span>
+<span id="cb14-187"><a href="#cb14-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-188"><a href="#cb14-188" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Campo <span class="pp">|</span> Ejemplo <span class="pp">|</span> Descripción <span class="pp">|</span></span>
+<span id="cb14-189"><a href="#cb14-189" aria-hidden="true" tabindex="-1"></a><span class="pp">|:------|:--------|:------------|</span></span>
+<span id="cb14-190"><a href="#cb14-190" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{locus}`</span> <span class="pp">|</span> <span class="in">`12S`</span> <span class="pp">|</span> Debe coincidir exactamente con <span class="in">`locus_shorthand`</span> en <span class="in">`primer_data.csv`</span> <span class="pp">|</span></span>
+<span id="cb14-191"><a href="#cb14-191" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sample_id}`</span> <span class="pp">|</span> <span class="in">`GC-001-d1`</span> <span class="pp">|</span> Identificador único de la muestra — debe estar en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb14-192"><a href="#cb14-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`S{N}`</span> <span class="pp">|</span> <span class="in">`S1`</span> <span class="pp">|</span> Número de muestra asignado por el secuenciador <span class="pp">|</span></span>
+<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`L{lane}`</span> <span class="pp">|</span> <span class="in">`L001`</span> <span class="pp">|</span> Carril de secuenciación <span class="pp">|</span></span>
+<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`R{1\|2}`</span> <span class="pp">|</span> <span class="in">`R1`</span> / <span class="in">`R2`</span> <span class="pp">|</span> Dirección de la lectura (forward / reverse) <span class="pp">|</span></span>
+<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`_001.fastq`</span> <span class="pp">|</span> — <span class="pp">|</span> Sufijo estándar de Illumina <span class="pp">|</span></span>
+<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning icon="false"}</span>
+<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a>**Errores comunes:**</span>
+<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`locus_shorthand`</span> en el nombre del archivo no coincide con el de <span class="in">`primer_data.csv`</span> → el script no encontrará ningún archivo</span>
+<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`sample_id`</span> no existe en <span class="in">`metadata.csv`</span> → la muestra no tendrá metadatos en el análisis final</span>
+<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Archivos con extensión <span class="in">`.fastq.gz`</span> en lugar de <span class="in">`.fastq`</span> → verifica si necesitas descomprimirlos primero con <span class="in">`gunzip`</span></span>
+<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
+<span id="cb14-209"><a href="#cb14-209" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usa siempre <span class="in">`~/metabarcoding-code`</span> como tu directorio de proyecto.</span>
+<span id="cb14-210"><a href="#cb14-210" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.</span>
+<span id="cb14-211"><a href="#cb14-211" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Activa <span class="in">`conda activate metabarcoding`</span> solo para los pasos de QC y Cutadapt.</span>
+<span id="cb14-212"><a href="#cb14-212" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
