@@ -1,0 +1,1310 @@
+---
+title: "Análisis ecológico de comunidades de peces"
+subtitle: "Golfo de California — Metabarcoding 12S rDNA"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    code-fold: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+Este reporte presenta el flujo completo de análisis ecológico de comunidades de peces en el Golfo de California a partir de datos de metabarcoding del gen 12S rDNA. Partiendo de los archivos `.RData` generados por el pipeline DADA2, construimos el objeto *phyloseq*, evaluamos la calidad de los datos, estandarizamos la profundidad de secuenciación y aplicamos análisis de diversidad alfa, composición taxonómica y diversidad beta. Todos los pasos siguen las mejores prácticas actuales para estudios de eDNA en ecología de comunidades.
+
+---
+
+## 1. Preparación
+
+### Carga de paquetes
+
+Cargamos todos los paquetes necesarios al inicio del documento. Usamos `suppressPackageStartupMessages()` para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.
+
+```{r paquetes}
+suppressPackageStartupMessages({
+  # Manipulación de datos y rutas
+  library(here)
+  library(dplyr)
+  library(tidyr)
+  library(tibble)
+
+  # Bioinformática y ecología de comunidades
+  library(phyloseq)
+  library(Biostrings)
+  library(vegan)
+
+  # Visualización
+  library(ggplot2)
+  library(ggforce)
+  library(viridis)
+  library(RColorBrewer)
+  library(pheatmap)
+  library(colorspace)
+
+  # Tablas
+  library(knitr)
+  library(kableExtra)
+})
+```
+
+### Definición de rutas
+
+Centralizamos todas las rutas del proyecto en una sola sección. `here::here()` detecta automáticamente la raíz del proyecto (donde está el archivo `.Rproj` o `.here`), lo que hace el código reproducible en cualquier computadora.
+
+```{r rutas}
+proj_root        <- here::here()
+ruta_rdata       <- here::here("final_data", "rdata_output")
+ruta_metadata    <- here::here("metadata", "Fish_speciesGC.csv")
+ruta_csv_output  <- here::here("final_data", "csv_output", "taxon_table.csv")
+ruta_figs_fam    <- here::here("final_data", "figs_families_stacked")
+ruta_figs_sp     <- here::here("final_data", "figs_species_stacked")
+
+# Crear directorios de salida si no existen
+dir.create(ruta_csv_output |> dirname(), showWarnings = FALSE, recursive = TRUE)
+dir.create(ruta_figs_fam,  showWarnings = FALSE, recursive = TRUE)
+dir.create(ruta_figs_sp,   showWarnings = FALSE, recursive = TRUE)
+
+message("Raíz del proyecto: ", proj_root)
+```
+
+### Carga dinámica de datos
+
+Cargamos todos los archivos `.RData` disponibles en el directorio de salida del pipeline DADA2. El uso de un loop con `new.env()` evita que las variables de distintos archivos se sobreescriban en el entorno global. Luego combinamos inteligentemente las tablas `track` de todos los archivos, y seleccionamos el primer `.RData` válido (que contenga `otu_mat`) para construir el objeto *phyloseq*.
+
+```{r cargar-datos}
+rdatas <- list.files(ruta_rdata, pattern = "\\.R[Dd]ata$", full.names = TRUE)
+stopifnot("No se encontraron archivos RData." = length(rdatas) > 0)
+
+output_list <- lapply(rdatas, function(f) {
+  e <- new.env()
+  load(f, envir = e)
+  as.list(e)
+})
+names(output_list) <- basename(rdatas)
+
+# Combinar todas las tablas track disponibles
+track <- do.call(rbind, lapply(output_list, function(x) {
+  if (!is.null(x$track)) x$track else NULL
+}))
+
+# Seleccionar el primer RData con otu_mat válido
+idx_first <- which(sapply(output_list, function(x) !is.null(x$otu_mat)))[1]
+stopifnot("Ningún RData contiene otu_mat." = !is.na(idx_first))
+first <- output_list[[idx_first]]
+
+message("Archivos RData cargados: ", length(rdatas))
+message("Muestras en track: ",      nrow(track))
+```
+
+---
+
+## 2. Tabla de rendimiento del pipeline
+
+### Track con porcentajes de retención
+
+El seguimiento del número de lecturas a lo largo del pipeline (*read tracking*) es el primer control de calidad del análisis. Cada etapa — filtrado, denoising, merge, quimeras, filtro de longitud — reduce el número de lecturas. Pérdidas moderadas son normales, pero caídas abruptas en algún paso pueden indicar parámetros inadecuados o muestras de baja calidad.
+
+En esta versión mejorada añadimos **columnas de porcentaje de retención** entre cada paso, lo que facilita identificar en qué etapa se pierden más lecturas. El porcentaje final (`pct_final`) refleja la eficiencia global del pipeline: valores entre **70–90%** son típicamente esperados.
+
+```{r track-tabla}
+track_pct <- as.data.frame(track) %>%
+  dplyr::mutate(
+    pct_filtered  = round(filtered      / input        * 100, 1),
+    pct_denoised  = round(denoisedF     / filtered     * 100, 1),
+    pct_merged    = round(merged        / denoisedF    * 100, 1),
+    pct_nonchim   = round(nonchim       / merged       * 100, 1),
+    pct_final     = round(length_filter / input        * 100, 1)
+  )
+
+track_pct %>%
+  kable(
+    format  = "html",
+    digits  = 1,
+    big.mark = ",",
+    align   = "c",
+    caption = "Rendimiento del pipeline DADA2 por muestra (conteos y % de retención)"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    font_size  = 10
+  ) %>%
+  column_spec(
+    which(grepl("^pct_", colnames(track_pct))),
+    color = "white",
+    background = "#2c7bb6"
+  )
+```
+
+```{r track-suma}
+# Resumen global del pipeline
+track_sum <- dplyr::summarise_all(as.data.frame(track), sum)
+track_sum_pct <- track_sum %>%
+  dplyr::mutate(
+    pct_filtered  = round(filtered      / input        * 100, 1),
+    pct_merged    = round(merged        / filtered     * 100, 1),
+    pct_nonchim   = round(nonchim       / merged       * 100, 1),
+    pct_final     = round(length_filter / input        * 100, 1)
+  )
+
+track_sum_pct %>%
+  kable(
+    format   = "html",
+    digits   = 1,
+    big.mark = ",",
+    align    = "c",
+    caption  = "Resumen global del pipeline (suma de todas las muestras)"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    font_size  = 10
+  )
+```
+
+::: {.callout-note}
+**Recuerda:** Una retención final (`pct_final`) por debajo del 50% en la mayoría de las muestras puede indicar problemas en el paso de filtrado de calidad (parámetros demasiado estrictos) o en el merge (amplicón demasiado largo para el overlap de los reads).
+:::
+
+---
+
+## 3. Control de calidad del objeto phyloseq
+
+### Preparación de datos para phyloseq
+
+Antes de construir el objeto *phyloseq*, cargamos y cubramos las tablas de taxonomía y metadata, y construimos la matriz de abundancias en el formato correcto (ASVs como filas, muestras como columnas).
+
+```{r prep-otu}
+# Matriz de abundancias: ASVs como filas, muestras como columnas
+otu_raw <- if (!is.null(first$otu_mat)) first$otu_mat else first$seqtab_clean
+stopifnot(!is.null(otu_raw))
+ASV_mat <- t(as.matrix(otu_raw))
+```
+
+```{r prep-tax}
+# Tabla taxonómica
+if (!is.null(first$tax_mat)) {
+  taxa_df <- as.data.frame(first$tax_mat)
+  for (rk in c("Kingdom","Phylum","Class","Order","Family","Genus","Species")) {
+    if (!rk %in% colnames(taxa_df)) taxa_df[[rk]] <- NA_character_
+  }
+} else {
+  stopifnot(!is.null(first$taxonomy_df), "Sequence" %in% names(first$taxonomy_df))
+  keep <- intersect(
+    c("Sequence","Kingdom","Phylum","Class","Order","Family","Genus","Species"),
+    names(first$taxonomy_df)
+  )
+  taxa_df <- first$taxonomy_df[, keep, drop = FALSE] %>%
+    dplyr::distinct(Sequence, .keep_all = TRUE) %>%
+    tibble::column_to_rownames("Sequence")
+}
+
+# Alinear filas con ASV_mat y filtrar clases no-peces
+taxa_df <- taxa_df[rownames(ASV_mat), , drop = FALSE]
+taxa_df <- taxa_df[!(taxa_df$Class %in% c("Mammalia", "Aves") | is.na(taxa_df$Class)), ]
+```
+
+```{r prep-meta}
+# Metadata de muestras
+md <- as.data.frame(first$sample_meta)
+
+# Corrección de site_id donde sea necesario (dinámica, sin hardcoding)
+# Ejemplo: corregir Isla San Marcos Norte si el name es exactamente ese
+md <- md %>%
+  dplyr::mutate(
+    site_id = dplyr::case_when(
+      name == "Isla San Marcos (North)" ~ "MAR",
+      TRUE ~ site_id
+    )
+  )
+
+# Mover controles (MOCK/CTR) al final para tablas
+is_ctrl <- grepl("MOCK|CTR", md$site_id, ignore.case = TRUE)
+md <- dplyr::bind_rows(md[!is_ctrl, ], md[is_ctrl, ])
+
+stopifnot(nrow(md) > 0)
+```
+
+```{r curación-taxonómica}
+# Curación geográfica con lista de especies del Golfo de California
+fish_sp      <- read.csv(ruta_metadata, row.names = NULL)
+fish_species <- fish_sp$Species2
+
+taxa2 <- as.data.frame(taxa_df)
+
+check_and_replace <- function(species, genus, family, order) {
+  if (!is.na(genus) && genus == "Balistes")      species <- "Balistes polylepis"
+  if (!is.na(genus) && genus == "Atractoscion")  species <- "Atractoscion nobilis"
+  if (!is.na(genus) && genus == "Elops")         species <- "Elops affinis"
+  if (!is.na(genus) && genus == "Kajikia")       species <- "Kajikia audax"
+  if (!is.na(genus) && genus == "Prionurus")     species <- "Prionurus laticlavius"
+  if (!is.na(family) && family == "Pomacentridae") order <- "Blenniiformes"
+  if (!is.na(family) && family == "Sphyraenidae")  order <- "Carangiformes"
+  if (!is.na(family) && family == "Sciaenidae")    order <- "Perciformes"
+  if (!is.na(family) && family == "Malacanthidae") order <- "Perciformes"
+  if (!is.na(family) && family == "Pomacanthidae") order <- "Acanthuriformes"
+  list(species = species, order = order)
+}
+
+res <- mapply(
+  check_and_replace,
+  species = taxa2[, "Species"],
+  genus   = taxa2[, "Genus"],
+  family  = taxa2[, "Family"],
+  order   = taxa2[, "Order"],
+  SIMPLIFY = FALSE
+)
+taxa2$Species <- sapply(res, `[[`, "species")
+taxa2$Order   <- sapply(res, `[[`, "order")
+
+# Filtrar artefactos
+taxa2 <- taxa2 %>%
+  dplyr::filter(!(Species == "Eukaryotic synthetic" | grepl("^NA sp$", Species)))
+
+taxa_mat <- as.matrix(taxa2)
+```
+
+### Construcción del objeto phyloseq
+
+*phyloseq* integra en un solo objeto la tabla de abundancias, la taxonomía y la metadata de muestras. Una vez construido, todas las operaciones — filtrado, transformación, visualización — se realizan de manera consistente y reproducible. También guardamos las secuencias originales de cada ASV en el slot `refseq` y renombramos los ASVs como `ASV1`, `ASV2`, etc., para mayor legibilidad.
+
+```{r phyloseq-construccion}
+ASV_ps <- phyloseq::otu_table(ASV_mat, taxa_are_rows = TRUE)
+TAX_ps <- phyloseq::tax_table(taxa_mat)
+SMD_ps <- phyloseq::sample_data(md)
+
+ps <- phyloseq::phyloseq(ASV_ps, TAX_ps, SMD_ps)
+
+# Guardar secuencias originales y renombrar ASVs
+dna <- Biostrings::DNAStringSet(phyloseq::taxa_names(ps))
+names(dna) <- phyloseq::taxa_names(ps)
+ps <- phyloseq::merge_phyloseq(ps, dna)
+phyloseq::taxa_names(ps) <- paste0("ASV", seq_len(phyloseq::ntaxa(ps)))
+
+message("Objeto phyloseq construido: ",
+        phyloseq::nsamples(ps), " muestras, ",
+        phyloseq::ntaxa(ps), " ASVs")
+print(ps)
+```
+
+### Reads por muestra (boxplot de cobertura)
+
+Antes de cualquier análisis de diversidad es fundamental evaluar la **cobertura de secuenciación** por muestra. Muestras con muy pocas lecturas pueden producir estimados de diversidad poco confiables. Marcamos con una línea roja el umbral mínimo de 1,000 lecturas: muestras que no lo superen deben ser revisadas antes de continuar.
+
+```{r qc-reads-por-muestra, fig.width=9, fig.height=5}
+sample_reads <- data.frame(
+  sample_id = phyloseq::sample_names(ps),
+  reads     = phyloseq::sample_sums(ps),
+  site_id   = phyloseq::sample_data(ps)$site_id,
+  stringsAsFactors = FALSE
+)
+
+low_cov <- sample_reads %>% dplyr::filter(reads < 1000)
+if (nrow(low_cov) > 0) {
+  message("Muestras con menos de 1,000 lecturas: ", paste(low_cov$site_id, collapse = ", "))
+}
+
+ggplot(sample_reads, aes(x = reorder(site_id, reads), y = reads)) +
+  geom_col(
+    aes(fill = reads < 1000),
+    alpha = 0.85, width = 0.7
+  ) +
+  geom_hline(yintercept = 1000, linetype = "dashed", color = "#d73027", linewidth = 0.9) +
+  annotate("text", x = 0.5, y = 1000, label = "Mínimo 1,000 lecturas",
+           hjust = 0, vjust = -0.5, size = 3.2, color = "#d73027") +
+  scale_fill_manual(
+    values = c("FALSE" = "#4dac26", "TRUE" = "#d01c8b"),
+    labels = c("FALSE" = ">= 1,000", "TRUE" = "< 1,000 (baja cobertura)")
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  coord_flip() +
+  labs(
+    title = "Lecturas por muestra",
+    subtitle = "Barras rosas indican muestras con baja cobertura (<1,000 lecturas)",
+    x = "Sitio",
+    y = "Número de lecturas",
+    fill = "Cobertura"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(face = "bold"),
+    axis.title    = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom"
+  )
+```
+
+::: {.callout-tip}
+**Interpretación:** Si la muestra de baja cobertura es un control negativo, esto es esperado. Si es una muestra ambiental real, considera si eliminarla del análisis de diversidad afectaría tus conclusiones.
+:::
+
+### Rarefacción y curvas de rarefacción
+
+La **rarefacción** estandariza la profundidad de secuenciación al mismo número de lecturas en todas las muestras. Esto es indispensable antes de comparar índices de diversidad entre sitios, ya que con más lecturas inevitablemente se detectan más especies. Usamos `phyloseq::rarefy_even_depth()` para rarefacer al mínimo de lecturas entre las muestras no-control.
+
+Las **curvas de rarefacción** muestran cómo aumenta el número de ASVs detectadas al aumentar el número de lecturas submuestreadas. Una curva que se acerca a una asíntota indica que la muestra está suficientemente cubierta; una curva que sigue subiendo sugiere que hay más diversidad por descubrir con mayor secuenciación.
+
+```{r qc-rarefaccion, fig.width=9, fig.height=6}
+# Excluir controles antes de rarefacer
+ps_filt <- phyloseq::subset_samples(
+  ps,
+  !grepl("MOCK|CTR", phyloseq::sample_data(ps)$site_id, ignore.case = TRUE)
+)
+ps_filt <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_filt) > 0, ps_filt)
+
+# Rarefacer al mínimo de profundidad
+set.seed(123)
+min_depth <- min(phyloseq::sample_sums(ps_filt))
+message("Rarefacción a: ", min_depth, " lecturas por muestra")
+ps_rare <- phyloseq::rarefy_even_depth(
+  ps_filt,
+  sample.size = min_depth,
+  verbose     = FALSE,
+  rngseed     = 123
+)
+
+# Curvas de rarefacción con vegan::rarecurve
+comm_rare_input <- t(as.matrix(phyloseq::otu_table(ps_filt)))
+site_ids        <- phyloseq::sample_data(ps_filt)$site_id
+
+# Paleta de colores por muestra (viridis)
+n_samp <- nrow(comm_rare_input)
+pal    <- viridis::viridis(n_samp, option = "D")
+
+par(mar = c(5, 5, 3, 1))
+vegan::rarecurve(
+  comm_rare_input,
+  step     = 50,
+  col      = pal,
+  label    = FALSE,
+  main     = "Curvas de rarefacción por muestra",
+  xlab     = "Lecturas submuestreadas",
+  ylab     = "ASVs detectadas",
+  cex.main = 1.1,
+  cex.lab  = 1.0
+)
+abline(v = min_depth, lty = 2, col = "#d73027", lwd = 1.5)
+text(min_depth, par("usr")[4] * 0.95,
+     labels = paste0("Profundidad de rarefacción\n(", scales::comma(min_depth), " lecturas)"),
+     pos = 4, col = "#d73027", cex = 0.85)
+legend("bottomright",
+       legend = site_ids,
+       col    = pal,
+       lty    = 1, lwd = 2,
+       cex    = 0.7,
+       bty    = "n")
+```
+
+::: {.callout-note}
+**Recuerda:** Rarefacar implica descartar lecturas de las muestras más profundas. Si la diferencia de profundidad entre muestras es muy grande (>10x), considera si la muestra más superficial aporta información suficiente o si es mejor eliminarla del análisis.
+:::
+
+---
+
+## 4. Diversidad alfa
+
+La diversidad alfa (α) describe la **riqueza y equitatividad de especies dentro de cada sitio**. Usamos el objeto rarefaccionado `ps_rare` para garantizar que las comparaciones entre sitios no estén sesgadas por diferencias en la profundidad de secuenciación.
+
+Calculamos seis índices complementarios:
+
+| Índice | Qué mide |
+|:-------|:---------|
+| **Observed** | Número de ASVs detectadas |
+| **Chao1** | Riqueza estimada (incluye raras no detectadas) |
+| **ACE** | Estimador de cobertura de abundancia |
+| **Shannon** | Riqueza + equitatividad (sensible a especies raras) |
+| **Simpson** | Dominancia (sensible a especies abundantes) |
+| **InvSimpson** | Número efectivo de especies dominantes |
+
+### Cálculo de índices y boxplots por región
+
+Calculamos todos los índices con `phyloseq::estimate_richness()` y graficamos la distribución de valores por región del Golfo de California. La prueba de Kruskal-Wallis evalúa si hay diferencias significativas entre regiones.
+
+```{r alfa-calculo, fig.width=11, fig.height=7}
+alpha_df <- phyloseq::estimate_richness(
+  ps_rare,
+  measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson")
+)
+alpha_df$site_id   <- phyloseq::sample_data(ps_rare)$site_id
+alpha_df$region_gc <- phyloseq::sample_data(ps_rare)$region_gc
+
+# Reshape a formato largo para ggplot
+alpha_long <- alpha_df %>%
+  dplyr::select(site_id, region_gc, Observed, Chao1, ACE, Shannon, Simpson, InvSimpson) %>%
+  tidyr::pivot_longer(
+    cols      = -c(site_id, region_gc),
+    names_to  = "index",
+    values_to = "value"
+  ) %>%
+  dplyr::mutate(
+    index = factor(index,
+                   levels = c("Observed","Chao1","ACE","Shannon","Simpson","InvSimpson"))
+  )
+
+# Paleta de regiones (colorblind-friendly: RColorBrewer Set2)
+regions     <- unique(alpha_long$region_gc)
+pal_regions <- RColorBrewer::brewer.pal(max(3, length(regions)), "Set2")[seq_along(regions)]
+names(pal_regions) <- regions
+
+# Kruskal-Wallis por índice
+kw_results <- alpha_long %>%
+  dplyr::group_by(index) %>%
+  dplyr::summarise(
+    p_value = tryCatch(
+      kruskal.test(value ~ region_gc)$p.value,
+      error = function(e) NA_real_
+    ),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    label = dplyr::case_when(
+      p_value < 0.001 ~ "p < 0.001 ***",
+      p_value < 0.01  ~ paste0("p = ", round(p_value, 3), " **"),
+      p_value < 0.05  ~ paste0("p = ", round(p_value, 3), " *"),
+      !is.na(p_value) ~ paste0("p = ", round(p_value, 3), " ns"),
+      TRUE            ~ "p = NA"
+    )
+  )
+
+# Unir resultados al dataframe largo para anotar
+alpha_long <- alpha_long %>%
+  dplyr::left_join(kw_results, by = "index")
+
+# Calcular posición y del texto de anotación (máximo + 5%)
+y_pos <- alpha_long %>%
+  dplyr::group_by(index) %>%
+  dplyr::summarise(y_ann = max(value, na.rm = TRUE) * 1.08, .groups = "drop")
+
+alpha_long <- alpha_long %>% dplyr::left_join(y_pos, by = "index")
+
+ggplot(alpha_long, aes(x = region_gc, y = value, fill = region_gc)) +
+  geom_boxplot(alpha = 0.75, outlier.shape = 21, outlier.size = 2) +
+  geom_jitter(aes(color = region_gc), width = 0.15, size = 2, alpha = 0.7) +
+  geom_text(
+    data = dplyr::distinct(alpha_long, index, label, y_ann),
+    aes(x = 1.5, y = y_ann, label = label),
+    inherit.aes = FALSE,
+    size = 3, fontface = "italic", color = "gray30"
+  ) +
+  scale_fill_manual(values  = pal_regions) +
+  scale_color_manual(values = pal_regions) +
+  facet_wrap(~index, scales = "free_y", ncol = 3) +
+  labs(
+    title    = "Diversidad alfa por región del Golfo de California",
+    subtitle = "Objeto rarefaccionado — Kruskal-Wallis entre regiones",
+    x        = "Región",
+    y        = "Valor del índice"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(face = "bold"),
+    axis.title      = element_text(face = "bold"),
+    strip.text      = element_text(face = "bold"),
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  )
+```
+
+::: {.callout-tip}
+**Interpretación:** Un índice de Shannon entre 1 y 3 es típico para comunidades de peces. Valores de Simpson cercanos a 1 indican alta diversidad (baja dominancia). Si el p-valor de Kruskal-Wallis es < 0.05, hay evidencia de diferencias significativas en diversidad alfa entre las regiones del Golfo.
+:::
+
+```{r alfa-tabla}
+# Tabla resumen por región
+alpha_df %>%
+  dplyr::group_by(region_gc) %>%
+  dplyr::summarise(
+    dplyr::across(
+      c(Observed, Chao1, Shannon, InvSimpson),
+      list(media = ~round(mean(.x, na.rm=TRUE), 2),
+           sd    = ~round(sd(.x, na.rm=TRUE), 2)),
+      .names = "{.col}_{.fn}"
+    ),
+    .groups = "drop"
+  ) %>%
+  kable(
+    format   = "html",
+    align    = "c",
+    caption  = "Resumen de diversidad alfa por región (media ± DE)"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    font_size  = 10
+  )
+```
+
+---
+
+## 5. Curva de acumulación de especies
+
+La curva de acumulación muestra cómo aumenta el número de **especies únicas detectadas** conforme se incorporan más muestras al análisis. Es fundamental para evaluar la **suficiencia del muestreo**: si la curva alcanza una asíntota, el esfuerzo de muestreo fue suficiente. Si sigue creciendo, hay diversidad por descubrir.
+
+La banda sombreada representa ± 1 desviación estándar entre permutaciones aleatorias. La línea discontinua naranja muestra el estimador Chao de riqueza potencial total del sistema.
+
+```{r acumulacion, fig.width=8, fig.height=5}
+# Objeto sin controles, nivel especie
+ps_sp <- phyloseq::tax_glom(ps_filt, "Species")
+
+comm_sp <- as(phyloseq::otu_table(ps_sp), "matrix")
+if (phyloseq::taxa_are_rows(ps_sp)) comm_sp <- t(comm_sp)
+comm_pa <- (comm_sp > 0) * 1
+
+# Curva de acumulación por permutaciones aleatorias
+set.seed(123)
+acc <- vegan::specaccum(comm_pa, method = "random", permutations = 1000)
+
+acc_df <- data.frame(
+  muestras = acc$sites,
+  riqueza  = acc$richness,
+  lower    = acc$richness - acc$sd,
+  upper    = acc$richness + acc$sd
+)
+
+# Estimador Chao de riqueza potencial
+chao_est <- vegan::specpool(comm_pa)$chao
+
+ggplot(acc_df, aes(x = muestras, y = riqueza)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "#1b9e77", alpha = 0.25) +
+  geom_line(color = "#1b9e77", linewidth = 1.1) +
+  geom_point(color = "#1b9e77", size = 2) +
+  geom_hline(yintercept = chao_est, linetype = "dashed", color = "#d95f02", linewidth = 0.9) +
+  annotate(
+    "text",
+    x     = max(acc_df$muestras),
+    y     = chao_est,
+    label = paste0("Chao ≈ ", round(chao_est, 1)),
+    hjust = 1, vjust = -0.7, size = 3.5, color = "#d95f02"
+  ) +
+  scale_x_continuous(expand = expansion(mult = c(0.01, 0.02))) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.08))) +
+  labs(
+    title    = "Curva de acumulación de especies",
+    subtitle = "Banda: ± 1 SD entre 1,000 permutaciones aleatorias",
+    x        = "Número de muestras",
+    y        = "Especies acumuladas"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title   = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "gray40"),
+    axis.title   = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+::: {.callout-tip}
+**Interpretación:** Si la curva observada (verde) alcanza o se aproxima al estimador Chao (naranja discontinuo), el muestreo fue suficiente para capturar la mayor parte de la riqueza. Una brecha grande indica que podrían detectarse más especies con mayor esfuerzo de muestreo.
+:::
+
+---
+
+## 6. Composición taxonómica
+
+Los gráficos de barras apiladas muestran la **abundancia relativa** de cada taxón en cada muestra. Son la visualización estándar en estudios de metabarcoding para describir la composición de comunidades e identificar taxones dominantes.
+
+### Agrupación por especie y cálculo de abundancias relativas
+
+```{r composicion-prep}
+# Agrupar ASVs por especie y calcular proporciones
+ps_sp_prop <- phyloseq::transform_sample_counts(ps_sp, function(x) x / sum(x))
+```
+
+### Barras apiladas por familia
+
+La composición a nivel de familia facilita la comparación entre sitios e identifica los grupos funcionales dominantes. Familias con barras grandes y consistentes entre sitios indican taxa ampliamente distribuidos en el Golfo de California.
+
+```{r composicion-familia, fig.width=10, fig.height=6}
+df_fam <- phyloseq::psmelt(ps_sp_prop) %>%
+  dplyr::filter(site_id %in% md$site_id) %>%
+  dplyr::mutate(
+    site_id = factor(site_id, levels = unique(md$site_id)),
+    Family  = as.factor(Family)
+  ) %>%
+  dplyr::arrange(site_id, dplyr::desc(Abundance))
+
+n_families     <- length(unique(df_fam$Family))
+pal_fam        <- RColorBrewer::brewer.pal(min(12, n_families), "Paired")
+if (n_families > 12) {
+  pal_fam <- c(pal_fam, colorspace::rainbow_hcl(n_families - 12, c = 80, l = 65))
+}
+names(pal_fam) <- levels(df_fam$Family)[seq_along(pal_fam)]
+
+gp_fam <- ggplot(df_fam, aes(x = site_id, y = Abundance, fill = Family)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = pal_fam) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Abundancia relativa por Familia",
+    x     = "Sitio",
+    y     = "Abundancia relativa (%)"
+  ) +
+  theme_linedraw(base_size = 11) +
+  theme(
+    axis.text.x     = element_text(angle = 90, vjust = 0.95, hjust = 1, size = 9),
+    legend.position = "bottom",
+    legend.key.size = unit(0.4, "cm"),
+    legend.text     = element_text(face = "italic", size = 8),
+    plot.title      = element_text(face = "bold"),
+    axis.title      = element_text(face = "bold")
+  )
+
+print(gp_fam)
+ggsave(
+  file.path(ruta_figs_fam, "abundancia_relativa_familia.png"),
+  gp_fam, width = 10, height = 6, dpi = 300
+)
+```
+
+### Top 5 familias más abundantes
+
+```{r composicion-familia-top5, fig.width=9, fig.height=5}
+top5_fam <- df_fam %>%
+  dplyr::group_by(Family) %>%
+  dplyr::summarise(total = sum(Abundance, na.rm = TRUE), .groups = "drop") %>%
+  dplyr::arrange(dplyr::desc(total)) %>%
+  dplyr::slice_head(n = 5) %>%
+  dplyr::pull(Family)
+
+pal_top5_fam <- RColorBrewer::brewer.pal(5, "Set2")
+names(pal_top5_fam) <- top5_fam
+
+gp_top5_fam <- df_fam %>%
+  dplyr::filter(Family %in% top5_fam) %>%
+  ggplot(aes(x = site_id, y = Abundance, fill = Family)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = pal_top5_fam) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Top 5 familias más abundantes",
+    x     = "Sitio",
+    y     = "Abundancia relativa (%)"
+  ) +
+  theme_linedraw(base_size = 11) +
+  theme(
+    axis.text.x     = element_text(angle = 90, vjust = 0.95, hjust = 1, size = 9),
+    legend.position = "bottom",
+    legend.key.size = unit(0.5, "cm"),
+    legend.text     = element_text(face = "italic", size = 9),
+    plot.title      = element_text(face = "bold"),
+    axis.title      = element_text(face = "bold")
+  )
+
+print(gp_top5_fam)
+ggsave(
+  file.path(ruta_figs_fam, "abundancia_relativa_top5_familias.png"),
+  gp_top5_fam, width = 9, height = 5, dpi = 300
+)
+```
+
+### Barras apiladas por especie
+
+El análisis a nivel de especie provee la resolución taxonómica más fina disponible. Dado el alto número de especies posibles, la paleta es extensa. Este gráfico se complementa con el heatmap de la sección siguiente.
+
+```{r composicion-especie, fig.width=12, fig.height=9}
+df_sp <- phyloseq::psmelt(ps_sp_prop) %>%
+  dplyr::filter(site_id %in% md$site_id) %>%
+  dplyr::mutate(
+    site_id = factor(site_id, levels = unique(md$site_id)),
+    Species = as.factor(Species)
+  ) %>%
+  dplyr::arrange(site_id, dplyr::desc(Abundance))
+
+n_sp    <- length(unique(df_sp$Species))
+pal_sp  <- colorspace::rainbow_hcl(n_sp, c = 80, l = 60, start = 0, end = 360)
+
+gp_sp <- ggplot(df_sp, aes(x = site_id, y = Abundance, fill = Species)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = pal_sp) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Abundancia relativa por Especie",
+    x     = "Sitio",
+    y     = "Abundancia relativa (%)"
+  ) +
+  theme_linedraw(base_size = 11) +
+  theme(
+    axis.text.x      = element_text(angle = 90, vjust = 0.95, hjust = 1, size = 9),
+    legend.position  = "bottom",
+    legend.key.size  = unit(0.35, "cm"),
+    legend.text      = element_text(face = "italic", size = 7),
+    legend.title     = element_text(face = "bold"),
+    plot.title       = element_text(face = "bold"),
+    axis.title       = element_text(face = "bold")
+  ) +
+  guides(fill = guide_legend(nrow = ceiling(n_sp / 4), byrow = TRUE))
+
+print(gp_sp)
+ggsave(
+  file.path(ruta_figs_sp, "abundancia_relativa_especie.png"),
+  gp_sp, width = 12, height = 9, dpi = 300
+)
+```
+
+### Top 5 especies más abundantes
+
+```{r composicion-especie-top5, fig.width=9, fig.height=5}
+top5_sp <- df_sp %>%
+  dplyr::group_by(Species) %>%
+  dplyr::summarise(total = sum(Abundance, na.rm = TRUE), .groups = "drop") %>%
+  dplyr::arrange(dplyr::desc(total)) %>%
+  dplyr::slice_head(n = 5) %>%
+  dplyr::pull(Species)
+
+pal_top5_sp <- RColorBrewer::brewer.pal(5, "Set2")
+names(pal_top5_sp) <- top5_sp
+
+gp_top5_sp <- df_sp %>%
+  dplyr::filter(Species %in% top5_sp) %>%
+  ggplot(aes(x = site_id, y = Abundance, fill = Species)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = pal_top5_sp) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Top 5 especies más abundantes",
+    x     = "Sitio",
+    y     = "Abundancia relativa (%)"
+  ) +
+  theme_linedraw(base_size = 11) +
+  theme(
+    axis.text.x     = element_text(angle = 90, vjust = 0.95, hjust = 1, size = 9),
+    legend.position = "bottom",
+    legend.key.size = unit(0.5, "cm"),
+    legend.text     = element_text(face = "italic", size = 9),
+    plot.title      = element_text(face = "bold"),
+    axis.title      = element_text(face = "bold")
+  )
+
+print(gp_top5_sp)
+ggsave(
+  file.path(ruta_figs_sp, "abundancia_relativa_top5_especies.png"),
+  gp_top5_sp, width = 9, height = 5, dpi = 300
+)
+```
+
+### Heatmap: Top 20 especies × sitios
+
+El heatmap complementa los gráficos de barras mostrando simultáneamente la distribución de las 20 especies más abundantes en todos los sitios. Los valores están transformados con log(x+1) para reducir el efecto de species muy dominantes y hacer visibles las abundancias bajas. El clustering jerárquico (Ward D2) agrupa automáticamente sitios y especies con patrones similares.
+
+```{r heatmap-top20, fig.width=10, fig.height=7}
+# Top 20 especies por abundancia total
+top20_names <- names(sort(phyloseq::taxa_sums(ps_sp), decreasing = TRUE))[1:20]
+ps_top20    <- phyloseq::prune_taxa(top20_names, ps_sp)
+
+# Construir matriz sites × species
+mat_heat <- log1p(as.matrix(phyloseq::otu_table(ps_top20)))
+if (phyloseq::taxa_are_rows(ps_top20)) mat_heat <- t(mat_heat)
+
+# Etiquetas: site_id como filas, Species como columnas
+rownames(mat_heat) <- phyloseq::sample_data(ps_top20)$site_id
+colnames(mat_heat) <- phyloseq::tax_table(ps_top20)[, "Species"]
+
+# Anotación de filas por región
+ann_row <- data.frame(
+  Región = as.character(phyloseq::sample_data(ps_top20)$region_gc),
+  row.names = rownames(mat_heat)
+)
+
+# Paleta de anotación de regiones (colorblind-friendly)
+regiones_uniq <- unique(ann_row$Región)
+pal_ann <- RColorBrewer::brewer.pal(max(3, length(regiones_uniq)), "Set2")[seq_along(regiones_uniq)]
+names(pal_ann) <- regiones_uniq
+ann_colors <- list(Región = pal_ann)
+
+pheatmap::pheatmap(
+  t(mat_heat),
+  scale              = "none",
+  color              = viridis::viridis(50, option = "D"),
+  clustering_method  = "ward.D2",
+  annotation_col     = ann_row,
+  annotation_colors  = ann_colors,
+  fontsize_row       = 9,
+  fontsize_col       = 9,
+  main               = "Heatmap Top 20 especies — log(x+1)",
+  border_color       = NA,
+  cellwidth          = 18,
+  cellheight         = 14
+)
+```
+
+::: {.callout-tip}
+**Interpretación:** El clustering de columnas (sitios) muestra qué sitios tienen comunidades similares. El clustering de filas (especies) muestra qué especies co-ocurren. Bloques de color intenso en el mismo cluster de sitios indican asociaciones entre región geográfica y composición de especies.
+:::
+
+---
+
+## 7. Diversidad beta
+
+La diversidad beta (β) mide las **diferencias en composición de comunidades entre sitios**. El flujo de análisis correcto es:
+
+1. Verificar **homogeneidad de dispersiones** (`betadisper`) — prerequisito del PERMANOVA
+2. **PERMANOVA** con Bray-Curtis — prueba si las regiones tienen composiciones distintas
+3. **ANOSIM** con Jaccard — prueba alternativa basada en rangos
+4. **NMDS basado en especies** — visualización con taxonomía
+5. **NMDS basado en ASVs** — visualización libre de taxonomía
+
+### Preparación de matrices comunitarias
+
+```{r beta-prep}
+# Matriz de abundancias por especie (sin controles), muestras como filas
+comm_sp_mat <- as(phyloseq::otu_table(ps_sp), "matrix")
+if (phyloseq::taxa_are_rows(ps_sp)) comm_sp_mat <- t(comm_sp_mat)
+
+meta_sp <- as(phyloseq::sample_data(ps_sp), "data.frame")
+
+# Excluir controles dinámicamente (MOCK, CTR)
+is_ctrl_sp  <- grepl("MOCK|CTR", meta_sp$site_id, ignore.case = TRUE)
+meta_filt   <- meta_sp[!is_ctrl_sp, ]
+meta_filt$sample_id <- rownames(meta_filt)
+
+samps_keep  <- intersect(meta_filt$sample_id, rownames(comm_sp_mat))
+meta_filt   <- meta_filt[meta_filt$sample_id %in% samps_keep, ]
+comm_filt   <- comm_sp_mat[samps_keep, , drop = FALSE]
+rownames(comm_filt) <- meta_filt$site_id
+
+# Calcular matrices de distancia
+dist_bc  <- vegan::vegdist(comm_filt, method = "bray")
+dist_jac <- vegan::vegdist(comm_filt, method = "jaccard")
+
+message("Muestras en análisis de beta diversidad: ", nrow(comm_filt))
+```
+
+### Homogeneidad de dispersiones (betadisper)
+
+Antes de aplicar PERMANOVA es **obligatorio** verificar la homogeneidad de varianzas entre grupos. Si los grupos tienen dispersiones muy distintas, un PERMANOVA significativo puede reflejar esa diferencia de dispersión y no necesariamente diferencias en la posición de los centroides (composición media).
+
+```{r beta-betadisper, fig.width=8, fig.height=5}
+bd      <- vegan::betadisper(dist_bc, meta_filt$region_gc)
+bd_test <- vegan::permutest(bd, permutations = 999)
+
+cat("=== Test de homogeneidad de dispersiones (betadisper) ===\n")
+print(bd_test)
+
+# Visualizar dispersiones
+bd_df <- data.frame(
+  site_id   = rownames(bd$vectors),
+  region_gc = meta_filt$region_gc,
+  Distancia = bd$distances
+)
+
+ggplot(bd_df, aes(x = region_gc, y = Distancia, fill = region_gc)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = 21) +
+  geom_jitter(aes(color = region_gc), width = 0.15, size = 2.5, alpha = 0.8) +
+  scale_fill_manual(values  = pal_regions) +
+  scale_color_manual(values = pal_regions) +
+  annotate(
+    "text",
+    x     = 1.5,
+    y     = max(bd_df$Distancia) * 1.05,
+    label = paste0("betadisper p = ", round(bd_test$tab$`Pr(>F)`[1], 3)),
+    size  = 3.8, fontface = "italic", color = "gray30"
+  ) +
+  labs(
+    title    = "Homogeneidad de dispersiones por región (betadisper)",
+    subtitle = "Distancia al centroide de cada grupo — Bray-Curtis",
+    x        = "Región",
+    y        = "Distancia al centroide"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(face = "bold"),
+    axis.title      = element_text(face = "bold"),
+    legend.position = "none"
+  )
+```
+
+::: {.callout-note}
+**Recuerda:** Si el p-valor de `betadisper` es < 0.05, las dispersiones son heterogéneas entre grupos. En ese caso, interpreta el PERMANOVA con precaución: la significancia puede deberse a diferencias en dispersión, no solo en composición media.
+:::
+
+### PERMANOVA (adonis2) — Bray-Curtis
+
+PERMANOVA evalúa si la variable `region_gc` explica una parte significativa de la variación en la composición de comunidades. El estadístico **R²** indica la proporción de varianza explicada.
+
+```{r beta-permanova}
+permanova_res <- vegan::adonis2(
+  comm_filt ~ region_gc,
+  data         = meta_filt,
+  permutations = 999,
+  method       = "bray"
+)
+
+cat("=== PERMANOVA (adonis2) — Bray-Curtis ===\n")
+print(permanova_res)
+
+# Tabla limpia
+as.data.frame(permanova_res) %>%
+  tibble::rownames_to_column("Fuente") %>%
+  kable(
+    format  = "html",
+    digits  = 4,
+    align   = "c",
+    caption = "PERMANOVA (adonis2) — Bray-Curtis, 999 permutaciones"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    font_size  = 10
+  )
+```
+
+### ANOSIM — Jaccard
+
+ANOSIM es una prueba no paramétrica alternativa basada en rangos de distancias. El estadístico **R** oscila entre -1 y 1: valores positivos altos indican que las diferencias entre grupos superan las diferencias dentro de cada grupo.
+
+```{r beta-anosim, fig.width=7, fig.height=5}
+anosim_res <- vegan::anosim(dist_jac, meta_filt$region_gc)
+cat("=== ANOSIM — Jaccard ===\n")
+summary(anosim_res)
+
+# Visualización de distribución de distancias
+dist_mat <- as.matrix(dist_jac)
+n        <- nrow(dist_mat)
+df_dist  <- expand.grid(i = 1:n, j = 1:n) %>%
+  dplyr::filter(i < j) %>%
+  dplyr::mutate(
+    dist     = dist_mat[cbind(i, j)],
+    grupo_i  = meta_filt$region_gc[i],
+    grupo_j  = meta_filt$region_gc[j],
+    tipo     = ifelse(grupo_i == grupo_j, "Intra-región", "Inter-región")
+  )
+
+ggplot(df_dist, aes(x = tipo, y = dist, fill = tipo)) +
+  geom_violin(alpha = 0.6, trim = FALSE) +
+  geom_boxplot(width = 0.2, alpha = 0.85, outlier.color = "gray40") +
+  scale_fill_manual(
+    values = c("Intra-región" = "#1b9e77", "Inter-región" = "#d95f02")
+  ) +
+  annotate(
+    "text",
+    x     = 0.5,
+    y     = 0,
+    label = paste0("ANOSIM R = ", round(anosim_res$statistic, 3),
+                   "  |  p = ", signif(anosim_res$signif, 3)),
+    hjust = 0, vjust = -0.5, size = 3.8, color = "gray20"
+  ) +
+  labs(
+    title    = "ANOSIM: distancias Jaccard intra e inter región",
+    x        = "Tipo de comparación",
+    y        = "Distancia Jaccard"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(face = "bold"),
+    axis.title      = element_text(face = "bold"),
+    legend.position = "none"
+  )
+```
+
+::: {.callout-tip}
+**Interpretación:** ANOSIM R > 0.25 y p < 0.05 indican diferenciación moderada entre regiones. R > 0.75 indica separación muy clara. Si ANOSIM y PERMANOVA coinciden en su significancia, las conclusiones son más robustas.
+:::
+
+### NMDS basado en especies
+
+El NMDS (*Non-metric Multidimensional Scaling*) representa las distancias entre comunidades en 2D preservando al máximo las relaciones originales. Un **stress < 0.1** es excelente; **< 0.2** es aceptable. Los resultados de ANOSIM y PERMANOVA se anotan directamente en el gráfico.
+
+```{r beta-nmds-sp, fig.width=9, fig.height=7}
+set.seed(123)
+nmds_sp <- vegan::metaMDS(dist_bc, k = 2, trymax = 500, trace = FALSE)
+
+nmds_sp_df <- as.data.frame(nmds_sp$points) %>%
+  tibble::rownames_to_column("site_id") %>%
+  dplyr::left_join(
+    meta_filt %>% dplyr::select(site_id, region_gc),
+    by = "site_id"
+  ) %>%
+  dplyr::mutate(region_gc = as.factor(region_gc))
+
+ggplot(nmds_sp_df, aes(x = MDS1, y = MDS2, color = region_gc, fill = region_gc)) +
+  ggforce::geom_mark_ellipse(
+    aes(group = region_gc, fill = region_gc, label = region_gc),
+    alpha = 0.18, show.legend = FALSE, label.fontsize = 9
+  ) +
+  geom_point(size = 3.5, alpha = 0.9) +
+  geom_text(aes(label = site_id), vjust = -1, size = 3.2, fontface = "bold") +
+  scale_color_manual(values = pal_regions) +
+  scale_fill_manual(values  = pal_regions) +
+  guides(color = "none", fill = "none") +
+  labs(
+    title    = "NMDS basado en especies (Bray-Curtis)",
+    subtitle = "Elipses de confianza por región del Golfo de California",
+    x        = "NMDS1",
+    y        = "NMDS2"
+  ) +
+  annotate("text", x = -Inf, y = -Inf,
+           label = paste0("Stress = ", round(nmds_sp$stress, 3)),
+           hjust = -0.1, vjust = -0.5, size = 3.8, color = "gray30") +
+  annotate("text", x = -Inf, y = -Inf,
+           label = paste0("ANOSIM R = ", round(anosim_res$statistic, 2),
+                          ", p = ", signif(anosim_res$signif, 3)),
+           hjust = -0.1, vjust = -2.2, size = 3.5, color = "#1b9e77") +
+  annotate("text", x = -Inf, y = -Inf,
+           label = paste0("PERMANOVA R² = ", round(permanova_res$R2[1], 2),
+                          ", p = ", signif(permanova_res$`Pr(>F)`[1], 3)),
+           hjust = -0.1, vjust = -3.9, size = 3.5, color = "#d95f02") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title       = element_text(face = "bold"),
+    plot.subtitle    = element_text(color = "gray40"),
+    axis.title       = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+### NMDS basado en ASVs (enfoque libre de taxonomía)
+
+El **enfoque libre de taxonomía** trabaja directamente con las ASVs sin requerir asignación taxonómica. Esto permite aprovechar toda la información disponible, incluidas las ASVs sin asignar, y es más sensible a diferencias sutiles en la composición genética de las comunidades. La comparación con el NMDS basado en especies permite evaluar si las conclusiones son consistentes.
+
+```{r beta-nmds-asv, fig.width=9, fig.height=7}
+# Matriz ASV (sin controles) — detectar controles dinámicamente
+asv_full <- t(as.matrix(phyloseq::otu_table(ps_filt)))  # muestras × ASVs
+
+meta_asv <- as(phyloseq::sample_data(ps_filt), "data.frame")
+meta_asv$sample_id <- rownames(meta_asv)
+
+is_ctrl_asv  <- grepl("MOCK|CTR", meta_asv$site_id, ignore.case = TRUE)
+meta_asv_filt <- meta_asv[!is_ctrl_asv, ]
+
+samps_asv <- intersect(meta_asv_filt$sample_id, rownames(asv_full))
+meta_asv_filt <- meta_asv_filt[meta_asv_filt$sample_id %in% samps_asv, ]
+asv_filt  <- asv_full[samps_asv, , drop = FALSE]
+rownames(asv_filt) <- meta_asv_filt$site_id
+
+set.seed(123)
+dist_asv  <- vegan::vegdist(asv_filt, method = "bray")
+nmds_asv  <- vegan::metaMDS(dist_asv, k = 2, trymax = 500, trace = FALSE)
+
+# ANOSIM y PERMANOVA para ASVs
+anosim_asv   <- vegan::anosim(dist_asv, meta_asv_filt$region_gc)
+permanova_asv <- vegan::adonis2(
+  asv_filt ~ region_gc,
+  data         = meta_asv_filt,
+  permutations = 999,
+  method       = "bray"
+)
+
+nmds_asv_df <- as.data.frame(nmds_asv$points) %>%
+  tibble::rownames_to_column("site_id") %>%
+  dplyr::left_join(
+    meta_asv_filt %>% dplyr::select(site_id, region_gc),
+    by = "site_id"
+  ) %>%
+  dplyr::mutate(region_gc = as.factor(region_gc))
+
+ggplot(nmds_asv_df, aes(x = MDS1, y = MDS2, color = region_gc, fill = region_gc)) +
+  ggforce::geom_mark_ellipse(
+    aes(group = region_gc, fill = region_gc, label = region_gc),
+    alpha = 0.18, show.legend = FALSE, label.fontsize = 9
+  ) +
+  geom_point(size = 3.5, alpha = 0.9) +
+  geom_text(aes(label = site_id), vjust = -1, size = 3.2, fontface = "bold") +
+  scale_color_manual(values = pal_regions) +
+  scale_fill_manual(values  = pal_regions) +
+  guides(color = "none", fill = "none") +
+  labs(
+    title    = "NMDS basado en ASVs — libre de taxonomía (Bray-Curtis)",
+    subtitle = "Todas las ASVs como unidades de diversidad, sin colapsar por especie",
+    x        = "NMDS1",
+    y        = "NMDS2"
+  ) +
+  annotate("text", x = -Inf, y = -Inf,
+           label = paste0("Stress = ", round(nmds_asv$stress, 3)),
+           hjust = -0.1, vjust = -0.5, size = 3.8, color = "gray30") +
+  annotate("text", x = -Inf, y = -Inf,
+           label = paste0("ANOSIM R = ", round(anosim_asv$statistic, 2),
+                          ", p = ", signif(anosim_asv$signif, 3)),
+           hjust = -0.1, vjust = -2.2, size = 3.5, color = "#1b9e77") +
+  annotate("text", x = -Inf, y = -Inf,
+           label = paste0("PERMANOVA R² = ", round(permanova_asv$R2[1], 2),
+                          ", p = ", signif(permanova_asv$`Pr(>F)`[1], 3)),
+           hjust = -0.1, vjust = -3.9, size = 3.5, color = "#d95f02") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title       = element_text(face = "bold"),
+    plot.subtitle    = element_text(color = "gray40"),
+    axis.title       = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+::: {.callout-tip}
+**Interpretación:** Compara el NMDS basado en especies y el basado en ASVs. Si ambos muestran los mismos patrones de agrupación por región, tus conclusiones son robustas independientemente de la asignación taxonómica. Si difieren, puede indicar que hay ASVs sin asignar que contienen información relevante sobre la estructura de la comunidad.
+:::
+
+### Resumen de pruebas de diversidad beta
+
+```{r beta-resumen-tabla}
+resumen_beta <- data.frame(
+  Análisis    = c("betadisper (Bray-Curtis)",
+                  "PERMANOVA adonis2 (Bray-Curtis)",
+                  "ANOSIM (Jaccard)",
+                  "PERMANOVA ASV (Bray-Curtis)",
+                  "ANOSIM ASV (Bray-Curtis)"),
+  Estadístico = c(
+    paste0("F = ", round(bd_test$tab$F[1], 3)),
+    paste0("F = ", round(permanova_res$F[1], 3),
+           ", R² = ", round(permanova_res$R2[1], 3)),
+    paste0("R = ", round(anosim_res$statistic, 3)),
+    paste0("F = ", round(permanova_asv$F[1], 3),
+           ", R² = ", round(permanova_asv$R2[1], 3)),
+    paste0("R = ", round(anosim_asv$statistic, 3))
+  ),
+  p_valor = c(
+    round(bd_test$tab$`Pr(>F)`[1], 4),
+    round(permanova_res$`Pr(>F)`[1], 4),
+    round(anosim_res$signif, 4),
+    round(permanova_asv$`Pr(>F)`[1], 4),
+    round(anosim_asv$signif, 4)
+  ),
+  Significancia = c(
+    ifelse(bd_test$tab$`Pr(>F)`[1] < 0.05, "Sí *", "No"),
+    ifelse(permanova_res$`Pr(>F)`[1] < 0.05, "Sí *", "No"),
+    ifelse(anosim_res$signif < 0.05, "Sí *", "No"),
+    ifelse(permanova_asv$`Pr(>F)`[1] < 0.05, "Sí *", "No"),
+    ifelse(anosim_asv$signif < 0.05, "Sí *", "No")
+  )
+)
+
+resumen_beta %>%
+  kable(
+    format  = "html",
+    align   = "c",
+    caption = "Resumen de pruebas estadísticas de diversidad beta"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    font_size  = 10
+  )
+```
+
+---
+
+## 8. Control positivo — MOCK
+
+La muestra MOCK es un control positivo que contiene una mezcla conocida de ADN de especies en proporciones definidas. Permite validar la fidelidad del pipeline de extremo a extremo: ¿detectamos las especies esperadas? ¿aparecen especies que no deberían estar?
+
+**Detección dinámica:** en lugar de usar el nombre exacto de la muestra (que puede cambiar entre corridas), detectamos la muestra MOCK automáticamente usando `grepl("MOCK", site_id, ignore.case=TRUE)`.
+
+```{r mock-deteccion}
+# Generar tabla de abundancias por especie y muestra (para el análisis MOCK)
+ASV_df <- as.data.frame(phyloseq::otu_table(ps)) %>%
+  tibble::rownames_to_column("seqID") %>%
+  tidyr::pivot_longer(cols = -seqID, names_to = "Sample_name", values_to = "nReads")
+
+TAXA_df <- as.data.frame(phyloseq::tax_table(ps)) %>%
+  tibble::rownames_to_column("seqID")
+
+species_site_reads <- ASV_df %>%
+  dplyr::left_join(TAXA_df, by = "seqID") %>%
+  dplyr::filter(!is.na(Species)) %>%
+  dplyr::group_by(Sample_name, Species) %>%
+  dplyr::summarise(nReads = sum(nReads), .groups = "drop") %>%
+  tidyr::pivot_wider(names_from = Sample_name, values_from = nReads, values_fill = 0)
+
+# Exportar tabla a CSV
+write.csv(species_site_reads, ruta_csv_output, row.names = FALSE)
+
+# Detección dinámica del MOCK
+mock_meta <- as(phyloseq::sample_data(ps), "data.frame")
+mock_samples <- rownames(mock_meta)[grepl("MOCK", mock_meta$site_id, ignore.case = TRUE)]
+
+if (length(mock_samples) == 0) {
+  message("No se detectó ninguna muestra MOCK en este dataset.")
+} else {
+  message("Muestras MOCK detectadas: ", paste(mock_samples, collapse = ", "))
+}
+```
+
+```{r mock-grafico, fig.width=8, fig.height=6}
+if (length(mock_samples) > 0) {
+
+  # Usar la primera muestra MOCK encontrada
+  mock_col <- mock_samples[1]
+
+  df_mock <- species_site_reads %>%
+    dplyr::select(Species, dplyr::all_of(mock_col)) %>%
+    dplyr::rename(reads = dplyr::all_of(mock_col)) %>%
+    dplyr::filter(reads > 0) %>%
+    dplyr::mutate(rel_abund = reads / sum(reads)) %>%
+    dplyr::arrange(dplyr::desc(rel_abund))
+
+  df_mock$Species <- factor(df_mock$Species, levels = df_mock$Species)
+
+  # Paleta dinámica (Paired + viridis si hay muchas especies)
+  n_mock <- nrow(df_mock)
+  if (n_mock <= 12) {
+    pal_mock <- RColorBrewer::brewer.pal(max(3, n_mock), "Paired")[1:n_mock]
+  } else {
+    pal_mock <- c(
+      RColorBrewer::brewer.pal(12, "Paired"),
+      viridis::viridis(n_mock - 12, option = "D")
+    )
+  }
+  names(pal_mock) <- levels(df_mock$Species)
+
+  ggplot(df_mock, aes(x = "MOCK", y = rel_abund, fill = Species)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_manual(values = pal_mock) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+    labs(
+      title    = paste0("Control positivo: muestra MOCK (", mock_col, ")"),
+      subtitle = paste0(n_mock, " especies detectadas"),
+      x        = NULL,
+      y        = "Abundancia relativa (%)"
+    ) +
+    theme_linedraw(base_size = 13) +
+    theme(
+      axis.text.x     = element_text(size = 12),
+      legend.position = "right",
+      legend.key.size = unit(0.5, "cm"),
+      legend.text     = element_text(face = "italic", size = 9),
+      legend.title    = element_text(face = "bold"),
+      plot.title      = element_text(face = "bold"),
+      plot.subtitle   = element_text(color = "gray40"),
+      axis.title      = element_text(face = "bold")
+    ) +
+    guides(fill = guide_legend(ncol = 2))
+
+} else {
+  cat("No hay muestra MOCK en este dataset para graficar.\n")
+}
+```
+
+```{r mock-tabla}
+if (length(mock_samples) > 0) {
+  df_mock %>%
+    dplyr::mutate(rel_abund = scales::percent(rel_abund, accuracy = 0.1)) %>%
+    dplyr::rename(
+      Especie             = Species,
+      Lecturas            = reads,
+      `Abundancia relativa` = rel_abund
+    ) %>%
+    kable(
+      format  = "html",
+      align   = "c",
+      caption = paste0("Especies detectadas en la muestra MOCK (", mock_col, ")")
+    ) %>%
+    kable_styling(
+      bootstrap_options = c("striped", "hover", "condensed"),
+      full_width = TRUE,
+      font_size  = 10
+    )
+}
+```
+
+::: {.callout-note}
+**Recuerda:** Un MOCK bien resuelto contiene únicamente las especies incluidas en la mezcla, en proporciones similares a las esperadas. La presencia de especies adicionales (especialmente peces marinos del área) puede indicar contaminación cruzada entre muestras (*cross-talk*). La distorsión de proporciones puede reflejar sesgos en la amplificación de los primers.
+:::
+
+---
+
+## Información de sesión
+
+```{r session-info}
+sessionInfo()
+```

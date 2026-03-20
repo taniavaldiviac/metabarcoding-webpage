@@ -45,6 +45,8 @@ website:
           - text: "---"
           - href: 3-reporte.qmd
             text: "Reporte de análisis"
+          - href: 3-reporte-v2.qmd
+            text: "Reporte — versión avanzada"
       - href: Referencias.qmd
         text: Referencias
     right:
