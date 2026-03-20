@@ -430,46 +430,64 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 
 ## Día 4 — Análisis ecológico de comunidades
 
-### Tablas ASV y taxonomía — construcción del objeto phyloseq
+### De los datos de secuenciación a las tablas del análisis
 
 **9:00 – 11:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Construir las tablas fundamentales para el análisis ecológico e integrarlas en un objeto phyloseq.
+**Objetivo:** Cargar los resultados del pipeline DADA2, construir las tablas fundamentales de abundancias y taxonomía, y aplicar la curación geográfica de especies para dejar los datos listos para el análisis ecológico.
 :::
 
-- `makeSequenceTable()`: tabla de abundancia ASV × muestra
-- Asociación de taxonomía a ASVs
-- Filtrado de secuencias espurias: no asignadas, contaminantes, longitud atípica
-- Creación del objeto `phyloseq`: ASV table + tax table + metadatos
-- Inspección y verificación de coherencia de tablas
-- Exportación y análisis con phyloseq, vegan y ggplot2
+**Revisión del RData:**
+
+- Qué contiene el archivo `.RData` generado por el pipeline: `otu_mat`, `tax_mat`, `sample_meta`, `track`, `seqtab_clean`, `taxonomy_df`
+- Cómo cargarlo y explorar cada objeto en R
+- Resumen de rendimiento y filtrado de lecturas (`track`): evaluación de pérdidas por etapa
+
+**Construcción de tablas:**
+
+- Tabla de abundancias de ASVs: matriz ASV × muestra, orientación y formato
+- Tabla taxonómica: asociación de cada ASV a su clasificación (Kingdom → Species)
+- Distribución de longitudes de secuencias: verificación de consistencia del amplicón
+- Curación de la tabla taxonómica: filtrado de *Mammalia*, *Aves* y clases sin asignar
+
+**Curación geográfica de especies:**
+
+- Carga de la lista de referencia `Fish_speciesGC.csv`
+- Corrección de asignaciones problemáticas a nivel especie, género, familia y orden
+- Filtrado de secuencias espurias: sintéticas y no identificadas
+- Validación del resultado final
 
 ---
 
-### Exportación y análisis con phyloseq, vegan y ggplot2
+### Qué es phyloseq y construcción del objeto
 
 **11:20 – 13:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Explorar y visualizar los datos de ASVs útilizando las herramientas de análisis ecológico más útilizadas en estudios de eDNA.
+**Objetivo:** Comprender la estructura del objeto phyloseq e integrar en él todas las tablas del análisis para facilitar el trabajo con datos de metabarcoding.
 :::
 
-**phyloseq:**
+**El objeto phyloseq:**
 
-- `plot_richness()`, `plot_bar()`, `ordinate()`
-- Subsetting y transformación de datos
+- ¿Qué es phyloseq y por qué es el estándar en análisis de diversidad microbiana y de eDNA?
+- Componentes: `otu_table`, `tax_table`, `sample_data`, `refseq`
+- Ventajas: manejo unificado, subsetting reproducible, compatibilidad con vegan y ggplot2
 
-**vegan:**
+**Construcción del objeto:**
 
-- Matrices de comunidad y cálculo de índices de diversidad
-- Transformación y rarefacción: `decostand()`, `rarefy()`
+- Creación de `otu_table()`: abundancias con orientación `taxa_are_rows = TRUE`
+- Creación de `tax_table()`: matriz taxonómica con rownames = secuencias
+- Integración de `sample_data()`: metadatos de muestras (sitio, fecha, coordenadas)
+- Almacenamiento de las secuencias originales con `DNAStringSet` y `merge_phyloseq()`
+- Renombrado estandarizado de ASVs: `ASV1`, `ASV2`, …
 
-**ggplot2:**
+**Agrupación y abundancias relativas:**
 
-- Construcción de gráficos personalizados: barras, cajas, puntos
-- Combinación con phyloseq para resultados complejos
-- Exportación en formatos CSV, PNG y PDF
+- `tax_glom()`: colapsar ASVs por nivel taxonómico (especie, familia)
+- `transform_sample_counts()`: cálculo de abundancias relativas
+- Generación de la tabla de abundancias por especie y muestra con `psmelt()`
+- Exportación de la tabla a CSV
 
 ::: {.callout-tip icon="false"}
 **Práctica:** [Reporte de análisis — Comunidades de peces del Golfo de California](3-reporte.qmd)
@@ -477,30 +495,42 @@ Una vez conectado a la VPN, podrás continuar con el acceso por SSH.
 
 ---
 
-### Diversidad α y β — visualización e interpretación
+### Diversidad α, diversidad β y visualización
 
 **14:00 – 15:00**
 
 ::: {.callout-note icon="false"}
-**Objetivo:** Calcular e interpretar patrones de diversidad biológica y generar visualizaciones efectivas para comúnicar resultados.
+**Objetivo:** Calcular e interpretar patrones de diversidad biológica a nivel de muestra y entre comunidades, y generar visualizaciones para comunicar los resultados.
 :::
+
+**Exploración inicial:**
+
+- Curva de acumulación de especies (`vegan::specaccum()`): ¿fue suficiente el esfuerzo de muestreo?
+- Estimación de riqueza total con el índice de Chao
+- Barplots de abundancia relativa por familia y especie
 
 **Diversidad alfa (α):**
 
-- Índices: riqueza observada, Shannon, Simpson
-- Rarefacción y cobertura de la muestra
-- Comparación entre grupos con gráficos de caja
+- Riqueza observada por muestra: número de especies detectadas
+- Comparación entre sitios mediante gráficos de barras
 
 **Diversidad beta (β):**
 
-- Matrices de disimilitud: Jaccard, Bray-Curtis
-- Análisis multivariados: nMDS, PCoA, PCA
-- Visualización con flechas de variables ambientales
+- Matriz de disimilitud de Jaccard a partir de presencia/ausencia de especies
+- ANOSIM (`vegan::anosim()`): ¿son significativamente distintas las regiones?
+- PERMANOVA (`vegan::adonis2()`): cuánta variación explica la región geográfica
+- NMDS (`vegan::metaMDS()`): visualización de la similitud entre sitios en 2D
+- Interpretación conjunta de estadísticos: R², p-valor, stress
 
-**Barplots de abundancia relativa:**
+**Enfoque libre de taxonomía:**
 
-- Composición taxonómica por grupo o condición
-- Adaptación para presentaciones y publicaciónes
+- Repetición del análisis NMDS y ANOSIM usando directamente las abundancias de ASVs, sin colapsar por especie
+- ¿Qué diferencias aporta este enfoque frente al análisis basado en taxonomía?
+- Comparación de resultados e implicaciones para estudios de eDNA
+
+::: {.callout-tip icon="false"}
+**Práctica:** [Reporte de análisis — Comunidades de peces del Golfo de California](3-reporte.qmd)
+:::
 
 ---
 
