@@ -7,17 +7,19 @@ format:
     toc-depth: 2
     toc-location: left
 execute:
-  echo: true
+  echo: false
   warning: false
   message: false
 ---
 
+Este reporte ilustra el flujo completo de análisis ecológico a partir de los resultados del pipeline DADA2. Partiendo del archivo `.RData` generado en la etapa de asignación taxonómica, construimos las tablas de abundancias y taxonomía, creamos el objeto *phyloseq*, y exploramos la diversidad de comunidades de peces en distintos sitios del Golfo de California usando herramientas de ecología de comunidades.
+
 ```{r Cargar paquetes, echo=FALSE}
 library(phyloseq)
 library(tidyverse)
-library(RColorBrewer) 
+library(RColorBrewer)
 library(here)
-library(Biostrings)     
+library(Biostrings)
 library(vegan)
 library(pheatmap)
 library(tidyr)
@@ -55,16 +57,15 @@ ruta_figs_fam   <- here::here("final_data", "figs_families_stacked")
 ruta_figs_sp    <- here::here("final_data", "figs_species_stacked")
 ```
 
+---
+
+## Preparación de datos
+
 ### Resumen de rendimiento y filtrado de lecturas
 
-En este paso revisamos cuántas lecturas (secuencias) se obtuvieron y
-cómo se filtraron a lo largo del pipeline. El seguimiento del número de
-lecturas en cada etapa del pipeline nos permite evaluar la eficiencia y
-calidad del proceso de secuenciación y filtrado. Si se pierden muchas
-lecturas en algún paso, puede indicar problemas técnicos o errores en el
-procesamiento. Este control de calidad es esencial para asegurar que los
-resultados sean confiables y representativos de la comunidad biológica
-estudiada.
+El seguimiento del número de lecturas a lo largo del pipeline (*read tracking*) es el primer control de calidad del análisis. Cada etapa —filtrado, denoising, merge, quimeras— reduce el número de lecturas; pérdidas moderadas son esperables y normales, pero caídas abruptas en algún paso pueden indicar problemas técnicos, parámetros inadecuados o una muestra de baja calidad.
+
+La tabla que se genera a continuación consolida los conteos de todas las muestras y permite evaluar de un vistazo la eficiencia global del pipeline. Valores típicos esperados: retención del **70–90%** de las lecturas originales al final del proceso.
 
 ```{r Resumen de rendimiento y filtrado de lecturas,echo=FALSE}
 output.files <- list.files(ruta_rdata, full.names = TRUE, pattern = "\\.R[Dd]ata$")
@@ -95,12 +96,9 @@ track.sum %>%
 
 ### Carga y organización de la metadata de muestras
 
-La metadata conecta los datos de secuenciación con la información
-ecológica y ambiental de cada muestra. Sin una metadata bien organizada,
-no podríamos relacionar los patrones de diversidad con factores como el
-sitio de muestreo, la fecha, o las condiciones ambientales. Esto es
-fundamental para interpretar los resultados en un contexto ecológico y
-para responder preguntas científicas relevantes.
+La metadata conecta cada muestra de secuenciación con su información ecológica y geográfica: sitio de colecta, fecha, coordenadas, región del Golfo de California, entre otros campos. Sin una metadata bien organizada no es posible relacionar los patrones de diversidad con factores ambientales ni comparar sitios de manera reproducible.
+
+En este paso cargamos el objeto `sample_meta` almacenado en el `.RData`, aplicamos una corrección puntual al identificador de un sitio y reordenamos las filas para que la muestra MOCK (control positivo) quede al final de la tabla.
 
 ```{r Carga y organización de la metadata de muestras, echo=FALSE}
 first <- output.list[[1]]
@@ -127,19 +125,13 @@ md %>%
 
 ### Preparación de la tabla de abundancias de ASVs
 
-Las ASVs (Amplicon Sequence Variants) representan las secuencias únicas
-detectadas en el estudio. En esta sección preparamos una matriz que
-indica cuántas veces aparece cada ASV en cada muestra. Esta matriz es la
-base para todos los análisis de diversidad y composición de comunidades.
-La matriz de abundancias de ASVs es la base para todos los análisis de
-diversidad y composición de comunidades. Nos permite cuantificar la
-presencia y abundancia de cada variante de secuencia en cada muestra, lo
-que es esencial para comparar comunidades, calcular índices de
-diversidad y detectar patrones ecológicos.
+Las ASVs (*Amplicon Sequence Variants*) son las unidades básicas de diversidad que genera DADA2. Cada ASV es una secuencia única, resuelta con precisión de un solo nucleótido. La tabla de abundancias registra cuántas lecturas de cada ASV se detectaron en cada muestra, formando una matriz de dimensiones **ASVs × muestras**.
+
+Esta matriz es el punto de partida de todos los análisis ecológicos: cálculo de índices de diversidad, análisis multivariados, gráficos de composición y comparaciones entre sitios.
 
 ```{r Preparación de la tabla de abundancias de ASVs, echo=FALSE}
 # Tomar abundancias desde el RData
-otu <- if (!is.null(first$otu_mat)) first$otu_mat else first$seqtab_clean
+ otu <- if (!is.null(first$otu_mat)) first$otu_mat else first$seqtab_clean
 stopifnot(!is.null(otu))
 # ASVs como filas, muestras como columnas (lo que requieren tus chunks posteriores)
 ASV_mat <- t(as.matrix(otu))
@@ -152,11 +144,9 @@ head(ASV_mat, 10) %>%
 
 ### Preparación de la tabla taxonómica
 
-La tabla taxonómica nos permite traducir las secuencias en información
-biológica significativa, identificando los organismos presentes en las
-muestras. Esto es crucial para interpretar los resultados en términos de
-biodiversidad y para realizar análisis ecológicos a diferentes niveles
-taxonómicos (especie, género, familia, etc.).
+La tabla taxonómica traduce cada ASV (una secuencia de nucleótidos) a su clasificación biológica desde Kingdom hasta Species. Esta información es la que permite interpretar los datos en términos de biodiversidad real: ¿qué organismos están presentes? ¿a qué grupos pertenecen?
+
+La tabla se construye a partir del objeto `tax_mat` generado por `assignTaxonomy()` y `addSpecies()` en el pipeline DADA2. En este paso también aplicamos un filtro inicial para excluir clases que no corresponden a peces (*Mammalia*, *Aves*) y aquellas sin asignación a nivel de clase.
 
 ```{r Preparación de la tabla taxonómica, echo=FALSE}
 # Usar tax_mat si existe; si no, derivarlo de taxonomy_df
@@ -184,14 +174,11 @@ taxa_df[1:10, 1:7]  %>%
   kable_styling(full_width = TRUE, font_size = 10)
 ```
 
-### Curación geográfica de especies de peces
+### Curación geográfica de especies
 
-En este paso filtramos y corregimos la asignación taxonómica para
-asegurarnos de que solo se incluyan especies de peces relevantes para el
-área de estudio. Esto evita sesgos en los resultados y asegura que las
-conclusiones sean aplicables a la comunidad local. Además, elimina
-posibles contaminantes o errores de asignación que podrían distorsionar
-el análisis.
+La asignación taxonómica automática no siempre es perfecta. En estudios de eDNA con marcadores específicos de grupo (como el gen 12S para peces), algunas asignaciones pueden ser incorrectas por inconsistencias en la base de datos de referencia, por contaminación, o por errores de nomenclatura. La curación geográfica consiste en contrastar las asignaciones del pipeline con una lista de referencia de especies esperadas para el área de estudio.
+
+En este caso utilizamos el archivo `Fish_speciesGC.csv`, que contiene las especies de peces con distribución documentada en el Golfo de California. Además, corregimos manualmente asignaciones problemáticas a nivel de especie, género, familia y orden para las que tenemos evidencia independiente. Finalmente, filtramos secuencias espurias como las etiquetadas como "Eukaryotic synthetic".
 
 ```{r}
 fish_sp <- read.csv(ruta_metadata, row.names = NULL)
@@ -236,33 +223,24 @@ taxa2[1:10, 1:7] %>%
   kable_styling(full_width = TRUE, font_size = 10)
 ```
 
+---
+
+## Construcción del objeto *phyloseq*
+
+*phyloseq* es el paquete de R más utilizado para el análisis de datos de diversidad microbiana y de eDNA. Su ventaja principal es que integra en un solo objeto todas las tablas del análisis —abundancias, taxonomía y metadata— lo que facilita el filtrado, la transformación y la visualización de datos complejos de manera reproducible.
+
+Un objeto *phyloseq* está compuesto por:
+
+| Componente | Función |
+|:-----------|:--------|
+| `otu_table` | Matriz de abundancias ASV × muestra |
+| `tax_table` | Clasificación taxonómica de cada ASV |
+| `sample_data` | Metadata de cada muestra (sitio, fecha, coordenadas) |
+| `refseq` | Secuencias originales de cada ASV (opcional) |
+
+Una vez construido el objeto, operaciones como filtrar por taxonomía, calcular abundancias relativas o generar gráficos de diversidad se realizan con pocas líneas de código y de forma consistente.
+
 ### Creación del objeto *phyloseq* y asignación de secuencias
-
-Integrar todos los datos en un objeto *phyloseq* facilita el manejo y
-análisis de datos complejos, permitiendo realizar análisis
-multivariados, visualizaciones y filtrados de manera eficiente y
-reproducible. Esto es clave para mantener la integridad y trazabilidad
-de los datos a lo largo del análisis.
-
-1.  Crea la matriz de abundancias (`otu_table`) Cada fila representa una
-    secuencia (ASV) y cada columna una muestra. Aquí se almacena cuántas
-    veces aparece cada ASV en cada muestra.
-
-2.  Crea la tabla taxonómica (`tax_table`) Relaciona cada ASV con su
-    clasificación biológica (reino, filo, clase, orden, familia, género,
-    especie).
-
-3.  Agrega la metadata de las muestras (`sample_data`) Incluye
-    información ambiental y de muestreo para cada muestra (sitio, fecha,
-    coordenadas, etc.).
-
-4.  Integra todo en un objeto *phyloseq* El objeto phyloseq permite
-    manejar todos estos datos juntos, facilitando análisis de
-    diversidad, visualizaciones y filtrados.
-
-5.  Asigna las secuencias originales y renombra los ASVs Guarda las
-    secuencias originales en el objeto y les da nombres estandarizados
-    (ASV1, ASV2, ...).
 
 ```{r Creación del objeto phyloseq y asignación de secuencias}
 ASV  <- phyloseq::otu_table(ASV_mat, taxa_are_rows = TRUE)
@@ -277,24 +255,16 @@ ps <- phyloseq::merge_phyloseq(ps, dna)
 phyloseq::taxa_names(ps) <- paste0("ASV", seq_len(phyloseq::ntaxa(ps)))
 ```
 
--   `ps` muestra un resumen del objeto phyloseq, incluyendo el número de
-    ASVs, muestras y taxones.
+El objeto `ps` contiene ahora todos los datos integrados. Algunos accesos útiles:
 
--   `otu_table(ps)` accede a la matriz de abundancias.
-
--   `tax_table(ps)` accede a la tabla taxonómica.
-
--   `sample_data(ps)` accede a la metadata de las muestras.
-
--   `refseq(ps)` accede a las secuencias originales asociadas a cada
-    ASV.
+- `otu_table(ps)` — matriz de abundancias
+- `tax_table(ps)` — clasificación taxonómica
+- `sample_data(ps)` — metadata de muestras
+- `refseq(ps)` — secuencias originales de cada ASV
 
 ### Agrupación de ASVs por especie y cálculo de abundancias relativas
 
-Agrupamos las ASVs por especie para simplificar el análisis y calcular
-la abundancia relativa de cada especie en cada muestra. Esto nos permite
-comparar la composición de especies entre sitios y entender la
-estructura de las comunidades.
+Múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, etc.). La función `tax_glom()` colapsa todas las ASVs de una misma especie sumando sus abundancias, produciendo una tabla donde cada fila es una especie única. Sobre ese objeto se calculan las abundancias relativas dividiendo los conteos de cada muestra entre su total de lecturas, de modo que cada muestra suma 1 (o 100%).
 
 ```{r Agrupación de ASVs por especie y cálculo de abundancias relativas}
 # merge asvs by species
@@ -305,28 +275,32 @@ ps.sp.prop <- phyloseq::transform_sample_counts(ps.sp, function(x) x/sum(x))
 check_df <- as.data.frame(tax_table(ps.sp.prop))
 ```
 
+---
+
+## Tabla de abundancias y distribución de secuencias
+
 ### Generación de la tabla de abundancias por especie y muestra
 
-Creamos una tabla que muestra cuántas lecturas corresponden a cada
-especie en cada muestra. Esta tabla es útil para análisis personalizados
-y para exportar los resultados a otros formatos o programas.
+La tabla de abundancias por especie y muestra es el producto central del análisis: registra cuántas lecturas corresponden a cada especie en cada sitio de muestreo. Este formato tabular facilita el cálculo de índices de diversidad, la comparación entre sitios y la exportación de resultados para análisis en otros programas.
+
+La tabla se genera uniendo la matriz de ASVs con la tabla taxonómica y agregando las lecturas por especie y muestra. Se exporta en formato CSV para su uso posterior.
 
 ```{r Generación de la tabla de abundancias por especie y muestra}
 ASV.df<-as.data.frame(ASV)%>%
-  rownames_to_column(var="seqID") %>% 
+  rownames_to_column(var="seqID") %>%
   tidyr::pivot_longer(cols=-seqID,names_to = "Sample_name", values_to = "nReads")
-  
+
 TAXA.df<-as.data.frame(TAXA)%>%
   rownames_to_column(var="seqID")
 
-species.site.reads <- ASV.df %>% 
-  left_join(TAXA.df, by="seqID") %>% 
-  filter(!is.na(Species)) %>% 
+species.site.reads <- ASV.df %>%
+  left_join(TAXA.df, by="seqID") %>%
+  filter(!is.na(Species)) %>%
   group_by(Sample_name, Species)
 
 species.site.reads <- aggregate(nReads ~ Sample_name + Species, data = species.site.reads, sum)
-species.site.reads <- species.site.reads%>% 
-   pivot_wider(names_from = Sample_name, values_from = nReads, values_fill = 0) 
+species.site.reads <- species.site.reads%>%
+   pivot_wider(names_from = Sample_name, values_from = nReads, values_fill = 0)
 
 write.csv(species.site.reads, ruta_csv_output)
 
@@ -336,11 +310,11 @@ species.site.reads[1:10, 1:3] %>%
 
 ```
 
-### Visualización de la distribución de longitudes de secuencias
+### Distribución de longitudes de secuencias
 
-Analizar la longitud de las secuencias nos ayuda a verificar la calidad
-y consistencia de los datos. Secuencias demasiado cortas o largas pueden
-indicar problemas en la amplificación o secuenciación.
+Las ASVs generadas por DADA2 deben tener una longitud consistente con el amplicón esperado para el marcador utilizado. Secuencias demasiado cortas pueden ser artefactos del pipeline o primers mal recortados; secuencias muy largas pueden indicar uniones incorrectas entre lecturas forward y reverse o la presencia de insertos no esperados.
+
+El histograma siguiente muestra la distribución de longitudes de todas las ASVs detectadas. La línea naranja marca la mediana. Un buen resultado es una distribución estrecha, centrada en la longitud esperada del amplicón (para el gen 12S de peces, típicamente 160–185 bp).
 
 ```{r Visualización de la distribución de longitudes de secuencias, echo=FALSE}
 seq_lengths <- nchar(colnames(otu))
@@ -364,12 +338,17 @@ ggplot(df_lengths, aes(x = Length)) +
   )
 ```
 
+---
+
+## Diversidad alfa
+
+La diversidad alfa (α) describe la riqueza y equitatividad de especies *dentro* de cada muestra o sitio de muestreo. Es la forma más directa de responder la pregunta: ¿cuántas especies hay en cada sitio? Métricas comunes incluyen la riqueza observada (número de especies detectadas), el índice de Shannon (que pondera la equitatividad) y el índice de Simpson (más sensible a especies dominantes).
+
 ### Curva de acumulación de especies
 
-La curva de acumulación muestra cómo aumenta el número de especies
-detectadas a medida que se analizan más muestras. Es útil para evaluar
-si el muestreo fue suficiente y estimar la riqueza total de especies en
-el área de estudio.
+La curva de acumulación muestra cómo aumenta el número de especies detectadas a medida que se incorporan más muestras al análisis. Es una herramienta fundamental para evaluar la **suficiencia del muestreo**: si la curva se estabiliza (llega a una asíntota), el esfuerzo de muestreo fue suficiente para capturar la mayor parte de la diversidad del sistema. Si la curva sigue aumentando abruptamente, hay diversidad no detectada que requeriría más muestras.
+
+La línea discontinua naranja muestra el estimador de riqueza de Chao, que proporciona una estimación del número total de especies que podría haber en el sistema, incluidas las raras o poco detectadas.
 
 ```{r Curva de acumulación de especies, echo=FALSE}
 # Agrupar por Species
@@ -417,7 +396,60 @@ ggplot(acc_df, aes(samples, richness)) +
   )
 ```
 
-### Abundancia relativa, nivel Familia, barras apiladas
+### Especies observadas por muestra
+
+El número de especies observadas es el índice de diversidad alfa más directo e interpretable. Cada barra representa una muestra y su altura indica cuántas especies distintas se detectaron en ese sitio. Las diferencias entre sitios pueden reflejar gradientes ambientales reales, diferencias en el esfuerzo de muestreo, o variación estocástica.
+
+```{r Diversidad alfa: especies observadas por muestra, echo=FALSE}
+# Matriz de presencia/ausencia
+comm_pa <- as(otu_table(ps.sp), "matrix")
+if (taxa_are_rows(ps.sp)) comm_pa <- t(comm_pa)
+comm_pa <- (comm_pa > 0) * 1
+
+# Crear un vector con los nombres de las muestras en comm_pa
+comm_names <- rownames(comm_pa)
+
+# Crear un data frame que relacione los nombres de comm_pa con site_id de md
+df_match <- data.frame(
+  comm_name = comm_names,
+  site_id = md$site_id[match(comm_names, rownames(md))]
+)
+
+# Calcular especies observadas por muestra
+observed <- rowSums(comm_pa)
+
+# Crear tibble para graficar, usando site_id como eje x y respetando el orden de md$site_id
+alpha_df <- tibble::tibble(
+  site_id = factor(df_match$site_id, levels = unique(md$site_id)),
+  Observed = observed
+)
+
+ggplot(alpha_df, aes(x = site_id, y = Observed)) +
+  geom_col(fill = "#21908C", alpha = 0.85) +
+  geom_text(aes(label = Observed), vjust = -0.5, size = 3, color = "#440154") +
+  labs(
+    title = "Diversidad alfa: especies observadas por muestra",
+    x = "Sitio",
+    y = "Número de especies observadas"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.95, hjust = 1, size = 11),
+    panel.grid.minor = element_blank()
+  )
+```
+
+---
+
+## Composición taxonómica
+
+Los gráficos de barras apiladas (*stacked barplots*) muestran la **abundancia relativa** de cada taxón en cada muestra. La altura de cada segmento de color indica qué proporción del total de lecturas de ese sitio corresponde a esa familia o especie. Son la visualización estándar en estudios de metabarcoding para describir la composición y detectar taxones dominantes.
+
+### Abundancia relativa por familia
+
+Las barras muestran la composición taxonómica a nivel de familia en cada sitio. Este nivel de resolución facilita la comparación entre comunidades y la identificación de grupos funcionales dominantes. Familias con barras grandes y consistentes entre sitios indican taxa abundantes y ampliamente distribuidos en el Golfo de California.
 
 ```{r Abundancia relativa, nivel Familia, barras apiladas, echo=FALSE, warning=FALSE}
 dir.create(ruta_figs_fam, showWarnings = FALSE)
@@ -460,12 +492,9 @@ print(gp)
 ggsave(file.path(ruta_figs_fam, "abundancia_relativa_por_familia.png"), gp, width = 8, height = 5, dpi = 300)
 ```
 
-### Top 5 Familias, barras apiladas
+### Top 5 familias más abundantes
 
-Analizar la composición de especies dentro de las familias más
-abundantes permite entender la diversidad interna de cada grupo y
-detectar especies clave o raras. Es útil para estudios de conservación y
-para identificar especies indicadoras.
+Con muchas familias representadas, el gráfico completo puede ser difícil de interpretar. Para facilitar la comparación entre sitios, filtramos las **cinco familias más abundantes** en todo el dataset. Este subconjunto concentra típicamente la mayor parte de las lecturas y refleja los grupos ecológicamente más relevantes de la comunidad estudiada.
 
 ```{r Top 5 Familias, echo=FALSE, warning=FALSE}
 dir.create(ruta_figs_fam, showWarnings = FALSE)
@@ -499,12 +528,14 @@ print(gp)
 ggsave(file.path(ruta_figs_fam, "relative_abundance_by_top5_families.png"), gp, width = 8, height = 5, dpi = 300)
 ```
 
-### Abundancia relativa, nivel Especie, barras apiladas
+### Abundancia relativa por especie
+
+El análisis a nivel de especie proporciona la resolución taxonómica más fina disponible. Dado que el número de especies puede ser elevado, la paleta de colores es extensa y algunas especies pueden compartir tonos similares; por eso este gráfico se complementa con el análisis de las top especies en la siguiente sección.
 
 ```{r Abundancia relativa, nivel Especie, barras apiladas, echo=FALSE, warning=FALSE, fig.width=12, fig.height=10}
 dir.create(ruta_figs_sp, showWarnings = FALSE)
 
-# 
+#
 df <- psmelt(ps.sp.prop)
 df <- df %>% filter(site_id %in% md$site_id)
 df$site_id <- factor(df$site_id, levels = unique(md$site_id))
@@ -531,8 +562,8 @@ gp <- ggplot(df, aes(x = site_id, y = Abundance, fill = Species)) +
   theme(
    axis.text.x = element_text(angle = 90, vjust = 0.95, hjust = 1, size = 14),
     axis.text.y = element_text(size = 14),
-    axis.title.x = element_text(face = "bold", size = 18), 
-    axis.title.y = element_text(face = "bold", size = 18), 
+    axis.title.x = element_text(face = "bold", size = 18),
+    axis.title.y = element_text(face = "bold", size = 18),
     legend.position = "bottom",
     legend.key.size = unit(0.4, "cm"),
     legend.text = element_text(face = "italic", size = 12),
@@ -546,7 +577,9 @@ ggsave(file.path(ruta_figs_sp, "abundancia_relativa_por_especie.png"), gp, width
 
 ```
 
-### Top 5 Especies, barras apiladas
+### Top 5 especies más abundantes
+
+Las cinco especies que concentran la mayor proporción de lecturas en el dataset. Identificar las especies dominantes es un punto de partida fundamental para la interpretación ecológica: ¿son especies residentes o pelágicas? ¿tienen distribución amplia o están restringidas a ciertas regiones del Golfo?
 
 ```{r Top 5 Especies, barras apiladas, echo=FALSE, warning=FALSE}
 dir.create(ruta_figs_sp, showWarnings = FALSE)
@@ -588,12 +621,11 @@ ggsave(file.path(ruta_figs_sp, "abundancia_relativa_top5_especies.png"), gp, wid
 
 ```
 
-### Mock
+### Control positivo: muestra Mock
 
-La muestra MOCK es un control positivo que permite validar la eficiencia
-y precisión del pipeline de metabarcoding. Analizar MOCK ayuda a
-detectar posibles errores, contaminaciones o sesgos en la identificación
-de especies, asegurando la confiabilidad de los resultados.
+La muestra MOCK es un control positivo que contiene una mezcla conocida de ADN de especies seleccionadas en proporciones determinadas. Incluirla en el análisis permite validar la eficiencia y precisión del pipeline de extremo a extremo: ¿detectamos las especies que deben estar? ¿aparecen especies que no deberían estar (contaminación o asignación errónea)?
+
+Un MOCK bien resuelto muestra solo las especies esperadas, con abundancias proporcionales a las cantidades de ADN utilizadas. La presencia de especies adicionales o proporciones muy distorsionadas son señales de contaminación cruzada o errores en la asignación taxonómica.
 
 ```{r Mock, echo=FALSE}
 mock_name <- "12S-GC-013-d1_S13" # nombre de la muestra MOCK
@@ -637,60 +669,23 @@ ggplot(df_mock, aes(x = "MOCK", y = rel_abund, fill = Species)) +
   guides(fill = guide_legend(ncol = 2))
 ```
 
-### Diversidad alfa: especies observadas por muestra
+---
 
-La diversidad alfa nos da una medida de la riqueza de especies en cada
-muestra, permitiendo comparar sitios y detectar patrones de
-biodiversidad local. Es fundamental para entender la estructura interna
-de las comunidades y para identificar sitios de alta o baja diversidad.
+## Diversidad beta
 
-```{r Diversidad alfa: especies observadas por muestra, echo=FALSE}
-# Matriz de presencia/ausencia
-comm_pa <- as(otu_table(ps.sp), "matrix")
-if (taxa_are_rows(ps.sp)) comm_pa <- t(comm_pa)
-comm_pa <- (comm_pa > 0) * 1
+La diversidad beta (β) mide las **diferencias en composición de especies entre comunidades**. A diferencia de la diversidad alfa, que describe cada sitio por separado, la diversidad beta evalúa qué tan distintos son los sitios entre sí. Es la herramienta clave para responder preguntas como: ¿se agrupan los sitios por región geográfica? ¿Hay un recambio de especies a lo largo del Golfo de California?
 
-# Crear un vector con los nombres de las muestras en comm_pa
-comm_names <- rownames(comm_pa)
+El flujo de análisis que seguimos es:
 
-# Crear un data frame que relacione los nombres de comm_pa con site_id de md
-df_match <- data.frame(
-  comm_name = comm_names,
-  site_id = md$site_id[match(comm_names, rownames(md))]
-)
+1. Calcular una **matriz de disimilitud** (Jaccard, basada en presencia/ausencia de especies)
+2. Probar estadísticamente si las diferencias entre grupos son significativas (**ANOSIM** y **PERMANOVA**)
+3. Visualizar la estructura de las comunidades en un espacio reducido (**NMDS**)
 
-# Calcular especies observadas por muestra
-observed <- rowSums(comm_pa)
+### Análisis de similitud entre regiones (ANOSIM)
 
-# Crear tibble para graficar, usando site_id como eje x y respetando el orden de md$site_id
-alpha_df <- tibble::tibble(
-  site_id = factor(df_match$site_id, levels = unique(md$site_id)),
-  Observed = observed
-)
+ANOSIM (*Analysis of Similarities*) evalúa si las distancias entre muestras de distintos grupos (inter-región) son mayores que las distancias dentro de cada grupo (intra-región). El estadístico **R** va de −1 a 1: valores cercanos a 1 indican grupos bien separados, valores cercanos a 0 indican que no hay diferencia entre grupos. El **p-valor** indica si el resultado es estadísticamente significativo.
 
-ggplot(alpha_df, aes(x = site_id, y = Observed)) +
-  geom_col(fill = "#21908C", alpha = 0.85) +
-  geom_text(aes(label = Observed), vjust = -0.5, size = 3, color = "#440154") +
-  labs(
-    title = "Diversidad alfa: especies observadas por muestra",
-    x = "Sitio",
-    y = "Número de especies observadas"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 90, vjust = 0.95, hjust = 1, size = 11),
-    panel.grid.minor = element_blank()
-  )
-```
-
-### Análisis de similitud entre sitios (ANOSIM)
-
-ANOSIM permite evaluar estadísticamente si las diferencias entre grupos
-de muestras (por ejemplo, regiones) son significativas. Esto ayuda a
-validar si los patrones observados en los gráficos reflejan diferencias
-reales en la composición de las comunidades.
+El gráfico de violín permite visualizar la distribución de distancias intra e inter región, complementando la interpretación del estadístico R.
 
 ```{r Análisis de similitud entre sitios (ANOSIM), echo=FALSE}
 # Reconstruir comm_filt si no existe
@@ -760,23 +755,20 @@ ggplot(df_dist, aes(x = tipo, y = distancia, fill = tipo)) +
 
 ### Análisis de varianza permutacional (PERMANOVA)
 
-PERMANOVA permite probar hipótesis sobre el efecto de variables
-ambientales o categóricas en la composición de las comunidades. Es una
-herramienta robusta para analizar datos ecológicos complejos y para
-identificar factores que estructuran la biodiversidad.
+PERMANOVA (*Permutational Multivariate Analysis of Variance*, `adonis2`) evalúa si una variable categórica —en este caso la región geográfica— explica una parte significativa de la variación en la composición de las comunidades. El estadístico **R²** indica la proporción de varianza explicada por la región; el **p-valor** se obtiene por permutaciones aleatorias de las etiquetas de grupo.
+
+A diferencia de ANOSIM, PERMANOVA es más flexible y puede incluir múltiples variables explicativas. Sin embargo, es sensible a diferencias en la dispersión entre grupos (homogeneidad de varianzas), por lo que se recomienda interpretar en conjunto con ANOSIM.
 
 ```{r Análisis de varianza permutacional (PERMANOVA)}
 permanova_res <- vegan::adonis2(comm_filt ~ region_gc, data = meta_filt, permutations = 999, method = "bray")
 print(permanova_res)
 ```
 
-### Non-metric Multidimensional Scaling (NMDS) 
+### NMDS: visualización de la composición comunitaria
 
-La diversidad beta analiza las diferencias entre comunidades, ayudando a
-identificar agrupamientos, gradientes ecológicos o efectos de factores
-ambientales. El NMDS es una herramienta visual poderosa para explorar la
-estructura de las comunidades y detectar patrones de similitud o
-diferenciación entre sitios.
+NMDS (*Non-metric Multidimensional Scaling*) es un método de ordenación que representa las distancias entre comunidades en un espacio de baja dimensión (generalmente 2D o 3D), preservando al máximo las relaciones de disimilitud originales. Cada punto representa una muestra; sitios cercanos en el gráfico tienen comunidades de peces más similares.
+
+El **stress** indica la fidelidad de la representación: valores < 0.1 son excelentes, < 0.2 son aceptables. Los valores de ANOSIM y PERMANOVA se muestran directamente en el gráfico para facilitar la interpretación conjunta.
 
 ```{r Diversidad beta: matriz de distancias y NMDS , echo=FALSE, fig.width=8, fig.height=6}
 # Matriz de presencia/ausencia
@@ -860,7 +852,20 @@ ggplot(nmds_df, aes(x = MDS1, y = MDS2, color = region_gc, fill = region_gc)) +
   )
 ```
 
-### Enfoque libre de taxonomia
+---
+
+## Enfoque libre de taxonomía
+
+En todos los análisis anteriores colapsamos las ASVs por especie antes de calcular diversidad beta. Esto requiere que cada ASV tenga una asignación taxonómica confiable, lo cual no siempre ocurre: una fracción de las ASVs puede quedar sin asignar a nivel de especie, especialmente cuando la base de datos de referencia tiene cobertura incompleta.
+
+El **enfoque libre de taxonomía** (*taxonomy-free approach*) omite el paso de asignación y trabaja directamente con las ASVs como unidades de diversidad, sin importar si fueron identificadas o no. Esto tiene dos ventajas:
+
+1. **Aprovecha toda la información disponible**, incluidas las ASVs sin asignar.
+2. **Es más sensible a diferencias sutiles** en la composición de la comunidad a nivel molecular, ya que dos sitios pueden compartir las mismas especies pero tener ASVs distintas (variantes genéticas diferentes).
+
+La comparación entre los resultados obtenidos con ambos enfoques permite evaluar si las conclusiones ecológicas son robustas independientemente de la taxonomía.
+
+### NMDS libre de taxonomía
 
 ```{r Enfoque libre de taxonomia,echo=FALSE,warning=FALSE}
 # Matriz de abundancias de ASVs por sitio (ya creada como ASV_mat)
@@ -921,7 +926,7 @@ ggplot(nmds_asv_df, aes(x = MDS1, y = MDS2, color = region_gc, fill = region_gc)
   )
 ```
 
-### ANOSIM
+### ANOSIM libre de taxonomía
 
 ```{r  ANOSIM - ASV , echo=FALSE}
 anosim_asv_res <- vegan::anosim(dist_asv, nmds_asv_df$region_gc)
@@ -972,46 +977,18 @@ ggplot(df_dist_asv, aes(x = tipo, y = distancia, fill = tipo)) +
   )
 ```
 
-### Análisis de varianza permutacional (PERMANOVA) - ASV
+### PERMANOVA libre de taxonomía
 
 ```{r PERMANOVA - ASV, echo=FALSE}
 permanova_asv_res <- vegan::adonis2(comm_filt ~ region_gc, data = nmds_asv_df, permutations = 999, method = "jaccard")
 print(permanova_asv_res)
 ```
 
-### Gráfico NMDS final - ASV
+### NMDS final con estadísticos
 
-Este gráfico muestra la estructura de las comunidades de peces en el
-Golfo de California, comparando dos regiones ("Centro" y "Norte")
-mediante un análisis NMDS basado en la distancia Jaccard.
+Este gráfico muestra la estructura de las comunidades de peces en el Golfo de California usando directamente los ASVs como unidades de diversidad. La comparación con el NMDS basado en especies (sección anterior) permite evaluar si las conclusiones son consistentes independientemente del enfoque utilizado.
 
--   Cada punto representa una muestra (sitio) y su posición refleja la
-    composición de especies: sitios más cercanos tienen comunidades más
-    similares.
-
--   Los colores y elipses agrupan las muestras por región ("Centro" en
-    verde y "Norte" en morado), mostrando la tendencia de agrupamiento
-    regional.
-
--   Las etiquetas identifican cada sitio de muestreo.
-
--   Valores estadísticos en la esquina inferior izquierda:
-
-    -   PERMANOVA: F = 1.19, R² = 0.06, p = 0.27. Indica que no hay
-        diferencias significativas en la composición de especies entre
-        regiones (p \> 0.05).
-
-    -   ANOSIM: R = 0.22, p = 0.043. Indica una diferencia significativa
-        pero pequeña entre regiones (p \< 0.05).
-
-    -   Stress: 0.033. Un valor bajo, lo que significa que la
-        representación gráfica es fiel a las distancias reales entre
-        comunidades.
-
-El gráfico sugiere que hay una ligera diferencia en la composición de
-especies entre las regiones "Centro" y "Norte", respaldada por ANOSIM
-pero no por PERMANOVA. La agrupación por región es visible, pero las
-comunidades no están completamente separadas.
+Cada punto representa un sitio de muestreo; los colores y elipses agrupan los sitios por región geográfica. Los estadísticos en la esquina inferior izquierda resumen la evidencia de diferenciación entre regiones.
 
 ```{r plot final NMDS - ASV, echo=FALSE}
 ggplot(nmds_asv_df, aes(x = MDS1, y = MDS2, color = region_gc, fill = region_gc)) +
