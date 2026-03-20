@@ -190,10 +190,32 @@ dev.off()
 
 | Senal | Interpretación |
 |-------|---------------|
-| Puntos rojos cerca de la linea negra | Buen ajuste del modelo [OK] |
-| Puntos muy dispersos | Datos insuficientes o calidad variable |
-| Tasas de error > 10% (A->C, etc.) | Posible problema de calidad del run |
-| Transiciones correctas (A->A) cerca de 1.0 | Normal |
+| Puntos grises cerca de la linea negra | Buen ajuste del modelo [OK] |
+| Puntos muy dispersos | Datos insuficientes o calidad variable en ese bin de Q |
+| Tasas de error > 10% en Q≥20 (A->C, etc.) | Posible problema de calidad del run |
+| Transiciones correctas (A->A, C->C…) altas y planas | Normal — no son errores |
+
+### Los tres elementos del gráfico
+
+La gráfica tiene 16 paneles — uno por cada posible transición entre bases (4 bases × 4 posibles lecturas). Se organizan en una cuadrícula de 4×4:
+
+- **Diagonal (A2A, C2C, G2G, T2T):** lectura *correcta* — la base real y la leída son la misma. La probabilidad es alta (cerca de 1.0) y se mantiene plana conforme sube el Q-score. Estos paneles no representan errores; son la referencia de que el modelo funciona.
+
+- **Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):** errores reales — la secuenciadora leyó una base distinta a la real. La tasa debe **bajar** conforme sube el Q-score (eje X): a mayor calidad Phred, menos errores de ese tipo.
+
+Cada panel tiene tres elementos:
+
+| Elemento | Qué representa |
+|----------|---------------|
+| Puntos grises | Tasas de error **observadas** en tus datos, agrupadas por Q-score |
+| Línea negra | Modelo ajustado por DADA2 — lo que aprendió `learnErrors()` |
+| Línea roja | Tasa teórica según la definición nominal del Q-score (Q20 = 1 error/100 bases, Q30 = 1/1000, etc.) |
+
+La línea negra no tiene que coincidir con la línea roja: la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real. Lo que importa es que la **línea negra siga los puntos grises**.
+
+::: {.callout-tip icon="false"}
+**Ondulaciones en la línea negra** en calidades intermedias (Q15–Q25) son normales cuando hay pocos reads en esos bins. No indican un problema si el patrón general sigue siendo decreciente.
+:::
 
 ---
 
