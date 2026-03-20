@@ -305,27 +305,4 @@ load(file.path(output_location, "rdata_output",
 
 ---
 
-## Checkpoint — Antes de continuar con quimeras
-
-Antes de pasar al siguiente paso guarda todos los objetos necesarios en un archivo `.RData`. Si el script se interrumpe podrás retomar desde aquí sin repetir la dereplicación, el aprendizaje de errores ni la inferencia de ASVs.
-
-```{r eval=FALSE}
-save(dadaFs, dadaRs, derepFs, derepRs, errF, errR,
-     filtFs, filtRs, sample.names, primer.data, run_name, out,
-     file = file.path(output_location, "rdata_output",
-                      paste0(run_name, "_", primer.data$locus_shorthand[i],
-                             "_checkpoint_antes_quimeras.RData")))
-message("Checkpoint guardado — listo para remoción de quimeras")
-```
-
-Para reanudar desde este punto en otra sesión:
-
-```{r eval=FALSE}
-load(file.path(output_location, "rdata_output",
-               paste0(run_name, "_", primer.data$locus_shorthand[i],
-                      "_checkpoint_antes_quimeras.RData")))
-```
-
----
-
 [→ Siguiente: DADA2 — Remoción de quimeras y seguimiento de lecturas](2-dada2QAQC-Chimeras.qmd){.btn .btn-primary}

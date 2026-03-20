@@ -213,3 +213,27 @@ Las quimeras son artefactos de PCR, no errores de secuenciación. Por eso dada2 
 3. Revisa la tabla de tracking  -  ?en que paso se pierde mas lectura?
 4. ¿Hay muestras con retención < 30% en algun paso?
 :::
+
+---
+
+## Checkpoint — Antes de asignación taxonómica
+
+Guarda todos los objetos necesarios antes de continuar con la asignación taxonómica. Si el script se interrumpe podrás retomar desde aquí sin repetir ninguno de los pasos anteriores.
+
+```{r eval=FALSE}
+save(cleaned.seqtab.nochim, seqtab.nochim, seqtab,
+     dadaFs, dadaRs, mergers, track,
+     sample.names, primer.data, run_name, out,
+     file = file.path(output_location, "rdata_output",
+                      paste0(run_name, "_", primer.data$locus_shorthand[i],
+                             "_checkpoint_antes_taxonomy.RData")))
+message("Checkpoint guardado — listo para asignación taxonómica")
+```
+
+Para reanudar desde este punto en otra sesión:
+
+```{r eval=FALSE}
+load(file.path(output_location, "rdata_output",
+               paste0(run_name, "_", primer.data$locus_shorthand[i],
+                      "_checkpoint_antes_taxonomy.RData")))
+```
