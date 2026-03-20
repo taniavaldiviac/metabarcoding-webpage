@@ -403,7 +403,7 @@
     "href": "0-Conexion-clonacion.html#qué-contiene-este-repositorio",
     "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "¿Qué contiene este repositorio?",
-    "text": "¿Qué contiene este repositorio?\n\nscripts/: Scripts numerados en orden de ejecución (bash, R, Quarto).\nraw_fastqs/: Archivos FASTQ originales.\nfor_dada2/: Archivos procesados listos para DADA2.\ncutadapt_reports/: Reportes del preprocesamiento con Cutadapt.\nfinal_data/: Resultados del análisis (tablas, figuras, RData).\nmetadata/: Archivos de configuración (primers, metadatos).\n\n\n\n\n\n\n\n\nNotaRecuerda\n\n\n\n\nUsa siempre ~/metabarcoding-code como tu directorio de proyecto.\nLos paquetes de R están disponibles automáticamente — no necesitas instalar nada.\nActiva conda activate metabarcoding solo para los pasos de QC y Cutadapt."
+    "text": "¿Qué contiene este repositorio?\n\nscripts/: Scripts numerados en orden de ejecución (bash, R, Quarto).\nraw_fastqs/: Archivos FASTQ originales.\nfor_dada2/: Archivos procesados listos para DADA2.\ncutadapt_reports/: Reportes del preprocesamiento con Cutadapt.\nfinal_data/: Resultados del análisis (tablas, figuras, RData).\nmetadata/: Archivos de configuración (primers, metadatos).\n\nPara explorar el contenido del repositorio:\nls -l ~/metabarcoding-code/\nY para ver los archivos FASTQ disponibles:\nls -lh ~/metabarcoding-code/raw_fastqs/\n\n\n\n\n\n\n\nNotaRecuerda\n\n\n\n\nUsa siempre ~/metabarcoding-code como tu directorio de proyecto.\nLos paquetes de R están disponibles automáticamente — no necesitas instalar nada.\nActiva conda activate metabarcoding solo para los pasos de QC y Cutadapt."
   },
   {
     "objectID": "0b-linux-r-intro.html",
