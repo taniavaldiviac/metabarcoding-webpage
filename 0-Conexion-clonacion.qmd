@@ -163,6 +163,9 @@ head ~/metabarcoding-code/metadata/metadata.csv
 | `region` | Región geográfica del estudio |
 | `locus_shorthand` | Marcador al que corresponde la muestra |
 | `sequencing_lane` | Carril de secuenciación (para estudios multi-lane) |
+| `replicate` | Número de réplica técnica (1, 2, 3…) |
+| `filename_base` | Nombre del archivo tal como lo entrega el secuenciador — se llena manualmente |
+| `rename_to` | Nombre generado automáticamente al que se renombrará el archivo para entrar al pipeline (ej. `12S-GC-001-d1_1_S1_L001`) |
 
 ---
 
