@@ -519,12 +519,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(lengths_all, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">fill =</span> ReadType)) <span class="sc">+</span></span>
 <span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
 <span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> ReadType, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribución de longitudes de lecturas crudas (primeras 100k por archivo)"</span>,</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>                    <span class="at">x =</span> <span class="st">"Longitud (bp)"</span>, <span class="at">y =</span> <span class="st">"Frecuencia"</span>) <span class="sc">+</span></span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(lengths_all<span class="sc">$</span>Length, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">by =</span> <span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribución de longitudes de lecturas crudas (primeras 100k por archivo)"</span>,</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>                    <span class="at">x =</span> <span class="st">"Longitud (bp)"</span>, <span class="at">y =</span> <span class="st">"Frecuencia"</span>) <span class="sc">+</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">7</span>))</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>La gráfica se guarda en <code>final_data/logs/</code> con el sufijo <code>_raw_read_lengths.png</code>.</p>
@@ -1363,104 +1365,106 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-253"><a href="#cb16-253" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(lengths_all, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">fill =</span> ReadType)) <span class="sc">+</span></span>
 <span id="cb16-254"><a href="#cb16-254" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
 <span id="cb16-255"><a href="#cb16-255" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> ReadType, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb16-256"><a href="#cb16-256" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribución de longitudes de lecturas crudas (primeras 100k por archivo)"</span>,</span>
-<span id="cb16-257"><a href="#cb16-257" aria-hidden="true" tabindex="-1"></a>                    <span class="at">x =</span> <span class="st">"Longitud (bp)"</span>, <span class="at">y =</span> <span class="st">"Frecuencia"</span>) <span class="sc">+</span></span>
-<span id="cb16-258"><a href="#cb16-258" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span>
-<span id="cb16-259"><a href="#cb16-259" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb16-260"><a href="#cb16-260" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
-<span id="cb16-261"><a href="#cb16-261" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb16-262"><a href="#cb16-262" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-263"><a href="#cb16-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-264"><a href="#cb16-264" aria-hidden="true" tabindex="-1"></a>La gráfica se guarda en <span class="in">`final_data/logs/`</span> con el sufijo <span class="in">`_raw_read_lengths.png`</span>.</span>
+<span id="cb16-256"><a href="#cb16-256" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(lengths_all<span class="sc">$</span>Length, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">by =</span> <span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb16-257"><a href="#cb16-257" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribución de longitudes de lecturas crudas (primeras 100k por archivo)"</span>,</span>
+<span id="cb16-258"><a href="#cb16-258" aria-hidden="true" tabindex="-1"></a>                    <span class="at">x =</span> <span class="st">"Longitud (bp)"</span>, <span class="at">y =</span> <span class="st">"Frecuencia"</span>) <span class="sc">+</span></span>
+<span id="cb16-259"><a href="#cb16-259" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb16-260"><a href="#cb16-260" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">7</span>))</span>
+<span id="cb16-261"><a href="#cb16-261" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-262"><a href="#cb16-262" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
+<span id="cb16-263"><a href="#cb16-263" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-264"><a href="#cb16-264" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb16-265"><a href="#cb16-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-266"><a href="#cb16-266" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-266"><a href="#cb16-266" aria-hidden="true" tabindex="-1"></a>La gráfica se guarda en <span class="in">`final_data/logs/`</span> con el sufijo <span class="in">`_raw_read_lengths.png`</span>.</span>
 <span id="cb16-267"><a href="#cb16-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-268"><a href="#cb16-268" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 11 — Filtrado y trimming</span></span>
+<span id="cb16-268"><a href="#cb16-268" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb16-269"><a href="#cb16-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-270"><a href="#cb16-270" aria-hidden="true" tabindex="-1"></a>El pipeline valida primero que los puntos de truncamiento sean razonables (mínimo 50 bp) y luego ejecuta el filtrado dentro de un <span class="in">`tryCatch`</span> para dar un mensaje claro si algo falla. El <span class="in">`truncLen`</span> está definido en el script — ajústalo si tus perfiles de calidad indican un punto diferente:</span>
+<span id="cb16-270"><a href="#cb16-270" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 11 — Filtrado y trimming</span></span>
 <span id="cb16-271"><a href="#cb16-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-272"><a href="#cb16-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-273"><a href="#cb16-273" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar que los puntos de truncamiento son razonables</span></span>
-<span id="cb16-274"><a href="#cb16-274" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(where_trim_all_Fs) <span class="sc">||</span> where_trim_all_Fs <span class="sc">&lt;</span> <span class="dv">50</span>) {</span>
-<span id="cb16-275"><a href="#cb16-275" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"truncLen_F muy bajo o NA ("</span>, where_trim_all_Fs, <span class="st">"). Revisa calidad de Forward."</span>)</span>
-<span id="cb16-276"><a href="#cb16-276" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb16-277"><a href="#cb16-277" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(where_trim_all_Rs) <span class="sc">||</span> where_trim_all_Rs <span class="sc">&lt;</span> <span class="dv">50</span>) {</span>
-<span id="cb16-278"><a href="#cb16-278" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"truncLen_R muy bajo o NA ("</span>, where_trim_all_Rs, <span class="st">"). Revisa calidad de Reverse."</span>)</span>
-<span id="cb16-279"><a href="#cb16-279" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb16-280"><a href="#cb16-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-281"><a href="#cb16-281" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
-<span id="cb16-282"><a href="#cb16-282" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filterAndTrim</span>(</span>
-<span id="cb16-283"><a href="#cb16-283" aria-hidden="true" tabindex="-1"></a>    fnFs, filtFs, fnRs, filtRs,</span>
-<span id="cb16-284"><a href="#cb16-284" aria-hidden="true" tabindex="-1"></a>    <span class="at">truncLen    =</span> <span class="fu">c</span>(<span class="dv">65</span>, <span class="dv">65</span>),   <span class="co"># ajustar según perfiles de calidad del run</span></span>
-<span id="cb16-285"><a href="#cb16-285" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxN        =</span> <span class="dv">0</span>,           <span class="co"># elimina lecturas con Ns</span></span>
-<span id="cb16-286"><a href="#cb16-286" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),     <span class="co"># máximo 2 errores esperados por lectura</span></span>
-<span id="cb16-287"><a href="#cb16-287" aria-hidden="true" tabindex="-1"></a>    <span class="at">truncQ      =</span> <span class="dv">2</span>,           <span class="co"># trunca si encuentra base con calidad &lt; 2</span></span>
-<span id="cb16-288"><a href="#cb16-288" aria-hidden="true" tabindex="-1"></a>    <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,        <span class="co"># remueve contaminación PhiX de Illumina</span></span>
-<span id="cb16-289"><a href="#cb16-289" aria-hidden="true" tabindex="-1"></a>    <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-290"><a href="#cb16-290" aria-hidden="true" tabindex="-1"></a>    <span class="at">multithread =</span> <span class="dv">4</span>,</span>
-<span id="cb16-291"><a href="#cb16-291" aria-hidden="true" tabindex="-1"></a>    <span class="at">matchIDs    =</span> <span class="cn">TRUE</span>         <span class="co"># asegura pareado correcto F/R</span></span>
-<span id="cb16-292"><a href="#cb16-292" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb16-293"><a href="#cb16-293" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
-<span id="cb16-294"><a href="#cb16-294" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error en filterAndTrim: "</span>, <span class="fu">conditionMessage</span>(e),</span>
-<span id="cb16-295"><a href="#cb16-295" aria-hidden="true" tabindex="-1"></a>       <span class="st">"</span><span class="sc">\n</span><span class="st">Revisa que los archivos FASTQ existan y no estén corruptos."</span>)</span>
-<span id="cb16-296"><a href="#cb16-296" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb16-297"><a href="#cb16-297" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-298"><a href="#cb16-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-299"><a href="#cb16-299" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-272"><a href="#cb16-272" aria-hidden="true" tabindex="-1"></a>El pipeline valida primero que los puntos de truncamiento sean razonables (mínimo 50 bp) y luego ejecuta el filtrado dentro de un <span class="in">`tryCatch`</span> para dar un mensaje claro si algo falla. El <span class="in">`truncLen`</span> está definido en el script — ajústalo si tus perfiles de calidad indican un punto diferente:</span>
+<span id="cb16-273"><a href="#cb16-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-274"><a href="#cb16-274" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-275"><a href="#cb16-275" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar que los puntos de truncamiento son razonables</span></span>
+<span id="cb16-276"><a href="#cb16-276" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(where_trim_all_Fs) <span class="sc">||</span> where_trim_all_Fs <span class="sc">&lt;</span> <span class="dv">50</span>) {</span>
+<span id="cb16-277"><a href="#cb16-277" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"truncLen_F muy bajo o NA ("</span>, where_trim_all_Fs, <span class="st">"). Revisa calidad de Forward."</span>)</span>
+<span id="cb16-278"><a href="#cb16-278" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-279"><a href="#cb16-279" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(where_trim_all_Rs) <span class="sc">||</span> where_trim_all_Rs <span class="sc">&lt;</span> <span class="dv">50</span>) {</span>
+<span id="cb16-280"><a href="#cb16-280" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"truncLen_R muy bajo o NA ("</span>, where_trim_all_Rs, <span class="st">"). Revisa calidad de Reverse."</span>)</span>
+<span id="cb16-281"><a href="#cb16-281" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-282"><a href="#cb16-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-283"><a href="#cb16-283" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb16-284"><a href="#cb16-284" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filterAndTrim</span>(</span>
+<span id="cb16-285"><a href="#cb16-285" aria-hidden="true" tabindex="-1"></a>    fnFs, filtFs, fnRs, filtRs,</span>
+<span id="cb16-286"><a href="#cb16-286" aria-hidden="true" tabindex="-1"></a>    <span class="at">truncLen    =</span> <span class="fu">c</span>(<span class="dv">65</span>, <span class="dv">65</span>),   <span class="co"># ajustar según perfiles de calidad del run</span></span>
+<span id="cb16-287"><a href="#cb16-287" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxN        =</span> <span class="dv">0</span>,           <span class="co"># elimina lecturas con Ns</span></span>
+<span id="cb16-288"><a href="#cb16-288" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),     <span class="co"># máximo 2 errores esperados por lectura</span></span>
+<span id="cb16-289"><a href="#cb16-289" aria-hidden="true" tabindex="-1"></a>    <span class="at">truncQ      =</span> <span class="dv">2</span>,           <span class="co"># trunca si encuentra base con calidad &lt; 2</span></span>
+<span id="cb16-290"><a href="#cb16-290" aria-hidden="true" tabindex="-1"></a>    <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,        <span class="co"># remueve contaminación PhiX de Illumina</span></span>
+<span id="cb16-291"><a href="#cb16-291" aria-hidden="true" tabindex="-1"></a>    <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-292"><a href="#cb16-292" aria-hidden="true" tabindex="-1"></a>    <span class="at">multithread =</span> <span class="dv">4</span>,</span>
+<span id="cb16-293"><a href="#cb16-293" aria-hidden="true" tabindex="-1"></a>    <span class="at">matchIDs    =</span> <span class="cn">TRUE</span>         <span class="co"># asegura pareado correcto F/R</span></span>
+<span id="cb16-294"><a href="#cb16-294" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-295"><a href="#cb16-295" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb16-296"><a href="#cb16-296" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error en filterAndTrim: "</span>, <span class="fu">conditionMessage</span>(e),</span>
+<span id="cb16-297"><a href="#cb16-297" aria-hidden="true" tabindex="-1"></a>       <span class="st">"</span><span class="sc">\n</span><span class="st">Revisa que los archivos FASTQ existan y no estén corruptos."</span>)</span>
+<span id="cb16-298"><a href="#cb16-298" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb16-299"><a href="#cb16-299" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb16-300"><a href="#cb16-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-301"><a href="#cb16-301" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 12 — Verificar retención</span></span>
+<span id="cb16-301"><a href="#cb16-301" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb16-302"><a href="#cb16-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-303"><a href="#cb16-303" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-304"><a href="#cb16-304" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
-<span id="cb16-305"><a href="#cb16-305" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
-<span id="cb16-306"><a href="#cb16-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-307"><a href="#cb16-307" aria-hidden="true" tabindex="-1"></a><span class="co"># Muestras con retención muy baja</span></span>
-<span id="cb16-308"><a href="#cb16-308" aria-hidden="true" tabindex="-1"></a>low_retention <span class="ot">&lt;-</span> out[,<span class="st">"reads.out"</span>] <span class="sc">/</span> out[,<span class="st">"reads.in"</span>] <span class="sc">&lt;</span> <span class="fl">0.3</span></span>
-<span id="cb16-309"><a href="#cb16-309" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
-<span id="cb16-310"><a href="#cb16-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-311"><a href="#cb16-311" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar tabla</span></span>
-<span id="cb16-312"><a href="#cb16-312" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(out,</span>
-<span id="cb16-313"><a href="#cb16-313" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
-<span id="cb16-314"><a href="#cb16-314" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_filterAndTrim_stats.csv"</span>)),</span>
-<span id="cb16-315"><a href="#cb16-315" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-316"><a href="#cb16-316" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-317"><a href="#cb16-317" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span>
-<span id="cb16-318"><a href="#cb16-318" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-319"><a href="#cb16-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-320"><a href="#cb16-320" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Retención global <span class="pp">|</span> Interpretación <span class="pp">|</span></span>
-<span id="cb16-321"><a href="#cb16-321" aria-hidden="true" tabindex="-1"></a><span class="pp">|-----------------|----------------|</span></span>
-<span id="cb16-322"><a href="#cb16-322" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> &gt; 70% <span class="pp">|</span> Normal <span class="pp">|</span></span>
-<span id="cb16-323"><a href="#cb16-323" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 50-70% <span class="pp">|</span> Aceptable  -  revisar parámetros <span class="pp">|</span></span>
-<span id="cb16-324"><a href="#cb16-324" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> &lt; 50% <span class="pp">|</span> Bajo  -  relajar <span class="in">`maxEE`</span> o <span class="in">`truncLen`</span> <span class="pp">|</span></span>
-<span id="cb16-325"><a href="#cb16-325" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> &lt; 30% en una muestra <span class="pp">|</span> Muestra problematica  -  revisar QC <span class="pp">|</span></span>
-<span id="cb16-326"><a href="#cb16-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-327"><a href="#cb16-327" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-303"><a href="#cb16-303" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 12 — Verificar retención</span></span>
+<span id="cb16-304"><a href="#cb16-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-305"><a href="#cb16-305" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-306"><a href="#cb16-306" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb16-307"><a href="#cb16-307" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
+<span id="cb16-308"><a href="#cb16-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-309"><a href="#cb16-309" aria-hidden="true" tabindex="-1"></a><span class="co"># Muestras con retención muy baja</span></span>
+<span id="cb16-310"><a href="#cb16-310" aria-hidden="true" tabindex="-1"></a>low_retention <span class="ot">&lt;-</span> out[,<span class="st">"reads.out"</span>] <span class="sc">/</span> out[,<span class="st">"reads.in"</span>] <span class="sc">&lt;</span> <span class="fl">0.3</span></span>
+<span id="cb16-311"><a href="#cb16-311" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
+<span id="cb16-312"><a href="#cb16-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-313"><a href="#cb16-313" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar tabla</span></span>
+<span id="cb16-314"><a href="#cb16-314" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(out,</span>
+<span id="cb16-315"><a href="#cb16-315" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb16-316"><a href="#cb16-316" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_filterAndTrim_stats.csv"</span>)),</span>
+<span id="cb16-317"><a href="#cb16-317" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-318"><a href="#cb16-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-319"><a href="#cb16-319" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span>
+<span id="cb16-320"><a href="#cb16-320" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-321"><a href="#cb16-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-322"><a href="#cb16-322" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Retención global <span class="pp">|</span> Interpretación <span class="pp">|</span></span>
+<span id="cb16-323"><a href="#cb16-323" aria-hidden="true" tabindex="-1"></a><span class="pp">|-----------------|----------------|</span></span>
+<span id="cb16-324"><a href="#cb16-324" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> &gt; 70% <span class="pp">|</span> Normal <span class="pp">|</span></span>
+<span id="cb16-325"><a href="#cb16-325" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 50-70% <span class="pp">|</span> Aceptable  -  revisar parámetros <span class="pp">|</span></span>
+<span id="cb16-326"><a href="#cb16-326" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> &lt; 50% <span class="pp">|</span> Bajo  -  relajar <span class="in">`maxEE`</span> o <span class="in">`truncLen`</span> <span class="pp">|</span></span>
+<span id="cb16-327"><a href="#cb16-327" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> &lt; 30% en una muestra <span class="pp">|</span> Muestra problematica  -  revisar QC <span class="pp">|</span></span>
 <span id="cb16-328"><a href="#cb16-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-329"><a href="#cb16-329" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 13 — Guardar checkpoint después de filterAndTrim</span></span>
+<span id="cb16-329"><a href="#cb16-329" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb16-330"><a href="#cb16-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-331"><a href="#cb16-331" aria-hidden="true" tabindex="-1"></a>El pipeline guarda automáticamente un checkpoint <span class="in">`.RData`</span> después de <span class="in">`filterAndTrim()`</span>. Si necesitas reanudar el análisis desde este punto (por ejemplo, para ajustar parámetros de denoising sin repetir el filtrado), puedes cargar este archivo:</span>
+<span id="cb16-331"><a href="#cb16-331" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 13 — Guardar checkpoint después de filterAndTrim</span></span>
 <span id="cb16-332"><a href="#cb16-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-333"><a href="#cb16-333" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-334"><a href="#cb16-334" aria-hidden="true" tabindex="-1"></a><span class="co"># El pipeline guarda:</span></span>
-<span id="cb16-335"><a href="#cb16-335" aria-hidden="true" tabindex="-1"></a><span class="co"># final_data/rdata_output/&lt;run_name&gt;_&lt;locus&gt;_checkpoint1_filterAndTrim.RData</span></span>
-<span id="cb16-336"><a href="#cb16-336" aria-hidden="true" tabindex="-1"></a><span class="co"># Contiene: out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name</span></span>
-<span id="cb16-337"><a href="#cb16-337" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-338"><a href="#cb16-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-339"><a href="#cb16-339" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto en otra sesión:</span>
+<span id="cb16-333"><a href="#cb16-333" aria-hidden="true" tabindex="-1"></a>El pipeline guarda automáticamente un checkpoint <span class="in">`.RData`</span> después de <span class="in">`filterAndTrim()`</span>. Si necesitas reanudar el análisis desde este punto (por ejemplo, para ajustar parámetros de denoising sin repetir el filtrado), puedes cargar este archivo:</span>
+<span id="cb16-334"><a href="#cb16-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-335"><a href="#cb16-335" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-336"><a href="#cb16-336" aria-hidden="true" tabindex="-1"></a><span class="co"># El pipeline guarda:</span></span>
+<span id="cb16-337"><a href="#cb16-337" aria-hidden="true" tabindex="-1"></a><span class="co"># final_data/rdata_output/&lt;run_name&gt;_&lt;locus&gt;_checkpoint1_filterAndTrim.RData</span></span>
+<span id="cb16-338"><a href="#cb16-338" aria-hidden="true" tabindex="-1"></a><span class="co"># Contiene: out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name</span></span>
+<span id="cb16-339"><a href="#cb16-339" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb16-340"><a href="#cb16-340" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-341"><a href="#cb16-341" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-342"><a href="#cb16-342" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-343"><a href="#cb16-343" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
-<span id="cb16-344"><a href="#cb16-344" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-345"><a href="#cb16-345" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-346"><a href="#cb16-346" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-341"><a href="#cb16-341" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto en otra sesión:</span>
+<span id="cb16-342"><a href="#cb16-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-343"><a href="#cb16-343" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-344"><a href="#cb16-344" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb16-345"><a href="#cb16-345" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
+<span id="cb16-346"><a href="#cb16-346" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb16-347"><a href="#cb16-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-348"><a href="#cb16-348" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
-<span id="cb16-349"><a href="#cb16-349" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
-<span id="cb16-350"><a href="#cb16-350" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Comparar los gráficos de calidad Forward vs Reverse  -  ?donde cae la calidad?</span>
-<span id="cb16-351"><a href="#cb16-351" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Verificar los puntos de truncamiento calculados  -  ?son razonables?</span>
-<span id="cb16-352"><a href="#cb16-352" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Revisar la tabla de retención  -  ¿Hay muestras problematicas?</span>
-<span id="cb16-353"><a href="#cb16-353" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb16-348"><a href="#cb16-348" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-349"><a href="#cb16-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-350"><a href="#cb16-350" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
+<span id="cb16-351"><a href="#cb16-351" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
+<span id="cb16-352"><a href="#cb16-352" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Comparar los gráficos de calidad Forward vs Reverse  -  ?donde cae la calidad?</span>
+<span id="cb16-353"><a href="#cb16-353" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Verificar los puntos de truncamiento calculados  -  ?son razonables?</span>
+<span id="cb16-354"><a href="#cb16-354" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Revisar la tabla de retención  -  ¿Hay muestras problematicas?</span>
+<span id="cb16-355"><a href="#cb16-355" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
