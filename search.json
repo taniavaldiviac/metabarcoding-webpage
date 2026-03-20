@@ -382,7 +382,7 @@
     "href": "0-Conexion-clonacion.html#copia-los-archivos-fastq",
     "title": "Conexión al servidor y clonación de repositorio Github",
     "section": "4. Copia los archivos FASTQ",
-    "text": "4. Copia los archivos FASTQ\nLos archivos de secuenciación están en el directorio del instructor:\ncp /home/tvaldivia/metabarcoding-code/raw_fastqs/* ~/metabarcoding-code/raw_fastqs/"
+    "text": "4. Copia los archivos FASTQ\nLos archivos de secuenciación están en el directorio del instructor:\ncp /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/* ~/metabarcoding-code/raw_fastqs/"
   },
   {
     "objectID": "0-Conexion-clonacion.html#verifica-los-paquetes-de-r",
