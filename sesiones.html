@@ -237,9 +237,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#día-4-análisis-ecológico-de-comunidades" id="toc-día-4-análisis-ecológico-de-comunidades" class="nav-link" data-scroll-target="#día-4-análisis-ecológico-de-comunidades">Día 4 — Análisis ecológico de comunidades</a>
   <ul class="collapse">
-  <li><a href="#tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq" id="toc-tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq" class="nav-link" data-scroll-target="#tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq">Tablas ASV y taxonomía — construcción del objeto phyloseq</a></li>
-  <li><a href="#exportación-y-análisis-con-phyloseq-vegan-y-ggplot2" id="toc-exportación-y-análisis-con-phyloseq-vegan-y-ggplot2" class="nav-link" data-scroll-target="#exportación-y-análisis-con-phyloseq-vegan-y-ggplot2">Exportación y análisis con phyloseq, vegan y ggplot2</a></li>
-  <li><a href="#diversidad-α-y-β-visualización-e-interpretación" id="toc-diversidad-α-y-β-visualización-e-interpretación" class="nav-link" data-scroll-target="#diversidad-α-y-β-visualización-e-interpretación">Diversidad α y β — visualización e interpretación</a></li>
+  <li><a href="#de-los-datos-de-secuenciación-a-las-tablas-del-análisis" id="toc-de-los-datos-de-secuenciación-a-las-tablas-del-análisis" class="nav-link" data-scroll-target="#de-los-datos-de-secuenciación-a-las-tablas-del-análisis">De los datos de secuenciación a las tablas del análisis</a></li>
+  <li><a href="#qué-es-phyloseq-y-construcción-del-objeto" id="toc-qué-es-phyloseq-y-construcción-del-objeto" class="nav-link" data-scroll-target="#qué-es-phyloseq-y-construcción-del-objeto">Qué es phyloseq y construcción del objeto</a></li>
+  <li><a href="#diversidad-α-diversidad-β-y-visualización" id="toc-diversidad-α-diversidad-β-y-visualización" class="nav-link" data-scroll-target="#diversidad-α-diversidad-β-y-visualización">Diversidad α, diversidad β y visualización</a></li>
   </ul></li>
   <li><a href="#día-5-temas-avanzados-y-proyecto-final" id="toc-día-5-temas-avanzados-y-proyecto-final" class="nav-link" data-scroll-target="#día-5-temas-avanzados-y-proyecto-final">Día 5 — Temas avanzados y proyecto final</a>
   <ul class="collapse">
@@ -888,8 +888,8 @@ Tip
 </section>
 <section id="día-4-análisis-ecológico-de-comunidades" class="level2">
 <h2 class="anchored" data-anchor-id="día-4-análisis-ecológico-de-comunidades">Día 4 — Análisis ecológico de comunidades</h2>
-<section id="tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq" class="level3">
-<h3 class="anchored" data-anchor-id="tablas-asv-y-taxonomía-construcción-del-objeto-phyloseq">Tablas ASV y taxonomía — construcción del objeto phyloseq</h3>
+<section id="de-los-datos-de-secuenciación-a-las-tablas-del-análisis" class="level3">
+<h3 class="anchored" data-anchor-id="de-los-datos-de-secuenciación-a-las-tablas-del-análisis">De los datos de secuenciación a las tablas del análisis</h3>
 <p><strong>9:00 – 11:00</strong></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -901,21 +901,33 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Objetivo:</strong> Construir las tablas fundamentales para el análisis ecológico e integrarlas en un objeto phyloseq.</p>
+<p><strong>Objetivo:</strong> Cargar los resultados del pipeline DADA2, construir las tablas fundamentales de abundancias y taxonomía, y aplicar la curación geográfica de especies para dejar los datos listos para el análisis ecológico.</p>
 </div>
 </div>
+<p><strong>Revisión del RData:</strong></p>
 <ul>
-<li><code>makeSequenceTable()</code>: tabla de abundancia ASV × muestra</li>
-<li>Asociación de taxonomía a ASVs</li>
-<li>Filtrado de secuencias espurias: no asignadas, contaminantes, longitud atípica</li>
-<li>Creación del objeto <code>phyloseq</code>: ASV table + tax table + metadatos</li>
-<li>Inspección y verificación de coherencia de tablas</li>
-<li>Exportación y análisis con phyloseq, vegan y ggplot2</li>
+<li>Qué contiene el archivo <code>.RData</code> generado por el pipeline: <code>otu_mat</code>, <code>tax_mat</code>, <code>sample_meta</code>, <code>track</code>, <code>seqtab_clean</code>, <code>taxonomy_df</code></li>
+<li>Cómo cargarlo y explorar cada objeto en R</li>
+<li>Resumen de rendimiento y filtrado de lecturas (<code>track</code>): evaluación de pérdidas por etapa</li>
+</ul>
+<p><strong>Construcción de tablas:</strong></p>
+<ul>
+<li>Tabla de abundancias de ASVs: matriz ASV × muestra, orientación y formato</li>
+<li>Tabla taxonómica: asociación de cada ASV a su clasificación (Kingdom → Species)</li>
+<li>Distribución de longitudes de secuencias: verificación de consistencia del amplicón</li>
+<li>Curación de la tabla taxonómica: filtrado de <em>Mammalia</em>, <em>Aves</em> y clases sin asignar</li>
+</ul>
+<p><strong>Curación geográfica de especies:</strong></p>
+<ul>
+<li>Carga de la lista de referencia <code>Fish_speciesGC.csv</code></li>
+<li>Corrección de asignaciones problemáticas a nivel especie, género, familia y orden</li>
+<li>Filtrado de secuencias espurias: sintéticas y no identificadas</li>
+<li>Validación del resultado final</li>
 </ul>
 <hr>
 </section>
-<section id="exportación-y-análisis-con-phyloseq-vegan-y-ggplot2" class="level3">
-<h3 class="anchored" data-anchor-id="exportación-y-análisis-con-phyloseq-vegan-y-ggplot2">Exportación y análisis con phyloseq, vegan y ggplot2</h3>
+<section id="qué-es-phyloseq-y-construcción-del-objeto" class="level3">
+<h3 class="anchored" data-anchor-id="qué-es-phyloseq-y-construcción-del-objeto">Qué es phyloseq y construcción del objeto</h3>
 <p><strong>11:20 – 13:00</strong></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -927,24 +939,29 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Objetivo:</strong> Explorar y visualizar los datos de ASVs útilizando las herramientas de análisis ecológico más útilizadas en estudios de eDNA.</p>
+<p><strong>Objetivo:</strong> Comprender la estructura del objeto phyloseq e integrar en él todas las tablas del análisis para facilitar el trabajo con datos de metabarcoding.</p>
 </div>
 </div>
-<p><strong>phyloseq:</strong></p>
+<p><strong>El objeto phyloseq:</strong></p>
 <ul>
-<li><code>plot_richness()</code>, <code>plot_bar()</code>, <code>ordinate()</code></li>
-<li>Subsetting y transformación de datos</li>
+<li>¿Qué es phyloseq y por qué es el estándar en análisis de diversidad microbiana y de eDNA?</li>
+<li>Componentes: <code>otu_table</code>, <code>tax_table</code>, <code>sample_data</code>, <code>refseq</code></li>
+<li>Ventajas: manejo unificado, subsetting reproducible, compatibilidad con vegan y ggplot2</li>
 </ul>
-<p><strong>vegan:</strong></p>
+<p><strong>Construcción del objeto:</strong></p>
 <ul>
-<li>Matrices de comunidad y cálculo de índices de diversidad</li>
-<li>Transformación y rarefacción: <code>decostand()</code>, <code>rarefy()</code></li>
+<li>Creación de <code>otu_table()</code>: abundancias con orientación <code>taxa_are_rows = TRUE</code></li>
+<li>Creación de <code>tax_table()</code>: matriz taxonómica con rownames = secuencias</li>
+<li>Integración de <code>sample_data()</code>: metadatos de muestras (sitio, fecha, coordenadas)</li>
+<li>Almacenamiento de las secuencias originales con <code>DNAStringSet</code> y <code>merge_phyloseq()</code></li>
+<li>Renombrado estandarizado de ASVs: <code>ASV1</code>, <code>ASV2</code>, …</li>
 </ul>
-<p><strong>ggplot2:</strong></p>
+<p><strong>Agrupación y abundancias relativas:</strong></p>
 <ul>
-<li>Construcción de gráficos personalizados: barras, cajas, puntos</li>
-<li>Combinación con phyloseq para resultados complejos</li>
-<li>Exportación en formatos CSV, PNG y PDF</li>
+<li><code>tax_glom()</code>: colapsar ASVs por nivel taxonómico (especie, familia)</li>
+<li><code>transform_sample_counts()</code>: cálculo de abundancias relativas</li>
+<li>Generación de la tabla de abundancias por especie y muestra con <code>psmelt()</code></li>
+<li>Exportación de la tabla a CSV</li>
 </ul>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -961,8 +978,8 @@ Tip
 </div>
 <hr>
 </section>
-<section id="diversidad-α-y-β-visualización-e-interpretación" class="level3">
-<h3 class="anchored" data-anchor-id="diversidad-α-y-β-visualización-e-interpretación">Diversidad α y β — visualización e interpretación</h3>
+<section id="diversidad-α-diversidad-β-y-visualización" class="level3">
+<h3 class="anchored" data-anchor-id="diversidad-α-diversidad-β-y-visualización">Diversidad α, diversidad β y visualización</h3>
 <p><strong>14:00 – 15:00</strong></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -974,26 +991,47 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Objetivo:</strong> Calcular e interpretar patrones de diversidad biológica y generar visualizaciones efectivas para comúnicar resultados.</p>
+<p><strong>Objetivo:</strong> Calcular e interpretar patrones de diversidad biológica a nivel de muestra y entre comunidades, y generar visualizaciones para comunicar los resultados.</p>
 </div>
 </div>
+<p><strong>Exploración inicial:</strong></p>
+<ul>
+<li>Curva de acumulación de especies (<code>vegan::specaccum()</code>): ¿fue suficiente el esfuerzo de muestreo?</li>
+<li>Estimación de riqueza total con el índice de Chao</li>
+<li>Barplots de abundancia relativa por familia y especie</li>
+</ul>
 <p><strong>Diversidad alfa (α):</strong></p>
 <ul>
-<li>Índices: riqueza observada, Shannon, Simpson</li>
-<li>Rarefacción y cobertura de la muestra</li>
-<li>Comparación entre grupos con gráficos de caja</li>
+<li>Riqueza observada por muestra: número de especies detectadas</li>
+<li>Comparación entre sitios mediante gráficos de barras</li>
 </ul>
 <p><strong>Diversidad beta (β):</strong></p>
 <ul>
-<li>Matrices de disimilitud: Jaccard, Bray-Curtis</li>
-<li>Análisis multivariados: nMDS, PCoA, PCA</li>
-<li>Visualización con flechas de variables ambientales</li>
+<li>Matriz de disimilitud de Jaccard a partir de presencia/ausencia de especies</li>
+<li>ANOSIM (<code>vegan::anosim()</code>): ¿son significativamente distintas las regiones?</li>
+<li>PERMANOVA (<code>vegan::adonis2()</code>): cuánta variación explica la región geográfica</li>
+<li>NMDS (<code>vegan::metaMDS()</code>): visualización de la similitud entre sitios en 2D</li>
+<li>Interpretación conjunta de estadísticos: R², p-valor, stress</li>
 </ul>
-<p><strong>Barplots de abundancia relativa:</strong></p>
+<p><strong>Enfoque libre de taxonomía:</strong></p>
 <ul>
-<li>Composición taxonómica por grupo o condición</li>
-<li>Adaptación para presentaciones y publicaciónes</li>
+<li>Repetición del análisis NMDS y ANOSIM usando directamente las abundancias de ASVs, sin colapsar por especie</li>
+<li>¿Qué diferencias aporta este enfoque frente al análisis basado en taxonomía?</li>
+<li>Comparación de resultados e implicaciones para estudios de eDNA</li>
 </ul>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Práctica:</strong> <a href="./3-reporte.html">Reporte de análisis — Comunidades de peces del Golfo de California</a></p>
+</div>
+</div>
 <hr>
 </section>
 </section>
@@ -1983,150 +2021,180 @@ Tip
 <span id="cb1-430"><a href="#cb1-430" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-431"><a href="#cb1-431" aria-hidden="true" tabindex="-1"></a><span class="fu">## Día 4 — Análisis ecológico de comunidades</span></span>
 <span id="cb1-432"><a href="#cb1-432" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-433"><a href="#cb1-433" aria-hidden="true" tabindex="-1"></a><span class="fu">### Tablas ASV y taxonomía — construcción del objeto phyloseq</span></span>
+<span id="cb1-433"><a href="#cb1-433" aria-hidden="true" tabindex="-1"></a><span class="fu">### De los datos de secuenciación a las tablas del análisis</span></span>
 <span id="cb1-434"><a href="#cb1-434" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-435"><a href="#cb1-435" aria-hidden="true" tabindex="-1"></a>**9:00 – 11:00**</span>
 <span id="cb1-436"><a href="#cb1-436" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-437"><a href="#cb1-437" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
-<span id="cb1-438"><a href="#cb1-438" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Construir las tablas fundamentales para el análisis ecológico e integrarlas en un objeto phyloseq.</span>
+<span id="cb1-438"><a href="#cb1-438" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Cargar los resultados del pipeline DADA2, construir las tablas fundamentales de abundancias y taxonomía, y aplicar la curación geográfica de especies para dejar los datos listos para el análisis ecológico.</span>
 <span id="cb1-439"><a href="#cb1-439" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-440"><a href="#cb1-440" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-441"><a href="#cb1-441" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`makeSequenceTable()`</span>: tabla de abundancia ASV × muestra</span>
-<span id="cb1-442"><a href="#cb1-442" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Asociación de taxonomía a ASVs</span>
-<span id="cb1-443"><a href="#cb1-443" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Filtrado de secuencias espurias: no asignadas, contaminantes, longitud atípica</span>
-<span id="cb1-444"><a href="#cb1-444" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Creación del objeto <span class="in">`phyloseq`</span>: ASV table + tax table + metadatos</span>
-<span id="cb1-445"><a href="#cb1-445" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Inspección y verificación de coherencia de tablas</span>
-<span id="cb1-446"><a href="#cb1-446" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Exportación y análisis con phyloseq, vegan y ggplot2</span>
-<span id="cb1-447"><a href="#cb1-447" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-448"><a href="#cb1-448" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb1-449"><a href="#cb1-449" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-450"><a href="#cb1-450" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exportación y análisis con phyloseq, vegan y ggplot2</span></span>
-<span id="cb1-451"><a href="#cb1-451" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-452"><a href="#cb1-452" aria-hidden="true" tabindex="-1"></a>**11:20 – 13:00**</span>
+<span id="cb1-441"><a href="#cb1-441" aria-hidden="true" tabindex="-1"></a>**Revisión del RData:**</span>
+<span id="cb1-442"><a href="#cb1-442" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-443"><a href="#cb1-443" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Qué contiene el archivo <span class="in">`.RData`</span> generado por el pipeline: <span class="in">`otu_mat`</span>, <span class="in">`tax_mat`</span>, <span class="in">`sample_meta`</span>, <span class="in">`track`</span>, <span class="in">`seqtab_clean`</span>, <span class="in">`taxonomy_df`</span></span>
+<span id="cb1-444"><a href="#cb1-444" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cómo cargarlo y explorar cada objeto en R</span>
+<span id="cb1-445"><a href="#cb1-445" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Resumen de rendimiento y filtrado de lecturas (<span class="in">`track`</span>): evaluación de pérdidas por etapa</span>
+<span id="cb1-446"><a href="#cb1-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-447"><a href="#cb1-447" aria-hidden="true" tabindex="-1"></a>**Construcción de tablas:**</span>
+<span id="cb1-448"><a href="#cb1-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-449"><a href="#cb1-449" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Tabla de abundancias de ASVs: matriz ASV × muestra, orientación y formato</span>
+<span id="cb1-450"><a href="#cb1-450" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Tabla taxonómica: asociación de cada ASV a su clasificación (Kingdom → Species)</span>
+<span id="cb1-451"><a href="#cb1-451" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Distribución de longitudes de secuencias: verificación de consistencia del amplicón</span>
+<span id="cb1-452"><a href="#cb1-452" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Curación de la tabla taxonómica: filtrado de *Mammalia*, *Aves* y clases sin asignar</span>
 <span id="cb1-453"><a href="#cb1-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-454"><a href="#cb1-454" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
-<span id="cb1-455"><a href="#cb1-455" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Explorar y visualizar los datos de ASVs útilizando las herramientas de análisis ecológico más útilizadas en estudios de eDNA.</span>
-<span id="cb1-456"><a href="#cb1-456" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-457"><a href="#cb1-457" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-458"><a href="#cb1-458" aria-hidden="true" tabindex="-1"></a>**phyloseq:**</span>
-<span id="cb1-459"><a href="#cb1-459" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-460"><a href="#cb1-460" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`plot_richness()`</span>, <span class="in">`plot_bar()`</span>, <span class="in">`ordinate()`</span></span>
-<span id="cb1-461"><a href="#cb1-461" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Subsetting y transformación de datos</span>
+<span id="cb1-454"><a href="#cb1-454" aria-hidden="true" tabindex="-1"></a>**Curación geográfica de especies:**</span>
+<span id="cb1-455"><a href="#cb1-455" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-456"><a href="#cb1-456" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Carga de la lista de referencia <span class="in">`Fish_speciesGC.csv`</span></span>
+<span id="cb1-457"><a href="#cb1-457" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Corrección de asignaciones problemáticas a nivel especie, género, familia y orden</span>
+<span id="cb1-458"><a href="#cb1-458" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Filtrado de secuencias espurias: sintéticas y no identificadas</span>
+<span id="cb1-459"><a href="#cb1-459" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Validación del resultado final</span>
+<span id="cb1-460"><a href="#cb1-460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-461"><a href="#cb1-461" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb1-462"><a href="#cb1-462" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-463"><a href="#cb1-463" aria-hidden="true" tabindex="-1"></a>**vegan:**</span>
+<span id="cb1-463"><a href="#cb1-463" aria-hidden="true" tabindex="-1"></a><span class="fu">### Qué es phyloseq y construcción del objeto</span></span>
 <span id="cb1-464"><a href="#cb1-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-465"><a href="#cb1-465" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Matrices de comunidad y cálculo de índices de diversidad</span>
-<span id="cb1-466"><a href="#cb1-466" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Transformación y rarefacción: <span class="in">`decostand()`</span>, <span class="in">`rarefy()`</span></span>
-<span id="cb1-467"><a href="#cb1-467" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-468"><a href="#cb1-468" aria-hidden="true" tabindex="-1"></a>**ggplot2:**</span>
-<span id="cb1-469"><a href="#cb1-469" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-470"><a href="#cb1-470" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Construcción de gráficos personalizados: barras, cajas, puntos</span>
-<span id="cb1-471"><a href="#cb1-471" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Combinación con phyloseq para resultados complejos</span>
-<span id="cb1-472"><a href="#cb1-472" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Exportación en formatos CSV, PNG y PDF</span>
-<span id="cb1-473"><a href="#cb1-473" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-474"><a href="#cb1-474" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
-<span id="cb1-475"><a href="#cb1-475" aria-hidden="true" tabindex="-1"></a>**Práctica:** <span class="co">[</span><span class="ot">Reporte de análisis — Comunidades de peces del Golfo de California</span><span class="co">](3-reporte.qmd)</span></span>
-<span id="cb1-476"><a href="#cb1-476" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-477"><a href="#cb1-477" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-478"><a href="#cb1-478" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb1-479"><a href="#cb1-479" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-480"><a href="#cb1-480" aria-hidden="true" tabindex="-1"></a><span class="fu">### Diversidad α y β — visualización e interpretación</span></span>
-<span id="cb1-481"><a href="#cb1-481" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-482"><a href="#cb1-482" aria-hidden="true" tabindex="-1"></a>**14:00 – 15:00**</span>
-<span id="cb1-483"><a href="#cb1-483" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-484"><a href="#cb1-484" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
-<span id="cb1-485"><a href="#cb1-485" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Calcular e interpretar patrones de diversidad biológica y generar visualizaciones efectivas para comúnicar resultados.</span>
-<span id="cb1-486"><a href="#cb1-486" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-487"><a href="#cb1-487" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-488"><a href="#cb1-488" aria-hidden="true" tabindex="-1"></a>**Diversidad alfa (α):**</span>
-<span id="cb1-489"><a href="#cb1-489" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-490"><a href="#cb1-490" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Índices: riqueza observada, Shannon, Simpson</span>
-<span id="cb1-491"><a href="#cb1-491" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Rarefacción y cobertura de la muestra</span>
-<span id="cb1-492"><a href="#cb1-492" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comparación entre grupos con gráficos de caja</span>
-<span id="cb1-493"><a href="#cb1-493" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-494"><a href="#cb1-494" aria-hidden="true" tabindex="-1"></a>**Diversidad beta (β):**</span>
+<span id="cb1-465"><a href="#cb1-465" aria-hidden="true" tabindex="-1"></a>**11:20 – 13:00**</span>
+<span id="cb1-466"><a href="#cb1-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-467"><a href="#cb1-467" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
+<span id="cb1-468"><a href="#cb1-468" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Comprender la estructura del objeto phyloseq e integrar en él todas las tablas del análisis para facilitar el trabajo con datos de metabarcoding.</span>
+<span id="cb1-469"><a href="#cb1-469" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-470"><a href="#cb1-470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-471"><a href="#cb1-471" aria-hidden="true" tabindex="-1"></a>**El objeto phyloseq:**</span>
+<span id="cb1-472"><a href="#cb1-472" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-473"><a href="#cb1-473" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>¿Qué es phyloseq y por qué es el estándar en análisis de diversidad microbiana y de eDNA?</span>
+<span id="cb1-474"><a href="#cb1-474" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Componentes: <span class="in">`otu_table`</span>, <span class="in">`tax_table`</span>, <span class="in">`sample_data`</span>, <span class="in">`refseq`</span></span>
+<span id="cb1-475"><a href="#cb1-475" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Ventajas: manejo unificado, subsetting reproducible, compatibilidad con vegan y ggplot2</span>
+<span id="cb1-476"><a href="#cb1-476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-477"><a href="#cb1-477" aria-hidden="true" tabindex="-1"></a>**Construcción del objeto:**</span>
+<span id="cb1-478"><a href="#cb1-478" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-479"><a href="#cb1-479" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Creación de <span class="in">`otu_table()`</span>: abundancias con orientación <span class="in">`taxa_are_rows = TRUE`</span></span>
+<span id="cb1-480"><a href="#cb1-480" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Creación de <span class="in">`tax_table()`</span>: matriz taxonómica con rownames = secuencias</span>
+<span id="cb1-481"><a href="#cb1-481" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Integración de <span class="in">`sample_data()`</span>: metadatos de muestras (sitio, fecha, coordenadas)</span>
+<span id="cb1-482"><a href="#cb1-482" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Almacenamiento de las secuencias originales con <span class="in">`DNAStringSet`</span> y <span class="in">`merge_phyloseq()`</span></span>
+<span id="cb1-483"><a href="#cb1-483" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Renombrado estandarizado de ASVs: <span class="in">`ASV1`</span>, <span class="in">`ASV2`</span>, …</span>
+<span id="cb1-484"><a href="#cb1-484" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-485"><a href="#cb1-485" aria-hidden="true" tabindex="-1"></a>**Agrupación y abundancias relativas:**</span>
+<span id="cb1-486"><a href="#cb1-486" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-487"><a href="#cb1-487" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`tax_glom()`</span>: colapsar ASVs por nivel taxonómico (especie, familia)</span>
+<span id="cb1-488"><a href="#cb1-488" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`transform_sample_counts()`</span>: cálculo de abundancias relativas</span>
+<span id="cb1-489"><a href="#cb1-489" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Generación de la tabla de abundancias por especie y muestra con <span class="in">`psmelt()`</span></span>
+<span id="cb1-490"><a href="#cb1-490" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Exportación de la tabla a CSV</span>
+<span id="cb1-491"><a href="#cb1-491" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-492"><a href="#cb1-492" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb1-493"><a href="#cb1-493" aria-hidden="true" tabindex="-1"></a>**Práctica:** <span class="co">[</span><span class="ot">Reporte de análisis — Comunidades de peces del Golfo de California</span><span class="co">](3-reporte.qmd)</span></span>
+<span id="cb1-494"><a href="#cb1-494" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-495"><a href="#cb1-495" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-496"><a href="#cb1-496" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Matrices de disimilitud: Jaccard, Bray-Curtis</span>
-<span id="cb1-497"><a href="#cb1-497" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Análisis multivariados: nMDS, PCoA, PCA</span>
-<span id="cb1-498"><a href="#cb1-498" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Visualización con flechas de variables ambientales</span>
+<span id="cb1-496"><a href="#cb1-496" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-497"><a href="#cb1-497" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-498"><a href="#cb1-498" aria-hidden="true" tabindex="-1"></a><span class="fu">### Diversidad α, diversidad β y visualización</span></span>
 <span id="cb1-499"><a href="#cb1-499" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-500"><a href="#cb1-500" aria-hidden="true" tabindex="-1"></a>**Barplots de abundancia relativa:**</span>
+<span id="cb1-500"><a href="#cb1-500" aria-hidden="true" tabindex="-1"></a>**14:00 – 15:00**</span>
 <span id="cb1-501"><a href="#cb1-501" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-502"><a href="#cb1-502" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Composición taxonómica por grupo o condición</span>
-<span id="cb1-503"><a href="#cb1-503" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Adaptación para presentaciones y publicaciónes</span>
-<span id="cb1-504"><a href="#cb1-504" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-505"><a href="#cb1-505" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb1-506"><a href="#cb1-506" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-507"><a href="#cb1-507" aria-hidden="true" tabindex="-1"></a><span class="fu">## Día 5 — Temas avanzados y proyecto final</span></span>
-<span id="cb1-508"><a href="#cb1-508" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-509"><a href="#cb1-509" aria-hidden="true" tabindex="-1"></a><span class="fu">### Detección y remoción de contaminantes con `decontam`</span></span>
-<span id="cb1-510"><a href="#cb1-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-511"><a href="#cb1-511" aria-hidden="true" tabindex="-1"></a>**9:00 – 11:00**</span>
-<span id="cb1-512"><a href="#cb1-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-513"><a href="#cb1-513" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
-<span id="cb1-514"><a href="#cb1-514" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Aprender a identificar y remover secuencias contaminantes útilizando controles negativos y el paquete <span class="in">`decontam`</span>, mejorando la calidad y confiabilidad de los resultados.</span>
-<span id="cb1-515"><a href="#cb1-515" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-502"><a href="#cb1-502" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
+<span id="cb1-503"><a href="#cb1-503" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Calcular e interpretar patrones de diversidad biológica a nivel de muestra y entre comunidades, y generar visualizaciones para comunicar los resultados.</span>
+<span id="cb1-504"><a href="#cb1-504" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-505"><a href="#cb1-505" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-506"><a href="#cb1-506" aria-hidden="true" tabindex="-1"></a>**Exploración inicial:**</span>
+<span id="cb1-507"><a href="#cb1-507" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-508"><a href="#cb1-508" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Curva de acumulación de especies (<span class="in">`vegan::specaccum()`</span>): ¿fue suficiente el esfuerzo de muestreo?</span>
+<span id="cb1-509"><a href="#cb1-509" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Estimación de riqueza total con el índice de Chao</span>
+<span id="cb1-510"><a href="#cb1-510" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Barplots de abundancia relativa por familia y especie</span>
+<span id="cb1-511"><a href="#cb1-511" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-512"><a href="#cb1-512" aria-hidden="true" tabindex="-1"></a>**Diversidad alfa (α):**</span>
+<span id="cb1-513"><a href="#cb1-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-514"><a href="#cb1-514" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Riqueza observada por muestra: número de especies detectadas</span>
+<span id="cb1-515"><a href="#cb1-515" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comparación entre sitios mediante gráficos de barras</span>
 <span id="cb1-516"><a href="#cb1-516" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-517"><a href="#cb1-517" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Tipos de controles negativos: blanco de extracción, PCR y campo</span>
-<span id="cb1-518"><a href="#cb1-518" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Fuentes comunes de contaminación y su impacto en resultados ecológicos</span>
-<span id="cb1-519"><a href="#cb1-519" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Métodos del paquete <span class="in">`decontam`</span>: <span class="in">`frequency`</span>, <span class="in">`prevalence`</span>, <span class="in">`combined`</span></span>
-<span id="cb1-520"><a href="#cb1-520" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Requisitos del input: tabla de ASVs + metadatos con identificación de controles</span>
-<span id="cb1-521"><a href="#cb1-521" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Visualización y documentación de decisiones de filtrado</span>
-<span id="cb1-522"><a href="#cb1-522" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-523"><a href="#cb1-523" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-517"><a href="#cb1-517" aria-hidden="true" tabindex="-1"></a>**Diversidad beta (β):**</span>
+<span id="cb1-518"><a href="#cb1-518" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-519"><a href="#cb1-519" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Matriz de disimilitud de Jaccard a partir de presencia/ausencia de especies</span>
+<span id="cb1-520"><a href="#cb1-520" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>ANOSIM (<span class="in">`vegan::anosim()`</span>): ¿son significativamente distintas las regiones?</span>
+<span id="cb1-521"><a href="#cb1-521" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>PERMANOVA (<span class="in">`vegan::adonis2()`</span>): cuánta variación explica la región geográfica</span>
+<span id="cb1-522"><a href="#cb1-522" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>NMDS (<span class="in">`vegan::metaMDS()`</span>): visualización de la similitud entre sitios en 2D</span>
+<span id="cb1-523"><a href="#cb1-523" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Interpretación conjunta de estadísticos: R², p-valor, stress</span>
 <span id="cb1-524"><a href="#cb1-524" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-525"><a href="#cb1-525" aria-hidden="true" tabindex="-1"></a><span class="fu">### OTUs: agrupamiento por similitud con VSEARCH</span></span>
+<span id="cb1-525"><a href="#cb1-525" aria-hidden="true" tabindex="-1"></a>**Enfoque libre de taxonomía:**</span>
 <span id="cb1-526"><a href="#cb1-526" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-527"><a href="#cb1-527" aria-hidden="true" tabindex="-1"></a>**11:20 – 13:00**</span>
-<span id="cb1-528"><a href="#cb1-528" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-529"><a href="#cb1-529" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Diferencias entre OTUs y ASVs: definición, ventajas y limitaciones</span>
-<span id="cb1-530"><a href="#cb1-530" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>¿Cuándo y por qué seguir útilizando OTUs?</span>
-<span id="cb1-531"><a href="#cb1-531" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Flujo de trabajo en VSEARCH: dereplicación, clustering, chimera checking</span>
-<span id="cb1-532"><a href="#cb1-532" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Umbrales de identidad: 97%, 99%</span>
-<span id="cb1-533"><a href="#cb1-533" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Introducción a <span class="in">`clustur`</span> en R: integración con phyloseq</span>
-<span id="cb1-534"><a href="#cb1-534" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comparación práctica: número de OTUs vs ASVs, cambios en riqueza y composición</span>
-<span id="cb1-535"><a href="#cb1-535" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-536"><a href="#cb1-536" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb1-537"><a href="#cb1-537" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-538"><a href="#cb1-538" aria-hidden="true" tabindex="-1"></a><span class="fu">### Bases de datos de referencia personalizadas</span></span>
-<span id="cb1-539"><a href="#cb1-539" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-540"><a href="#cb1-540" aria-hidden="true" tabindex="-1"></a>**14:00 – 15:00**</span>
-<span id="cb1-541"><a href="#cb1-541" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-542"><a href="#cb1-542" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
-<span id="cb1-543"><a href="#cb1-543" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Aprender a construir una base de datos de referencia local para asignación taxonómica, desde la búsqueda en NCBI hasta la PCR virtual.</span>
-<span id="cb1-544"><a href="#cb1-544" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-545"><a href="#cb1-545" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-546"><a href="#cb1-546" aria-hidden="true" tabindex="-1"></a>**Paso 1 — Búsqueda en NCBI:**</span>
-<span id="cb1-547"><a href="#cb1-547" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-548"><a href="#cb1-548" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Construcción de queries para amplicónes y mitogenomas completos</span>
-<span id="cb1-549"><a href="#cb1-549" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Descarga páginada con <span class="in">`rentrez`</span> respetando los límites de la API</span>
-<span id="cb1-550"><a href="#cb1-550" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Parámetros: locus, longitud de amplicón, taxón objetivo</span>
-<span id="cb1-551"><a href="#cb1-551" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-552"><a href="#cb1-552" aria-hidden="true" tabindex="-1"></a>**Paso 2 — PCR virtual:**</span>
-<span id="cb1-553"><a href="#cb1-553" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-554"><a href="#cb1-554" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Identificación de sitios de anillamiento de primers con tolerancia a errores</span>
-<span id="cb1-555"><a href="#cb1-555" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Extracción de amplicónes *in silico*</span>
-<span id="cb1-556"><a href="#cb1-556" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Renombrado de encabezados con anotación de NCBI</span>
-<span id="cb1-557"><a href="#cb1-557" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Formato final: <span class="in">`Species|Accession`</span></span>
+<span id="cb1-527"><a href="#cb1-527" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Repetición del análisis NMDS y ANOSIM usando directamente las abundancias de ASVs, sin colapsar por especie</span>
+<span id="cb1-528"><a href="#cb1-528" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>¿Qué diferencias aporta este enfoque frente al análisis basado en taxonomía?</span>
+<span id="cb1-529"><a href="#cb1-529" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comparación de resultados e implicaciones para estudios de eDNA</span>
+<span id="cb1-530"><a href="#cb1-530" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-531"><a href="#cb1-531" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb1-532"><a href="#cb1-532" aria-hidden="true" tabindex="-1"></a>**Práctica:** <span class="co">[</span><span class="ot">Reporte de análisis — Comunidades de peces del Golfo de California</span><span class="co">](3-reporte.qmd)</span></span>
+<span id="cb1-533"><a href="#cb1-533" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-534"><a href="#cb1-534" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-535"><a href="#cb1-535" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-536"><a href="#cb1-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-537"><a href="#cb1-537" aria-hidden="true" tabindex="-1"></a><span class="fu">## Día 5 — Temas avanzados y proyecto final</span></span>
+<span id="cb1-538"><a href="#cb1-538" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-539"><a href="#cb1-539" aria-hidden="true" tabindex="-1"></a><span class="fu">### Detección y remoción de contaminantes con `decontam`</span></span>
+<span id="cb1-540"><a href="#cb1-540" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-541"><a href="#cb1-541" aria-hidden="true" tabindex="-1"></a>**9:00 – 11:00**</span>
+<span id="cb1-542"><a href="#cb1-542" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-543"><a href="#cb1-543" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
+<span id="cb1-544"><a href="#cb1-544" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Aprender a identificar y remover secuencias contaminantes útilizando controles negativos y el paquete <span class="in">`decontam`</span>, mejorando la calidad y confiabilidad de los resultados.</span>
+<span id="cb1-545"><a href="#cb1-545" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-546"><a href="#cb1-546" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-547"><a href="#cb1-547" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Tipos de controles negativos: blanco de extracción, PCR y campo</span>
+<span id="cb1-548"><a href="#cb1-548" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Fuentes comunes de contaminación y su impacto en resultados ecológicos</span>
+<span id="cb1-549"><a href="#cb1-549" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Métodos del paquete <span class="in">`decontam`</span>: <span class="in">`frequency`</span>, <span class="in">`prevalence`</span>, <span class="in">`combined`</span></span>
+<span id="cb1-550"><a href="#cb1-550" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Requisitos del input: tabla de ASVs + metadatos con identificación de controles</span>
+<span id="cb1-551"><a href="#cb1-551" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Visualización y documentación de decisiones de filtrado</span>
+<span id="cb1-552"><a href="#cb1-552" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-553"><a href="#cb1-553" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-554"><a href="#cb1-554" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-555"><a href="#cb1-555" aria-hidden="true" tabindex="-1"></a><span class="fu">### OTUs: agrupamiento por similitud con VSEARCH</span></span>
+<span id="cb1-556"><a href="#cb1-556" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-557"><a href="#cb1-557" aria-hidden="true" tabindex="-1"></a>**11:20 – 13:00**</span>
 <span id="cb1-558"><a href="#cb1-558" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-559"><a href="#cb1-559" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
-<span id="cb1-560"><a href="#cb1-560" aria-hidden="true" tabindex="-1"></a>**Práctica:** Scripts <span class="in">`3-RDB-paso1`</span> y <span class="in">`4-RDB-paso2`</span> del repositorio</span>
-<span id="cb1-561"><a href="#cb1-561" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-562"><a href="#cb1-562" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-563"><a href="#cb1-563" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb1-564"><a href="#cb1-564" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-565"><a href="#cb1-565" aria-hidden="true" tabindex="-1"></a><span class="fu">### Temas auxiliares y dudas del curso</span></span>
-<span id="cb1-566"><a href="#cb1-566" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-567"><a href="#cb1-567" aria-hidden="true" tabindex="-1"></a>**15:00 – 15:10 receso | 15:10 – 17:00**</span>
-<span id="cb1-568"><a href="#cb1-568" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-569"><a href="#cb1-569" aria-hidden="true" tabindex="-1"></a>Espacio flexible para profundizar en temas de interés del grupo:</span>
-<span id="cb1-570"><a href="#cb1-570" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-571"><a href="#cb1-571" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Diseño de primers *in silico* (ecoPrimers, PrimerMiner)</span>
-<span id="cb1-572"><a href="#cb1-572" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Reproducibilidad: estructura de proyectos, Quarto, Git/GitHub</span>
-<span id="cb1-573"><a href="#cb1-573" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Errores comunes y soluciones prácticas en análisis de eDNA</span>
-<span id="cb1-574"><a href="#cb1-574" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Oportunidades del metabarcoding en monitoreo ambiental y conservación</span>
+<span id="cb1-559"><a href="#cb1-559" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Diferencias entre OTUs y ASVs: definición, ventajas y limitaciones</span>
+<span id="cb1-560"><a href="#cb1-560" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>¿Cuándo y por qué seguir útilizando OTUs?</span>
+<span id="cb1-561"><a href="#cb1-561" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Flujo de trabajo en VSEARCH: dereplicación, clustering, chimera checking</span>
+<span id="cb1-562"><a href="#cb1-562" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Umbrales de identidad: 97%, 99%</span>
+<span id="cb1-563"><a href="#cb1-563" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Introducción a <span class="in">`clustur`</span> en R: integración con phyloseq</span>
+<span id="cb1-564"><a href="#cb1-564" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comparación práctica: número de OTUs vs ASVs, cambios en riqueza y composición</span>
+<span id="cb1-565"><a href="#cb1-565" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-566"><a href="#cb1-566" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-567"><a href="#cb1-567" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-568"><a href="#cb1-568" aria-hidden="true" tabindex="-1"></a><span class="fu">### Bases de datos de referencia personalizadas</span></span>
+<span id="cb1-569"><a href="#cb1-569" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-570"><a href="#cb1-570" aria-hidden="true" tabindex="-1"></a>**14:00 – 15:00**</span>
+<span id="cb1-571"><a href="#cb1-571" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-572"><a href="#cb1-572" aria-hidden="true" tabindex="-1"></a>::: {.callout-note icon="false"}</span>
+<span id="cb1-573"><a href="#cb1-573" aria-hidden="true" tabindex="-1"></a>**Objetivo:** Aprender a construir una base de datos de referencia local para asignación taxonómica, desde la búsqueda en NCBI hasta la PCR virtual.</span>
+<span id="cb1-574"><a href="#cb1-574" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-575"><a href="#cb1-575" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-576"><a href="#cb1-576" aria-hidden="true" tabindex="-1"></a>---</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb1-576"><a href="#cb1-576" aria-hidden="true" tabindex="-1"></a>**Paso 1 — Búsqueda en NCBI:**</span>
+<span id="cb1-577"><a href="#cb1-577" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-578"><a href="#cb1-578" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Construcción de queries para amplicónes y mitogenomas completos</span>
+<span id="cb1-579"><a href="#cb1-579" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Descarga páginada con <span class="in">`rentrez`</span> respetando los límites de la API</span>
+<span id="cb1-580"><a href="#cb1-580" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Parámetros: locus, longitud de amplicón, taxón objetivo</span>
+<span id="cb1-581"><a href="#cb1-581" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-582"><a href="#cb1-582" aria-hidden="true" tabindex="-1"></a>**Paso 2 — PCR virtual:**</span>
+<span id="cb1-583"><a href="#cb1-583" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-584"><a href="#cb1-584" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Identificación de sitios de anillamiento de primers con tolerancia a errores</span>
+<span id="cb1-585"><a href="#cb1-585" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Extracción de amplicónes *in silico*</span>
+<span id="cb1-586"><a href="#cb1-586" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Renombrado de encabezados con anotación de NCBI</span>
+<span id="cb1-587"><a href="#cb1-587" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Formato final: <span class="in">`Species|Accession`</span></span>
+<span id="cb1-588"><a href="#cb1-588" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-589"><a href="#cb1-589" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb1-590"><a href="#cb1-590" aria-hidden="true" tabindex="-1"></a>**Práctica:** Scripts <span class="in">`3-RDB-paso1`</span> y <span class="in">`4-RDB-paso2`</span> del repositorio</span>
+<span id="cb1-591"><a href="#cb1-591" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-592"><a href="#cb1-592" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-593"><a href="#cb1-593" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-594"><a href="#cb1-594" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-595"><a href="#cb1-595" aria-hidden="true" tabindex="-1"></a><span class="fu">### Temas auxiliares y dudas del curso</span></span>
+<span id="cb1-596"><a href="#cb1-596" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-597"><a href="#cb1-597" aria-hidden="true" tabindex="-1"></a>**15:00 – 15:10 receso | 15:10 – 17:00**</span>
+<span id="cb1-598"><a href="#cb1-598" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-599"><a href="#cb1-599" aria-hidden="true" tabindex="-1"></a>Espacio flexible para profundizar en temas de interés del grupo:</span>
+<span id="cb1-600"><a href="#cb1-600" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-601"><a href="#cb1-601" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Diseño de primers *in silico* (ecoPrimers, PrimerMiner)</span>
+<span id="cb1-602"><a href="#cb1-602" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Reproducibilidad: estructura de proyectos, Quarto, Git/GitHub</span>
+<span id="cb1-603"><a href="#cb1-603" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Errores comunes y soluciones prácticas en análisis de eDNA</span>
+<span id="cb1-604"><a href="#cb1-604" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Oportunidades del metabarcoding en monitoreo ambiental y conservación</span>
+<span id="cb1-605"><a href="#cb1-605" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-606"><a href="#cb1-606" aria-hidden="true" tabindex="-1"></a>---</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
