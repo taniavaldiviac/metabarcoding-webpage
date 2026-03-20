@@ -476,7 +476,7 @@ Tip
 <p>El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.</p>
 <section id="formato-esperado" class="level3">
 <h3 class="anchored" data-anchor-id="formato-esperado">Formato esperado</h3>
-<pre><code>{locus}_{sample_id}_S{N}_L{lane}_R{1|2}_001.fastq</code></pre>
+<pre><code>{locus_shorthand}-{sample_id}-{dilution}_{replicate}_{site}_{sequencing_lane}_R{1|2}_001.fastq</code></pre>
 <p><strong>Ejemplo real de este curso:</strong></p>
 <pre><code>12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward
 12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse</code></pre>
@@ -498,24 +498,34 @@ Tip
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><code>{locus}</code></td>
+<td style="text-align: left;"><code>{locus_shorthand}</code></td>
 <td style="text-align: left;"><code>12S</code></td>
-<td style="text-align: left;">Debe coincidir exactamente con <code>locus_shorthand</code> en <code>primer_data.csv</code></td>
+<td style="text-align: left;">Columna <code>locus_shorthand</code> en <code>primer_data.csv</code> — debe coincidir exactamente</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>{sample_id}</code></td>
-<td style="text-align: left;"><code>GC-001-d1</code></td>
-<td style="text-align: left;">Identificador único de la muestra — debe estar en <code>metadata.csv</code></td>
+<td style="text-align: left;"><code>GC-001</code></td>
+<td style="text-align: left;">Columna <code>sample_id</code> en <code>metadata.csv</code></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><code>S{N}</code></td>
-<td style="text-align: left;"><code>S1</code></td>
-<td style="text-align: left;">Número de muestra asignado por el secuenciador</td>
+<td style="text-align: left;"><code>{dilution}</code></td>
+<td style="text-align: left;"><code>d1</code></td>
+<td style="text-align: left;">Columna <code>dilution</code> en <code>metadata.csv</code></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><code>L{lane}</code></td>
+<td style="text-align: left;"><code>{replicate}</code></td>
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;">Columna <code>replicate</code> en <code>metadata.csv</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>{site}</code></td>
+<td style="text-align: left;"><code>S1</code></td>
+<td style="text-align: left;">Columna <code>site</code> en <code>metadata.csv</code> — número de muestra del MiSeq</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>{sequencing_lane}</code></td>
 <td style="text-align: left;"><code>L001</code></td>
-<td style="text-align: left;">Carril de secuenciación</td>
+<td style="text-align: left;">Columna <code>sequencing_lane</code> en <code>metadata.csv</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><code>R{1\|2}</code></td>
@@ -1202,7 +1212,7 @@ Advertencia
 <span id="cb14-176"><a href="#cb14-176" aria-hidden="true" tabindex="-1"></a><span class="fu">### Formato esperado</span></span>
 <span id="cb14-177"><a href="#cb14-177" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-178"><a href="#cb14-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-179"><a href="#cb14-179" aria-hidden="true" tabindex="-1"></a><span class="in">{locus}_{sample_id}_S{N}_L{lane}_R{1|2}_001.fastq</span></span>
+<span id="cb14-179"><a href="#cb14-179" aria-hidden="true" tabindex="-1"></a><span class="in">{locus_shorthand}-{sample_id}-{dilution}_{replicate}_{site}_{sequencing_lane}_R{1|2}_001.fastq</span></span>
 <span id="cb14-180"><a href="#cb14-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb14-181"><a href="#cb14-181" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-182"><a href="#cb14-182" aria-hidden="true" tabindex="-1"></a>**Ejemplo real de este curso:**</span>
@@ -1216,29 +1226,31 @@ Advertencia
 <span id="cb14-190"><a href="#cb14-190" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-191"><a href="#cb14-191" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Campo <span class="pp">|</span> Ejemplo <span class="pp">|</span> Descripción <span class="pp">|</span></span>
 <span id="cb14-192"><a href="#cb14-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|:------|:--------|:------------|</span></span>
-<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{locus}`</span> <span class="pp">|</span> <span class="in">`12S`</span> <span class="pp">|</span> Debe coincidir exactamente con <span class="in">`locus_shorthand`</span> en <span class="in">`primer_data.csv`</span> <span class="pp">|</span></span>
-<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sample_id}`</span> <span class="pp">|</span> <span class="in">`GC-001-d1`</span> <span class="pp">|</span> Identificador único de la muestra — debe estar en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
-<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`S{N}`</span> <span class="pp">|</span> <span class="in">`S1`</span> <span class="pp">|</span> Número de muestra asignado por el secuenciador <span class="pp">|</span></span>
-<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`L{lane}`</span> <span class="pp">|</span> <span class="in">`L001`</span> <span class="pp">|</span> Carril de secuenciación <span class="pp">|</span></span>
-<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`R{1\|2}`</span> <span class="pp">|</span> <span class="in">`R1`</span> / <span class="in">`R2`</span> <span class="pp">|</span> Dirección de la lectura (forward / reverse) <span class="pp">|</span></span>
-<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`_001.fastq`</span> <span class="pp">|</span> — <span class="pp">|</span> Sufijo estándar de Illumina <span class="pp">|</span></span>
-<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning icon="false"}</span>
-<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a>**Errores comunes:**</span>
-<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`locus_shorthand`</span> en el nombre del archivo no coincide con el de <span class="in">`primer_data.csv`</span> → el script no encontrará ningún archivo</span>
-<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`sample_id`</span> no existe en <span class="in">`metadata.csv`</span> → la muestra no tendrá metadatos en el análisis final</span>
-<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Archivos con extensión <span class="in">`.fastq.gz`</span> en lugar de <span class="in">`.fastq`</span> → verifica si necesitas descomprimirlos primero con <span class="in">`gunzip`</span></span>
-<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{locus_shorthand}`</span> <span class="pp">|</span> <span class="in">`12S`</span> <span class="pp">|</span> Columna <span class="in">`locus_shorthand`</span> en <span class="in">`primer_data.csv`</span> — debe coincidir exactamente <span class="pp">|</span></span>
+<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sample_id}`</span> <span class="pp">|</span> <span class="in">`GC-001`</span> <span class="pp">|</span> Columna <span class="in">`sample_id`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{dilution}`</span> <span class="pp">|</span> <span class="in">`d1`</span> <span class="pp">|</span> Columna <span class="in">`dilution`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{replicate}`</span> <span class="pp">|</span> <span class="in">`1`</span> <span class="pp">|</span> Columna <span class="in">`replicate`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{site}`</span> <span class="pp">|</span> <span class="in">`S1`</span> <span class="pp">|</span> Columna <span class="in">`site`</span> en <span class="in">`metadata.csv`</span> — número de muestra del MiSeq <span class="pp">|</span></span>
+<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sequencing_lane}`</span> <span class="pp">|</span> <span class="in">`L001`</span> <span class="pp">|</span> Columna <span class="in">`sequencing_lane`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`R{1\|2}`</span> <span class="pp">|</span> <span class="in">`R1`</span> / <span class="in">`R2`</span> <span class="pp">|</span> Dirección de la lectura (forward / reverse) <span class="pp">|</span></span>
+<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`_001.fastq`</span> <span class="pp">|</span> — <span class="pp">|</span> Sufijo estándar de Illumina <span class="pp">|</span></span>
+<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning icon="false"}</span>
+<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a>**Errores comunes:**</span>
+<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`locus_shorthand`</span> en el nombre del archivo no coincide con el de <span class="in">`primer_data.csv`</span> → el script no encontrará ningún archivo</span>
+<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`sample_id`</span> no existe en <span class="in">`metadata.csv`</span> → la muestra no tendrá metadatos en el análisis final</span>
+<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Archivos con extensión <span class="in">`.fastq.gz`</span> en lugar de <span class="in">`.fastq`</span> → verifica si necesitas descomprimirlos primero con <span class="in">`gunzip`</span></span>
+<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb14-209"><a href="#cb14-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-210"><a href="#cb14-210" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
-<span id="cb14-211"><a href="#cb14-211" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
-<span id="cb14-212"><a href="#cb14-212" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usa siempre <span class="in">`~/metabarcoding-code`</span> como tu directorio de proyecto.</span>
-<span id="cb14-213"><a href="#cb14-213" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.</span>
-<span id="cb14-214"><a href="#cb14-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Activa <span class="in">`conda activate metabarcoding`</span> solo para los pasos de QC y Cutadapt.</span>
-<span id="cb14-215"><a href="#cb14-215" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb14-210"><a href="#cb14-210" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb14-211"><a href="#cb14-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-212"><a href="#cb14-212" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb14-213"><a href="#cb14-213" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
+<span id="cb14-214"><a href="#cb14-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usa siempre <span class="in">`~/metabarcoding-code`</span> como tu directorio de proyecto.</span>
+<span id="cb14-215"><a href="#cb14-215" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.</span>
+<span id="cb14-216"><a href="#cb14-216" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Activa <span class="in">`conda activate metabarcoding`</span> solo para los pasos de QC y Cutadapt.</span>
+<span id="cb14-217"><a href="#cb14-217" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
