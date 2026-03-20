@@ -215,6 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#paso-3-visualizar-el-modelo-de-error" id="toc-paso-3-visualizar-el-modelo-de-error" class="nav-link" data-scroll-target="#paso-3-visualizar-el-modelo-de-error">Paso 3 — Visualizar el modelo de error</a>
   <ul class="collapse">
   <li><a href="#que-buscar-en-el-gráfico" id="toc-que-buscar-en-el-gráfico" class="nav-link" data-scroll-target="#que-buscar-en-el-gráfico">¿Que buscar en el gráfico?</a></li>
+  <li><a href="#los-tres-elementos-del-gráfico" id="toc-los-tres-elementos-del-gráfico" class="nav-link" data-scroll-target="#los-tres-elementos-del-gráfico">Los tres elementos del gráfico</a></li>
   </ul></li>
   <li><a href="#paso-4-guardar-checkpoint-después-de-learnerrors" id="toc-paso-4-guardar-checkpoint-después-de-learnerrors" class="nav-link" data-scroll-target="#paso-4-guardar-checkpoint-después-de-learnerrors">Paso 4 — Guardar checkpoint después de learnErrors</a></li>
   <li><a href="#paso-5-inferencia-de-asvs-con-dada" id="toc-paso-5-inferencia-de-asvs-con-dada" class="nav-link" data-scroll-target="#paso-5-inferencia-de-asvs-con-dada">Paso 5 — Inferencia de ASVs con <code>dada()</code></a></li>
@@ -477,23 +478,72 @@ Tip
 </thead>
 <tbody>
 <tr class="odd">
-<td>Puntos rojos cerca de la linea negra</td>
+<td>Puntos grises cerca de la linea negra</td>
 <td>Buen ajuste del modelo [OK]</td>
 </tr>
 <tr class="even">
 <td>Puntos muy dispersos</td>
-<td>Datos insuficientes o calidad variable</td>
+<td>Datos insuficientes o calidad variable en ese bin de Q</td>
 </tr>
 <tr class="odd">
-<td>Tasas de error &gt; 10% (A-&gt;C, etc.)</td>
+<td>Tasas de error &gt; 10% en Q≥20 (A-&gt;C, etc.)</td>
 <td>Posible problema de calidad del run</td>
 </tr>
 <tr class="even">
-<td>Transiciones correctas (A-&gt;A) cerca de 1.0</td>
-<td>Normal</td>
+<td>Transiciones correctas (A-&gt;A, C-&gt;C…) altas y planas</td>
+<td>Normal — no son errores</td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="los-tres-elementos-del-gráfico" class="level3">
+<h3 class="anchored" data-anchor-id="los-tres-elementos-del-gráfico">Los tres elementos del gráfico</h3>
+<p>La gráfica tiene 16 paneles — uno por cada posible transición entre bases (4 bases × 4 posibles lecturas). Se organizan en una cuadrícula de 4×4:</p>
+<ul>
+<li><p><strong>Diagonal (A2A, C2C, G2G, T2T):</strong> lectura <em>correcta</em> — la base real y la leída son la misma. La probabilidad es alta (cerca de 1.0) y se mantiene plana conforme sube el Q-score. Estos paneles no representan errores; son la referencia de que el modelo funciona.</p></li>
+<li><p><strong>Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):</strong> errores reales — la secuenciadora leyó una base distinta a la real. La tasa debe <strong>bajar</strong> conforme sube el Q-score (eje X): a mayor calidad Phred, menos errores de ese tipo.</p></li>
+</ul>
+<p>Cada panel tiene tres elementos:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Elemento</th>
+<th>Qué representa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Puntos grises</td>
+<td>Tasas de error <strong>observadas</strong> en tus datos, agrupadas por Q-score</td>
+</tr>
+<tr class="even">
+<td>Línea negra</td>
+<td>Modelo ajustado por DADA2 — lo que aprendió <code>learnErrors()</code></td>
+</tr>
+<tr class="odd">
+<td>Línea roja</td>
+<td>Tasa teórica según la definición nominal del Q-score (Q20 = 1 error/100 bases, Q30 = 1/1000, etc.)</td>
+</tr>
+</tbody>
+</table>
+<p>La línea negra no tiene que coincidir con la línea roja: la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real. Lo que importa es que la <strong>línea negra siga los puntos grises</strong>.</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Ondulaciones en la línea negra</strong> en calidades intermedias (Q15–Q25) son normales cuando hay pocos reads en esos bins. No indican un problema si el patrón general sigue siendo decreciente.</p>
+</div>
+</div>
 <hr>
 </section>
 </section>
@@ -1268,92 +1318,114 @@ Tip
 <span id="cb16-190"><a href="#cb16-190" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-191"><a href="#cb16-191" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Senal <span class="pp">|</span> Interpretación <span class="pp">|</span></span>
 <span id="cb16-192"><a href="#cb16-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------|---------------|</span></span>
-<span id="cb16-193"><a href="#cb16-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos rojos cerca de la linea negra <span class="pp">|</span> Buen ajuste del modelo <span class="co">[</span><span class="ot">OK</span><span class="co">]</span> <span class="pp">|</span></span>
-<span id="cb16-194"><a href="#cb16-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos muy dispersos <span class="pp">|</span> Datos insuficientes o calidad variable <span class="pp">|</span></span>
-<span id="cb16-195"><a href="#cb16-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Tasas de error &gt; 10% (A-&gt;C, etc.) <span class="pp">|</span> Posible problema de calidad del run <span class="pp">|</span></span>
-<span id="cb16-196"><a href="#cb16-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Transiciones correctas (A-&gt;A) cerca de 1.0 <span class="pp">|</span> Normal <span class="pp">|</span></span>
+<span id="cb16-193"><a href="#cb16-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos grises cerca de la linea negra <span class="pp">|</span> Buen ajuste del modelo <span class="co">[</span><span class="ot">OK</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb16-194"><a href="#cb16-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos muy dispersos <span class="pp">|</span> Datos insuficientes o calidad variable en ese bin de Q <span class="pp">|</span></span>
+<span id="cb16-195"><a href="#cb16-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Tasas de error &gt; 10% en Q≥20 (A-&gt;C, etc.) <span class="pp">|</span> Posible problema de calidad del run <span class="pp">|</span></span>
+<span id="cb16-196"><a href="#cb16-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Transiciones correctas (A-&gt;A, C-&gt;C…) altas y planas <span class="pp">|</span> Normal — no son errores <span class="pp">|</span></span>
 <span id="cb16-197"><a href="#cb16-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-198"><a href="#cb16-198" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-198"><a href="#cb16-198" aria-hidden="true" tabindex="-1"></a><span class="fu">### Los tres elementos del gráfico</span></span>
 <span id="cb16-199"><a href="#cb16-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-200"><a href="#cb16-200" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 4 — Guardar checkpoint después de learnErrors</span></span>
+<span id="cb16-200"><a href="#cb16-200" aria-hidden="true" tabindex="-1"></a>La gráfica tiene 16 paneles — uno por cada posible transición entre bases (4 bases × 4 posibles lecturas). Se organizan en una cuadrícula de 4×4:</span>
 <span id="cb16-201"><a href="#cb16-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-202"><a href="#cb16-202" aria-hidden="true" tabindex="-1"></a>El pipeline guarda automáticamente un checkpoint <span class="in">`.RData`</span> después de <span class="in">`learnErrors()`</span>. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el paso más lento.</span>
+<span id="cb16-202"><a href="#cb16-202" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Diagonal (A2A, C2C, G2G, T2T):** lectura *correcta* — la base real y la leída son la misma. La probabilidad es alta (cerca de 1.0) y se mantiene plana conforme sube el Q-score. Estos paneles no representan errores; son la referencia de que el modelo funciona.</span>
 <span id="cb16-203"><a href="#cb16-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-204"><a href="#cb16-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-205"><a href="#cb16-205" aria-hidden="true" tabindex="-1"></a><span class="co"># El pipeline guarda:</span></span>
-<span id="cb16-206"><a href="#cb16-206" aria-hidden="true" tabindex="-1"></a><span class="co"># final_data/rdata_output/&lt;run_name&gt;_&lt;locus&gt;_checkpoint2_learnErrors.RData</span></span>
-<span id="cb16-207"><a href="#cb16-207" aria-hidden="true" tabindex="-1"></a><span class="co"># Contiene: errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out</span></span>
-<span id="cb16-208"><a href="#cb16-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-209"><a href="#cb16-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-210"><a href="#cb16-210" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto en otra sesión:</span>
-<span id="cb16-211"><a href="#cb16-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-212"><a href="#cb16-212" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-213"><a href="#cb16-213" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-214"><a href="#cb16-214" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
-<span id="cb16-215"><a href="#cb16-215" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-216"><a href="#cb16-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-217"><a href="#cb16-217" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-218"><a href="#cb16-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-219"><a href="#cb16-219" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 5 — Inferencia de ASVs con `dada()`</span></span>
-<span id="cb16-220"><a href="#cb16-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-221"><a href="#cb16-221" aria-hidden="true" tabindex="-1"></a>Con el modelo de error aprendido, <span class="in">`dada()`</span> infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.</span>
-<span id="cb16-222"><a href="#cb16-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-223"><a href="#cb16-223" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-224"><a href="#cb16-224" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-225"><a href="#cb16-225" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-226"><a href="#cb16-226" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-227"><a href="#cb16-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-228"><a href="#cb16-228" aria-hidden="true" tabindex="-1"></a>Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo:</span>
-<span id="cb16-229"><a href="#cb16-229" aria-hidden="true" tabindex="-1"></a><span class="in">`Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.`</span></span>
-<span id="cb16-230"><a href="#cb16-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-231"><a href="#cb16-231" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-232"><a href="#cb16-232" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuantos ASVs se infirieron en la primera muestra</span></span>
-<span id="cb16-233"><a href="#cb16-233" aria-hidden="true" tabindex="-1"></a>dadaFs[[<span class="dv">1</span>]]</span>
-<span id="cb16-234"><a href="#cb16-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-235"><a href="#cb16-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-236"><a href="#cb16-236" aria-hidden="true" tabindex="-1"></a>Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto "colapso" el denoising.</span>
-<span id="cb16-237"><a href="#cb16-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-238"><a href="#cb16-238" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-239"><a href="#cb16-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-240"><a href="#cb16-240" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 6 — Guardar checkpoint después de dada()</span></span>
-<span id="cb16-241"><a href="#cb16-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-242"><a href="#cb16-242" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-243"><a href="#cb16-243" aria-hidden="true" tabindex="-1"></a><span class="co"># El pipeline guarda:</span></span>
-<span id="cb16-244"><a href="#cb16-244" aria-hidden="true" tabindex="-1"></a><span class="co"># final_data/rdata_output/&lt;run_name&gt;_&lt;locus&gt;_checkpoint3_dada.RData</span></span>
-<span id="cb16-245"><a href="#cb16-245" aria-hidden="true" tabindex="-1"></a><span class="co"># Contiene: dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out</span></span>
-<span id="cb16-246"><a href="#cb16-246" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-247"><a href="#cb16-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-248"><a href="#cb16-248" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto antes de <span class="in">`mergePairs()`</span>:</span>
+<span id="cb16-204"><a href="#cb16-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):** errores reales — la secuenciadora leyó una base distinta a la real. La tasa debe **bajar** conforme sube el Q-score (eje X): a mayor calidad Phred, menos errores de ese tipo.</span>
+<span id="cb16-205"><a href="#cb16-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-206"><a href="#cb16-206" aria-hidden="true" tabindex="-1"></a>Cada panel tiene tres elementos:</span>
+<span id="cb16-207"><a href="#cb16-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-208"><a href="#cb16-208" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Elemento <span class="pp">|</span> Qué representa <span class="pp">|</span></span>
+<span id="cb16-209"><a href="#cb16-209" aria-hidden="true" tabindex="-1"></a><span class="pp">|----------|---------------|</span></span>
+<span id="cb16-210"><a href="#cb16-210" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos grises <span class="pp">|</span> Tasas de error **observadas** en tus datos, agrupadas por Q-score <span class="pp">|</span></span>
+<span id="cb16-211"><a href="#cb16-211" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Línea negra <span class="pp">|</span> Modelo ajustado por DADA2 — lo que aprendió <span class="in">`learnErrors()`</span> <span class="pp">|</span></span>
+<span id="cb16-212"><a href="#cb16-212" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Línea roja <span class="pp">|</span> Tasa teórica según la definición nominal del Q-score (Q20 = 1 error/100 bases, Q30 = 1/1000, etc.) <span class="pp">|</span></span>
+<span id="cb16-213"><a href="#cb16-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-214"><a href="#cb16-214" aria-hidden="true" tabindex="-1"></a>La línea negra no tiene que coincidir con la línea roja: la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real. Lo que importa es que la **línea negra siga los puntos grises**.</span>
+<span id="cb16-215"><a href="#cb16-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-216"><a href="#cb16-216" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb16-217"><a href="#cb16-217" aria-hidden="true" tabindex="-1"></a>**Ondulaciones en la línea negra** en calidades intermedias (Q15–Q25) son normales cuando hay pocos reads en esos bins. No indican un problema si el patrón general sigue siendo decreciente.</span>
+<span id="cb16-218"><a href="#cb16-218" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb16-219"><a href="#cb16-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-220"><a href="#cb16-220" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-221"><a href="#cb16-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-222"><a href="#cb16-222" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 4 — Guardar checkpoint después de learnErrors</span></span>
+<span id="cb16-223"><a href="#cb16-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-224"><a href="#cb16-224" aria-hidden="true" tabindex="-1"></a>El pipeline guarda automáticamente un checkpoint <span class="in">`.RData`</span> después de <span class="in">`learnErrors()`</span>. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el paso más lento.</span>
+<span id="cb16-225"><a href="#cb16-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-226"><a href="#cb16-226" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-227"><a href="#cb16-227" aria-hidden="true" tabindex="-1"></a><span class="co"># El pipeline guarda:</span></span>
+<span id="cb16-228"><a href="#cb16-228" aria-hidden="true" tabindex="-1"></a><span class="co"># final_data/rdata_output/&lt;run_name&gt;_&lt;locus&gt;_checkpoint2_learnErrors.RData</span></span>
+<span id="cb16-229"><a href="#cb16-229" aria-hidden="true" tabindex="-1"></a><span class="co"># Contiene: errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out</span></span>
+<span id="cb16-230"><a href="#cb16-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-231"><a href="#cb16-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-232"><a href="#cb16-232" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto en otra sesión:</span>
+<span id="cb16-233"><a href="#cb16-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-234"><a href="#cb16-234" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-235"><a href="#cb16-235" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb16-236"><a href="#cb16-236" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
+<span id="cb16-237"><a href="#cb16-237" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-238"><a href="#cb16-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-239"><a href="#cb16-239" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-240"><a href="#cb16-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-241"><a href="#cb16-241" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 5 — Inferencia de ASVs con `dada()`</span></span>
+<span id="cb16-242"><a href="#cb16-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-243"><a href="#cb16-243" aria-hidden="true" tabindex="-1"></a>Con el modelo de error aprendido, <span class="in">`dada()`</span> infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.</span>
+<span id="cb16-244"><a href="#cb16-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-245"><a href="#cb16-245" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-246"><a href="#cb16-246" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-247"><a href="#cb16-247" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-248"><a href="#cb16-248" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb16-249"><a href="#cb16-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-250"><a href="#cb16-250" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-251"><a href="#cb16-251" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-252"><a href="#cb16-252" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
-<span id="cb16-253"><a href="#cb16-253" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-254"><a href="#cb16-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-255"><a href="#cb16-255" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-256"><a href="#cb16-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-257"><a href="#cb16-257" aria-hidden="true" tabindex="-1"></a><span class="fu">## Retención esperada en este paso</span></span>
-<span id="cb16-258"><a href="#cb16-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-259"><a href="#cb16-259" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Paso <span class="pp">|</span> Lectura típica <span class="pp">|</span></span>
-<span id="cb16-260"><a href="#cb16-260" aria-hidden="true" tabindex="-1"></a><span class="pp">|------|---------------|</span></span>
-<span id="cb16-261"><a href="#cb16-261" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Lecturas únicas tras dereplicación <span class="pp">|</span> 5-30% del total (normal) <span class="pp">|</span></span>
-<span id="cb16-262"><a href="#cb16-262" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ASVs inferidos vs únicos entrada <span class="pp">|</span> 1-10% (alta compresión es buena senal) <span class="pp">|</span></span>
+<span id="cb16-250"><a href="#cb16-250" aria-hidden="true" tabindex="-1"></a>Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo:</span>
+<span id="cb16-251"><a href="#cb16-251" aria-hidden="true" tabindex="-1"></a><span class="in">`Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.`</span></span>
+<span id="cb16-252"><a href="#cb16-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-253"><a href="#cb16-253" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-254"><a href="#cb16-254" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuantos ASVs se infirieron en la primera muestra</span></span>
+<span id="cb16-255"><a href="#cb16-255" aria-hidden="true" tabindex="-1"></a>dadaFs[[<span class="dv">1</span>]]</span>
+<span id="cb16-256"><a href="#cb16-256" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-257"><a href="#cb16-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-258"><a href="#cb16-258" aria-hidden="true" tabindex="-1"></a>Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto "colapso" el denoising.</span>
+<span id="cb16-259"><a href="#cb16-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-260"><a href="#cb16-260" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-261"><a href="#cb16-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-262"><a href="#cb16-262" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 6 — Guardar checkpoint después de dada()</span></span>
 <span id="cb16-263"><a href="#cb16-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-264"><a href="#cb16-264" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-265"><a href="#cb16-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-266"><a href="#cb16-266" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
-<span id="cb16-267"><a href="#cb16-267" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
-<span id="cb16-268"><a href="#cb16-268" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`learnErrors()`</span> necesita suficientes datos (al menos varios MB de FASTQ filtrados) para estimar tasas confiables.</span>
-<span id="cb16-269"><a href="#cb16-269" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si el modelo no converge, aumenta <span class="in">`MAX_CONSIST`</span> a 50 o <span class="in">`nbases_target`</span> a <span class="in">`2e8`</span>.</span>
-<span id="cb16-270"><a href="#cb16-270" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los modelos <span class="in">`errF`</span> y <span class="in">`errR`</span> son independientes: las lecturas Reverse suelen tener tasas de error ligeramente mayores que las Forward, y eso es normal.</span>
-<span id="cb16-271"><a href="#cb16-271" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb16-272"><a href="#cb16-272" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-273"><a href="#cb16-273" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
-<span id="cb16-274"><a href="#cb16-274" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
-<span id="cb16-275"><a href="#cb16-275" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Revisa <span class="in">`plotErrors()`</span>  -  ¿Los puntos rojos siguen la linea negra?</span>
-<span id="cb16-276"><a href="#cb16-276" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compara el número de ASVs inferidos con el número de secuencias únicas de entrada.</span>
-<span id="cb16-277"><a href="#cb16-277" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>¿Hay alguna muestra con muy pocos ASVs? ¿Coincide con las que tenian baja retención en filterAndTrim?</span>
-<span id="cb16-278"><a href="#cb16-278" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb16-264"><a href="#cb16-264" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-265"><a href="#cb16-265" aria-hidden="true" tabindex="-1"></a><span class="co"># El pipeline guarda:</span></span>
+<span id="cb16-266"><a href="#cb16-266" aria-hidden="true" tabindex="-1"></a><span class="co"># final_data/rdata_output/&lt;run_name&gt;_&lt;locus&gt;_checkpoint3_dada.RData</span></span>
+<span id="cb16-267"><a href="#cb16-267" aria-hidden="true" tabindex="-1"></a><span class="co"># Contiene: dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out</span></span>
+<span id="cb16-268"><a href="#cb16-268" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-269"><a href="#cb16-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-270"><a href="#cb16-270" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto antes de <span class="in">`mergePairs()`</span>:</span>
+<span id="cb16-271"><a href="#cb16-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-272"><a href="#cb16-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb16-273"><a href="#cb16-273" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb16-274"><a href="#cb16-274" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
+<span id="cb16-275"><a href="#cb16-275" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb16-276"><a href="#cb16-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-277"><a href="#cb16-277" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-278"><a href="#cb16-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-279"><a href="#cb16-279" aria-hidden="true" tabindex="-1"></a><span class="fu">## Retención esperada en este paso</span></span>
+<span id="cb16-280"><a href="#cb16-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-281"><a href="#cb16-281" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Paso <span class="pp">|</span> Lectura típica <span class="pp">|</span></span>
+<span id="cb16-282"><a href="#cb16-282" aria-hidden="true" tabindex="-1"></a><span class="pp">|------|---------------|</span></span>
+<span id="cb16-283"><a href="#cb16-283" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Lecturas únicas tras dereplicación <span class="pp">|</span> 5-30% del total (normal) <span class="pp">|</span></span>
+<span id="cb16-284"><a href="#cb16-284" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ASVs inferidos vs únicos entrada <span class="pp">|</span> 1-10% (alta compresión es buena senal) <span class="pp">|</span></span>
+<span id="cb16-285"><a href="#cb16-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-286"><a href="#cb16-286" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb16-287"><a href="#cb16-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-288"><a href="#cb16-288" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb16-289"><a href="#cb16-289" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
+<span id="cb16-290"><a href="#cb16-290" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`learnErrors()`</span> necesita suficientes datos (al menos varios MB de FASTQ filtrados) para estimar tasas confiables.</span>
+<span id="cb16-291"><a href="#cb16-291" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si el modelo no converge, aumenta <span class="in">`MAX_CONSIST`</span> a 50 o <span class="in">`nbases_target`</span> a <span class="in">`2e8`</span>.</span>
+<span id="cb16-292"><a href="#cb16-292" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los modelos <span class="in">`errF`</span> y <span class="in">`errR`</span> son independientes: las lecturas Reverse suelen tener tasas de error ligeramente mayores que las Forward, y eso es normal.</span>
+<span id="cb16-293"><a href="#cb16-293" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb16-294"><a href="#cb16-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-295"><a href="#cb16-295" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
+<span id="cb16-296"><a href="#cb16-296" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
+<span id="cb16-297"><a href="#cb16-297" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Revisa <span class="in">`plotErrors()`</span>  -  ¿Los puntos rojos siguen la linea negra?</span>
+<span id="cb16-298"><a href="#cb16-298" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compara el número de ASVs inferidos con el número de secuencias únicas de entrada.</span>
+<span id="cb16-299"><a href="#cb16-299" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>¿Hay alguna muestra con muy pocos ASVs? ¿Coincide con las que tenian baja retención en filterAndTrim?</span>
+<span id="cb16-300"><a href="#cb16-300" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
