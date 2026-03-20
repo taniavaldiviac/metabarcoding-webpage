@@ -135,13 +135,21 @@ Después de aprender los modelos, el pipeline los valida automáticamente:
 
 ```{r eval=FALSE}
 # Validar modelo Forward
-if (!is.null(errF$trans) && !is.null(errF$err_out)) {
-  message("Transiciones aprendidas: ", length(unique(errF$trans)))
-  message("Rango de tasas de error: ",
-          round(min(errF$err_out, na.rm = TRUE), 5), " — ",
-          round(max(errF$err_out, na.rm = TRUE), 5))
-  if (any(errF$err_out > 0.1, na.rm = TRUE))
-    warning("Tasas de error > 10%. Revisa calidad de datos.")
+# err_out es una matriz 16×41: filas = 16 posibles transiciones (A2A, A2C, …, T2T)
+# Las transiciones "correctas" (A2A, C2C, G2G, T2T) tienen probabilidad ≈ 1.0 y no
+# son errores — hay que excluirlas al evaluar tasas de error reales.
+if (!is.null(errF$err_out)) {
+  rn          <- rownames(errF$err_out)              # ej. "A2A", "A2C", …
+  error_rows  <- rn[substr(rn, 1, 1) != substr(rn, 3, 3)]  # solo A2C, A2G, etc.
+  err_rates   <- errF$err_out[error_rows, , drop = FALSE]
+  max_err     <- max(err_rates, na.rm = TRUE)
+
+  message("Tipos de transición de error: ", length(error_rows), " (de 16 posibles)")
+  message("Rango de tasas de error (transiciones incorrectas): ",
+          round(min(err_rates, na.rm = TRUE), 5), " — ", round(max_err, 5))
+
+  if (max_err > 0.1)
+    warning("Tasa de error máxima > 10% en alguna transición. Revisa calidad de datos.")
 }
 ```
 
