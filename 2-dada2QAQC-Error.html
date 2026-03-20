@@ -221,6 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#paso-5-inferencia-de-asvs-con-dada" id="toc-paso-5-inferencia-de-asvs-con-dada" class="nav-link" data-scroll-target="#paso-5-inferencia-de-asvs-con-dada">Paso 5 — Inferencia de ASVs con <code>dada()</code></a></li>
   <li><a href="#paso-6-guardar-checkpoint-después-de-dada" id="toc-paso-6-guardar-checkpoint-después-de-dada" class="nav-link" data-scroll-target="#paso-6-guardar-checkpoint-después-de-dada">Paso 6 — Guardar checkpoint después de dada()</a></li>
   <li><a href="#retención-esperada-en-este-paso" id="toc-retención-esperada-en-este-paso" class="nav-link" data-scroll-target="#retención-esperada-en-este-paso">Retención esperada en este paso</a></li>
+  <li><a href="#checkpoint-antes-de-continuar-con-quimeras" id="toc-checkpoint-antes-de-continuar-con-quimeras" class="nav-link" data-scroll-target="#checkpoint-antes-de-continuar-con-quimeras">Checkpoint — Antes de continuar con quimeras</a></li>
   </ul>
 </nav>
     </div>
@@ -671,6 +672,31 @@ Tip
 <li>¿Hay alguna muestra con muy pocos ASVs? ¿Coincide con las que tenian baja retención en filterAndTrim?</li>
 </ol>
 </div>
+</div>
+<hr>
+</section>
+<section id="checkpoint-antes-de-continuar-con-quimeras" class="level2">
+<h2 class="anchored" data-anchor-id="checkpoint-antes-de-continuar-con-quimeras">Checkpoint — Antes de continuar con quimeras</h2>
+<p>Antes de pasar al siguiente paso guarda todos los objetos necesarios en un archivo <code>.RData</code>. Si el script se interrumpe podrás retomar desde aquí sin repetir la dereplicación, el aprendizaje de errores ni la inferencia de ASVs.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(dadaFs, dadaRs, derepFs, derepRs, errF, errR,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>     filtFs, filtRs, sample.names, primer.data, run_name, out,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint_antes_quimeras.RData"</span>)))</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint guardado — listo para remoción de quimeras"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Para reanudar desde este punto en otra sesión:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"_checkpoint_antes_quimeras.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <hr>
 <p><a href="./2-dada2QAQC-Chimeras.html" class="btn btn-primary">→ Siguiente: DADA2 — Remoción de quimeras y seguimiento de lecturas</a></p>
@@ -1132,314 +1158,337 @@ Tip
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Dada2 - Dereplicación e Inferencia de Errores"</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: true</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>Este paso tiene dos partes: primero **dereplicamos** las lecturas (eliminamos duplicados y contamos abundancias), luego **aprendemos el modelo de error** de la secuenciadora para poder distinguir errores técnicos de variantes biológicas reales.</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 1 — Dereplicación</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>La dereplicación colapsa lecturas identicas en secuencias únicas y registra cuantas veces aparece cada una. Esto reduce el volumen de datos sin perder información biológica.</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>exists <span class="ot">&lt;-</span> <span class="fu">file.exists</span>(filtFs) <span class="sc">&amp;</span> <span class="fu">file.exists</span>(filtRs)</span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>filtFs <span class="ot">&lt;-</span> filtFs[exists]</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>filtRs <span class="ot">&lt;-</span> filtRs[exists]</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>sample.names <span class="ot">&lt;-</span> sample.names[exists]</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>derepFs <span class="ot">&lt;-</span> <span class="fu">derepFastq</span>(filtFs, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>derepRs <span class="ot">&lt;-</span> <span class="fu">derepFastq</span>(filtRs, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(derepFs) <span class="ot">&lt;-</span> sample.names</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(derepRs) <span class="ot">&lt;-</span> sample.names</span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>Deberías ver para cada muestra: cuantas lecturas únicas quedaron. Un ratio alto de secuencias únicas / total puede indicar alta diversidad o contaminación; un ratio muy bajo es normal en muestras con taxones dominantes.</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Diagnóstico rápido de la primera muestra</span></span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>n_unique_F     <span class="ot">&lt;-</span> <span class="fu">length</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques)</span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>total_reads_F  <span class="ot">&lt;-</span> <span class="fu">sum</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques)</span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>compression_ratio <span class="ot">&lt;-</span> <span class="fu">round</span>(n_unique_F <span class="sc">/</span> total_reads_F <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Secuencias únicas Forward: "</span>, n_unique_F)</span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Ratio de compresión: "</span>, compression_ratio, <span class="st">"%"</span>)</span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Top 5 abundancias: "</span>, <span class="fu">paste</span>(<span class="fu">head</span>(<span class="fu">sort</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques, <span class="at">decreasing =</span> <span class="cn">TRUE</span>), <span class="dv">5</span>), <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (compression_ratio <span class="sc">&lt;</span> <span class="dv">1</span>)</span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"INFO: Baja diversidad (&lt; 1% únicas). Normal en muestras con especies dominantes."</span>)</span>
-<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (compression_ratio <span class="sc">&gt;</span> <span class="dv">50</span>)</span>
-<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Alta diversidad inusual (&gt; 50% únicas). Revisa calidad del filtrado o contaminación."</span>)</span>
-<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a>El pipeline guarda las estadísticas de dereplicación para todas las muestras en <span class="in">`final_data/logs/`</span>:</span>
-<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>derep_stats <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sample        =</span> sample.names,</span>
-<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unique_seqs_F =</span> <span class="fu">sapply</span>(derepFs, <span class="cf">function</span>(x) <span class="fu">length</span>(x<span class="sc">$</span>uniques)),</span>
-<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_reads_F =</span> <span class="fu">sapply</span>(derepFs, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>uniques)),</span>
-<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unique_seqs_R =</span> <span class="fu">sapply</span>(derepRs, <span class="cf">function</span>(x) <span class="fu">length</span>(x<span class="sc">$</span>uniques)),</span>
-<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_reads_R =</span> <span class="fu">sapply</span>(derepRs, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>uniques))</span>
-<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a>derep_stats<span class="sc">$</span>Compression_ratio_F <span class="ot">&lt;-</span> <span class="fu">with</span>(derep_stats,</span>
-<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(Unique_seqs_F <span class="sc">/</span> Total_reads_F <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>))</span>
-<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a>derep_stats<span class="sc">$</span>Compression_ratio_R <span class="ot">&lt;-</span> <span class="fu">with</span>(derep_stats,</span>
-<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(Unique_seqs_R <span class="sc">/</span> Total_reads_R <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>))</span>
-<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(derep_stats,</span>
-<span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
-<span id="cb16-64"><a href="#cb16-64" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_derep_stats.csv"</span>)),</span>
-<span id="cb16-65"><a href="#cb16-65" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb16-66"><a href="#cb16-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-67"><a href="#cb16-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-68"><a href="#cb16-68" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-69"><a href="#cb16-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-70"><a href="#cb16-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 2 — Aprender el modelo de error</span></span>
-<span id="cb16-71"><a href="#cb16-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-72"><a href="#cb16-72" aria-hidden="true" tabindex="-1"></a>La secuenciadora Illumina comete errores al leer las bases (una A real puede leerse como C, G o T). <span class="in">`learnErrors()`</span> estima estas tasas para cada tipo de transicion (A-&gt;C, A-&gt;G, etc.) en función de la calidad Phred de cada posición.</span>
-<span id="cb16-73"><a href="#cb16-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-74"><a href="#cb16-74" aria-hidden="true" tabindex="-1"></a>El pipeline primero verifica que haya suficientes datos para estimar el modelo:</span>
-<span id="cb16-75"><a href="#cb16-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-76"><a href="#cb16-76" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-77"><a href="#cb16-77" aria-hidden="true" tabindex="-1"></a>nbases_target <span class="ot">&lt;-</span> <span class="fl">1e8</span>   <span class="co"># 100 millones de bases (aumentar si tienes &gt; 50 muestras)</span></span>
-<span id="cb16-78"><a href="#cb16-78" aria-hidden="true" tabindex="-1"></a>max_consist   <span class="ot">&lt;-</span> <span class="dv">25</span>    <span class="co"># más iteraciones que el default (10) para forzar convergencia</span></span>
-<span id="cb16-79"><a href="#cb16-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-80"><a href="#cb16-80" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar datos disponibles</span></span>
-<span id="cb16-81"><a href="#cb16-81" aria-hidden="true" tabindex="-1"></a>total_bases_F <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">sapply</span>(filtFs, <span class="cf">function</span>(f) <span class="cf">if</span> (<span class="fu">file.exists</span>(f)) <span class="fu">file.info</span>(f)<span class="sc">$</span>size <span class="cf">else</span> <span class="dv">0</span>))</span>
-<span id="cb16-82"><a href="#cb16-82" aria-hidden="true" tabindex="-1"></a>total_bases_R <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">sapply</span>(filtRs, <span class="cf">function</span>(r) <span class="cf">if</span> (<span class="fu">file.exists</span>(r)) <span class="fu">file.info</span>(r)<span class="sc">$</span>size <span class="cf">else</span> <span class="dv">0</span>))</span>
-<span id="cb16-83"><a href="#cb16-83" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Forward disponible: ~"</span>, <span class="fu">round</span>(total_bases_F <span class="sc">/</span> <span class="fl">1e6</span>, <span class="dv">1</span>), <span class="st">" MB"</span>)</span>
-<span id="cb16-84"><a href="#cb16-84" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Reverse disponible: ~"</span>, <span class="fu">round</span>(total_bases_R <span class="sc">/</span> <span class="fl">1e6</span>, <span class="dv">1</span>), <span class="st">" MB"</span>)</span>
-<span id="cb16-85"><a href="#cb16-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-86"><a href="#cb16-86" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (total_bases_F <span class="sc">&lt;</span> <span class="fl">1e6</span> <span class="sc">||</span> total_bases_R <span class="sc">&lt;</span> <span class="fl">1e6</span>)</span>
-<span id="cb16-87"><a href="#cb16-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Datos muy limitados (&lt; 1 MB). El modelo puede ser inestable."</span>)</span>
-<span id="cb16-88"><a href="#cb16-88" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-89"><a href="#cb16-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-90"><a href="#cb16-90" aria-hidden="true" tabindex="-1"></a>Los parámetros clave son:</span>
-<span id="cb16-91"><a href="#cb16-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-92"><a href="#cb16-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Parámetro <span class="pp">|</span> Valor <span class="pp">|</span> Qué hace <span class="pp">|</span></span>
-<span id="cb16-93"><a href="#cb16-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|:---|</span></span>
-<span id="cb16-94"><a href="#cb16-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`nbases`</span> <span class="pp">|</span> <span class="in">`1e8`</span> (100M) <span class="pp">|</span> Número de bases a usar para aprender el modelo. DADA2 toma tantas muestras como necesite para alcanzar ese total. Aumentar a <span class="in">`2e8`</span> si tienes &gt; 50 muestras <span class="pp">|</span></span>
-<span id="cb16-95"><a href="#cb16-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`randomize`</span> <span class="pp">|</span> <span class="in">`TRUE`</span> <span class="pp">|</span> Selecciona lecturas al azar en lugar de tomar siempre las primeras. Produce un modelo más representativo <span class="pp">|</span></span>
-<span id="cb16-96"><a href="#cb16-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`multithread`</span> <span class="pp">|</span> <span class="in">`TRUE`</span> <span class="pp">|</span> Usa todos los núcleos disponibles del servidor para acelerar el cálculo <span class="pp">|</span></span>
-<span id="cb16-97"><a href="#cb16-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`MAX_CONSIST`</span> <span class="pp">|</span> <span class="in">`25`</span> <span class="pp">|</span> Número máximo de iteraciones del algoritmo. El default de DADA2 es 10; aquí se aumenta a 25 para garantizar convergencia <span class="pp">|</span></span>
-<span id="cb16-98"><a href="#cb16-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-99"><a href="#cb16-99" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-100"><a href="#cb16-100" aria-hidden="true" tabindex="-1"></a>errF <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
-<span id="cb16-101"><a href="#cb16-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtFs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-102"><a href="#cb16-102" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-103"><a href="#cb16-103" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
-<span id="cb16-104"><a href="#cb16-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Forward: "</span>, <span class="fu">conditionMessage</span>(e))</span>
-<span id="cb16-105"><a href="#cb16-105" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb16-106"><a href="#cb16-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-107"><a href="#cb16-107" aria-hidden="true" tabindex="-1"></a>errR <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
-<span id="cb16-108"><a href="#cb16-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtRs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-109"><a href="#cb16-109" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-110"><a href="#cb16-110" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
-<span id="cb16-111"><a href="#cb16-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Reverse: "</span>, <span class="fu">conditionMessage</span>(e))</span>
-<span id="cb16-112"><a href="#cb16-112" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb16-113"><a href="#cb16-113" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-114"><a href="#cb16-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-115"><a href="#cb16-115" aria-hidden="true" tabindex="-1"></a>Este paso puede tardar varios minutos. La salida indica cuántas bases y muestras se usaron, y cuántas rondas necesitó el algoritmo para converger. Por ejemplo:</span>
-<span id="cb16-116"><a href="#cb16-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-117"><a href="#cb16-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-118"><a href="#cb16-118" aria-hidden="true" tabindex="-1"></a><span class="in">103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.</span></span>
-<span id="cb16-119"><a href="#cb16-119" aria-hidden="true" tabindex="-1"></a><span class="in">Initializing error rates to maximum possible estimate.</span></span>
-<span id="cb16-120"><a href="#cb16-120" aria-hidden="true" tabindex="-1"></a><span class="in">selfConsist step 1 ............</span></span>
-<span id="cb16-121"><a href="#cb16-121" aria-hidden="true" tabindex="-1"></a><span class="in">   selfConsist step 2</span></span>
-<span id="cb16-122"><a href="#cb16-122" aria-hidden="true" tabindex="-1"></a><span class="in">   ...</span></span>
-<span id="cb16-123"><a href="#cb16-123" aria-hidden="true" tabindex="-1"></a><span class="in">Convergence after 10 rounds.</span></span>
-<span id="cb16-124"><a href="#cb16-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-125"><a href="#cb16-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-126"><a href="#cb16-126" aria-hidden="true" tabindex="-1"></a>**¿Qué significa "convergencia"?**</span>
-<span id="cb16-127"><a href="#cb16-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-128"><a href="#cb16-128" aria-hidden="true" tabindex="-1"></a><span class="in">`learnErrors()`</span> trabaja de forma iterativa: en cada ronda estima las tasas de error → infiere ASVs con esas tasas → re-estima los errores con las ASVs inferidas. Cuando las estimaciones dejan de cambiar entre rondas, el modelo **convergió**. Convergencia en menos de 10 rondas es ideal; si no converge en 25 hay un problema con los datos o los parámetros.</span>
-<span id="cb16-129"><a href="#cb16-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-130"><a href="#cb16-130" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
-<span id="cb16-131"><a href="#cb16-131" aria-hidden="true" tabindex="-1"></a>**Resultado esperado:** convergencia en 5–15 rondas para Forward y Reverse. Es normal que Reverse necesite una o dos rondas más que Forward, ya que sus lecturas tienen mayor tasa de error.</span>
-<span id="cb16-132"><a href="#cb16-132" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb16-133"><a href="#cb16-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-134"><a href="#cb16-134" aria-hidden="true" tabindex="-1"></a>Después de aprender los modelos, el pipeline los valida automáticamente:</span>
-<span id="cb16-135"><a href="#cb16-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-136"><a href="#cb16-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-137"><a href="#cb16-137" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar modelo Forward</span></span>
-<span id="cb16-138"><a href="#cb16-138" aria-hidden="true" tabindex="-1"></a><span class="co"># err_out: matriz 16×41 — filas = transiciones (A2A, A2C, …), columnas = Q-scores (0–40)</span></span>
-<span id="cb16-139"><a href="#cb16-139" aria-hidden="true" tabindex="-1"></a><span class="co"># Las transiciones correctas (A2A, C2C, G2G, T2T) tienen probabilidad ≈ 1.0 → excluir.</span></span>
-<span id="cb16-140"><a href="#cb16-140" aria-hidden="true" tabindex="-1"></a><span class="co"># Las tasas altas en Q&lt;20 son normales (bases de baja calidad son intrínsecamente inciertas).</span></span>
-<span id="cb16-141"><a href="#cb16-141" aria-hidden="true" tabindex="-1"></a><span class="co"># Solo se evalúa Q≥20, donde vive la mayoría de las lecturas filtradas.</span></span>
-<span id="cb16-142"><a href="#cb16-142" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(errF<span class="sc">$</span>err_out)) {</span>
-<span id="cb16-143"><a href="#cb16-143" aria-hidden="true" tabindex="-1"></a>  rn         <span class="ot">&lt;-</span> <span class="fu">rownames</span>(errF<span class="sc">$</span>err_out)</span>
-<span id="cb16-144"><a href="#cb16-144" aria-hidden="true" tabindex="-1"></a>  error_rows <span class="ot">&lt;-</span> rn[<span class="fu">substr</span>(rn, <span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">!=</span> <span class="fu">substr</span>(rn, <span class="dv">3</span>, <span class="dv">3</span>)]   <span class="co"># A2C, A2G, etc.</span></span>
-<span id="cb16-145"><a href="#cb16-145" aria-hidden="true" tabindex="-1"></a>  q_cols     <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">colnames</span>(errF<span class="sc">$</span>err_out))</span>
-<span id="cb16-146"><a href="#cb16-146" aria-hidden="true" tabindex="-1"></a>  hq_cols    <span class="ot">&lt;-</span> <span class="fu">which</span>(q_cols <span class="sc">&gt;=</span> <span class="dv">20</span>)                          <span class="co"># columnas Q≥20</span></span>
-<span id="cb16-147"><a href="#cb16-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-148"><a href="#cb16-148" aria-hidden="true" tabindex="-1"></a>  err_hq  <span class="ot">&lt;-</span> errF<span class="sc">$</span>err_out[error_rows, hq_cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb16-149"><a href="#cb16-149" aria-hidden="true" tabindex="-1"></a>  max_err <span class="ot">&lt;-</span> <span class="fu">max</span>(err_hq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-150"><a href="#cb16-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-151"><a href="#cb16-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tipos de transición de error: "</span>, <span class="fu">length</span>(error_rows), <span class="st">" (de 16 posibles)"</span>)</span>
-<span id="cb16-152"><a href="#cb16-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tasa de error máxima en Q≥20: "</span>, <span class="fu">round</span>(max_err, <span class="dv">5</span>),</span>
-<span id="cb16-153"><a href="#cb16-153" aria-hidden="true" tabindex="-1"></a>          <span class="st">" (normal si &lt; 0.05; preocupante si &gt; 0.10)"</span>)</span>
-<span id="cb16-154"><a href="#cb16-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-155"><a href="#cb16-155" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (max_err <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
-<span id="cb16-156"><a href="#cb16-156" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Tasa de error &gt; 10% en Q≥20. Revisa el perfil de calidad del run."</span>)</span>
-<span id="cb16-157"><a href="#cb16-157" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
-<span id="cb16-158"><a href="#cb16-158" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"Modelo de error OK."</span>)</span>
-<span id="cb16-159"><a href="#cb16-159" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb16-160"><a href="#cb16-160" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-161"><a href="#cb16-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-162"><a href="#cb16-162" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-163"><a href="#cb16-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-164"><a href="#cb16-164" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 3 — Visualizar el modelo de error</span></span>
-<span id="cb16-165"><a href="#cb16-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-166"><a href="#cb16-166" aria-hidden="true" tabindex="-1"></a>El gráfico de errores muestra las 12 posibles transiciones (A-&gt;C, A-&gt;G, etc.). Los **puntos rojos** son las tasas observadas; la **linea negra** es el modelo ajustado. Deben seguir el mismo patrón: la tasa de error cae conforme aumenta la calidad (Q-score).</span>
-<span id="cb16-167"><a href="#cb16-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-168"><a href="#cb16-168" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-169"><a href="#cb16-169" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-170"><a href="#cb16-170" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-171"><a href="#cb16-171" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-172"><a href="#cb16-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-173"><a href="#cb16-173" aria-hidden="true" tabindex="-1"></a>El pipeline guarda estas gráficas automáticamente en <span class="in">`final_data/logs/`</span>:</span>
-<span id="cb16-174"><a href="#cb16-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-175"><a href="#cb16-175" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-176"><a href="#cb16-176" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
-<span id="cb16-177"><a href="#cb16-177" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errF.png"</span>)),</span>
-<span id="cb16-178"><a href="#cb16-178" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
-<span id="cb16-179"><a href="#cb16-179" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb16-180"><a href="#cb16-180" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb16-181"><a href="#cb16-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-182"><a href="#cb16-182" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
-<span id="cb16-183"><a href="#cb16-183" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errR.png"</span>)),</span>
-<span id="cb16-184"><a href="#cb16-184" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
-<span id="cb16-185"><a href="#cb16-185" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb16-186"><a href="#cb16-186" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb16-187"><a href="#cb16-187" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-188"><a href="#cb16-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-189"><a href="#cb16-189" aria-hidden="true" tabindex="-1"></a><span class="fu">### ¿Que buscar en el gráfico?</span></span>
-<span id="cb16-190"><a href="#cb16-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-191"><a href="#cb16-191" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Senal <span class="pp">|</span> Interpretación <span class="pp">|</span></span>
-<span id="cb16-192"><a href="#cb16-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------|---------------|</span></span>
-<span id="cb16-193"><a href="#cb16-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos grises cerca de la linea negra <span class="pp">|</span> Buen ajuste del modelo <span class="co">[</span><span class="ot">OK</span><span class="co">]</span> <span class="pp">|</span></span>
-<span id="cb16-194"><a href="#cb16-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos muy dispersos <span class="pp">|</span> Datos insuficientes o calidad variable en ese bin de Q <span class="pp">|</span></span>
-<span id="cb16-195"><a href="#cb16-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Tasas de error &gt; 10% en Q≥20 (A-&gt;C, etc.) <span class="pp">|</span> Posible problema de calidad del run <span class="pp">|</span></span>
-<span id="cb16-196"><a href="#cb16-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Transiciones correctas (A-&gt;A, C-&gt;C…) altas y planas <span class="pp">|</span> Normal — no son errores <span class="pp">|</span></span>
-<span id="cb16-197"><a href="#cb16-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-198"><a href="#cb16-198" aria-hidden="true" tabindex="-1"></a><span class="fu">### Los tres elementos del gráfico</span></span>
-<span id="cb16-199"><a href="#cb16-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-200"><a href="#cb16-200" aria-hidden="true" tabindex="-1"></a>La gráfica tiene 16 paneles — uno por cada posible transición entre bases (4 bases × 4 posibles lecturas). Se organizan en una cuadrícula de 4×4:</span>
-<span id="cb16-201"><a href="#cb16-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-202"><a href="#cb16-202" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Diagonal (A2A, C2C, G2G, T2T):** lectura *correcta* — la base real y la leída son la misma. La probabilidad es alta (cerca de 1.0) y se mantiene plana conforme sube el Q-score. Estos paneles no representan errores; son la referencia de que el modelo funciona.</span>
-<span id="cb16-203"><a href="#cb16-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-204"><a href="#cb16-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):** errores reales — la secuenciadora leyó una base distinta a la real. La tasa debe **bajar** conforme sube el Q-score (eje X): a mayor calidad Phred, menos errores de ese tipo.</span>
-<span id="cb16-205"><a href="#cb16-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-206"><a href="#cb16-206" aria-hidden="true" tabindex="-1"></a>Cada panel tiene tres elementos:</span>
-<span id="cb16-207"><a href="#cb16-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-208"><a href="#cb16-208" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Elemento <span class="pp">|</span> Qué representa <span class="pp">|</span></span>
-<span id="cb16-209"><a href="#cb16-209" aria-hidden="true" tabindex="-1"></a><span class="pp">|----------|---------------|</span></span>
-<span id="cb16-210"><a href="#cb16-210" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos grises <span class="pp">|</span> Tasas de error **observadas** en tus datos, agrupadas por Q-score <span class="pp">|</span></span>
-<span id="cb16-211"><a href="#cb16-211" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Línea negra <span class="pp">|</span> Modelo ajustado por DADA2 — lo que aprendió <span class="in">`learnErrors()`</span> <span class="pp">|</span></span>
-<span id="cb16-212"><a href="#cb16-212" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Línea roja <span class="pp">|</span> Tasa teórica según la definición nominal del Q-score (Q20 = 1 error/100 bases, Q30 = 1/1000, etc.) <span class="pp">|</span></span>
-<span id="cb16-213"><a href="#cb16-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-214"><a href="#cb16-214" aria-hidden="true" tabindex="-1"></a>La línea negra no tiene que coincidir con la línea roja: la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real. Lo que importa es que la **línea negra siga los puntos grises**.</span>
-<span id="cb16-215"><a href="#cb16-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-216"><a href="#cb16-216" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
-<span id="cb16-217"><a href="#cb16-217" aria-hidden="true" tabindex="-1"></a>**Ondulaciones en la línea negra** en calidades intermedias (Q15–Q25) son normales cuando hay pocos reads en esos bins. No indican un problema si el patrón general sigue siendo decreciente.</span>
-<span id="cb16-218"><a href="#cb16-218" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb16-219"><a href="#cb16-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-220"><a href="#cb16-220" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-221"><a href="#cb16-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-222"><a href="#cb16-222" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 4 — Guardar checkpoint después de learnErrors</span></span>
-<span id="cb16-223"><a href="#cb16-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-224"><a href="#cb16-224" aria-hidden="true" tabindex="-1"></a>El pipeline guarda automáticamente un checkpoint <span class="in">`.RData`</span> después de <span class="in">`learnErrors()`</span>. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el paso más lento.</span>
-<span id="cb16-225"><a href="#cb16-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-226"><a href="#cb16-226" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-227"><a href="#cb16-227" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out,</span>
-<span id="cb16-228"><a href="#cb16-228" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-229"><a href="#cb16-229" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb16-230"><a href="#cb16-230" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
-<span id="cb16-231"><a href="#cb16-231" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 2 guardado (learnErrors)"</span>)</span>
-<span id="cb16-232"><a href="#cb16-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-233"><a href="#cb16-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-234"><a href="#cb16-234" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto en otra sesión:</span>
-<span id="cb16-235"><a href="#cb16-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-236"><a href="#cb16-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-237"><a href="#cb16-237" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-238"><a href="#cb16-238" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
-<span id="cb16-239"><a href="#cb16-239" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-240"><a href="#cb16-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-241"><a href="#cb16-241" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-242"><a href="#cb16-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-243"><a href="#cb16-243" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 5 — Inferencia de ASVs con `dada()`</span></span>
-<span id="cb16-244"><a href="#cb16-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-245"><a href="#cb16-245" aria-hidden="true" tabindex="-1"></a>Con el modelo de error aprendido, <span class="in">`dada()`</span> infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.</span>
-<span id="cb16-246"><a href="#cb16-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-247"><a href="#cb16-247" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-248"><a href="#cb16-248" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-249"><a href="#cb16-249" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-250"><a href="#cb16-250" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-251"><a href="#cb16-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-252"><a href="#cb16-252" aria-hidden="true" tabindex="-1"></a>Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo:</span>
-<span id="cb16-253"><a href="#cb16-253" aria-hidden="true" tabindex="-1"></a><span class="in">`Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.`</span></span>
-<span id="cb16-254"><a href="#cb16-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-255"><a href="#cb16-255" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-256"><a href="#cb16-256" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuantos ASVs se infirieron en la primera muestra</span></span>
-<span id="cb16-257"><a href="#cb16-257" aria-hidden="true" tabindex="-1"></a>dadaFs[[<span class="dv">1</span>]]</span>
-<span id="cb16-258"><a href="#cb16-258" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-259"><a href="#cb16-259" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-260"><a href="#cb16-260" aria-hidden="true" tabindex="-1"></a>Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto "colapso" el denoising.</span>
-<span id="cb16-261"><a href="#cb16-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-262"><a href="#cb16-262" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-263"><a href="#cb16-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-264"><a href="#cb16-264" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 6 — Guardar checkpoint después de dada()</span></span>
-<span id="cb16-265"><a href="#cb16-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-266"><a href="#cb16-266" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-267"><a href="#cb16-267" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out,</span>
-<span id="cb16-268"><a href="#cb16-268" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-269"><a href="#cb16-269" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb16-270"><a href="#cb16-270" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
-<span id="cb16-271"><a href="#cb16-271" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 3 guardado (dada)"</span>)</span>
-<span id="cb16-272"><a href="#cb16-272" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-273"><a href="#cb16-273" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-274"><a href="#cb16-274" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto antes de <span class="in">`mergePairs()`</span>:</span>
-<span id="cb16-275"><a href="#cb16-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-276"><a href="#cb16-276" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb16-277"><a href="#cb16-277" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-278"><a href="#cb16-278" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
-<span id="cb16-279"><a href="#cb16-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb16-280"><a href="#cb16-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-281"><a href="#cb16-281" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-282"><a href="#cb16-282" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-283"><a href="#cb16-283" aria-hidden="true" tabindex="-1"></a><span class="fu">## Retención esperada en este paso</span></span>
-<span id="cb16-284"><a href="#cb16-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-285"><a href="#cb16-285" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Paso <span class="pp">|</span> Lectura típica <span class="pp">|</span></span>
-<span id="cb16-286"><a href="#cb16-286" aria-hidden="true" tabindex="-1"></a><span class="pp">|------|---------------|</span></span>
-<span id="cb16-287"><a href="#cb16-287" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Lecturas únicas tras dereplicación <span class="pp">|</span> 5-30% del total (normal) <span class="pp">|</span></span>
-<span id="cb16-288"><a href="#cb16-288" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ASVs inferidos vs únicos entrada <span class="pp">|</span> 1-10% (alta compresión es buena senal) <span class="pp">|</span></span>
-<span id="cb16-289"><a href="#cb16-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-290"><a href="#cb16-290" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-291"><a href="#cb16-291" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-292"><a href="#cb16-292" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
-<span id="cb16-293"><a href="#cb16-293" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
-<span id="cb16-294"><a href="#cb16-294" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`learnErrors()`</span> necesita suficientes datos (al menos varios MB de FASTQ filtrados) para estimar tasas confiables.</span>
-<span id="cb16-295"><a href="#cb16-295" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si el modelo no converge, aumenta <span class="in">`MAX_CONSIST`</span> a 50 o <span class="in">`nbases_target`</span> a <span class="in">`2e8`</span>.</span>
-<span id="cb16-296"><a href="#cb16-296" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los modelos <span class="in">`errF`</span> y <span class="in">`errR`</span> son independientes: las lecturas Reverse suelen tener tasas de error ligeramente mayores que las Forward, y eso es normal.</span>
-<span id="cb16-297"><a href="#cb16-297" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb16-298"><a href="#cb16-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-299"><a href="#cb16-299" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
-<span id="cb16-300"><a href="#cb16-300" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
-<span id="cb16-301"><a href="#cb16-301" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Revisa <span class="in">`plotErrors()`</span>  -  ¿Los puntos grises siguen la linea negra?</span>
-<span id="cb16-302"><a href="#cb16-302" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compara el número de ASVs inferidos con el número de secuencias únicas de entrada.</span>
-<span id="cb16-303"><a href="#cb16-303" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>¿Hay alguna muestra con muy pocos ASVs? ¿Coincide con las que tenian baja retención en filterAndTrim?</span>
-<span id="cb16-304"><a href="#cb16-304" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb16-305"><a href="#cb16-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-306"><a href="#cb16-306" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb16-307"><a href="#cb16-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-308"><a href="#cb16-308" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">→ Siguiente: DADA2 — Remoción de quimeras y seguimiento de lecturas</span><span class="co">](2-dada2QAQC-Chimeras.qmd)</span>{.btn .btn-primary}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Dada2 - Dereplicación e Inferencia de Errores"</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: true</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>Este paso tiene dos partes: primero **dereplicamos** las lecturas (eliminamos duplicados y contamos abundancias), luego **aprendemos el modelo de error** de la secuenciadora para poder distinguir errores técnicos de variantes biológicas reales.</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 1 — Dereplicación</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>La dereplicación colapsa lecturas identicas en secuencias únicas y registra cuantas veces aparece cada una. Esto reduce el volumen de datos sin perder información biológica.</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>exists <span class="ot">&lt;-</span> <span class="fu">file.exists</span>(filtFs) <span class="sc">&amp;</span> <span class="fu">file.exists</span>(filtRs)</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>filtFs <span class="ot">&lt;-</span> filtFs[exists]</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>filtRs <span class="ot">&lt;-</span> filtRs[exists]</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>sample.names <span class="ot">&lt;-</span> sample.names[exists]</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>derepFs <span class="ot">&lt;-</span> <span class="fu">derepFastq</span>(filtFs, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>derepRs <span class="ot">&lt;-</span> <span class="fu">derepFastq</span>(filtRs, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(derepFs) <span class="ot">&lt;-</span> sample.names</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(derepRs) <span class="ot">&lt;-</span> sample.names</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>Deberías ver para cada muestra: cuantas lecturas únicas quedaron. Un ratio alto de secuencias únicas / total puede indicar alta diversidad o contaminación; un ratio muy bajo es normal en muestras con taxones dominantes.</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Diagnóstico rápido de la primera muestra</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>n_unique_F     <span class="ot">&lt;-</span> <span class="fu">length</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques)</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>total_reads_F  <span class="ot">&lt;-</span> <span class="fu">sum</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques)</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>compression_ratio <span class="ot">&lt;-</span> <span class="fu">round</span>(n_unique_F <span class="sc">/</span> total_reads_F <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Secuencias únicas Forward: "</span>, n_unique_F)</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Ratio de compresión: "</span>, compression_ratio, <span class="st">"%"</span>)</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Top 5 abundancias: "</span>, <span class="fu">paste</span>(<span class="fu">head</span>(<span class="fu">sort</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques, <span class="at">decreasing =</span> <span class="cn">TRUE</span>), <span class="dv">5</span>), <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (compression_ratio <span class="sc">&lt;</span> <span class="dv">1</span>)</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"INFO: Baja diversidad (&lt; 1% únicas). Normal en muestras con especies dominantes."</span>)</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (compression_ratio <span class="sc">&gt;</span> <span class="dv">50</span>)</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Alta diversidad inusual (&gt; 50% únicas). Revisa calidad del filtrado o contaminación."</span>)</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>El pipeline guarda las estadísticas de dereplicación para todas las muestras en <span class="in">`final_data/logs/`</span>:</span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>derep_stats <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sample        =</span> sample.names,</span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unique_seqs_F =</span> <span class="fu">sapply</span>(derepFs, <span class="cf">function</span>(x) <span class="fu">length</span>(x<span class="sc">$</span>uniques)),</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_reads_F =</span> <span class="fu">sapply</span>(derepFs, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>uniques)),</span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unique_seqs_R =</span> <span class="fu">sapply</span>(derepRs, <span class="cf">function</span>(x) <span class="fu">length</span>(x<span class="sc">$</span>uniques)),</span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_reads_R =</span> <span class="fu">sapply</span>(derepRs, <span class="cf">function</span>(x) <span class="fu">sum</span>(x<span class="sc">$</span>uniques))</span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>derep_stats<span class="sc">$</span>Compression_ratio_F <span class="ot">&lt;-</span> <span class="fu">with</span>(derep_stats,</span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(Unique_seqs_F <span class="sc">/</span> Total_reads_F <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>))</span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a>derep_stats<span class="sc">$</span>Compression_ratio_R <span class="ot">&lt;-</span> <span class="fu">with</span>(derep_stats,</span>
+<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(Unique_seqs_R <span class="sc">/</span> Total_reads_R <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>))</span>
+<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(derep_stats,</span>
+<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_derep_stats.csv"</span>)),</span>
+<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 2 — Aprender el modelo de error</span></span>
+<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-72"><a href="#cb18-72" aria-hidden="true" tabindex="-1"></a>La secuenciadora Illumina comete errores al leer las bases (una A real puede leerse como C, G o T). <span class="in">`learnErrors()`</span> estima estas tasas para cada tipo de transicion (A-&gt;C, A-&gt;G, etc.) en función de la calidad Phred de cada posición.</span>
+<span id="cb18-73"><a href="#cb18-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a>El pipeline primero verifica que haya suficientes datos para estimar el modelo:</span>
+<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a>nbases_target <span class="ot">&lt;-</span> <span class="fl">1e8</span>   <span class="co"># 100 millones de bases (aumentar si tienes &gt; 50 muestras)</span></span>
+<span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a>max_consist   <span class="ot">&lt;-</span> <span class="dv">25</span>    <span class="co"># más iteraciones que el default (10) para forzar convergencia</span></span>
+<span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-80"><a href="#cb18-80" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar datos disponibles</span></span>
+<span id="cb18-81"><a href="#cb18-81" aria-hidden="true" tabindex="-1"></a>total_bases_F <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">sapply</span>(filtFs, <span class="cf">function</span>(f) <span class="cf">if</span> (<span class="fu">file.exists</span>(f)) <span class="fu">file.info</span>(f)<span class="sc">$</span>size <span class="cf">else</span> <span class="dv">0</span>))</span>
+<span id="cb18-82"><a href="#cb18-82" aria-hidden="true" tabindex="-1"></a>total_bases_R <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">sapply</span>(filtRs, <span class="cf">function</span>(r) <span class="cf">if</span> (<span class="fu">file.exists</span>(r)) <span class="fu">file.info</span>(r)<span class="sc">$</span>size <span class="cf">else</span> <span class="dv">0</span>))</span>
+<span id="cb18-83"><a href="#cb18-83" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Forward disponible: ~"</span>, <span class="fu">round</span>(total_bases_F <span class="sc">/</span> <span class="fl">1e6</span>, <span class="dv">1</span>), <span class="st">" MB"</span>)</span>
+<span id="cb18-84"><a href="#cb18-84" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Reverse disponible: ~"</span>, <span class="fu">round</span>(total_bases_R <span class="sc">/</span> <span class="fl">1e6</span>, <span class="dv">1</span>), <span class="st">" MB"</span>)</span>
+<span id="cb18-85"><a href="#cb18-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-86"><a href="#cb18-86" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (total_bases_F <span class="sc">&lt;</span> <span class="fl">1e6</span> <span class="sc">||</span> total_bases_R <span class="sc">&lt;</span> <span class="fl">1e6</span>)</span>
+<span id="cb18-87"><a href="#cb18-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Datos muy limitados (&lt; 1 MB). El modelo puede ser inestable."</span>)</span>
+<span id="cb18-88"><a href="#cb18-88" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-89"><a href="#cb18-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-90"><a href="#cb18-90" aria-hidden="true" tabindex="-1"></a>Los parámetros clave son:</span>
+<span id="cb18-91"><a href="#cb18-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-92"><a href="#cb18-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Parámetro <span class="pp">|</span> Valor <span class="pp">|</span> Qué hace <span class="pp">|</span></span>
+<span id="cb18-93"><a href="#cb18-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|:---|</span></span>
+<span id="cb18-94"><a href="#cb18-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`nbases`</span> <span class="pp">|</span> <span class="in">`1e8`</span> (100M) <span class="pp">|</span> Número de bases a usar para aprender el modelo. DADA2 toma tantas muestras como necesite para alcanzar ese total. Aumentar a <span class="in">`2e8`</span> si tienes &gt; 50 muestras <span class="pp">|</span></span>
+<span id="cb18-95"><a href="#cb18-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`randomize`</span> <span class="pp">|</span> <span class="in">`TRUE`</span> <span class="pp">|</span> Selecciona lecturas al azar en lugar de tomar siempre las primeras. Produce un modelo más representativo <span class="pp">|</span></span>
+<span id="cb18-96"><a href="#cb18-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`multithread`</span> <span class="pp">|</span> <span class="in">`TRUE`</span> <span class="pp">|</span> Usa todos los núcleos disponibles del servidor para acelerar el cálculo <span class="pp">|</span></span>
+<span id="cb18-97"><a href="#cb18-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`MAX_CONSIST`</span> <span class="pp">|</span> <span class="in">`25`</span> <span class="pp">|</span> Número máximo de iteraciones del algoritmo. El default de DADA2 es 10; aquí se aumenta a 25 para garantizar convergencia <span class="pp">|</span></span>
+<span id="cb18-98"><a href="#cb18-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-99"><a href="#cb18-99" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-100"><a href="#cb18-100" aria-hidden="true" tabindex="-1"></a>errF <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb18-101"><a href="#cb18-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtFs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-102"><a href="#cb18-102" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-103"><a href="#cb18-103" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb18-104"><a href="#cb18-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Forward: "</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb18-105"><a href="#cb18-105" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-106"><a href="#cb18-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-107"><a href="#cb18-107" aria-hidden="true" tabindex="-1"></a>errR <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb18-108"><a href="#cb18-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtRs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-109"><a href="#cb18-109" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-110"><a href="#cb18-110" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb18-111"><a href="#cb18-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Reverse: "</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb18-112"><a href="#cb18-112" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-113"><a href="#cb18-113" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-114"><a href="#cb18-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-115"><a href="#cb18-115" aria-hidden="true" tabindex="-1"></a>Este paso puede tardar varios minutos. La salida indica cuántas bases y muestras se usaron, y cuántas rondas necesitó el algoritmo para converger. Por ejemplo:</span>
+<span id="cb18-116"><a href="#cb18-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-117"><a href="#cb18-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-118"><a href="#cb18-118" aria-hidden="true" tabindex="-1"></a><span class="in">103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.</span></span>
+<span id="cb18-119"><a href="#cb18-119" aria-hidden="true" tabindex="-1"></a><span class="in">Initializing error rates to maximum possible estimate.</span></span>
+<span id="cb18-120"><a href="#cb18-120" aria-hidden="true" tabindex="-1"></a><span class="in">selfConsist step 1 ............</span></span>
+<span id="cb18-121"><a href="#cb18-121" aria-hidden="true" tabindex="-1"></a><span class="in">   selfConsist step 2</span></span>
+<span id="cb18-122"><a href="#cb18-122" aria-hidden="true" tabindex="-1"></a><span class="in">   ...</span></span>
+<span id="cb18-123"><a href="#cb18-123" aria-hidden="true" tabindex="-1"></a><span class="in">Convergence after 10 rounds.</span></span>
+<span id="cb18-124"><a href="#cb18-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-125"><a href="#cb18-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-126"><a href="#cb18-126" aria-hidden="true" tabindex="-1"></a>**¿Qué significa "convergencia"?**</span>
+<span id="cb18-127"><a href="#cb18-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-128"><a href="#cb18-128" aria-hidden="true" tabindex="-1"></a><span class="in">`learnErrors()`</span> trabaja de forma iterativa: en cada ronda estima las tasas de error → infiere ASVs con esas tasas → re-estima los errores con las ASVs inferidas. Cuando las estimaciones dejan de cambiar entre rondas, el modelo **convergió**. Convergencia en menos de 10 rondas es ideal; si no converge en 25 hay un problema con los datos o los parámetros.</span>
+<span id="cb18-129"><a href="#cb18-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-130"><a href="#cb18-130" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb18-131"><a href="#cb18-131" aria-hidden="true" tabindex="-1"></a>**Resultado esperado:** convergencia en 5–15 rondas para Forward y Reverse. Es normal que Reverse necesite una o dos rondas más que Forward, ya que sus lecturas tienen mayor tasa de error.</span>
+<span id="cb18-132"><a href="#cb18-132" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-133"><a href="#cb18-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-134"><a href="#cb18-134" aria-hidden="true" tabindex="-1"></a>Después de aprender los modelos, el pipeline los valida automáticamente:</span>
+<span id="cb18-135"><a href="#cb18-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-136"><a href="#cb18-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-137"><a href="#cb18-137" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar modelo Forward</span></span>
+<span id="cb18-138"><a href="#cb18-138" aria-hidden="true" tabindex="-1"></a><span class="co"># err_out: matriz 16×41 — filas = transiciones (A2A, A2C, …), columnas = Q-scores (0–40)</span></span>
+<span id="cb18-139"><a href="#cb18-139" aria-hidden="true" tabindex="-1"></a><span class="co"># Las transiciones correctas (A2A, C2C, G2G, T2T) tienen probabilidad ≈ 1.0 → excluir.</span></span>
+<span id="cb18-140"><a href="#cb18-140" aria-hidden="true" tabindex="-1"></a><span class="co"># Las tasas altas en Q&lt;20 son normales (bases de baja calidad son intrínsecamente inciertas).</span></span>
+<span id="cb18-141"><a href="#cb18-141" aria-hidden="true" tabindex="-1"></a><span class="co"># Solo se evalúa Q≥20, donde vive la mayoría de las lecturas filtradas.</span></span>
+<span id="cb18-142"><a href="#cb18-142" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(errF<span class="sc">$</span>err_out)) {</span>
+<span id="cb18-143"><a href="#cb18-143" aria-hidden="true" tabindex="-1"></a>  rn         <span class="ot">&lt;-</span> <span class="fu">rownames</span>(errF<span class="sc">$</span>err_out)</span>
+<span id="cb18-144"><a href="#cb18-144" aria-hidden="true" tabindex="-1"></a>  error_rows <span class="ot">&lt;-</span> rn[<span class="fu">substr</span>(rn, <span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">!=</span> <span class="fu">substr</span>(rn, <span class="dv">3</span>, <span class="dv">3</span>)]   <span class="co"># A2C, A2G, etc.</span></span>
+<span id="cb18-145"><a href="#cb18-145" aria-hidden="true" tabindex="-1"></a>  q_cols     <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">colnames</span>(errF<span class="sc">$</span>err_out))</span>
+<span id="cb18-146"><a href="#cb18-146" aria-hidden="true" tabindex="-1"></a>  hq_cols    <span class="ot">&lt;-</span> <span class="fu">which</span>(q_cols <span class="sc">&gt;=</span> <span class="dv">20</span>)                          <span class="co"># columnas Q≥20</span></span>
+<span id="cb18-147"><a href="#cb18-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-148"><a href="#cb18-148" aria-hidden="true" tabindex="-1"></a>  err_hq  <span class="ot">&lt;-</span> errF<span class="sc">$</span>err_out[error_rows, hq_cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb18-149"><a href="#cb18-149" aria-hidden="true" tabindex="-1"></a>  max_err <span class="ot">&lt;-</span> <span class="fu">max</span>(err_hq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-150"><a href="#cb18-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-151"><a href="#cb18-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tipos de transición de error: "</span>, <span class="fu">length</span>(error_rows), <span class="st">" (de 16 posibles)"</span>)</span>
+<span id="cb18-152"><a href="#cb18-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tasa de error máxima en Q≥20: "</span>, <span class="fu">round</span>(max_err, <span class="dv">5</span>),</span>
+<span id="cb18-153"><a href="#cb18-153" aria-hidden="true" tabindex="-1"></a>          <span class="st">" (normal si &lt; 0.05; preocupante si &gt; 0.10)"</span>)</span>
+<span id="cb18-154"><a href="#cb18-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-155"><a href="#cb18-155" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (max_err <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
+<span id="cb18-156"><a href="#cb18-156" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Tasa de error &gt; 10% en Q≥20. Revisa el perfil de calidad del run."</span>)</span>
+<span id="cb18-157"><a href="#cb18-157" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb18-158"><a href="#cb18-158" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"Modelo de error OK."</span>)</span>
+<span id="cb18-159"><a href="#cb18-159" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-160"><a href="#cb18-160" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-161"><a href="#cb18-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-162"><a href="#cb18-162" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-163"><a href="#cb18-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-164"><a href="#cb18-164" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 3 — Visualizar el modelo de error</span></span>
+<span id="cb18-165"><a href="#cb18-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-166"><a href="#cb18-166" aria-hidden="true" tabindex="-1"></a>El gráfico de errores muestra las 12 posibles transiciones (A-&gt;C, A-&gt;G, etc.). Los **puntos rojos** son las tasas observadas; la **linea negra** es el modelo ajustado. Deben seguir el mismo patrón: la tasa de error cae conforme aumenta la calidad (Q-score).</span>
+<span id="cb18-167"><a href="#cb18-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-168"><a href="#cb18-168" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-169"><a href="#cb18-169" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-170"><a href="#cb18-170" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-171"><a href="#cb18-171" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-172"><a href="#cb18-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-173"><a href="#cb18-173" aria-hidden="true" tabindex="-1"></a>El pipeline guarda estas gráficas automáticamente en <span class="in">`final_data/logs/`</span>:</span>
+<span id="cb18-174"><a href="#cb18-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-175"><a href="#cb18-175" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-176"><a href="#cb18-176" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb18-177"><a href="#cb18-177" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errF.png"</span>)),</span>
+<span id="cb18-178"><a href="#cb18-178" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
+<span id="cb18-179"><a href="#cb18-179" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb18-180"><a href="#cb18-180" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb18-181"><a href="#cb18-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-182"><a href="#cb18-182" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb18-183"><a href="#cb18-183" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errR.png"</span>)),</span>
+<span id="cb18-184"><a href="#cb18-184" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
+<span id="cb18-185"><a href="#cb18-185" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb18-186"><a href="#cb18-186" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb18-187"><a href="#cb18-187" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-188"><a href="#cb18-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-189"><a href="#cb18-189" aria-hidden="true" tabindex="-1"></a><span class="fu">### ¿Que buscar en el gráfico?</span></span>
+<span id="cb18-190"><a href="#cb18-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-191"><a href="#cb18-191" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Senal <span class="pp">|</span> Interpretación <span class="pp">|</span></span>
+<span id="cb18-192"><a href="#cb18-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|-------|---------------|</span></span>
+<span id="cb18-193"><a href="#cb18-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos grises cerca de la linea negra <span class="pp">|</span> Buen ajuste del modelo <span class="co">[</span><span class="ot">OK</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb18-194"><a href="#cb18-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos muy dispersos <span class="pp">|</span> Datos insuficientes o calidad variable en ese bin de Q <span class="pp">|</span></span>
+<span id="cb18-195"><a href="#cb18-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Tasas de error &gt; 10% en Q≥20 (A-&gt;C, etc.) <span class="pp">|</span> Posible problema de calidad del run <span class="pp">|</span></span>
+<span id="cb18-196"><a href="#cb18-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Transiciones correctas (A-&gt;A, C-&gt;C…) altas y planas <span class="pp">|</span> Normal — no son errores <span class="pp">|</span></span>
+<span id="cb18-197"><a href="#cb18-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-198"><a href="#cb18-198" aria-hidden="true" tabindex="-1"></a><span class="fu">### Los tres elementos del gráfico</span></span>
+<span id="cb18-199"><a href="#cb18-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-200"><a href="#cb18-200" aria-hidden="true" tabindex="-1"></a>La gráfica tiene 16 paneles — uno por cada posible transición entre bases (4 bases × 4 posibles lecturas). Se organizan en una cuadrícula de 4×4:</span>
+<span id="cb18-201"><a href="#cb18-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-202"><a href="#cb18-202" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Diagonal (A2A, C2C, G2G, T2T):** lectura *correcta* — la base real y la leída son la misma. La probabilidad es alta (cerca de 1.0) y se mantiene plana conforme sube el Q-score. Estos paneles no representan errores; son la referencia de que el modelo funciona.</span>
+<span id="cb18-203"><a href="#cb18-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-204"><a href="#cb18-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):** errores reales — la secuenciadora leyó una base distinta a la real. La tasa debe **bajar** conforme sube el Q-score (eje X): a mayor calidad Phred, menos errores de ese tipo.</span>
+<span id="cb18-205"><a href="#cb18-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-206"><a href="#cb18-206" aria-hidden="true" tabindex="-1"></a>Cada panel tiene tres elementos:</span>
+<span id="cb18-207"><a href="#cb18-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-208"><a href="#cb18-208" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Elemento <span class="pp">|</span> Qué representa <span class="pp">|</span></span>
+<span id="cb18-209"><a href="#cb18-209" aria-hidden="true" tabindex="-1"></a><span class="pp">|----------|---------------|</span></span>
+<span id="cb18-210"><a href="#cb18-210" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Puntos grises <span class="pp">|</span> Tasas de error **observadas** en tus datos, agrupadas por Q-score <span class="pp">|</span></span>
+<span id="cb18-211"><a href="#cb18-211" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Línea negra <span class="pp">|</span> Modelo ajustado por DADA2 — lo que aprendió <span class="in">`learnErrors()`</span> <span class="pp">|</span></span>
+<span id="cb18-212"><a href="#cb18-212" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Línea roja <span class="pp">|</span> Tasa teórica según la definición nominal del Q-score (Q20 = 1 error/100 bases, Q30 = 1/1000, etc.) <span class="pp">|</span></span>
+<span id="cb18-213"><a href="#cb18-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-214"><a href="#cb18-214" aria-hidden="true" tabindex="-1"></a>La línea negra no tiene que coincidir con la línea roja: la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real. Lo que importa es que la **línea negra siga los puntos grises**.</span>
+<span id="cb18-215"><a href="#cb18-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-216"><a href="#cb18-216" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb18-217"><a href="#cb18-217" aria-hidden="true" tabindex="-1"></a>**Ondulaciones en la línea negra** en calidades intermedias (Q15–Q25) son normales cuando hay pocos reads en esos bins. No indican un problema si el patrón general sigue siendo decreciente.</span>
+<span id="cb18-218"><a href="#cb18-218" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-219"><a href="#cb18-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-220"><a href="#cb18-220" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-221"><a href="#cb18-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-222"><a href="#cb18-222" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 4 — Guardar checkpoint después de learnErrors</span></span>
+<span id="cb18-223"><a href="#cb18-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-224"><a href="#cb18-224" aria-hidden="true" tabindex="-1"></a>El pipeline guarda automáticamente un checkpoint <span class="in">`.RData`</span> después de <span class="in">`learnErrors()`</span>. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el paso más lento.</span>
+<span id="cb18-225"><a href="#cb18-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-226"><a href="#cb18-226" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-227"><a href="#cb18-227" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out,</span>
+<span id="cb18-228"><a href="#cb18-228" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb18-229"><a href="#cb18-229" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb18-230"><a href="#cb18-230" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
+<span id="cb18-231"><a href="#cb18-231" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 2 guardado (learnErrors)"</span>)</span>
+<span id="cb18-232"><a href="#cb18-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-233"><a href="#cb18-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-234"><a href="#cb18-234" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto en otra sesión:</span>
+<span id="cb18-235"><a href="#cb18-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-236"><a href="#cb18-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-237"><a href="#cb18-237" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb18-238"><a href="#cb18-238" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
+<span id="cb18-239"><a href="#cb18-239" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-240"><a href="#cb18-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-241"><a href="#cb18-241" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-242"><a href="#cb18-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-243"><a href="#cb18-243" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 5 — Inferencia de ASVs con `dada()`</span></span>
+<span id="cb18-244"><a href="#cb18-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-245"><a href="#cb18-245" aria-hidden="true" tabindex="-1"></a>Con el modelo de error aprendido, <span class="in">`dada()`</span> infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.</span>
+<span id="cb18-246"><a href="#cb18-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-247"><a href="#cb18-247" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-248"><a href="#cb18-248" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-249"><a href="#cb18-249" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-250"><a href="#cb18-250" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-251"><a href="#cb18-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-252"><a href="#cb18-252" aria-hidden="true" tabindex="-1"></a>Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo:</span>
+<span id="cb18-253"><a href="#cb18-253" aria-hidden="true" tabindex="-1"></a><span class="in">`Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.`</span></span>
+<span id="cb18-254"><a href="#cb18-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-255"><a href="#cb18-255" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-256"><a href="#cb18-256" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuantos ASVs se infirieron en la primera muestra</span></span>
+<span id="cb18-257"><a href="#cb18-257" aria-hidden="true" tabindex="-1"></a>dadaFs[[<span class="dv">1</span>]]</span>
+<span id="cb18-258"><a href="#cb18-258" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-259"><a href="#cb18-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-260"><a href="#cb18-260" aria-hidden="true" tabindex="-1"></a>Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto "colapso" el denoising.</span>
+<span id="cb18-261"><a href="#cb18-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-262"><a href="#cb18-262" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-263"><a href="#cb18-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-264"><a href="#cb18-264" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paso 6 — Guardar checkpoint después de dada()</span></span>
+<span id="cb18-265"><a href="#cb18-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-266"><a href="#cb18-266" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-267"><a href="#cb18-267" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out,</span>
+<span id="cb18-268"><a href="#cb18-268" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb18-269"><a href="#cb18-269" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb18-270"><a href="#cb18-270" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
+<span id="cb18-271"><a href="#cb18-271" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 3 guardado (dada)"</span>)</span>
+<span id="cb18-272"><a href="#cb18-272" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-273"><a href="#cb18-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-274"><a href="#cb18-274" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto antes de <span class="in">`mergePairs()`</span>:</span>
+<span id="cb18-275"><a href="#cb18-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-276"><a href="#cb18-276" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-277"><a href="#cb18-277" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb18-278"><a href="#cb18-278" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
+<span id="cb18-279"><a href="#cb18-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-280"><a href="#cb18-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-281"><a href="#cb18-281" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-282"><a href="#cb18-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-283"><a href="#cb18-283" aria-hidden="true" tabindex="-1"></a><span class="fu">## Retención esperada en este paso</span></span>
+<span id="cb18-284"><a href="#cb18-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-285"><a href="#cb18-285" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Paso <span class="pp">|</span> Lectura típica <span class="pp">|</span></span>
+<span id="cb18-286"><a href="#cb18-286" aria-hidden="true" tabindex="-1"></a><span class="pp">|------|---------------|</span></span>
+<span id="cb18-287"><a href="#cb18-287" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Lecturas únicas tras dereplicación <span class="pp">|</span> 5-30% del total (normal) <span class="pp">|</span></span>
+<span id="cb18-288"><a href="#cb18-288" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> ASVs inferidos vs únicos entrada <span class="pp">|</span> 1-10% (alta compresión es buena senal) <span class="pp">|</span></span>
+<span id="cb18-289"><a href="#cb18-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-290"><a href="#cb18-290" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-291"><a href="#cb18-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-292"><a href="#cb18-292" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb18-293"><a href="#cb18-293" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
+<span id="cb18-294"><a href="#cb18-294" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`learnErrors()`</span> necesita suficientes datos (al menos varios MB de FASTQ filtrados) para estimar tasas confiables.</span>
+<span id="cb18-295"><a href="#cb18-295" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si el modelo no converge, aumenta <span class="in">`MAX_CONSIST`</span> a 50 o <span class="in">`nbases_target`</span> a <span class="in">`2e8`</span>.</span>
+<span id="cb18-296"><a href="#cb18-296" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los modelos <span class="in">`errF`</span> y <span class="in">`errR`</span> son independientes: las lecturas Reverse suelen tener tasas de error ligeramente mayores que las Forward, y eso es normal.</span>
+<span id="cb18-297"><a href="#cb18-297" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-298"><a href="#cb18-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-299"><a href="#cb18-299" aria-hidden="true" tabindex="-1"></a>:::{.callout-tip}</span>
+<span id="cb18-300"><a href="#cb18-300" aria-hidden="true" tabindex="-1"></a><span class="fu">## Para el curso</span></span>
+<span id="cb18-301"><a href="#cb18-301" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Revisa <span class="in">`plotErrors()`</span>  -  ¿Los puntos grises siguen la linea negra?</span>
+<span id="cb18-302"><a href="#cb18-302" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compara el número de ASVs inferidos con el número de secuencias únicas de entrada.</span>
+<span id="cb18-303"><a href="#cb18-303" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>¿Hay alguna muestra con muy pocos ASVs? ¿Coincide con las que tenian baja retención en filterAndTrim?</span>
+<span id="cb18-304"><a href="#cb18-304" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb18-305"><a href="#cb18-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-306"><a href="#cb18-306" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-307"><a href="#cb18-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-308"><a href="#cb18-308" aria-hidden="true" tabindex="-1"></a><span class="fu">## Checkpoint — Antes de continuar con quimeras</span></span>
+<span id="cb18-309"><a href="#cb18-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-310"><a href="#cb18-310" aria-hidden="true" tabindex="-1"></a>Antes de pasar al siguiente paso guarda todos los objetos necesarios en un archivo <span class="in">`.RData`</span>. Si el script se interrumpe podrás retomar desde aquí sin repetir la dereplicación, el aprendizaje de errores ni la inferencia de ASVs.</span>
+<span id="cb18-311"><a href="#cb18-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-312"><a href="#cb18-312" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-313"><a href="#cb18-313" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(dadaFs, dadaRs, derepFs, derepRs, errF, errR,</span>
+<span id="cb18-314"><a href="#cb18-314" aria-hidden="true" tabindex="-1"></a>     filtFs, filtRs, sample.names, primer.data, run_name, out,</span>
+<span id="cb18-315"><a href="#cb18-315" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb18-316"><a href="#cb18-316" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb18-317"><a href="#cb18-317" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint_antes_quimeras.RData"</span>)))</span>
+<span id="cb18-318"><a href="#cb18-318" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint guardado — listo para remoción de quimeras"</span>)</span>
+<span id="cb18-319"><a href="#cb18-319" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-320"><a href="#cb18-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-321"><a href="#cb18-321" aria-hidden="true" tabindex="-1"></a>Para reanudar desde este punto en otra sesión:</span>
+<span id="cb18-322"><a href="#cb18-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-323"><a href="#cb18-323" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb18-324"><a href="#cb18-324" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb18-325"><a href="#cb18-325" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb18-326"><a href="#cb18-326" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"_checkpoint_antes_quimeras.RData"</span>)))</span>
+<span id="cb18-327"><a href="#cb18-327" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-328"><a href="#cb18-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-329"><a href="#cb18-329" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb18-330"><a href="#cb18-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-331"><a href="#cb18-331" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">→ Siguiente: DADA2 — Remoción de quimeras y seguimiento de lecturas</span><span class="co">](2-dada2QAQC-Chimeras.qmd)</span>{.btn .btn-primary}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
