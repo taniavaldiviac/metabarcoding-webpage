@@ -298,7 +298,11 @@ load(file.path(output_location, "rdata_output",
 
 :::{.callout-tip}
 ## Para el curso
-1. Revisa `plotErrors()`  -  ¿Los puntos rojos siguen la linea negra?
+1. Revisa `plotErrors()`  -  ¿Los puntos grises siguen la linea negra?
 2. Compara el número de ASVs inferidos con el número de secuencias únicas de entrada.
 3. ¿Hay alguna muestra con muy pocos ASVs? ¿Coincide con las que tenian baja retención en filterAndTrim?
 :::
+
+---
+
+[→ Siguiente: DADA2 — Remoción de quimeras y seguimiento de lecturas](2-dada2QAQC-Chimeras.qmd){.btn .btn-primary}
