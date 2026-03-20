@@ -117,6 +117,93 @@ ls -lh ~/metabarcoding-code/raw_fastqs/
 
 ---
 
+## Archivos de configuración en `metadata/`
+
+La carpeta `metadata/` contiene dos archivos esenciales que el pipeline lee al inicio de cada análisis.
+
+### `primer_data.csv` — Configuración del locus
+
+Este archivo define los parámetros del marcador genético que se va a analizar. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice `i` al inicio del script.
+
+``` sh
+cat ~/metabarcoding-code/metadata/primer_data.csv
+```
+
+| Columna | Qué contiene |
+|:--------|:-------------|
+| `locus_shorthand` | Identificador corto del marcador (ej. `12S`) — se usa para filtrar los archivos FASTQ y nombrar los outputs |
+| `seq_f` / `seq_r` | Secuencia completa de los primers forward y reverse |
+| `F_qual` / `R_qual` | Longitud del primer usada por Cutadapt para el recorte |
+| `amplicon_length` | Longitud esperada del amplicón (bp) |
+| `max_trim` | Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R |
+| `overlap` | Solapamiento mínimo requerido entre lecturas F y R para el merge |
+| `db_name` | Nombre del archivo FASTA de la base de datos taxonómica en `metadata/` |
+
+::: {.callout-tip icon="false"}
+**En el script**, el locus a analizar se selecciona con `i <- 1` (primera fila). Si tienes múltiples marcadores, cambia el valor de `i` para procesar el locus correspondiente.
+:::
+
+---
+
+### `metadata.csv` — Información de las muestras
+
+Este archivo conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq* en la etapa de análisis.
+
+``` sh
+head ~/metabarcoding-code/metadata/metadata.csv
+```
+
+| Columna | Qué contiene |
+|:--------|:-------------|
+| `sample_id` | Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ |
+| `site_id` | Código del sitio de muestreo (ej. `POR`, `BSS`) |
+| `name` | Nombre completo del sitio |
+| `date` | Fecha de colecta |
+| `lat` / `lon` | Coordenadas geográficas |
+| `region` | Región geográfica del estudio |
+| `locus_shorthand` | Marcador al que corresponde la muestra |
+| `sequencing_lane` | Carril de secuenciación (para estudios multi-lane) |
+
+---
+
+## Nomenclatura de los archivos FASTQ
+
+El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.
+
+### Formato esperado
+
+```
+{locus}_{sample_id}_S{N}_L{lane}_R{1|2}_001.fastq
+```
+
+**Ejemplo real de este curso:**
+
+```
+12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward
+12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse
+```
+
+### Descripción de cada campo
+
+| Campo | Ejemplo | Descripción |
+|:------|:--------|:------------|
+| `{locus}` | `12S` | Debe coincidir exactamente con `locus_shorthand` en `primer_data.csv` |
+| `{sample_id}` | `GC-001-d1` | Identificador único de la muestra — debe estar en `metadata.csv` |
+| `S{N}` | `S1` | Número de muestra asignado por el secuenciador |
+| `L{lane}` | `L001` | Carril de secuenciación |
+| `R{1\|2}` | `R1` / `R2` | Dirección de la lectura (forward / reverse) |
+| `_001.fastq` | — | Sufijo estándar de Illumina |
+
+::: {.callout-warning icon="false"}
+**Errores comunes:**
+
+- El `locus_shorthand` en el nombre del archivo no coincide con el de `primer_data.csv` → el script no encontrará ningún archivo
+- El `sample_id` no existe en `metadata.csv` → la muestra no tendrá metadatos en el análisis final
+- Archivos con extensión `.fastq.gz` en lugar de `.fastq` → verifica si necesitas descomprimirlos primero con `gunzip`
+:::
+
+---
+
 :::{.callout-note}
 ## Recuerda
 - Usa siempre `~/metabarcoding-code` como tu directorio de proyecto.
