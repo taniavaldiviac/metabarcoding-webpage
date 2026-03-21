@@ -441,6 +441,27 @@
     "text": "Parte 2 — Introducción a R\n\n¿Por qué usamos R en metabarcoding?\nR tiene los paquetes especializados que usamos en el curso: dada2, phyloseq, vegan, ggplot2. Además, los scripts en R son reproducibles y documentables con Quarto o R Markdown.\n\n\n\nConceptos básicos\n\n\nCódigo\n# Variables\nx &lt;- 10\nnombre &lt;- \"muestra1\"\n\n# Vectores\nmuestras &lt;- c(\"M1\", \"M2\", \"M3\")\nlecturas &lt;- c(15000, 22000, 8500)\n\n# Acceder a elementos\nmuestras[1]        # primer elemento\nlecturas[lecturas &gt; 10000]  # filtrar por condición\n\n# Operaciones básicas\nmean(lecturas)\nsum(lecturas)\nlength(muestras)\n\n\n\n\n\nFunciones y paquetes\n\n\nCódigo\n# Una función toma argumentos y devuelve un resultado\nresultado &lt;- sum(c(1, 2, 3))\n\n# Instalar paquetes (solo una vez)\ninstall.packages(\"tidyverse\")\n\n# Cargar paquetes (cada sesión)\nlibrary(tidyverse)\n\n# Ver ayuda de una función\n?mean\nhelp(\"filter\")\n\n\n\n\n\nEstructura de un script en R\nUn script bien organizado tiene estas secciones:\n\n\nCódigo\n# ============================================================\n# Nombre del script: 03-dada2-pipeline.R\n# Descripción: Pipeline DADA2 para metabarcoding\n# Autor: Dr. Miguel A. Martínez / Dra. Tania Valdivia\n# Fecha: 2025-10-28\n# ============================================================\n\n# 1. Cargar librerías ----------------------------------------\nlibrary(dada2)\nlibrary(tidyverse)\n\n# 2. Definir rutas -------------------------------------------\nproj_root &lt;- here::here()\nfastq_location &lt;- file.path(proj_root, \"for_dada2\")\n\n# 3. Análisis ------------------------------------------------\n# ... código del pipeline ...\n\n\n\n\n\nTipos de objetos más usados en DADA2\n\n\n\nObjeto\nTipo en R\nEjemplo\n\n\n\n\nNombres de muestras\ncharacter vector\nc(\"M1\", \"M2\")\n\n\nRutas de archivos\ncharacter vector\nlist.files(...)\n\n\nTabla de lecturas\nmatrix\nout de filterAndTrim()\n\n\nTabla de ASVs\nmatrix\nseqtab\n\n\nTaxonomía\ndata.frame\ntax_df\n\n\n\n\n\n\nBuenas prácticas para proyectos bioinformáticos\nUna estructura de carpetas consistente ahorra tiempo y evita errores:\nmetabarcoding-code/\n├── raw_fastqs/          # datos crudos (no modificar)\n├── for_dada2/           # FASTQs recortados con cutadapt\n│   └── filtered/        # FASTQs filtrados por DADA2\n├── final_data/\n│   ├── csv_output/      # tablas de ASVs y taxonomía\n│   ├── rdata_output/    # checkpoints .RData\n│   └── logs/            # sessionInfo, errores, gráficas\n├── metadata/            # primer_data.csv, metadata.csv, BD taxonomía\n└── scripts/             # scripts numerados en orden de ejecución\nReglas de nombres de archivos:\n\nUsar guiones bajos _ en lugar de espacios\nNumerar scripts en orden: 01-fastqc.sh, 02b-cutadapt.sh, 03-dada2-pipeline.R\nIncluir fecha o run_name en los archivos de salida para no sobreescribir\n\n\n\n\n\n\n\n\nTipPara el curso\n\n\n\n\nAbre la terminal y practica: ¿en qué directorio estás? (pwd), ¿qué archivos hay en raw_fastqs/? (ls -lh raw_fastqs/)\nRevisa la estructura de carpetas de metabarcoding-code/ — ¿coincide con el esquema de arriba?"
   },
   {
+    "objectID": "0-Conexion.html",
+    "href": "0-Conexion.html",
+    "title": "Conexión al servidor",
+    "section": "",
+    "text": "Consulta tus credenciales de acceso en la hoja de participantes."
+  },
+  {
+    "objectID": "0-Conexion.html#conéctate-a-la-vpn",
+    "href": "0-Conexion.html#conéctate-a-la-vpn",
+    "title": "Conexión al servidor",
+    "section": "1. Conéctate a la VPN",
+    "text": "1. Conéctate a la VPN\nAntes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
+  },
+  {
+    "objectID": "0-Conexion.html#conéctate-al-servidor-por-ssh",
+    "href": "0-Conexion.html#conéctate-al-servidor-por-ssh",
+    "title": "Conexión al servidor",
+    "section": "2. Conéctate al servidor por SSH",
+    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter."
+  },
+  {
     "objectID": "0-Clonacion.html",
     "href": "0-Clonacion.html",
     "title": "Clonación de repositorio Github",
@@ -497,25 +518,32 @@
     "text": "Nomenclatura de los archivos FASTQ\nEl pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.\n\nFormato esperado\n{locus_shorthand}-{sample_id}-{dilution}_{replicate}_{site}_{sequencing_lane}_R{1|2}_001.fastq\nEjemplo real de este curso:\n12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward\n12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse\n\n\nDescripción de cada campo\n\n\n\n\n\n\n\n\nCampo\nEjemplo\nDescripción\n\n\n\n\n{locus_shorthand}\n12S\nColumna locus_shorthand en primer_data.csv — debe coincidir exactamente\n\n\n{sample_id}\nGC-001\nColumna sample_id en metadata.csv\n\n\n{dilution}\nd1\nColumna dilution en metadata.csv\n\n\n{replicate}\n1\nColumna replicate en metadata.csv\n\n\n{site}\nS1\nColumna site en metadata.csv — número de muestra del MiSeq\n\n\n{sequencing_lane}\nL001\nColumna sequencing_lane en metadata.csv\n\n\nR{1\\|2}\nR1 / R2\nDirección de la lectura (forward / reverse)\n\n\n_001.fastq\n—\nSufijo estándar de Illumina\n\n\n\n\n\n\n\n\n\nAdvertencia\n\n\n\nErrores comunes:\n\nEl locus_shorthand en el nombre del archivo no coincide con el de primer_data.csv → el script no encontrará ningún archivo\nEl sample_id no existe en metadata.csv → la muestra no tendrá metadatos en el análisis final\nArchivos con extensión .fastq.gz en lugar de .fastq → verifica si necesitas descomprimirlos primero con gunzip\n\n\n\n\n\n\n\n\n\n\nNotaRecuerda\n\n\n\n\nUsa siempre ~/metabarcoding-code como tu directorio de proyecto.\nLos paquetes de R están disponibles automáticamente — no necesitas instalar nada.\nActiva conda activate metabarcoding solo para los pasos de QC y Cutadapt."
   },
   {
-    "objectID": "0-Conexion.html",
-    "href": "0-Conexion.html",
-    "title": "Conexión al servidor",
+    "objectID": "0-Zoom.html",
+    "href": "0-Zoom.html",
+    "title": "Conexión a Zoom",
     "section": "",
-    "text": "Consulta tus credenciales de acceso en la hoja de participantes."
+    "text": "Únase a la reunión de Zoom\n\nID de reunión: 374 855 8256\nCódigo de acceso: 1QH8R9"
   },
   {
-    "objectID": "0-Conexion.html#conéctate-a-la-vpn",
-    "href": "0-Conexion.html#conéctate-a-la-vpn",
-    "title": "Conexión al servidor",
-    "section": "1. Conéctate a la VPN",
-    "text": "1. Conéctate a la VPN\nAntes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
+    "objectID": "0-Zoom.html#sala-de-reuniones-fausto-valenzuela-quiñonez",
+    "href": "0-Zoom.html#sala-de-reuniones-fausto-valenzuela-quiñonez",
+    "title": "Conexión a Zoom",
+    "section": "",
+    "text": "Únase a la reunión de Zoom\n\nID de reunión: 374 855 8256\nCódigo de acceso: 1QH8R9"
   },
   {
-    "objectID": "0-Conexion.html#conéctate-al-servidor-por-ssh",
-    "href": "0-Conexion.html#conéctate-al-servidor-por-ssh",
-    "title": "Conexión al servidor",
-    "section": "2. Conéctate al servidor por SSH",
-    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter."
+    "objectID": "0-Zoom.html#desde-dispositivo-móvil-un-toque",
+    "href": "0-Zoom.html#desde-dispositivo-móvil-un-toque",
+    "title": "Conexión a Zoom",
+    "section": "Desde dispositivo móvil (un toque)",
+    "text": "Desde dispositivo móvil (un toque)\n\n+1 305 224 1968 (Estados Unidos)\n+1 309 205 3325 (Estados Unidos)"
+  },
+  {
+    "objectID": "0-Zoom.html#unirse-mediante-sip",
+    "href": "0-Zoom.html#unirse-mediante-sip",
+    "title": "Conexión a Zoom",
+    "section": "Unirse mediante SIP",
+    "text": "Unirse mediante SIP\n\n3748558256@zoomcrc.com\nCódigo de acceso: 778134\n\n\nInstrucciones para unirse"
   },
   {
     "objectID": "1-qaqc-cutadapt.html",
@@ -760,14 +788,14 @@
     "href": "sesiones.html",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
-    "text": "Bienvenida y presentación del curso\nConexión a Zoom (ID: 374 855 8256 · Código: 1QH8R9)\nPruebas de conexión al servidor\neDNA, metabarcoding, qPCR y ddPCR\nDiseño experimental\nMuestreo de ADN ambiental · Marcadores genéticos\nExtracción, PCR y preparación de librerías"
+    "text": "Bienvenida y presentación del curso\nConexión a Zoom\nPruebas de conexión al servidor\neDNA, metabarcoding, qPCR y ddPCR\nDiseño experimental\nMuestreo de ADN ambiental · Marcadores genéticos\nExtracción, PCR y preparación de librerías"
   },
   {
     "objectID": "sesiones.html#día-1-introducción-teórica-y-fundamentos",
     "href": "sesiones.html#día-1-introducción-teórica-y-fundamentos",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "",
-    "text": "Bienvenida y presentación del curso\nConexión a Zoom (ID: 374 855 8256 · Código: 1QH8R9)\nPruebas de conexión al servidor\neDNA, metabarcoding, qPCR y ddPCR\nDiseño experimental\nMuestreo de ADN ambiental · Marcadores genéticos\nExtracción, PCR y preparación de librerías"
+    "text": "Bienvenida y presentación del curso\nConexión a Zoom\nPruebas de conexión al servidor\neDNA, metabarcoding, qPCR y ddPCR\nDiseño experimental\nMuestreo de ADN ambiental · Marcadores genéticos\nExtracción, PCR y preparación de librerías"
   },
   {
     "objectID": "sesiones.html#día-2-entorno-bioinformático-y-control-de-calidad",
