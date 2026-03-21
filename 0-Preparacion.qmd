@@ -13,16 +13,13 @@ Todo lo necesario para correr el flujo de trabajo del curso se encuentra en el r
 
 ```
 metabarcoding-code/
-├── scripts/             # Scripts numerados en orden de ejecución (bash, R, Quarto)
-├── raw_fastqs/          # Archivos FASTQ originales (no modificar)
-├── for_dada2/           # FASTQs recortados con cutadapt, listos para DADA2
-│   └── filtered/        # FASTQs filtrados por DADA2
-├── cutadapt_reports/    # Reportes del preprocesamiento con Cutadapt
-├── final_data/
-│   ├── csv_output/      # Tablas de ASVs y taxonomía
-│   ├── rdata_output/    # Checkpoints .RData
-│   └── logs/            # sessionInfo, errores, gráficas
-└── metadata/            # Archivos de configuración (primers, metadatos, BD taxonómica)
+├── scripts/             # Scripts numerados en orden de ejecución
+├── metadata/            # Archivos de configuración (primers, metadatos, listado de especies)
+├── raw_fastqs/          # Datos crudos — se copian durante el curso
+├── for_dada2/           # FASTQs recortados con Cutadapt (se genera al correr el pipeline)
+├── cutadapt_reports/    # Reportes de Cutadapt (se genera al correr el pipeline)
+├── final_data/          # Resultados del análisis (se genera al correr el pipeline)
+└── environment.yml      # Definición del ambiente conda
 ```
 
 Para explorar el contenido del repositorio:
