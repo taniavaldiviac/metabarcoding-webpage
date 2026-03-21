@@ -18,10 +18,7 @@ execute:
 - Bienvenida y presentación del curso
 - [Conexión a Zoom](0-Zoom.qmd)
 - [Pruebas de conexión al servidor](0-Conexion.qmd)
-- eDNA, metabarcoding, qPCR y ddPCR
-- Diseño experimental
-- Muestreo de ADN ambiental · Marcadores genéticos
-- Extracción, PCR y preparación de librerías
+- Teoría
 
 ---
 
