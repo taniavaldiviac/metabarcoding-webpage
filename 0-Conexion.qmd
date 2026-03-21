@@ -1,0 +1,29 @@
+---
+title: "Conexión al servidor"
+execute:
+  echo: false
+  warning: false
+---
+
+## 1. Conéctate a la VPN
+
+Antes de conectarte al servidor necesitas activar la VPN con el cliente **Hillstone Secure Connect**:
+
+- **Servidor VPN**: `200.23.161.197`
+- **Puerto**: `4666`
+- **Usuario**: `BIO\tu_usuario` (por ejemplo, `BIO\usr01`)
+- **Contraseña**: la que te proporcionó el instructor
+
+---
+
+## 2. Conéctate al servidor por SSH
+
+Abre la terminal en tu computadora y escribe:
+
+``` sh
+ssh usrXX@200.23.162.240
+```
+
+Reemplaza `usrXX` por tu usuario (por ejemplo, `usr01`). Escribe tu contraseña cuando se te pida.
+
+- Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe `yes` y presiona Enter.

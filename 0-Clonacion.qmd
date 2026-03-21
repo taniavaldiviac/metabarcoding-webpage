@@ -1,36 +1,11 @@
 ---
-title: "Conexión al servidor y clonación de repositorio Github"
+title: "Clonación de repositorio Github"
 execute:
   echo: false
   warning: false
 ---
 
-## 1. Conéctate a la VPN
-
-Antes de conectarte al servidor necesitas activar la VPN con el cliente **Hillstone Secure Connect**:
-
-- **Servidor VPN**: `200.23.161.197`
-- **Puerto**: `4666`
-- **Usuario**: `BIO\tu_usuario` (por ejemplo, `BIO\usr01`)
-- **Contraseña**: la que te proporcionó el instructor
-
----
-
-## 2. Conéctate al servidor por SSH
-
-Abre la terminal en tu computadora y escribe:
-
-``` sh
-ssh usrXX@200.23.162.240
-```
-
-Reemplaza `usrXX` por tu usuario (por ejemplo, `usr01`). Escribe tu contraseña cuando se te pida.
-
-- Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe `yes` y presiona Enter.
-
----
-
-## 3. Clona el repositorio del curso
+## 1. Clona el repositorio del curso
 
 ``` sh
 git clone https://github.com/taniavaldiviac/metabarcoding-code.git
@@ -39,7 +14,7 @@ cd ~/metabarcoding-code
 
 ---
 
-## 4. Copia los archivos FASTQ
+## 2. Copia los archivos FASTQ
 
 Los archivos de secuenciación están en el directorio del instructor:
 
@@ -49,7 +24,7 @@ cp /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/* ~/metabarcoding-code/r
 
 ---
 
-## 5. Verifica los paquetes de R
+## 3. Verifica los paquetes de R
 
 Los paquetes necesarios ya están instalados en el servidor. Tu cuenta está configurada para encontrarlos automáticamente. Verifica abriendo R:
 
@@ -70,7 +45,7 @@ Si no hay errores, está todo listo.
 
 ---
 
-## 6. Ambiente conda para herramientas de línea de comandos
+## 4. Ambiente conda para herramientas de línea de comandos
 
 Para los pasos de control de calidad y remoción de adaptadores, activa el ambiente `metabarcoding`:
 
