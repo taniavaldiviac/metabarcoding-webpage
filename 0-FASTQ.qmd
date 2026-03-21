@@ -1,0 +1,114 @@
+---
+title: "Archivos FASTQ: estructura y organización"
+execute:
+  echo: true
+  warning: false
+  eval: false
+---
+
+## ¿Qué es un archivo FASTQ?
+
+Un archivo FASTQ es el formato estándar para almacenar secuencias de ADN junto con sus valores de calidad. Es el formato de salida de los secuenciadores de nueva generación como Illumina MiSeq.
+
+Cada lectura (*read*) ocupa exactamente **4 líneas**:
+
+```
+@M00741:150:000000000-L7YMK:1:1101:15234:1334 1:N:0:1
+ACTGGCATTAGCAGGAATACCTTGTAACTGATTTGTACTGAGATTG
++
+CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+```
+
+| Línea | Contenido |
+|:------|:----------|
+| 1 | **Identificador** — empieza con `@`, contiene información del instrumento, carril, posición en el flowcell |
+| 2 | **Secuencia** — la secuencia de nucleótidos (A, T, C, G, N) |
+| 3 | **Separador** — siempre es `+` (opcionalmente seguido del identificador) |
+| 4 | **Calidad** — un carácter ASCII por cada base, codificando el puntaje Phred |
+
+---
+
+## Calidad Phred
+
+Cada carácter en la línea 4 representa la probabilidad de que la base correspondiente sea incorrecta. Se codifica como un valor **Phred** (Q) mapeado a un carácter ASCII.
+
+| Puntaje Phred (Q) | Probabilidad de error | Precisión | Carácter ASCII (ejemplo) |
+|:-------------------|:----------------------|:----------|:-------------------------|
+| 10 | 1 en 10 | 90% | `+` |
+| 20 | 1 en 100 | 99% | `5` |
+| 30 | 1 en 1,000 | 99.9% | `?` |
+| 40 | 1 en 10,000 | 99.99% | `I` |
+
+::: {.callout-tip icon="false"}
+En general, un puntaje Q ≥ 30 se considera buena calidad. En el paso de filtrado con DADA2 usamos este umbral para decidir dónde truncar las lecturas.
+:::
+
+---
+
+## Lecturas paired-end
+
+En secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando **dos archivos** por muestra:
+
+- `_R1_001.fastq` — lectura **forward** (de 5' a 3')
+- `_R2_001.fastq` — lectura **reverse** (de 3' a 5')
+
+```{mermaid}
+flowchart LR
+    F["→ R1 (forward)"] --> A["Fragmento de ADN"]
+    A --> R["← R2 (reverse)"]
+
+    style F fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    style R fill:#fef3c7,stroke:#f59e0b,color:#78350f
+    style A fill:#f3f4f6,stroke:#6b7280,color:#1f2937
+```
+
+Las dos lecturas se **solapan** en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (*merge*) para reconstruir la secuencia completa.
+
+---
+
+## Explorando tus archivos FASTQ
+
+Para ver los primeros reads de un archivo:
+
+```bash
+head -8 ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq
+```
+
+Esto muestra las primeras 2 lecturas (4 líneas cada una).
+
+Para contar el número de lecturas en un archivo:
+
+```bash
+echo $(( $(wc -l < ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq) / 4 ))
+```
+
+Para ver cuántos archivos FASTQ tienes:
+
+```bash
+ls ~/metabarcoding-code/raw_fastqs/*.fastq | wc -l
+```
+
+---
+
+## Organización de los archivos en el curso
+
+Los archivos FASTQ del curso siguen una convención de nombres que permite al pipeline identificar automáticamente el locus, la muestra y la dirección de lectura. Esta convención se describe en detalle en la sección de [Preparación del entorno](0-Preparacion.qmd).
+
+Cada muestra tiene un par de archivos (R1 y R2) en la carpeta `raw_fastqs/`:
+
+```
+raw_fastqs/
+├── 12S-GC-001-d1_1_S1_L001_R1_001.fastq
+├── 12S-GC-001-d1_1_S1_L001_R2_001.fastq
+├── 12S-GC-002-d1_1_S2_L001_R1_001.fastq
+├── 12S-GC-002-d1_1_S2_L001_R2_001.fastq
+└── ...
+```
+
+::: {.callout-important icon="false"}
+**Antes de continuar**, verifica que:
+
+- Tus archivos FASTQ están en `~/metabarcoding-code/raw_fastqs/`
+- Cada muestra tiene un par de archivos (R1 y R2)
+- Los nombres siguen la convención descrita en [Preparación del entorno](0-Preparacion.qmd)
+:::
