@@ -26,35 +26,30 @@ execute:
 
 ## Día 2 — Entorno bioinformático y control de calidad
 
-| Tema | Material |
-|:-----|:---------|
-| Introducción a Linux y R | [Práctica](0b-linux-r-intro.qmd) |
-| Clonación de repositorio | [Práctica](0-Clonacion.qmd) |
-| Archivos FASTQ: estructura y organización | |
-| Control de calidad con FastQC y recorte de primers con Cutadapt | [Práctica](1-qaqc-cutadapt.qmd) |
-| Introducción al pipeline DADA2 y denoising | [Introducción](2-dada2QAQC.qmd) |
+- [Introducción a Linux y R](0b-linux-r-intro.qmd)
+- [Clonación de repositorio](0-Clonacion.qmd)
+- Archivos FASTQ: estructura y organización
+- [Control de calidad con FastQC y MultiQC](1-qaqc-cutadapt.qmd)
+- [Recorte de primers con Cutadapt](1-qaqc-cutadapt.qmd)
+- [Introducción al pipeline DADA2](2-dada2QAQC.qmd)
 
 ---
 
 ## Día 3 — Pipeline DADA2
 
-| Tema | Material |
-|:-----|:---------|
-| Preparación del entorno y filtrado de lecturas | [Preparación](2-dada2QAQC-Prep.qmd) · [Filter & Trim](2-dada2QAQC-Filter.qmd) |
-| Aprendizaje del modelo de error | [Práctica](2-dada2QAQC-Error.qmd) |
-| Unión de lecturas paired-end | [Práctica](2-dada2QAQC-Merge.qmd) |
-| Remoción de quimeras | [Práctica](2-dada2QAQC-Chimeras.qmd) |
-| Asignación taxonómica | [Práctica](2-dada2QAQC-Taxonomy.qmd) |
+- [Preparación del entorno y filtrado de lecturas](2-dada2QAQC-Prep.qmd) · [Filter & Trim](2-dada2QAQC-Filter.qmd)
+- [Aprendizaje del modelo de error](2-dada2QAQC-Error.qmd)
+- [Unión de lecturas paired-end](2-dada2QAQC-Merge.qmd)
+- [Remoción de quimeras](2-dada2QAQC-Chimeras.qmd)
+- [Asignación taxonómica](2-dada2QAQC-Taxonomy.qmd)
 
 ---
 
 ## Día 4 — Análisis ecológico de comunidades
 
-| Tema | Material |
-|:-----|:---------|
-| De los resultados de DADA2 a las tablas de análisis | [Reporte](3-reporte.qmd) |
-| El objeto phyloseq: construcción y manipulación | [Reporte](3-reporte.qmd) |
-| Diversidad α, diversidad β y visualización | [Reporte](3-reporte.qmd) |
+- [De los resultados de DADA2 a las tablas de análisis](3-reporte.qmd)
+- [El objeto phyloseq: construcción y manipulación](3-reporte.qmd)
+- [Diversidad α, diversidad β y visualización](3-reporte.qmd)
 
 ---
 
