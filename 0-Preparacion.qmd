@@ -22,23 +22,66 @@ metabarcoding-code/
 └── environment.yml      # Definición del ambiente conda
 ```
 
-Para explorar el contenido del repositorio:
+### Flujo de datos entre carpetas
 
-``` sh
-ls -l ~/metabarcoding-code/
+```{mermaid}
+flowchart LR
+    A[raw_fastqs] -->|Cutadapt| B[for_dada2]
+    A -->|FastQC / MultiQC| C[cutadapt_reports]
+    B -->|DADA2| D[final_data]
+    E[metadata] -->|primers, metadatos| B
+    E -->|BD taxonómica| D
 ```
 
-Y para ver los archivos FASTQ disponibles:
-
-``` sh
-ls -lh ~/metabarcoding-code/raw_fastqs/
-```
+Los datos crudos en `raw_fastqs/` pasan por Cutadapt para remover primers y se guardan en `for_dada2/`. DADA2 toma esos archivos filtrados junto con la configuración de `metadata/` y produce los resultados finales en `final_data/`.
 
 ---
 
-## 1. Nomenclatura de los archivos FASTQ
+## Archivos de configuración
 
-El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.
+La carpeta `metadata/` contiene los archivos que el pipeline lee al inicio de cada análisis. Su contenido y estructura son fundamentales para que el código funcione correctamente.
+
+### `primer_data.csv` — Configuración del locus
+
+Define los parámetros del marcador genético. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice `i` al inicio del script.
+
+| Columna | Qué contiene |
+|:--------|:-------------|
+| `locus_shorthand` | Identificador corto del marcador (ej. `12S`) — se usa para filtrar los archivos FASTQ y nombrar los outputs |
+| `seq_f` / `seq_r` | Secuencia completa de los primers forward y reverse |
+| `F_qual` / `R_qual` | Longitud del primer usada por Cutadapt para el recorte |
+| `amplicon_length` | Longitud esperada del amplicón (bp) |
+| `max_trim` | Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R |
+| `overlap` | Solapamiento mínimo requerido entre lecturas F y R para el merge |
+| `db_name` | Nombre del archivo FASTA de la base de datos taxonómica en `metadata/` |
+
+::: {.callout-tip icon="false"}
+**En el script**, el locus a analizar se selecciona con `i <- 1` (primera fila). Si tienes múltiples marcadores, cambia el valor de `i` para procesar el locus correspondiente.
+:::
+
+### `metadata.csv` — Información de las muestras
+
+Conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq* en la etapa de análisis.
+
+| Columna | Qué contiene |
+|:--------|:-------------|
+| `sample_id` | Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ |
+| `site_id` | Código del sitio de muestreo (ej. `POR`, `BSS`) |
+| `name` | Nombre completo del sitio |
+| `date` | Fecha de colecta |
+| `lat` / `lon` | Coordenadas geográficas |
+| `region` | Región geográfica del estudio |
+| `locus_shorthand` | Marcador al que corresponde la muestra |
+| `sequencing_lane` | Carril de secuenciación (para estudios multi-lane) |
+| `replicate` | Número de réplica técnica (1, 2, 3…) |
+| `filename_base` | Nombre del archivo tal como lo entrega el secuenciador — se llena manualmente |
+| `rename_to` | Nombre generado automáticamente al que se renombrará el archivo para entrar al pipeline (ej. `12S-GC-001-d1_1_S1_L001`) |
+
+---
+
+## Nomenclatura de los archivos FASTQ
+
+El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Los nombres se construyen a partir de las columnas de `metadata.csv` y `primer_data.csv`, por lo que es fundamental que coincidan.
 
 ### Formato esperado
 
@@ -72,61 +115,4 @@ El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs.
 - El `locus_shorthand` en el nombre del archivo no coincide con el de `primer_data.csv` → el script no encontrará ningún archivo
 - El `sample_id` no existe en `metadata.csv` → la muestra no tendrá metadatos en el análisis final
 - Archivos con extensión `.fastq.gz` en lugar de `.fastq` → verifica si necesitas descomprimirlos primero con `gunzip`
-:::
-
----
-
-## 2. Archivo `metadata.csv` — Información de las muestras
-
-Este archivo conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq* en la etapa de análisis.
-
-``` sh
-head ~/metabarcoding-code/metadata/metadata.csv
-```
-
-| Columna | Qué contiene |
-|:--------|:-------------|
-| `sample_id` | Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ |
-| `site_id` | Código del sitio de muestreo (ej. `POR`, `BSS`) |
-| `name` | Nombre completo del sitio |
-| `date` | Fecha de colecta |
-| `lat` / `lon` | Coordenadas geográficas |
-| `region` | Región geográfica del estudio |
-| `locus_shorthand` | Marcador al que corresponde la muestra |
-| `sequencing_lane` | Carril de secuenciación (para estudios multi-lane) |
-| `replicate` | Número de réplica técnica (1, 2, 3…) |
-| `filename_base` | Nombre del archivo tal como lo entrega el secuenciador — se llena manualmente |
-| `rename_to` | Nombre generado automáticamente al que se renombrará el archivo para entrar al pipeline (ej. `12S-GC-001-d1_1_S1_L001`) |
-
----
-
-## 3. Archivo `primer_data.csv` — Configuración del locus
-
-Este archivo define los parámetros del marcador genético que se va a analizar. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice `i` al inicio del script.
-
-``` sh
-cat ~/metabarcoding-code/metadata/primer_data.csv
-```
-
-| Columna | Qué contiene |
-|:--------|:-------------|
-| `locus_shorthand` | Identificador corto del marcador (ej. `12S`) — se usa para filtrar los archivos FASTQ y nombrar los outputs |
-| `seq_f` / `seq_r` | Secuencia completa de los primers forward y reverse |
-| `F_qual` / `R_qual` | Longitud del primer usada por Cutadapt para el recorte |
-| `amplicon_length` | Longitud esperada del amplicón (bp) |
-| `max_trim` | Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R |
-| `overlap` | Solapamiento mínimo requerido entre lecturas F y R para el merge |
-| `db_name` | Nombre del archivo FASTA de la base de datos taxonómica en `metadata/` |
-
-::: {.callout-tip icon="false"}
-**En el script**, el locus a analizar se selecciona con `i <- 1` (primera fila). Si tienes múltiples marcadores, cambia el valor de `i` para procesar el locus correspondiente.
-:::
-
----
-
-:::{.callout-note}
-## Recuerda
-- Usa siempre `~/metabarcoding-code` como tu directorio de proyecto.
-- Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.
-- Activa `conda activate metabarcoding` solo para los pasos de QC y Cutadapt.
 :::

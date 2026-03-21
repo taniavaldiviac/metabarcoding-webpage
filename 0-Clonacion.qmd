@@ -66,3 +66,12 @@ Para desactivarlo cuando termines:
 ``` sh
 conda deactivate
 ```
+
+---
+
+:::{.callout-note}
+## Recuerda
+- Usa siempre `~/metabarcoding-code` como tu directorio de proyecto.
+- Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.
+- Activa `conda activate metabarcoding` solo para los pasos de QC y Cutadapt.
+:::
