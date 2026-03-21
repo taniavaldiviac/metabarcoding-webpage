@@ -36,11 +36,14 @@ Todo lo necesario para correr el flujo de trabajo del curso se encuentra en el r
 
 ```{mermaid}
 flowchart LR
-    A[raw_fastqs] -->|Cutadapt| B[for_dada2]
-    A -->|FastQC / MultiQC| C[cutadapt_reports]
-    B -->|DADA2| D[final_data]
-    E[metadata] -->|primers, metadatos| B
+    A[raw_fastqs]:::included -->|Cutadapt| B[for_dada2]:::generated
+    A -->|FastQC / MultiQC| C[cutadapt_reports]:::generated
+    B -->|DADA2| D[final_data]:::generated
+    E[metadata]:::included -->|primers, metadatos| B
     E -->|BD taxonómica| D
+
+    classDef included fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    classDef generated fill:#fef3c7,stroke:#f59e0b,color:#78350f
 ```
 
 Los datos crudos en `raw_fastqs/` pasan por Cutadapt para remover primers y se guardan en `for_dada2/`. DADA2 toma esos archivos filtrados junto con la configuración de `metadata/` y produce los resultados finales en `final_data/`.
