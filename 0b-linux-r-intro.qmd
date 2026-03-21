@@ -588,31 +588,6 @@ fastq_location <- file.path(proj_root, "for_dada2")
 
 ---
 
-### Buenas prácticas para proyectos bioinformáticos
-
-Una estructura de carpetas consistente ahorra tiempo y evita errores:
-
-```
-metabarcoding-code/
-├── raw_fastqs/          # datos crudos (no modificar)
-├── for_dada2/           # FASTQs recortados con cutadapt
-│   └── filtered/        # FASTQs filtrados por DADA2
-├── final_data/
-│   ├── csv_output/      # tablas de ASVs y taxonomía
-│   ├── rdata_output/    # checkpoints .RData
-│   └── logs/            # sessionInfo, errores, gráficas
-├── metadata/            # primer_data.csv, metadata.csv, BD taxonomía
-└── scripts/             # scripts numerados en orden de ejecución
-```
-
-**Reglas de nombres de archivos:**
-
-- Usar guiones bajos `_` en lugar de espacios
-- Numerar scripts en orden: `01-fastqc.sh`, `02b-cutadapt.sh`, `03-dada2-pipeline.R`
-- Incluir fecha o `run_name` en los archivos de salida para no sobreescribir
-
----
-
 ### Literatura recomendada
 
 * Introduction to R. William Venables (Network Theory Limited)
