@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Prácticas – Metabarcoding de comunidades de eucariontes</title>
+<title>Conexión al servidor – Metabarcoding de comunidades de eucariontes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -209,20 +209,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#conéctate-a-la-vpn" id="toc-conéctate-a-la-vpn" class="nav-link active" data-scroll-target="#conéctate-a-la-vpn">1. Conéctate a la VPN</a></li>
+  <li><a href="#conéctate-al-servidor-por-ssh" id="toc-conéctate-al-servidor-por-ssh" class="nav-link" data-scroll-target="#conéctate-al-servidor-por-ssh">2. Conéctate al servidor por SSH</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Prácticas</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Código</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Conexión al servidor</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Código</button></div></div>
 </div>
 
 
 
-<div class="quarto-title-meta column-page">
+<div class="quarto-title-meta column-page-left">
 
     
   
@@ -234,22 +241,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Cada práctica incluye objetivos, datos, y un cuaderno ejecutable en R.</p>
-<ol type="1">
-<li><strong>setup del entorno</strong>: instalación/verificación de R, RStudio y paquetes; clonar repo del curso.</li>
-<li><strong>DADA2 I</strong>: inspección de calidad, <code>filterAndTrim</code>, parámetros de truncado, <em>error learning</em>.</li>
-<li><strong>DADA2 II</strong>: <code>dada</code>, <em>merge pairs</em>, <code>removeBimeraDenovo</code>, construcción de tabla de ASVs.</li>
-<li><strong>asignación taxonómica</strong>: <code>assignTaxonomy</code> / <code>assignSpecies</code> y bases de referencia; <em>hash-based</em> opcional.</li>
-<li><strong>phyloseq</strong>: importación, rarefacción (si aplica), diversidad alfa/beta, NMDS/PCoA.</li>
-<li><strong>reporte reproducible</strong>: Quarto + figuras estandarizadas.</li>
-</ol>
-<blockquote class="blockquote">
-<p>Nota: incluiremos <strong>controles</strong>, réplicas, y <em>mock communities</em> para enfatizar dMIQE/MIQE.</p>
-</blockquote>
+<section id="conéctate-a-la-vpn" class="level2">
+<h2 class="anchored" data-anchor-id="conéctate-a-la-vpn">1. Conéctate a la VPN</h2>
+<p>Antes de conectarte al servidor necesitas activar la VPN con el cliente <strong>Hillstone Secure Connect</strong>:</p>
+<ul>
+<li><strong>Servidor VPN</strong>: <code>200.23.161.197</code></li>
+<li><strong>Puerto</strong>: <code>4666</code></li>
+<li><strong>Usuario</strong>: <code>BIO\tu_usuario</code> (por ejemplo, <code>BIO\usr01</code>)</li>
+<li><strong>Contraseña</strong>: la que te proporcionó el instructor</li>
+</ul>
+<hr>
+</section>
+<section id="conéctate-al-servidor-por-ssh" class="level2">
+<h2 class="anchored" data-anchor-id="conéctate-al-servidor-por-ssh">2. Conéctate al servidor por SSH</h2>
+<p>Abre la terminal en tu computadora y escribe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> usrXX@200.23.162.240</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Reemplaza <code>usrXX</code> por tu usuario (por ejemplo, <code>usr01</code>). Escribe tu contraseña cuando se te pida.</p>
+<ul>
+<li>Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe <code>yes</code> y presiona Enter.</li>
+</ul>
 
 
 <!-- -->
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -703,20 +718,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Prácticas"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Cada práctica incluye objetivos, datos, y un cuaderno ejecutable en R.</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**setup del entorno**: instalación/verificación de R, RStudio y paquetes; clonar repo del curso.</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**DADA2 I**: inspección de calidad, <span class="in">`filterAndTrim`</span>, parámetros de truncado, *error learning*.</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**DADA2 II**: <span class="in">`dada`</span>, *merge pairs*, <span class="in">`removeBimeraDenovo`</span>, construcción de tabla de ASVs.</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**asignación taxonómica**: <span class="in">`assignTaxonomy`</span> / <span class="in">`assignSpecies`</span> y bases de referencia; *hash-based* opcional.</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**phyloseq**: importación, rarefacción (si aplica), diversidad alfa/beta, NMDS/PCoA.</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**reporte reproducible**: Quarto + figuras estandarizadas.</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Nota: incluiremos **controles**, réplicas, y *mock communities* para enfatizar dMIQE/MIQE.</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Conexión al servidor"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Conéctate a la VPN</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>Antes de conectarte al servidor necesitas activar la VPN con el cliente **Hillstone Secure Connect**:</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Servidor VPN**: <span class="in">`200.23.161.197`</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Puerto**: <span class="in">`4666`</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Usuario**: <span class="in">`BIO\tu_usuario`</span> (por ejemplo, <span class="in">`BIO\usr01`</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Contraseña**: la que te proporcionó el instructor</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Conéctate al servidor por SSH</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>Abre la terminal en tu computadora y escribe:</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> usrXX@200.23.162.240</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>Reemplaza <span class="in">`usrXX`</span> por tu usuario (por ejemplo, <span class="in">`usr01`</span>). Escribe tu contraseña cuando se te pida.</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe <span class="in">`yes`</span> y presiona Enter.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
