@@ -1,0 +1,31 @@
+---
+title: "Conexión a Zoom"
+execute:
+  echo: false
+  warning: false
+---
+
+## Sala de reuniones — Fausto Valenzuela Quiñonez
+
+[Únase a la reunión de Zoom](https://us02web.zoom.us/j/3748558256?pwd=NHl2KzFYWmI4RzhZcjZoWU1xekdLdz09)
+
+- **ID de reunión**: 374 855 8256
+- **Código de acceso**: 1QH8R9
+
+---
+
+## Desde dispositivo móvil (un toque)
+
+- +1 305 224 1968 (Estados Unidos)
+- +1 309 205 3325 (Estados Unidos)
+
+---
+
+## Unirse mediante SIP
+
+- `3748558256@zoomcrc.com`
+- **Código de acceso**: 778134
+
+---
+
+[Instrucciones para unirse](https://us02web.zoom.us/meetings/3748558256/invitations?signature=nCkd85cms6bRVddEXcK9IEfSYQCzkFAx0tsnFpXkjU0)
