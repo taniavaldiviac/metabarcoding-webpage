@@ -851,7 +851,7 @@
     "href": "sesiones.html#día-2-entorno-bioinformático-y-control-de-calidad",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Día 2 — Entorno bioinformático y control de calidad",
-    "text": "Día 2 — Entorno bioinformático y control de calidad\n\nIntroducción a Linux y R\nPreparación del entorno\nClonación de repositorio\nArchivos FASTQ: estructura y organización\nControl de calidad con FastQC y MultiQC\nRecorte de primers con Cutadapt\nIntroducción al pipeline DADA2"
+    "text": "Día 2 — Entorno bioinformático y control de calidad\n\nIntroducción a Linux y R\nPreparación del entorno\nClonación de repositorio\nArchivos fastq: estructura y organización\nControl de calidad con FastQC y MultiQC\nRecorte de primers con Cutadapt\nIntroducción al pipeline DADA2"
   },
   {
     "objectID": "sesiones.html#día-3-pipeline-dada2",
