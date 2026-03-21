@@ -16,6 +16,7 @@ execute:
 ## Día 1 — Introducción teórica y fundamentos
 
 - Bienvenida y presentación del curso
+- [Conexión a Zoom](https://us02web.zoom.us/j/3748558256?pwd=NHl2KzFYWmI4RzhZcjZoWU1xekdLdz09) (ID: 374 855 8256 · Código: 1QH8R9)
 - [Pruebas de conexión al servidor](0-Conexion.qmd)
 - eDNA, metabarcoding, qPCR y ddPCR
 - Diseño experimental
