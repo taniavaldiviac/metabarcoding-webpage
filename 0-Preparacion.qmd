@@ -11,16 +11,26 @@ Todo lo necesario para correr el flujo de trabajo del curso se encuentra en el r
 
 ## Estructura del repositorio
 
-```
-metabarcoding-code/
-├── scripts/             # Scripts numerados en orden de ejecución
-├── metadata/            # Archivos de configuración (primers, metadatos, listado de especies)
-├── raw_fastqs/          # Datos crudos — se copian durante el curso
-├── for_dada2/           # FASTQs recortados con Cutadapt (se genera al correr el pipeline)
-├── cutadapt_reports/    # Reportes de Cutadapt (se genera al correr el pipeline)
-├── final_data/          # Resultados del análisis (se genera al correr el pipeline)
-└── environment.yml      # Definición del ambiente conda
-```
+::: {.callout-note icon="false"}
+## Incluidos al clonar el repositorio
+
+| Carpeta / Archivo | Contenido |
+|:------------------|:----------|
+| `scripts/` | Scripts numerados en orden de ejecución |
+| `metadata/` | Configuración: primers, metadatos, listado de especies |
+| `raw_fastqs/` | Datos crudos — se copian del servidor durante el curso |
+| `environment.yml` | Definición del ambiente conda para reproducibilidad |
+:::
+
+::: {.callout-warning icon="false"}
+## Se generan al correr el pipeline
+
+| Carpeta | Contenido |
+|:--------|:----------|
+| `for_dada2/` | FASTQs recortados con Cutadapt |
+| `cutadapt_reports/` | Reportes de Cutadapt |
+| `final_data/` | Resultados del análisis (tablas, figuras, checkpoints) |
+:::
 
 ### Flujo de datos entre carpetas
 
