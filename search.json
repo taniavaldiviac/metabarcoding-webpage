@@ -469,6 +469,27 @@
     "text": "Nomenclatura de los archivos FASTQ\nEl pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Los nombres se construyen a partir de las columnas de metadata.csv y primer_data.csv, por lo que es fundamental que coincidan.\n\nFormato esperado\n{locus_shorthand}-{sample_id}-{dilution}_{replicate}_{site}_{sequencing_lane}_R{1|2}_001.fastq\nEjemplo real de este curso:\n12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward\n12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse\n\n\nDescripción de cada campo\n\n\n\n\n\n\n\n\nCampo\nEjemplo\nDescripción\n\n\n\n\n{locus_shorthand}\n12S\nColumna locus_shorthand en primer_data.csv — debe coincidir exactamente\n\n\n{sample_id}\nGC-001\nColumna sample_id en metadata.csv\n\n\n{dilution}\nd1\nColumna dilution en metadata.csv\n\n\n{replicate}\n1\nColumna replicate en metadata.csv\n\n\n{site}\nS1\nColumna site en metadata.csv — número de muestra del MiSeq\n\n\n{sequencing_lane}\nL001\nColumna sequencing_lane en metadata.csv\n\n\nR{1\\|2}\nR1 / R2\nDirección de la lectura (forward / reverse)\n\n\n_001.fastq\n—\nSufijo estándar de Illumina\n\n\n\n\n\n\n\n\n\nAdvertencia\n\n\n\nErrores comunes:\n\nEl locus_shorthand en el nombre del archivo no coincide con el de primer_data.csv → el script no encontrará ningún archivo\nEl sample_id no existe en metadata.csv → la muestra no tendrá metadatos en el análisis final\nArchivos con extensión .fastq.gz en lugar de .fastq → verifica si necesitas descomprimirlos primero con gunzip"
   },
   {
+    "objectID": "0-Conexion.html",
+    "href": "0-Conexion.html",
+    "title": "Conexión al servidor",
+    "section": "",
+    "text": "Consulta tus credenciales de acceso en la hoja de participantes."
+  },
+  {
+    "objectID": "0-Conexion.html#conéctate-a-la-vpn",
+    "href": "0-Conexion.html#conéctate-a-la-vpn",
+    "title": "Conexión al servidor",
+    "section": "1. Conéctate a la VPN",
+    "text": "1. Conéctate a la VPN\nAntes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
+  },
+  {
+    "objectID": "0-Conexion.html#conéctate-al-servidor-por-ssh",
+    "href": "0-Conexion.html#conéctate-al-servidor-por-ssh",
+    "title": "Conexión al servidor",
+    "section": "2. Conéctate al servidor por SSH",
+    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter."
+  },
+  {
     "objectID": "0-Clonacion.html",
     "href": "0-Clonacion.html",
     "title": "Clonación de repositorio Github",
@@ -504,25 +525,46 @@
     "text": "4. Ambiente conda para herramientas de línea de comandos\nPara los pasos de control de calidad y remoción de adaptadores, activa el ambiente metabarcoding:\nconda activate metabarcoding\nEste ambiente contiene:\n\n\n\nHerramienta\nUso\n\n\n\n\ncutadapt\nRemoción de adaptadores y primers\n\n\nfastqc\nControl de calidad de lecturas\n\n\nmultiqc\nReporte agregado de calidad\n\n\n\nPara desactivarlo cuando termines:\nconda deactivate\n\n\n\n\n\n\n\nNotaRecuerda\n\n\n\n\nUsa siempre ~/metabarcoding-code como tu directorio de proyecto.\nLos paquetes de R están disponibles automáticamente — no necesitas instalar nada.\nActiva conda activate metabarcoding solo para los pasos de QC y Cutadapt."
   },
   {
-    "objectID": "0-Conexion.html",
-    "href": "0-Conexion.html",
-    "title": "Conexión al servidor",
+    "objectID": "0-FASTQ.html",
+    "href": "0-FASTQ.html",
+    "title": "Archivos FASTQ: estructura y organización",
     "section": "",
-    "text": "Consulta tus credenciales de acceso en la hoja de participantes."
+    "text": "Un archivo FASTQ es el formato estándar para almacenar secuencias de ADN junto con sus valores de calidad. Es el formato de salida de los secuenciadores de nueva generación como Illumina MiSeq.\nCada lectura (read) ocupa exactamente 4 líneas:\n@M00741:150:000000000-L7YMK:1:1101:15234:1334 1:N:0:1\nACTGGCATTAGCAGGAATACCTTGTAACTGATTTGTACTGAGATTG\n+\nCCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n\n\n\n\n\n\n\nLínea\nContenido\n\n\n\n\n1\nIdentificador — empieza con @, contiene información del instrumento, carril, posición en el flowcell\n\n\n2\nSecuencia — la secuencia de nucleótidos (A, T, C, G, N)\n\n\n3\nSeparador — siempre es + (opcionalmente seguido del identificador)\n\n\n4\nCalidad — un carácter ASCII por cada base, codificando el puntaje Phred"
   },
   {
-    "objectID": "0-Conexion.html#conéctate-a-la-vpn",
-    "href": "0-Conexion.html#conéctate-a-la-vpn",
-    "title": "Conexión al servidor",
-    "section": "1. Conéctate a la VPN",
-    "text": "1. Conéctate a la VPN\nAntes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
+    "objectID": "0-FASTQ.html#qué-es-un-archivo-fastq",
+    "href": "0-FASTQ.html#qué-es-un-archivo-fastq",
+    "title": "Archivos FASTQ: estructura y organización",
+    "section": "",
+    "text": "Un archivo FASTQ es el formato estándar para almacenar secuencias de ADN junto con sus valores de calidad. Es el formato de salida de los secuenciadores de nueva generación como Illumina MiSeq.\nCada lectura (read) ocupa exactamente 4 líneas:\n@M00741:150:000000000-L7YMK:1:1101:15234:1334 1:N:0:1\nACTGGCATTAGCAGGAATACCTTGTAACTGATTTGTACTGAGATTG\n+\nCCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n\n\n\n\n\n\n\nLínea\nContenido\n\n\n\n\n1\nIdentificador — empieza con @, contiene información del instrumento, carril, posición en el flowcell\n\n\n2\nSecuencia — la secuencia de nucleótidos (A, T, C, G, N)\n\n\n3\nSeparador — siempre es + (opcionalmente seguido del identificador)\n\n\n4\nCalidad — un carácter ASCII por cada base, codificando el puntaje Phred"
   },
   {
-    "objectID": "0-Conexion.html#conéctate-al-servidor-por-ssh",
-    "href": "0-Conexion.html#conéctate-al-servidor-por-ssh",
-    "title": "Conexión al servidor",
-    "section": "2. Conéctate al servidor por SSH",
-    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter."
+    "objectID": "0-FASTQ.html#calidad-phred",
+    "href": "0-FASTQ.html#calidad-phred",
+    "title": "Archivos FASTQ: estructura y organización",
+    "section": "Calidad Phred",
+    "text": "Calidad Phred\nCada carácter en la línea 4 representa la probabilidad de que la base correspondiente sea incorrecta. Se codifica como un valor Phred (Q) mapeado a un carácter ASCII.\n\n\n\n\n\n\n\n\n\nPuntaje Phred (Q)\nProbabilidad de error\nPrecisión\nCarácter ASCII (ejemplo)\n\n\n\n\n10\n1 en 10\n90%\n+\n\n\n20\n1 en 100\n99%\n5\n\n\n30\n1 en 1,000\n99.9%\n?\n\n\n40\n1 en 10,000\n99.99%\nI\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nEn general, un puntaje Q ≥ 30 se considera buena calidad. En el paso de filtrado con DADA2 usamos este umbral para decidir dónde truncar las lecturas."
+  },
+  {
+    "objectID": "0-FASTQ.html#lecturas-paired-end",
+    "href": "0-FASTQ.html#lecturas-paired-end",
+    "title": "Archivos FASTQ: estructura y organización",
+    "section": "Lecturas paired-end",
+    "text": "Lecturas paired-end\nEn secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando dos archivos por muestra:\n\n_R1_001.fastq — lectura forward (de 5’ a 3’)\n_R2_001.fastq — lectura reverse (de 3’ a 5’)\n\n\n\nCódigo\nflowchart LR\n    F[\"→ R1 (forward)\"] --&gt; A[\"Fragmento de ADN\"]\n    A --&gt; R[\"← R2 (reverse)\"]\n\n    style F fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f\n    style R fill:#fef3c7,stroke:#f59e0b,color:#78350f\n    style A fill:#f3f4f6,stroke:#6b7280,color:#1f2937\n\n\n\n\n\n\n\n\n\n\n\nLas dos lecturas se solapan en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (merge) para reconstruir la secuencia completa."
+  },
+  {
+    "objectID": "0-FASTQ.html#explorando-tus-archivos-fastq",
+    "href": "0-FASTQ.html#explorando-tus-archivos-fastq",
+    "title": "Archivos FASTQ: estructura y organización",
+    "section": "Explorando tus archivos FASTQ",
+    "text": "Explorando tus archivos FASTQ\nPara ver los primeros reads de un archivo:\nhead -8 ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq\nEsto muestra las primeras 2 lecturas (4 líneas cada una).\nPara contar el número de lecturas en un archivo:\necho $(( $(wc -l &lt; ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq) / 4 ))\nPara ver cuántos archivos FASTQ tienes:\nls ~/metabarcoding-code/raw_fastqs/*.fastq | wc -l"
+  },
+  {
+    "objectID": "0-FASTQ.html#organización-de-los-archivos-en-el-curso",
+    "href": "0-FASTQ.html#organización-de-los-archivos-en-el-curso",
+    "title": "Archivos FASTQ: estructura y organización",
+    "section": "Organización de los archivos en el curso",
+    "text": "Organización de los archivos en el curso\nLos archivos FASTQ del curso siguen una convención de nombres que permite al pipeline identificar automáticamente el locus, la muestra y la dirección de lectura. Esta convención se describe en detalle en la sección de Preparación del entorno.\nCada muestra tiene un par de archivos (R1 y R2) en la carpeta raw_fastqs/:\nraw_fastqs/\n├── 12S-GC-001-d1_1_S1_L001_R1_001.fastq\n├── 12S-GC-001-d1_1_S1_L001_R2_001.fastq\n├── 12S-GC-002-d1_1_S2_L001_R1_001.fastq\n├── 12S-GC-002-d1_1_S2_L001_R2_001.fastq\n└── ...\n\n\n\n\n\n\nImportante\n\n\n\nAntes de continuar, verifica que:\n\nTus archivos FASTQ están en ~/metabarcoding-code/raw_fastqs/\nCada muestra tiene un par de archivos (R1 y R2)\nLos nombres siguen la convención descrita en Preparación del entorno"
   },
   {
     "objectID": "0-Zoom.html",
