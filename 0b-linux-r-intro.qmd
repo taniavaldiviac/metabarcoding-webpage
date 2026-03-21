@@ -301,51 +301,264 @@ Si olvidas activar el entorno, los comandos como `cutadapt` o `fastqc` no serán
 
 ## Parte 2 — Introducción a R
 
+*Basado en material de Miguel Martinez Mercado (marmigues@gmail.com)*
+
 ### ¿Por qué usamos R en metabarcoding?
 
 R tiene los paquetes especializados que usamos en el curso: `dada2`, `phyloseq`, `vegan`, `ggplot2`. Además, los scripts en R son reproducibles y documentables con Quarto o R Markdown.
 
+Características de R:
+
+* R es un lenguaje de cómputo con gran poder estadístico y gráfico
+* Software libre
+* Curva de aprendizaje pronunciada
+* R es sensible a mayúsculas/minúsculas
+
 ---
 
-### Conceptos básicos
+### Uso general
+
+Iniciar R desde la terminal:
 
 ```{r eval=FALSE}
-# Variables
-x <- 10
-nombre <- "muestra1"
+# Desde la terminal de Linux, escribe:
+# R
 
-# Vectores
-muestras <- c("M1", "M2", "M3")
-lecturas <- c(15000, 22000, 8500)
+# El programa inicia con un mensaje de bienvenida.
+# El prompt de R es: >
+# Para salir de R:
+q()
+```
 
-# Acceder a elementos
-muestras[1]        # primer elemento
-lecturas[lecturas > 10000]  # filtrar por condición
+Al escribir código, uno o varios `#` al inicio de una línea hacen que R ignore el texto que le sigue. Usamos `#` para escribir comentarios y describir el código.
 
-# Operaciones básicas
-mean(lecturas)
-sum(lecturas)
-length(muestras)
+---
+
+### R como calculadora
+
+```{r eval=FALSE}
+# Sumar
+1 + 1
+#> [1] 2
+
+# Otras operaciones:
+# restar '-'
+# multiplicar '*'
+# dividir '/'
+```
+
+Cuando tecleamos un comando incompleto, el prompt cambia de `>` a `+`. No hay de qué preocuparse: podemos completar el comando o cancelarlo con `Esc` o `Ctrl + C`.
+
+R mantiene un historial de los comandos. Podemos acceder al historial con las flechas del cursor arriba y abajo.
+
+Para pedir ayuda sobre las funciones:
+
+```{r eval=FALSE}
+help(max)
+?max
 ```
 
 ---
 
-### Funciones y paquetes
+### Paquetes y librerías
+
+Cada función está en un paquete. Hay paquetes básicos que se instalan por default y paquetes especializados que el usuario instala.
 
 ```{r eval=FALSE}
-# Una función toma argumentos y devuelve un resultado
-resultado <- sum(c(1, 2, 3))
+# Cargar un paquete para usar sus funciones
+library(stats)
+mean(c(1, 3, 5))
 
-# Instalar paquetes (solo una vez)
+# Podemos usar una función SIN cargar el paquete
+stats::sd(c(1, 3, 5))
+```
+
+En bioinformática existe el proyecto [Bioconductor](https://www.bioconductor.org/) que desarrolla y comparte software de acceso libre para análisis de datos biológicos.
+
+```{r eval=FALSE}
+# Instalar paquetes de CRAN (solo una vez)
 install.packages("tidyverse")
+
+# Instalar paquetes de Bioconductor
+BiocManager::install("dada2")
 
 # Cargar paquetes (cada sesión)
 library(tidyverse)
-
-# Ver ayuda de una función
-?mean
-help("filter")
 ```
+
+---
+
+### Variables y vectores
+
+Las variables se asignan con el operador `<-`:
+
+```{r eval=FALSE}
+x <- 2
+y <- 3
+x + y
+#> [1] 5
+```
+
+Los vectores solo pueden contener un tipo de dato:
+
+```{r eval=FALSE}
+# Numérico
+z <- c(2, 4, 6)
+class(z)
+
+# Caracteres
+h <- c("Hola", "mundo")
+
+# Lógico
+b <- c(TRUE, FALSE, T, F)
+
+# Longitud de un vector
+length(z)
+#> [1] 3
+
+# Enlistar variables del espacio de trabajo
+ls()
+
+# Eliminar variables
+rm(x)
+```
+
+Recomendaciones para nombrar variables:
+
+- Usar nombres que reflejen el contenido de la variable
+- Se pueden separar palabras con `.` o con `_`
+- No usar caracteres especiales
+
+---
+
+### Comparaciones y operadores lógicos
+
+```{r eval=FALSE}
+a <- 3
+
+a == pi   # igualdad → FALSE
+a != pi   # desigualdad → TRUE
+a < pi    # menor que → TRUE
+a > pi    # mayor que → FALSE
+a <= pi   # menor o igual → TRUE
+a >= pi   # mayor o igual → FALSE
+```
+
+---
+
+### Seleccionar elementos de un vector
+
+```{r eval=FALSE}
+L <- c("A", "B", "C", "D", "E")
+
+# Usar corchetes para indexar
+L[3]
+#> "C"
+
+L[1:3]
+#> "A" "B" "C"
+
+L[c(1, 3, 5)]
+#> "A" "C" "E"
+
+# Selección por condición
+z <- c(2, 4, 6)
+z > 3
+#> FALSE  TRUE  TRUE
+
+z[z > 3]
+#> 4  6
+```
+
+---
+
+### Funciones
+
+```{r eval=FALSE}
+# Una función para calcular el promedio
+prom <- function(x) sum(x) / length(x)
+
+prom(c(2, 4, 4, 6))
+#> 4
+
+# Funciones más elaboradas se contienen entre llaves
+prom.long <- function(x) {
+  j <- sum(x)
+  k <- length(x)
+  p <- j / k
+  return(p)
+}
+
+prom.long(c(2, 4, 4, 6))
+#> 4
+```
+
+---
+
+### Directorio de trabajo
+
+```{r eval=FALSE}
+# Obtener el directorio de trabajo
+getwd()
+
+# Definir el directorio de trabajo
+mypath <- "/Ruta/al/directorio/de/interes"
+setwd(mypath)
+
+# Enlistar archivos en directorio de trabajo
+list.files()
+
+# Definir la ruta de un archivo en partes
+file.path(mypath, "mis_datos.csv")
+```
+
+---
+
+### Matrices y data.frames
+
+**Matrices:**
+
+```{r eval=FALSE}
+m1 <- matrix(nrow = 4, ncol = 2)
+dim(m1)
+nrow(m1)
+ncol(m1)
+
+m1[, 1] <- c(1, 3, 5, 7)
+m1[, 2] <- c(2, 4, 6, 8)
+colnames(m1) <- c("Nones", "Pares")
+m1
+```
+
+**Data.frames:**
+
+```{r eval=FALSE}
+# Crear un data.frame
+df <- data.frame(
+  muestra = c("M1", "M2", "M3"),
+  lecturas = c(15000, 22000, 8500),
+  sitio = c("POR", "BSS", "GC")
+)
+
+# Acceder a columnas
+df$muestra
+df[, "lecturas"]
+
+# Filtrar filas
+df[df$lecturas > 10000, ]
+```
+
+---
+
+### Tipos de objetos más usados en DADA2
+
+| Objeto | Tipo en R | Ejemplo |
+|--------|-----------|---------|
+| Nombres de muestras | `character vector` | `c("M1", "M2")` |
+| Rutas de archivos | `character vector` | `list.files(...)` |
+| Tabla de lecturas | `matrix` | `out` de `filterAndTrim()` |
+| Tabla de ASVs | `matrix` | `seqtab` |
+| Taxonomía | `data.frame` | `tax_df` |
 
 ---
 
@@ -375,18 +588,6 @@ fastq_location <- file.path(proj_root, "for_dada2")
 
 ---
 
-### Tipos de objetos más usados en DADA2
-
-| Objeto | Tipo en R | Ejemplo |
-|--------|-----------|---------|
-| Nombres de muestras | `character vector` | `c("M1", "M2")` |
-| Rutas de archivos | `character vector` | `list.files(...)` |
-| Tabla de lecturas | `matrix` | `out` de `filterAndTrim()` |
-| Tabla de ASVs | `matrix` | `seqtab` |
-| Taxonomía | `data.frame` | `tax_df` |
-
----
-
 ### Buenas prácticas para proyectos bioinformáticos
 
 Una estructura de carpetas consistente ahorra tiempo y evita errores:
@@ -409,6 +610,14 @@ metabarcoding-code/
 - Usar guiones bajos `_` en lugar de espacios
 - Numerar scripts en orden: `01-fastqc.sh`, `02b-cutadapt.sh`, `03-dada2-pipeline.R`
 - Incluir fecha o `run_name` en los archivos de salida para no sobreescribir
+
+---
+
+### Literatura recomendada
+
+* Introduction to R. William Venables (Network Theory Limited)
+* R in a Nutshell. Joseph Adler (O'Reilly)
+* ggplot2: Elegant Graphics for Data Analysis. Hadley Wickham (Springer)
 
 ---
 
