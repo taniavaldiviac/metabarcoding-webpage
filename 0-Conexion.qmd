@@ -5,6 +5,8 @@ execute:
   warning: false
 ---
 
+Consulta tus credenciales de acceso en la [hoja de participantes](https://docs.google.com/spreadsheets/d/1vBtzDH8RmsHje68rQGRrrKhKrLuYh0ewelPEGXlpfQc/edit?gid=0#gid=0).
+
 ## 1. Conéctate a la VPN
 
 Antes de conectarte al servidor necesitas activar la VPN con el cliente **Hillstone Secure Connect**:
