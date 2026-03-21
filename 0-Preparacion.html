@@ -195,16 +195,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="estructura-del-repositorio" class="level2">
 <h2 class="anchored" data-anchor-id="estructura-del-repositorio">Estructura del repositorio</h2>
 <pre><code>metabarcoding-code/
-├── scripts/             # Scripts numerados en orden de ejecución (bash, R, Quarto)
-├── raw_fastqs/          # Archivos FASTQ originales (no modificar)
-├── for_dada2/           # FASTQs recortados con cutadapt, listos para DADA2
-│   └── filtered/        # FASTQs filtrados por DADA2
-├── cutadapt_reports/    # Reportes del preprocesamiento con Cutadapt
-├── final_data/
-│   ├── csv_output/      # Tablas de ASVs y taxonomía
-│   ├── rdata_output/    # Checkpoints .RData
-│   └── logs/            # sessionInfo, errores, gráficas
-└── metadata/            # Archivos de configuración (primers, metadatos, BD taxonómica)</code></pre>
+├── scripts/             # Scripts numerados en orden de ejecución
+├── metadata/            # Archivos de configuración (primers, metadatos, listado de especies)
+├── raw_fastqs/          # Datos crudos — se copian durante el curso
+├── for_dada2/           # FASTQs recortados con Cutadapt (se genera al correr el pipeline)
+├── cutadapt_reports/    # Reportes de Cutadapt (se genera al correr el pipeline)
+├── final_data/          # Resultados del análisis (se genera al correr el pipeline)
+└── environment.yml      # Definición del ambiente conda</code></pre>
 <p>Para explorar el contenido del repositorio:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> ~/metabarcoding-code/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Y para ver los archivos FASTQ disponibles:</p>
@@ -914,126 +911,123 @@ Tip
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="in">metabarcoding-code/</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="in">├── scripts/             # Scripts numerados en orden de ejecución (bash, R, Quarto)</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="in">├── raw_fastqs/          # Archivos FASTQ originales (no modificar)</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="in">├── for_dada2/           # FASTQs recortados con cutadapt, listos para DADA2</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── filtered/        # FASTQs filtrados por DADA2</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="in">├── cutadapt_reports/    # Reportes del preprocesamiento con Cutadapt</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="in">├── final_data/</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── csv_output/      # Tablas de ASVs y taxonomía</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── rdata_output/    # Checkpoints .RData</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── logs/            # sessionInfo, errores, gráficas</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="in">└── metadata/            # Archivos de configuración (primers, metadatos, BD taxonómica)</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>Para explorar el contenido del repositorio:</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> ~/metabarcoding-code/</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>Y para ver los archivos FASTQ disponibles:</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/metabarcoding-code/raw_fastqs/</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Nomenclatura de los archivos FASTQ</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.</span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="fu">### Formato esperado</span></span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a><span class="in">{locus_shorthand}-{sample_id}-{dilution}_{replicate}_{site}_{sequencing_lane}_R{1|2}_001.fastq</span></span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>**Ejemplo real de este curso:**</span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="in">├── scripts/             # Scripts numerados en orden de ejecución</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="in">├── metadata/            # Archivos de configuración (primers, metadatos, listado de especies)</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="in">├── raw_fastqs/          # Datos crudos — se copian durante el curso</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="in">├── for_dada2/           # FASTQs recortados con Cutadapt (se genera al correr el pipeline)</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="in">├── cutadapt_reports/    # Reportes de Cutadapt (se genera al correr el pipeline)</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="in">├── final_data/          # Resultados del análisis (se genera al correr el pipeline)</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="in">└── environment.yml      # Definición del ambiente conda</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>Para explorar el contenido del repositorio:</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> ~/metabarcoding-code/</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>Y para ver los archivos FASTQ disponibles:</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/metabarcoding-code/raw_fastqs/</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Nomenclatura de los archivos FASTQ</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>El pipeline identifica qué archivos procesar a partir del nombre de los FASTQs. Es fundamental seguir la convención de nomenclatura correcta para que el script pueda emparejar cada muestra con su metadata.</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="fu">### Formato esperado</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="in">{locus_shorthand}-{sample_id}-{dilution}_{replicate}_{site}_{sequencing_lane}_R{1|2}_001.fastq</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>**Ejemplo real de este curso:**</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a><span class="in">12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward</span></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a><span class="in">12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse</span></span>
 <span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a><span class="in">12S-GC-001-d1_1_S1_L001_R1_001.fastq   ← lectura forward</span></span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="in">12S-GC-001-d1_1_S1_L001_R2_001.fastq   ← lectura reverse</span></span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="fu">### Descripción de cada campo</span></span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Campo <span class="pp">|</span> Ejemplo <span class="pp">|</span> Descripción <span class="pp">|</span></span>
-<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="pp">|:------|:--------|:------------|</span></span>
-<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{locus_shorthand}`</span> <span class="pp">|</span> <span class="in">`12S`</span> <span class="pp">|</span> Columna <span class="in">`locus_shorthand`</span> en <span class="in">`primer_data.csv`</span> — debe coincidir exactamente <span class="pp">|</span></span>
-<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sample_id}`</span> <span class="pp">|</span> <span class="in">`GC-001`</span> <span class="pp">|</span> Columna <span class="in">`sample_id`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
-<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{dilution}`</span> <span class="pp">|</span> <span class="in">`d1`</span> <span class="pp">|</span> Columna <span class="in">`dilution`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
-<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{replicate}`</span> <span class="pp">|</span> <span class="in">`1`</span> <span class="pp">|</span> Columna <span class="in">`replicate`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
-<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{site}`</span> <span class="pp">|</span> <span class="in">`S1`</span> <span class="pp">|</span> Columna <span class="in">`site`</span> en <span class="in">`metadata.csv`</span> — número de muestra del MiSeq <span class="pp">|</span></span>
-<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sequencing_lane}`</span> <span class="pp">|</span> <span class="in">`L001`</span> <span class="pp">|</span> Columna <span class="in">`sequencing_lane`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
-<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`R{1\|2}`</span> <span class="pp">|</span> <span class="in">`R1`</span> / <span class="in">`R2`</span> <span class="pp">|</span> Dirección de la lectura (forward / reverse) <span class="pp">|</span></span>
-<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`_001.fastq`</span> <span class="pp">|</span> — <span class="pp">|</span> Sufijo estándar de Illumina <span class="pp">|</span></span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="fu">### Descripción de cada campo</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Campo <span class="pp">|</span> Ejemplo <span class="pp">|</span> Descripción <span class="pp">|</span></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="pp">|:------|:--------|:------------|</span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{locus_shorthand}`</span> <span class="pp">|</span> <span class="in">`12S`</span> <span class="pp">|</span> Columna <span class="in">`locus_shorthand`</span> en <span class="in">`primer_data.csv`</span> — debe coincidir exactamente <span class="pp">|</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sample_id}`</span> <span class="pp">|</span> <span class="in">`GC-001`</span> <span class="pp">|</span> Columna <span class="in">`sample_id`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{dilution}`</span> <span class="pp">|</span> <span class="in">`d1`</span> <span class="pp">|</span> Columna <span class="in">`dilution`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{replicate}`</span> <span class="pp">|</span> <span class="in">`1`</span> <span class="pp">|</span> Columna <span class="in">`replicate`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{site}`</span> <span class="pp">|</span> <span class="in">`S1`</span> <span class="pp">|</span> Columna <span class="in">`site`</span> en <span class="in">`metadata.csv`</span> — número de muestra del MiSeq <span class="pp">|</span></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`{sequencing_lane}`</span> <span class="pp">|</span> <span class="in">`L001`</span> <span class="pp">|</span> Columna <span class="in">`sequencing_lane`</span> en <span class="in">`metadata.csv`</span> <span class="pp">|</span></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`R{1\|2}`</span> <span class="pp">|</span> <span class="in">`R1`</span> / <span class="in">`R2`</span> <span class="pp">|</span> Dirección de la lectura (forward / reverse) <span class="pp">|</span></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`_001.fastq`</span> <span class="pp">|</span> — <span class="pp">|</span> Sufijo estándar de Illumina <span class="pp">|</span></span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning icon="false"}</span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>**Errores comunes:**</span>
 <span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning icon="false"}</span>
-<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>**Errores comunes:**</span>
-<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`locus_shorthand`</span> en el nombre del archivo no coincide con el de <span class="in">`primer_data.csv`</span> → el script no encontrará ningún archivo</span>
-<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`sample_id`</span> no existe en <span class="in">`metadata.csv`</span> → la muestra no tendrá metadatos en el análisis final</span>
-<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Archivos con extensión <span class="in">`.fastq.gz`</span> en lugar de <span class="in">`.fastq`</span> → verifica si necesitas descomprimirlos primero con <span class="in">`gunzip`</span></span>
-<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Archivo `metadata.csv` — Información de las muestras</span></span>
-<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>Este archivo conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq* en la etapa de análisis.</span>
-<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> ~/metabarcoding-code/metadata/metadata.csv</span>
-<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Columna <span class="pp">|</span> Qué contiene <span class="pp">|</span></span>
-<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|:--------|:-------------|</span></span>
-<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sample_id`</span> <span class="pp">|</span> Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ <span class="pp">|</span></span>
-<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`site_id`</span> <span class="pp">|</span> Código del sitio de muestreo (ej. <span class="in">`POR`</span>, <span class="in">`BSS`</span>) <span class="pp">|</span></span>
-<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`name`</span> <span class="pp">|</span> Nombre completo del sitio <span class="pp">|</span></span>
-<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`date`</span> <span class="pp">|</span> Fecha de colecta <span class="pp">|</span></span>
-<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`lat`</span> / <span class="in">`lon`</span> <span class="pp">|</span> Coordenadas geográficas <span class="pp">|</span></span>
-<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`region`</span> <span class="pp">|</span> Región geográfica del estudio <span class="pp">|</span></span>
-<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`locus_shorthand`</span> <span class="pp">|</span> Marcador al que corresponde la muestra <span class="pp">|</span></span>
-<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sequencing_lane`</span> <span class="pp">|</span> Carril de secuenciación (para estudios multi-lane) <span class="pp">|</span></span>
-<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`replicate`</span> <span class="pp">|</span> Número de réplica técnica (1, 2, 3…) <span class="pp">|</span></span>
-<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`filename_base`</span> <span class="pp">|</span> Nombre del archivo tal como lo entrega el secuenciador — se llena manualmente <span class="pp">|</span></span>
-<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`rename_to`</span> <span class="pp">|</span> Nombre generado automáticamente al que se renombrará el archivo para entrar al pipeline (ej. <span class="in">`12S-GC-001-d1_1_S1_L001`</span>) <span class="pp">|</span></span>
-<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Archivo `primer_data.csv` — Configuración del locus</span></span>
-<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a>Este archivo define los parámetros del marcador genético que se va a analizar. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice <span class="in">`i`</span> al inicio del script.</span>
-<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
-<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/metabarcoding-code/metadata/primer_data.csv</span>
-<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Columna <span class="pp">|</span> Qué contiene <span class="pp">|</span></span>
-<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a><span class="pp">|:--------|:-------------|</span></span>
-<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`locus_shorthand`</span> <span class="pp">|</span> Identificador corto del marcador (ej. <span class="in">`12S`</span>) — se usa para filtrar los archivos FASTQ y nombrar los outputs <span class="pp">|</span></span>
-<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`seq_f`</span> / <span class="in">`seq_r`</span> <span class="pp">|</span> Secuencia completa de los primers forward y reverse <span class="pp">|</span></span>
-<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`F_qual`</span> / <span class="in">`R_qual`</span> <span class="pp">|</span> Longitud del primer usada por Cutadapt para el recorte <span class="pp">|</span></span>
-<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`amplicon_length`</span> <span class="pp">|</span> Longitud esperada del amplicón (bp) <span class="pp">|</span></span>
-<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`max_trim`</span> <span class="pp">|</span> Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R <span class="pp">|</span></span>
-<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`overlap`</span> <span class="pp">|</span> Solapamiento mínimo requerido entre lecturas F y R para el merge <span class="pp">|</span></span>
-<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`db_name`</span> <span class="pp">|</span> Nombre del archivo FASTA de la base de datos taxonómica en <span class="in">`metadata/`</span> <span class="pp">|</span></span>
-<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
-<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a>**En el script**, el locus a analizar se selecciona con <span class="in">`i &lt;- 1`</span> (primera fila). Si tienes múltiples marcadores, cambia el valor de <span class="in">`i`</span> para procesar el locus correspondiente.</span>
-<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-128"><a href="#cb8-128" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb8-129"><a href="#cb8-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
-<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
-<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usa siempre <span class="in">`~/metabarcoding-code`</span> como tu directorio de proyecto.</span>
-<span id="cb8-133"><a href="#cb8-133" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.</span>
-<span id="cb8-134"><a href="#cb8-134" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Activa <span class="in">`conda activate metabarcoding`</span> solo para los pasos de QC y Cutadapt.</span>
-<span id="cb8-135"><a href="#cb8-135" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`locus_shorthand`</span> en el nombre del archivo no coincide con el de <span class="in">`primer_data.csv`</span> → el script no encontrará ningún archivo</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El <span class="in">`sample_id`</span> no existe en <span class="in">`metadata.csv`</span> → la muestra no tendrá metadatos en el análisis final</span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Archivos con extensión <span class="in">`.fastq.gz`</span> en lugar de <span class="in">`.fastq`</span> → verifica si necesitas descomprimirlos primero con <span class="in">`gunzip`</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Archivo `metadata.csv` — Información de las muestras</span></span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>Este archivo conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq* en la etapa de análisis.</span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> ~/metabarcoding-code/metadata/metadata.csv</span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Columna <span class="pp">|</span> Qué contiene <span class="pp">|</span></span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a><span class="pp">|:--------|:-------------|</span></span>
+<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sample_id`</span> <span class="pp">|</span> Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ <span class="pp">|</span></span>
+<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`site_id`</span> <span class="pp">|</span> Código del sitio de muestreo (ej. <span class="in">`POR`</span>, <span class="in">`BSS`</span>) <span class="pp">|</span></span>
+<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`name`</span> <span class="pp">|</span> Nombre completo del sitio <span class="pp">|</span></span>
+<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`date`</span> <span class="pp">|</span> Fecha de colecta <span class="pp">|</span></span>
+<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`lat`</span> / <span class="in">`lon`</span> <span class="pp">|</span> Coordenadas geográficas <span class="pp">|</span></span>
+<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`region`</span> <span class="pp">|</span> Región geográfica del estudio <span class="pp">|</span></span>
+<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`locus_shorthand`</span> <span class="pp">|</span> Marcador al que corresponde la muestra <span class="pp">|</span></span>
+<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sequencing_lane`</span> <span class="pp">|</span> Carril de secuenciación (para estudios multi-lane) <span class="pp">|</span></span>
+<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`replicate`</span> <span class="pp">|</span> Número de réplica técnica (1, 2, 3…) <span class="pp">|</span></span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`filename_base`</span> <span class="pp">|</span> Nombre del archivo tal como lo entrega el secuenciador — se llena manualmente <span class="pp">|</span></span>
+<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`rename_to`</span> <span class="pp">|</span> Nombre generado automáticamente al que se renombrará el archivo para entrar al pipeline (ej. <span class="in">`12S-GC-001-d1_1_S1_L001`</span>) <span class="pp">|</span></span>
+<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Archivo `primer_data.csv` — Configuración del locus</span></span>
+<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a>Este archivo define los parámetros del marcador genético que se va a analizar. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice <span class="in">`i`</span> al inicio del script.</span>
+<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a><span class="in">``` sh</span></span>
+<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/metabarcoding-code/metadata/primer_data.csv</span>
+<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Columna <span class="pp">|</span> Qué contiene <span class="pp">|</span></span>
+<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a><span class="pp">|:--------|:-------------|</span></span>
+<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`locus_shorthand`</span> <span class="pp">|</span> Identificador corto del marcador (ej. <span class="in">`12S`</span>) — se usa para filtrar los archivos FASTQ y nombrar los outputs <span class="pp">|</span></span>
+<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`seq_f`</span> / <span class="in">`seq_r`</span> <span class="pp">|</span> Secuencia completa de los primers forward y reverse <span class="pp">|</span></span>
+<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`F_qual`</span> / <span class="in">`R_qual`</span> <span class="pp">|</span> Longitud del primer usada por Cutadapt para el recorte <span class="pp">|</span></span>
+<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`amplicon_length`</span> <span class="pp">|</span> Longitud esperada del amplicón (bp) <span class="pp">|</span></span>
+<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`max_trim`</span> <span class="pp">|</span> Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R <span class="pp">|</span></span>
+<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`overlap`</span> <span class="pp">|</span> Solapamiento mínimo requerido entre lecturas F y R para el merge <span class="pp">|</span></span>
+<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`db_name`</span> <span class="pp">|</span> Nombre del archivo FASTA de la base de datos taxonómica en <span class="in">`metadata/`</span> <span class="pp">|</span></span>
+<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip icon="false"}</span>
+<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a>**En el script**, el locus a analizar se selecciona con <span class="in">`i &lt;- 1`</span> (primera fila). Si tienes múltiples marcadores, cambia el valor de <span class="in">`i`</span> para procesar el locus correspondiente.</span>
+<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a>:::{.callout-note}</span>
+<span id="cb8-128"><a href="#cb8-128" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recuerda</span></span>
+<span id="cb8-129"><a href="#cb8-129" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usa siempre <span class="in">`~/metabarcoding-code`</span> como tu directorio de proyecto.</span>
+<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los paquetes de R están disponibles automáticamente — no necesitas instalar nada.</span>
+<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Activa <span class="in">`conda activate metabarcoding`</span> solo para los pasos de QC y Cutadapt.</span>
+<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
