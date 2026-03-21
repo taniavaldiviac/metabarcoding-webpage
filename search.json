@@ -501,14 +501,14 @@
     "href": "0-Conexion.html",
     "title": "Conexión al servidor",
     "section": "",
-    "text": "Antes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
+    "text": "Consulta tus credenciales de acceso en la hoja de participantes."
   },
   {
     "objectID": "0-Conexion.html#conéctate-a-la-vpn",
     "href": "0-Conexion.html#conéctate-a-la-vpn",
     "title": "Conexión al servidor",
-    "section": "",
-    "text": "Antes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
+    "section": "1. Conéctate a la VPN",
+    "text": "1. Conéctate a la VPN\nAntes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor"
   },
   {
     "objectID": "0-Conexion.html#conéctate-al-servidor-por-ssh",
