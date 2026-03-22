@@ -12,7 +12,6 @@ Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo 
 - **dada2**: el motor del pipeline — infiere ASVs, filtra lecturas, modela errores y asigna taxonomía
 - **tidyverse**: manipulación y visualización de datos (incluye `dplyr`, `ggplot2`, `readr`, etc.)
 - **ShortRead**: lectura y control de calidad de archivos FASTQ
-- **here**: manejo de rutas relativas al proyecto, independiente de dónde ejecutes el script
 - **seqinr** y **digest**: utilidades para trabajar con secuencias FASTA y generar identificadores únicos (hashes) para las ASVs
 
 ```{r eval=FALSE}
@@ -21,7 +20,6 @@ library(tidyverse, quietly = TRUE)
 library(seqinr)
 library(ShortRead)
 library(digest)
-library(here)
 library(fs)
 library(readr)
 
@@ -34,15 +32,14 @@ Si no hay errores, todas las librerías están disponibles en el servidor.
 
 ## Definir rutas y parámetros
 
-Definimos las rutas principales del proyecto. Usamos `here::here()` para que el script funcione sin importar desde qué directorio se ejecute — detecta automáticamente la raíz del proyecto (donde está el `.Rproj`).
+Definimos las rutas principales del proyecto. Todas son relativas a `~/metabarcoding-code/`, que es el directorio de trabajo.
 
 ```{r eval=FALSE}
-proj_root <- here::here()
-setwd(proj_root)
+setwd("~/metabarcoding-code")
 
-fastq_location    <- file.path(proj_root, "for_dada2")
-output_location   <- file.path(proj_root, "final_data")
-metadata_location <- file.path(proj_root, "metadata")
+fastq_location    <- "for_dada2"
+output_location   <- "final_data"
+metadata_location <- "metadata"
 primer_csv        <- file.path(metadata_location, "primer_data.csv")
 
 i        <- 1          # fila de primer_data.csv a procesar
