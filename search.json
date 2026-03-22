@@ -198,37 +198,37 @@
   {
     "objectID": "2-dada2QAQC.html",
     "href": "2-dada2QAQC.html",
-    "title": "Dada2 - Introducción",
+    "title": "Introducción al pipeline DADA2",
     "section": "",
-    "text": "Este script implementa un pipeline completo y reproducible para el análisis de datos de metabarcoding de ADN ambiental (eDNA) utilizando el paquete dada2 en R. El objetivo es transformar lecturas crudas de secuenciación de alto rendimiento en una tabla de variantes de secuencias amplificadas (ASVs) con asignación taxonómica."
+    "text": "DADA2 es un paquete de R que transforma lecturas crudas de secuenciación en una tabla de variantes de secuencias de amplicón (ASVs) con asignación taxonómica. A diferencia de los métodos tradicionales basados en OTUs (agrupamiento por similitud al 97%), DADA2 resuelve secuencias a resolución de nucleótido único, distinguiendo variantes biológicas reales de errores de secuenciación."
   },
   {
-    "objectID": "2-dada2QAQC.html#qué-hace-este-pipeline",
-    "href": "2-dada2QAQC.html#qué-hace-este-pipeline",
-    "title": "Dada2 - Introducción",
+    "objectID": "2-dada2QAQC.html#qué-es-dada2",
+    "href": "2-dada2QAQC.html#qué-es-dada2",
+    "title": "Introducción al pipeline DADA2",
     "section": "",
-    "text": "Este script implementa un pipeline completo y reproducible para el análisis de datos de metabarcoding de ADN ambiental (eDNA) utilizando el paquete dada2 en R. El objetivo es transformar lecturas crudas de secuenciación de alto rendimiento en una tabla de variantes de secuencias amplificadas (ASVs) con asignación taxonómica."
+    "text": "DADA2 es un paquete de R que transforma lecturas crudas de secuenciación en una tabla de variantes de secuencias de amplicón (ASVs) con asignación taxonómica. A diferencia de los métodos tradicionales basados en OTUs (agrupamiento por similitud al 97%), DADA2 resuelve secuencias a resolución de nucleótido único, distinguiendo variantes biológicas reales de errores de secuenciación."
   },
   {
-    "objectID": "2-dada2QAQC.html#flujo-de-trabajo-paso-a-paso",
-    "href": "2-dada2QAQC.html#flujo-de-trabajo-paso-a-paso",
-    "title": "Dada2 - Introducción",
-    "section": "Flujo de trabajo paso a paso",
-    "text": "Flujo de trabajo paso a paso\n\n1. Configuración del ambiente reproducible\n\nEstablece rutas de trabajo usando here() para independencia de la ubicación\nCarga las librerías necesarias (dada2, tidyverse, ShortRead, etc.)\nLee parámetros específicos por marcador molecular desde metadata/primer_data.csv\nGuarda información de sesión (sessionInfo()) para reproducibilidad\n\n\n\n2. Control de calidad inicial\n\nLee archivos FASTQ pareados (R1 y R2) filtrados por marcador (for_dada2)\nGenera perfiles de calidad por posición/ciclo para cada muestra\nCalcula automáticamente puntos de truncamiento basados en:\n\nCalidad promedio en ventanas deslizantes (sliding-window)\nUmbrales de calidad específicos por marcador (F_qual, R_qual)\n\nVisualiza distribución de longitudes de lecturas crudas\n\n\n\n3. Filtrado y trimming (filterAndTrim)\n\nElimina lecturas con baja calidad (maxEE = 2)\nTrunca lecturas según los puntos calculados en el paso anterior\nRemueve secuencias con bases ambiguas (N) y contaminación PhiX\nGenera archivos FASTQ filtrados en subdirectorio filtered/\n\n\n\n4. Dereplicación\n\nIdentifica secuencias únicas en cada muestra\nReduce redundancia manteniendo información de abundancia\nOptimiza recursos computacionales para pasos posteriores\n\n\n\n5. Modelado de errores de secuenciación\n\nAprende tasas de error específicas para lecturas Forward y Reverse\nUsa más de 100 millones de bases y hasta 25 iteraciones para convergencia\nGuarda gráficos de tasas de error observadas vs. esperadas\n\n\n\n6. Inferencia de ASVs (denoising)\n\nAplica algoritmo de dada2 para corregir errores de secuenciación\nDistingue variantes biológicas reales de errores técnicos\nResuelve secuencias a resolución de nucleótido único\n\n\n\n7. Unión de pares (merging)\n\nEnsambla lecturas Forward y Reverse usando región de solapamiento\nRequiere mínimo 12 bp de overlap\nReconstruye amplicón completo\n\n\n\n8. Construcción de tabla ASV\n\nCrea matriz de abundancias (muestras × ASVs)\nCada columna = secuencia única biológica real\n\n\n\n9. Eliminación de quimeras\n\nDetecta y remueve artefactos de PCR (secuencias quiméricas)\nMétodo “consensus” compara con ASVs parentales más abundantes\nReporta proporción de lecturas no quiméricas\n\n\n\n10. Filtrado por longitud\n\nDefine rango aceptable: mediana ± desviación estándar\nGenera histogramas antes/después del filtro con líneas de referencia\nGuarda ASVs filtradas en archivos de log\n\n\n\n11. Asignación taxonómica\n\nUsa base de datos específica por marcador (definida en primer_data.csv)\nAlgoritmo naive Bayesian classifier (RDP)\nPrueba cadena reverso-complementaria automáticamente\nGenera valores de bootstrap (confianza) por rango taxonómico\nCalcula % de secuencias no asignadas por nivel\n\n\n\n12. Seguimiento de lecturas (tracking)\n\nTabla con número de lecturas retenidas en cada paso:\n\nInput → Filtered → Denoised F/R → Merged → No-chimeras → Length filter\n\nPermite identificar dónde se pierden más lecturas\n\n\n\n13. Generación de outputs finales\nCSV generados:\n\nASV_table.csv: tabla de abundancias en formato largo (Sample_name, Label, Sequence, nReads)\ntaxonomy_output.csv: asignación taxonómica por ASV (Kingdom → Species)\ntax_bootstrap.csv: valores de confianza por nivel taxonómico\nfiltered_out_asv.csv: ASVs removidas por filtro de longitud\n\nGráficos (PNG a 300 DPI):\n\nPerfiles de calidad Forward/Reverse\nDistribución de longitudes crudas\nDistribución de longitudes de ASVs (pre y post-filtrado)\nGráficos de tasas de error\n\nRData:\n\nphyloseq_inputs.RData: contiene objetos listos para importar en phyloseq:\n\notu_mat: matriz de abundancias (integer)\ntax_mat: matriz taxonómica\nsample_meta: metadatos de muestras\ntrack: tabla de seguimiento\nparams: parámetros usados en el análisis"
+    "objectID": "2-dada2QAQC.html#visión-general-del-flujo-de-trabajo",
+    "href": "2-dada2QAQC.html#visión-general-del-flujo-de-trabajo",
+    "title": "Introducción al pipeline DADA2",
+    "section": "Visión general del flujo de trabajo",
+    "text": "Visión general del flujo de trabajo\n\n\n\n\n\nflowchart TD\n    A[Lecturas crudas FASTQ]:::input --&gt; B[Filtrado y truncamiento]\n    B --&gt; C[Modelado de errores]\n    C --&gt; D[Inferencia de ASVs]\n    D --&gt; E[Unión de lecturas paired-end]\n    E --&gt; F[Remoción de quimeras]\n    F --&gt; G[Asignación taxonómica]\n    G --&gt; H[Tabla de ASVs + taxonomía]:::output\n\n    classDef input fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f\n    classDef output fill:#d1fae5,stroke:#10b981,color:#064e3b"
   },
   {
-    "objectID": "2-dada2QAQC.html#ventajas-de-este-pipeline",
-    "href": "2-dada2QAQC.html#ventajas-de-este-pipeline",
-    "title": "Dada2 - Introducción",
-    "section": "Ventajas de este pipeline",
-    "text": "Ventajas de este pipeline\n*Reproducible: rutas relativas, parámetros documentados, sessionInfo guardado\nFlexible: procesa múltiples marcadores usando tabla de configuración ( ✅ Robusto: maneja archivos vacíos, valida inputs, protege contra errores\nTrazable: guarda logs detallados y gráficos de QC en cada paso\nListo para análisis**: outputs optimizados para phyloseq y análisis downstream"
+    "objectID": "2-dada2QAQC.html#qué-hace-cada-paso",
+    "href": "2-dada2QAQC.html#qué-hace-cada-paso",
+    "title": "Introducción al pipeline DADA2",
+    "section": "¿Qué hace cada paso?",
+    "text": "¿Qué hace cada paso?\n\n1. Filtrado y truncamiento\nElimina lecturas de baja calidad y trunca las secuencias en el punto donde la calidad decae. También remueve secuencias con bases ambiguas (N).\n\n\n2. Modelado de errores\nDADA2 aprende las tasas de error específicas de tu corrida de secuenciación. Este modelo es la base para distinguir errores técnicos de variación biológica real.\n\n\n3. Inferencia de ASVs (denoising)\nUsando el modelo de error, corrige errores de secuenciación y determina las secuencias biológicas reales presentes en cada muestra. Este es el paso central del pipeline.\n\n\n4. Unión de lecturas paired-end\nEnsambla las lecturas forward (R1) y reverse (R2) usando la región de solapamiento para reconstruir el amplicón completo.\n\n\n5. Remoción de quimeras\nDetecta y elimina secuencias quiméricas — artefactos de PCR formados por la unión de fragmentos de dos secuencias parentales diferentes.\n\n\n6. Asignación taxonómica\nAsigna identidad taxonómica (desde reino hasta especie) a cada ASV comparándola contra una base de datos de referencia."
   },
   {
-    "objectID": "2-dada2QAQC.html#para-empezar",
-    "href": "2-dada2QAQC.html#para-empezar",
-    "title": "Dada2 - Introducción",
-    "section": "Para empezar",
-    "text": "Para empezar\n\nAsegúrate de tener archivos FASTQ en for_dada2/\nCompleta metadata/primer_data.csv con parámetros de tu marcador\nCompleta metadata/metadata.csv con información de tus muestras\nAjusta i &lt;- 1 a la fila del marcador que quieres procesar\nEjecuta el script completo o por secciones"
+    "objectID": "2-dada2QAQC.html#qué-produce-el-pipeline",
+    "href": "2-dada2QAQC.html#qué-produce-el-pipeline",
+    "title": "Introducción al pipeline DADA2",
+    "section": "¿Qué produce el pipeline?",
+    "text": "¿Qué produce el pipeline?\n\n\n\n\n\n\n\nResultado\nDescripción\n\n\n\n\nTabla de ASVs\nMatriz de abundancias (muestras × secuencias únicas)\n\n\nTabla de taxonomía\nAsignación taxonómica por ASV con valores de confianza\n\n\nTabla de seguimiento\nNúmero de lecturas retenidas en cada paso del pipeline\n\n\nGráficos de diagnóstico\nPerfiles de calidad, tasas de error, distribución de longitudes\n\n\n\nEstos resultados se guardan en final_data/ y son la entrada para el análisis ecológico con phyloseq."
   },
   {
     "objectID": "2-dada2QAQC-Prep.html",
