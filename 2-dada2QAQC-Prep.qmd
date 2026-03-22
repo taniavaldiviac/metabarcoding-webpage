@@ -140,6 +140,7 @@ Antes de decidir dónde truncar, visualizamos los perfiles de calidad. Estas gr�
 Las gráficas se guardan como PNG porque en el servidor no hay pantalla gráfica:
 
 ```{r eval=FALSE}
+# Gráfica 1: Forward (primeras 6 muestras)
 png(filename = file.path(output_location, "logs",
               paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_forward.png")),
     width = 2400, height = 1600, res = 300)
@@ -148,12 +149,28 @@ plotQualityProfile(fnFs[seq_len(min(6, length(fnFs)))]) +
   ggplot2::labs(title = "Perfiles de calidad — Forward (R1)")
 dev.off()
 
+# Gráfica 2: Reverse (primeras 6 muestras)
 png(filename = file.path(output_location, "logs",
               paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_reverse.png")),
     width = 2400, height = 1600, res = 300)
 plotQualityProfile(fnRs[seq_len(min(6, length(fnRs)))]) +
   ggplot2::theme_minimal(base_size = 10) +
   ggplot2::labs(title = "Perfiles de calidad — Reverse (R2)")
+dev.off()
+
+# Gráfica 3: Muestra 1 — Forward vs Reverse lado a lado
+library(gridExtra)
+p_f <- plotQualityProfile(fnFs[1]) +
+  ggplot2::theme_minimal(base_size = 10) +
+  ggplot2::labs(title = "Muestra 1 — Forward (R1)")
+p_r <- plotQualityProfile(fnRs[1]) +
+  ggplot2::theme_minimal(base_size = 10) +
+  ggplot2::labs(title = "Muestra 1 — Reverse (R2)")
+
+png(filename = file.path(output_location, "logs",
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_paired.png")),
+    width = 2400, height = 1000, res = 300)
+gridExtra::grid.arrange(p_f, p_r, ncol = 2)
 dev.off()
 ```
 
