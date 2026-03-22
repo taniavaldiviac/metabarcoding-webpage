@@ -7,7 +7,13 @@ execute:
 
 ## Configuración del entorno
 
-Cargamos las librerías necesarias y definimos las rutas del proyecto.
+Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline. Cada una cumple un rol específico:
+
+- **dada2**: el motor del pipeline — infiere ASVs, filtra lecturas, modela errores y asigna taxonomía
+- **tidyverse**: manipulación y visualización de datos (incluye `dplyr`, `ggplot2`, `readr`, etc.)
+- **ShortRead**: lectura y control de calidad de archivos FASTQ
+- **here**: manejo de rutas relativas al proyecto, independiente de dónde ejecutes el script
+- **seqinr** y **digest**: utilidades para trabajar con secuencias FASTA y generar identificadores únicos (hashes) para las ASVs
 
 ```{r eval=FALSE}
 library(dada2, quietly = TRUE)
@@ -22,6 +28,14 @@ library(readr)
 set.seed(42)
 ```
 
+Si no hay errores, todas las librerías están disponibles en el servidor.
+
+---
+
+## Definir rutas y parámetros
+
+Definimos las rutas principales del proyecto. Usamos `here::here()` para que el script funcione sin importar desde qué directorio se ejecute — detecta automáticamente la raíz del proyecto (donde está el `.Rproj`).
+
 ```{r eval=FALSE}
 proj_root <- here::here()
 setwd(proj_root)
@@ -35,13 +49,14 @@ i        <- 1          # fila de primer_data.csv a procesar
 run_name <- format(Sys.time(), "%Y%m%d_%H%M")
 ```
 
-- `here::here()` detecta automáticamente la raíz del proyecto (donde está el `.Rproj`)
-- `i` selecciona el locus a procesar en `primer_data.csv`
-- `run_name` se usa como prefijo en todos los archivos de salida
+- **`i`** selecciona qué locus procesar. Si tienes varios marcadores (ej. 12S y COI), cambia este valor para procesar cada uno
+- **`run_name`** genera un prefijo único con la fecha y hora (ej. `20250326_1430`) para que cada corrida produzca archivos distintos y no se sobreescriban
 
 ---
 
 ## Leer parámetros del locus
+
+El pipeline lee `primer_data.csv` para obtener la configuración específica del marcador: nombre del locus, longitud máxima de truncamiento, base de datos taxonómica, etc. Esto permite procesar diferentes marcadores con el mismo script, solo cambiando el valor de `i`.
 
 ```{r eval=FALSE}
 primer_cols <- readr::read_csv(primer_csv, n_max = 0, show_col_types = FALSE) %>% names()
@@ -58,11 +73,15 @@ primer.data <- readr::read_csv(
 primer.data
 ```
 
-Verifica que la fila `i` corresponde al locus que quieres analizar.
+Verifica que la fila `i` corresponde al locus que quieres analizar. El pipeline usará `primer.data$locus_shorthand[i]`, `primer.data$db_name[i]`, etc. en todos los pasos siguientes.
 
 ---
 
 ## Localizar archivos FASTQ
+
+El script busca en `for_dada2/` todos los archivos FASTQ que contengan el nombre del locus seleccionado. Separa las lecturas forward (R1) y reverse (R2), y extrae el identificador de muestra (`sample_id`) del nombre del archivo.
+
+Por ejemplo, del archivo `12S-GC-001-d1_1_S1_L001_R1_001.fastq` extrae `GC-001` como identificador de muestra.
 
 ```{r eval=FALSE}
 fnFs <- grep(primer.data$locus_shorthand[i],
@@ -85,11 +104,13 @@ length(fnFs)
 head(sample.names)
 ```
 
-Si el número de muestras no coincide con lo esperado, revisa que los archivos estén en `for_dada2/` y que el `locus_shorthand` sea correcto.
+Deberías ver el número total de muestras y los primeros nombres. Si el número no coincide con lo esperado, revisa que los archivos estén en `for_dada2/` y que el `locus_shorthand` en `primer_data.csv` sea correcto.
 
 ---
 
 ## Preparar rutas de archivos filtrados
+
+Antes de filtrar, definimos dónde se guardarán los archivos filtrados (en `for_dada2/filtered/`) y eliminamos del análisis cualquier archivo vacío o corrupto que podría causar errores en pasos posteriores.
 
 ```{r eval=FALSE}
 filtFs <- file.path(fastq_location, "filtered", paste0(sample.names, "_F_filt.fastq"))
@@ -111,7 +132,9 @@ sample.names <- sample.names[!empty_files]
 
 ## Inspección de calidad
 
-Las gráficas se guardan como PNG porque en el servidor no hay pantalla:
+Antes de decidir dónde truncar, visualizamos los perfiles de calidad. Estas gráficas muestran cómo varía la calidad Phred (Q) a lo largo de la lectura — típicamente la calidad es alta al inicio y decae hacia el final, especialmente en las lecturas reverse (R2).
+
+Las gráficas se guardan como PNG porque en el servidor no hay pantalla gráfica:
 
 ```{r eval=FALSE}
 png(filename = file.path(output_location, "logs",
@@ -131,15 +154,22 @@ Para descargar las gráficas a tu computadora:
 scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/logs/*quality*.png ~/Downloads/
 ```
 
-- El eje Y muestra la calidad Phred (Q), el eje X la posición en la lectura
-- Busca donde la **línea verde** (mediana) cae por debajo de **Q30** — ese es el punto de truncamiento ideal
-- Las lecturas Reverse (R2) típicamente degradan más rápido que las Forward (R1)
+::: {.callout-tip icon="false"}
+**Cómo leer las gráficas:**
+
+- La **línea verde** es la mediana de calidad por posición
+- La **zona gris** muestra los cuartiles (variabilidad entre lecturas)
+- Busca dónde la mediana cae por debajo de **Q30** — ese es el punto de truncamiento ideal
+- Las lecturas R2 suelen degradar más rápido que R1; es normal que su punto de truncamiento sea menor
+:::
 
 ---
 
 ## Cálculo automático del punto de truncamiento
 
-El script calcula el punto de truncamiento usando una ventana móvil sobre la calidad mediana, limitado por `max_trim` para preservar el solapamiento F/R.
+En lugar de elegir manualmente dónde truncar, el script lo calcula automáticamente. Usa una **ventana móvil** de 10 posiciones sobre la calidad mediana: cuando la calidad promedio de la ventana cae por debajo de Q30, marca ese punto como truncamiento.
+
+El valor se limita por `max_trim` de `primer_data.csv` para garantizar que quede suficiente solapamiento entre las lecturas F y R para el merge posterior.
 
 ```{r eval=FALSE}
 n <- 500000; window_size <- 10
@@ -175,23 +205,34 @@ message("Puntos de truncamiento: F=", where_trim_all_Fs, " | R=", where_trim_all
 
 ## Filtrado y truncamiento
 
+Este es el paso central de esta sección. `filterAndTrim()` aplica varios filtros simultáneamente a cada par de lecturas (F y R):
+
+- **`truncLen`**: trunca las lecturas a la longitud especificada — elimina la cola de baja calidad
+- **`maxN = 0`**: descarta cualquier lectura que tenga bases ambiguas (N)
+- **`maxEE = c(2, 2)`**: descarta lecturas con más de 2 errores esperados — es un filtro más informativo que un umbral de calidad fijo porque considera la calidad de *todas* las bases, no solo la peor
+- **`rm.phix = TRUE`**: remueve lecturas del genoma PhiX, que Illumina usa como control interno de calidad
+
 ```{r eval=FALSE}
 out <- filterAndTrim(
   fnFs, filtFs, fnRs, filtRs,
   truncLen    = c(65, 65),   # ajustar según perfiles de calidad
-  maxN        = 0,           # elimina lecturas con Ns
-  maxEE       = c(2, 2),     # máximo 2 errores esperados por lectura
-  truncQ      = 2,           # trunca si calidad < 2
-  rm.phix     = TRUE,        # remueve contaminación PhiX
+  maxN        = 0,
+  maxEE       = c(2, 2),
+  truncQ      = 2,
+  rm.phix     = TRUE,
   compress    = TRUE,
   multithread = 4,
   matchIDs    = TRUE         # asegura pareado correcto F/R
 )
 ```
 
+Los archivos filtrados se guardan en `for_dada2/filtered/`.
+
 ---
 
 ## Verificar retención
+
+Después de filtrar, verificamos qué porcentaje de lecturas pasó los filtros. Una retención muy baja indica problemas de calidad o parámetros demasiado estrictos.
 
 ```{r eval=FALSE}
 pct_retained <- round(sum(out[,"reads.out"]) / sum(out[,"reads.in"]) * 100, 2)
@@ -206,13 +247,19 @@ head(out)
 | Retención global | Interpretación |
 |:-----------------|:---------------|
 | > 70% | Normal |
-| 50–70% | Aceptable — revisar parámetros |
-| < 50% | Bajo — relajar `maxEE` o `truncLen` |
-| < 30% en una muestra | Muestra problemática — revisar QC |
+| 50–70% | Aceptable — considerar relajar `truncLen` |
+| < 50% | Bajo — relajar `maxEE` o revisar calidad de la corrida |
+| < 30% en una muestra | Muestra problemática — revisar con FastQC |
+
+::: {.callout-warning icon="false"}
+Si la retención es muy baja en todas las muestras, lo más común es que `truncLen` sea demasiado corto. Revisa las gráficas de calidad y ajusta los valores.
+:::
 
 ---
 
 ## Guardar checkpoint
+
+El pipeline guarda un checkpoint después del filtrado. Esto permite reanudar el análisis desde este punto sin repetir el filtrado — útil si necesitas ajustar parámetros en pasos posteriores o si la sesión se interrumpe.
 
 ```{r eval=FALSE}
 save(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,

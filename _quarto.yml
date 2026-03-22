@@ -33,7 +33,7 @@ format:
     number-sections: false
     page-navigation: true
     lang: es
-    code-fold: false
+    code-fold: true
     highlight-style: github
     df-print: paged
     page-layout: full
