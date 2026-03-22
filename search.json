@@ -858,7 +858,7 @@
     "href": "sesiones.html#día-3-pipeline-dada2",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Día 3 — Pipeline DADA2",
-    "text": "Día 3 — Pipeline DADA2\n\nPreparación del entorno y filtrado de lecturas · Filter & Trim\nAprendizaje del modelo de error\nUnión de lecturas paired-end\nRemoción de quimeras\nAsignación taxonómica"
+    "text": "Día 3 — Pipeline DADA2\n\nFiltrado inicial · Filter & Trim\nAprendizaje del modelo de error\nUnión de lecturas paired-end\nRemoción de quimeras\nAsignación taxonómica"
   },
   {
     "objectID": "sesiones.html#día-4-análisis-ecológico-de-comunidades",
