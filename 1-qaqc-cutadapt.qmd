@@ -116,6 +116,12 @@ La línea roja marca 10,000 lecturas — muestras por debajo merecen revisión a
 
 ### Crear directorios y correr fastqc
 
+Primero creamos el directorio de salida. `final_data/` no existe aún en el repositorio — es donde se guardarán todos los resultados del pipeline:
+
+``` bash
+mkdir -p final_data/fastqc
+```
+
 ``` bash
 fastqc -q -t 4 -o final_data/fastqc raw_fastqs/*.fastq
 ```
