@@ -29,3 +29,17 @@ ssh usrXX@200.23.162.240
 Reemplaza `usrXX` por tu usuario (por ejemplo, `usr01`). Escribe tu contraseña cuando se te pida.
 
 - Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe `yes` y presiona Enter.
+
+### Mantener la conexión activa
+
+Las conexiones SSH pueden cerrarse automáticamente después de un periodo de inactividad (por ejemplo, mientras lees documentación o esperas que un análisis termine). Para evitarlo, agrega la opción `-o ServerAliveInterval=60` al conectarte:
+
+``` sh
+ssh -o ServerAliveInterval=60 usrXX@200.23.162.240
+```
+
+Esto le indica a tu computadora que envíe una señal al servidor cada 60 segundos para mantener la conexión abierta. Es especialmente útil cuando corres análisis largos como el pipeline de DADA2.
+
+::: {.callout-tip icon="false"}
+**Recomendación:** usa siempre esta opción durante el curso para evitar desconexiones inesperadas.
+:::
