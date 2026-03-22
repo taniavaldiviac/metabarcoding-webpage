@@ -141,13 +141,19 @@ Las gráficas se guardan como PNG porque en el servidor no hay pantalla gráfica
 
 ```{r eval=FALSE}
 png(filename = file.path(output_location, "logs",
-              paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_forward.png")))
-plotQualityProfile(fnFs[seq_len(min(10, length(fnFs)))])
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_forward.png")),
+    width = 2400, height = 1600, res = 300)
+plotQualityProfile(fnFs[seq_len(min(6, length(fnFs)))]) +
+  ggplot2::theme_minimal(base_size = 10) +
+  ggplot2::labs(title = "Perfiles de calidad — Forward (R1)")
 dev.off()
 
 png(filename = file.path(output_location, "logs",
-              paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_reverse.png")))
-plotQualityProfile(fnRs[seq_len(min(10, length(fnRs)))])
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_reverse.png")),
+    width = 2400, height = 1600, res = 300)
+plotQualityProfile(fnRs[seq_len(min(6, length(fnRs)))]) +
+  ggplot2::theme_minimal(base_size = 10) +
+  ggplot2::labs(title = "Perfiles de calidad — Reverse (R2)")
 dev.off()
 ```
 
