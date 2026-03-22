@@ -235,14 +235,14 @@
     "href": "2-dada2QAQC-Prep.html",
     "title": "DADA2 — Filtrado inicial",
     "section": "",
-    "text": "Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline. Cada una cumple un rol específico:\n\ndada2: el motor del pipeline — infiere ASVs, filtra lecturas, modela errores y asigna taxonomía\ntidyverse: manipulación y visualización de datos (incluye dplyr, ggplot2, readr, etc.)\nShortRead: lectura y control de calidad de archivos FASTQ\nseqinr y digest: utilidades para trabajar con secuencias FASTA y generar identificadores únicos (hashes) para las ASVs\n\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)\nlibrary(tidyverse, quietly = TRUE)\nlibrary(seqinr)\nlibrary(ShortRead)\nlibrary(digest)\nlibrary(fs)\nlibrary(readr)\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor."
+    "text": "Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline.\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(digest)                    # hashes SHA1 para identificar ASVs\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor."
   },
   {
     "objectID": "2-dada2QAQC-Prep.html#configuración-del-entorno",
     "href": "2-dada2QAQC-Prep.html#configuración-del-entorno",
     "title": "DADA2 — Filtrado inicial",
     "section": "",
-    "text": "Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline. Cada una cumple un rol específico:\n\ndada2: el motor del pipeline — infiere ASVs, filtra lecturas, modela errores y asigna taxonomía\ntidyverse: manipulación y visualización de datos (incluye dplyr, ggplot2, readr, etc.)\nShortRead: lectura y control de calidad de archivos FASTQ\nseqinr y digest: utilidades para trabajar con secuencias FASTA y generar identificadores únicos (hashes) para las ASVs\n\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)\nlibrary(tidyverse, quietly = TRUE)\nlibrary(seqinr)\nlibrary(ShortRead)\nlibrary(digest)\nlibrary(fs)\nlibrary(readr)\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor."
+    "text": "Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline.\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(digest)                    # hashes SHA1 para identificar ASVs\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor."
   },
   {
     "objectID": "2-dada2QAQC-Prep.html#definir-rutas-y-parámetros",
