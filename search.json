@@ -1259,13 +1259,13 @@
     "href": "sesiones.html#día-4-análisis-ecológico-de-comunidades",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Día 4 — Análisis ecológico de comunidades",
-    "text": "Día 4 — Análisis ecológico de comunidades\n\nDe los resultados de DADA2 a las tablas de análisis\nEl objeto phyloseq: construcción y manipulación\nDiversidad α, diversidad β y visualización"
+    "text": "Día 4 — Análisis ecológico de comunidades\n\nDe los resultados de DADA2 a las tablas de análisis\nEl objeto phyloseq: construcción y manipulación\nDiversidad α, diversidad β y visualización\nOTUs: agrupamiento por similitud con VSEARCH"
   },
   {
     "objectID": "sesiones.html#día-5-temas-avanzados",
     "href": "sesiones.html#día-5-temas-avanzados",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Día 5 — Temas avanzados",
-    "text": "Día 5 — Temas avanzados\n\nDetección y remoción de contaminantes con decontam\nOTUs: agrupamiento por similitud con VSEARCH\nBases de datos de referencia personalizadas\nTemas auxiliares y dudas del curso"
+    "text": "Día 5 — Temas avanzados\n\nBases de datos de referencia personalizadas\nDetección y remoción de contaminantes con decontam\nTemas auxiliares y dudas del curso"
   }
 ]
