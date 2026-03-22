@@ -223,6 +223,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>La asignación taxonómica automática no siempre es perfecta. En estudios de eDNA con marcadores específicos de grupo (como el gen 12S para peces), algunas asignaciones pueden ser incorrectas por inconsistencias en la base de datos de referencia, por contaminación, o por errores de nomenclatura. La curación geográfica consiste en contrastar las asignaciones del pipeline con una lista de referencia de especies esperadas para el área de estudio.</p>
 <p>En este caso utilizamos el archivo <code>Fish_speciesGC.csv</code>, que contiene las especies de peces con distribución documentada en el Golfo de California. Además, corregimos manualmente asignaciones problemáticas a nivel de especie, género, familia y orden para las que tenemos evidencia independiente. Finalmente, filtramos secuencias espurias como las etiquetadas como “Eukaryotic synthetic”.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fish_sp <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(ruta_metadata, <span class="at">row.names =</span> <span class="cn">NULL</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>taxa2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(taxa_df)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fish_species <span class="ot">&lt;-</span> fish_sp<span class="sc">$</span>Species2</span>
@@ -263,6 +265,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>taxa2[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>] <span class="sc">%&gt;%</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">"html"</span>, <span class="at">caption =</span> <span class="st">"Primeros 10 renglones de la tabla taxonómica curada"</span>, <span class="at">align =</span> <span class="st">"c"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">TRUE</span>, <span class="at">font_size =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <hr>
 </section>
@@ -301,6 +304,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="creación-del-objeto-phyloseq-y-asignación-de-secuencias" class="level3">
 <h3 class="anchored" data-anchor-id="creación-del-objeto-phyloseq-y-asignación-de-secuencias">Creación del objeto <em>phyloseq</em> y asignación de secuencias</h3>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ASV  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ASV_mat, <span class="at">taxa_are_rows =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>TAXA <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_table</span>(taxa2)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>MD   <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(md)</span>
@@ -311,6 +316,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(dna) <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">taxa_names</span>(ps)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">merge_phyloseq</span>(ps, dna)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>phyloseq<span class="sc">::</span><span class="fu">taxa_names</span>(ps) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ASV"</span>, <span class="fu">seq_len</span>(phyloseq<span class="sc">::</span><span class="fu">ntaxa</span>(ps)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <p>El objeto <code>ps</code> contiene ahora todos los datos integrados. Algunos accesos útiles:</p>
 <ul>
@@ -324,12 +330,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="agrupación-de-asvs-por-especie-y-cálculo-de-abundancias-relativas">Agrupación de ASVs por especie y cálculo de abundancias relativas</h3>
 <p>Múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, etc.). La función <code>tax_glom()</code> colapsa todas las ASVs de una misma especie sumando sus abundancias, produciendo una tabla donde cada fila es una especie única. Sobre ese objeto se calculan las abundancias relativas dividiendo los conteos de cada muestra entre su total de lecturas, de modo que cada muestra suma 1 (o 100%).</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># merge asvs by species</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ps.sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_glom</span>(ps, <span class="st">"Species"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear versión proporcional</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ps.sp.prop <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">transform_sample_counts</span>(ps.sp, <span class="cf">function</span>(x) x<span class="sc">/</span><span class="fu">sum</span>(x))</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>check_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">tax_table</span>(ps.sp.prop))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <hr>
 </section>
@@ -341,6 +350,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>La tabla de abundancias por especie y muestra es el producto central del análisis: registra cuántas lecturas corresponden a cada especie en cada sitio de muestreo. Este formato tabular facilita el cálculo de índices de diversidad, la comparación entre sitios y la exportación de resultados para análisis en otros programas.</p>
 <p>La tabla se genera uniendo la matriz de ASVs con la tabla taxonómica y agregando las lecturas por especie y muestra. Se exporta en formato CSV para su uso posterior.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ASV.df<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(ASV)<span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var=</span><span class="st">"seqID"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="sc">-</span>seqID,<span class="at">names_to =</span> <span class="st">"Sample_name"</span>, <span class="at">values_to =</span> <span class="st">"nReads"</span>)</span>
@@ -362,6 +373,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>species.site.reads[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">%&gt;%</span></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">"html"</span>, <span class="at">caption =</span> <span class="st">"Primeros 10 renglones y 3 columnas de la tabla de abundancias por especie y muestra"</span>, <span class="at">align =</span> <span class="st">"c"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">TRUE</span>, <span class="at">font_size =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 </section>
 <section id="distribución-de-longitudes-de-secuencias" class="level3">
@@ -430,8 +442,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>PERMANOVA (<em>Permutational Multivariate Analysis of Variance</em>, <code>adonis2</code>) evalúa si una variable categórica —en este caso la región geográfica— explica una parte significativa de la variación en la composición de las comunidades. El estadístico <strong>R²</strong> indica la proporción de varianza explicada por la región; el <strong>p-valor</strong> se obtiene por permutaciones aleatorias de las etiquetas de grupo.</p>
 <p>A diferencia de ANOSIM, PERMANOVA es más flexible y puede incluir múltiples variables explicativas. Sin embargo, es sensible a diferencias en la dispersión entre grupos (homogeneidad de varianzas), por lo que se recomienda interpretar en conjunto con ANOSIM.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>permanova_res <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">adonis2</span>(comm_filt <span class="sc">~</span> region_gc, <span class="at">data =</span> meta_filt, <span class="at">permutations =</span> <span class="dv">999</span>, <span class="at">method =</span> <span class="st">"bray"</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(permanova_res)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 </section>
 <section id="nmds-visualización-de-la-composición-comunitaria" class="level3">

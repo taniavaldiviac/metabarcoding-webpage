@@ -160,6 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#configuración-del-entorno" id="toc-configuración-del-entorno" class="nav-link active" data-scroll-target="#configuración-del-entorno">Configuración del entorno</a></li>
+  <li><a href="#definir-rutas-y-parámetros" id="toc-definir-rutas-y-parámetros" class="nav-link" data-scroll-target="#definir-rutas-y-parámetros">Definir rutas y parámetros</a></li>
   <li><a href="#leer-parámetros-del-locus" id="toc-leer-parámetros-del-locus" class="nav-link" data-scroll-target="#leer-parámetros-del-locus">Leer parámetros del locus</a></li>
   <li><a href="#localizar-archivos-fastq" id="toc-localizar-archivos-fastq" class="nav-link" data-scroll-target="#localizar-archivos-fastq">Localizar archivos FASTQ</a></li>
   <li><a href="#preparar-rutas-de-archivos-filtrados" id="toc-preparar-rutas-de-archivos-filtrados" class="nav-link" data-scroll-target="#preparar-rutas-de-archivos-filtrados">Preparar rutas de archivos filtrados</a></li>
@@ -195,8 +196,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="configuración-del-entorno" class="level2">
 <h2 class="anchored" data-anchor-id="configuración-del-entorno">Configuración del entorno</h2>
-<p>Cargamos las librerías necesarias y definimos las rutas del proyecto.</p>
+<p>Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline. Cada una cumple un rol específico:</p>
+<ul>
+<li><strong>dada2</strong>: el motor del pipeline — infiere ASVs, filtra lecturas, modela errores y asigna taxonomía</li>
+<li><strong>tidyverse</strong>: manipulación y visualización de datos (incluye <code>dplyr</code>, <code>ggplot2</code>, <code>readr</code>, etc.)</li>
+<li><strong>ShortRead</strong>: lectura y control de calidad de archivos FASTQ</li>
+<li><strong>here</strong>: manejo de rutas relativas al proyecto, independiente de dónde ejecutes el script</li>
+<li><strong>seqinr</strong> y <strong>digest</strong>: utilidades para trabajar con secuencias FASTA y generar identificadores únicos (hashes) para las ASVs</li>
+</ul>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dada2, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(seqinr)</span>
@@ -207,8 +217,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
+<p>Si no hay errores, todas las librerías están disponibles en el servidor.</p>
+<hr>
+</section>
+<section id="definir-rutas-y-parámetros" class="level2">
+<h2 class="anchored" data-anchor-id="definir-rutas-y-parámetros">Definir rutas y parámetros</h2>
+<p>Definimos las rutas principales del proyecto. Usamos <code>here::here()</code> para que el script funcione sin importar desde qué directorio se ejecute — detecta automáticamente la raíz del proyecto (donde está el <code>.Rproj</code>).</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>proj_root <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj_root)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -219,17 +238,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>i        <span class="ot">&lt;-</span> <span class="dv">1</span>          <span class="co"># fila de primer_data.csv a procesar</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>run_name <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">"%Y%m%d_%H%M"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <ul>
-<li><code>here::here()</code> detecta automáticamente la raíz del proyecto (donde está el <code>.Rproj</code>)</li>
-<li><code>i</code> selecciona el locus a procesar en <code>primer_data.csv</code></li>
-<li><code>run_name</code> se usa como prefijo en todos los archivos de salida</li>
+<li><strong><code>i</code></strong> selecciona qué locus procesar. Si tienes varios marcadores (ej. 12S y COI), cambia este valor para procesar cada uno</li>
+<li><strong><code>run_name</code></strong> genera un prefijo único con la fecha y hora (ej. <code>20250326_1430</code>) para que cada corrida produzca archivos distintos y no se sobreescriban</li>
 </ul>
 <hr>
 </section>
 <section id="leer-parámetros-del-locus" class="level2">
 <h2 class="anchored" data-anchor-id="leer-parámetros-del-locus">Leer parámetros del locus</h2>
+<p>El pipeline lee <code>primer_data.csv</code> para obtener la configuración específica del marcador: nombre del locus, longitud máxima de truncamiento, base de datos taxonómica, etc. Esto permite procesar diferentes marcadores con el mismo script, solo cambiando el valor de <code>i</code>.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>primer_cols <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(primer_csv, <span class="at">n_max =</span> <span class="dv">0</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>primer.data <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
@@ -242,13 +264,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>primer.data</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<p>Verifica que la fila <code>i</code> corresponde al locus que quieres analizar.</p>
+<p>Verifica que la fila <code>i</code> corresponde al locus que quieres analizar. El pipeline usará <code>primer.data$locus_shorthand[i]</code>, <code>primer.data$db_name[i]</code>, etc. en todos los pasos siguientes.</p>
 <hr>
 </section>
 <section id="localizar-archivos-fastq" class="level2">
 <h2 class="anchored" data-anchor-id="localizar-archivos-fastq">Localizar archivos FASTQ</h2>
+<p>El script busca en <code>for_dada2/</code> todos los archivos FASTQ que contengan el nombre del locus seleccionado. Separa las lecturas forward (R1) y reverse (R2), y extrae el identificador de muestra (<code>sample_id</code>) del nombre del archivo.</p>
+<p>Por ejemplo, del archivo <code>12S-GC-001-d1_1_S1_L001_R1_001.fastq</code> extrae <code>GC-001</code> como identificador de muestra.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fnFs <span class="ot">&lt;-</span> <span class="fu">grep</span>(primer.data<span class="sc">$</span>locus_shorthand[i],</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sort</span>(<span class="fu">list.files</span>(fastq_location, <span class="at">pattern =</span> <span class="st">"R1_001.fastq"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)),</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
@@ -267,13 +294,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(fnFs)</span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sample.names)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<p>Si el número de muestras no coincide con lo esperado, revisa que los archivos estén en <code>for_dada2/</code> y que el <code>locus_shorthand</code> sea correcto.</p>
+<p>Deberías ver el número total de muestras y los primeros nombres. Si el número no coincide con lo esperado, revisa que los archivos estén en <code>for_dada2/</code> y que el <code>locus_shorthand</code> en <code>primer_data.csv</code> sea correcto.</p>
 <hr>
 </section>
 <section id="preparar-rutas-de-archivos-filtrados" class="level2">
 <h2 class="anchored" data-anchor-id="preparar-rutas-de-archivos-filtrados">Preparar rutas de archivos filtrados</h2>
+<p>Antes de filtrar, definimos dónde se guardarán los archivos filtrados (en <code>for_dada2/filtered/</code>) y eliminamos del análisis cualquier archivo vacío o corrupto que podría causar errores en pasos posteriores.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>filtFs <span class="ot">&lt;-</span> <span class="fu">file.path</span>(fastq_location, <span class="st">"filtered"</span>, <span class="fu">paste0</span>(sample.names, <span class="st">"_F_filt.fastq"</span>))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>filtRs <span class="ot">&lt;-</span> <span class="fu">file.path</span>(fastq_location, <span class="st">"filtered"</span>, <span class="fu">paste0</span>(sample.names, <span class="st">"_R_filt.fastq"</span>))</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(filtFs) <span class="ot">&lt;-</span> sample.names</span>
@@ -287,13 +318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>filtFs       <span class="ot">&lt;-</span> filtFs[<span class="sc">!</span>empty_files]</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>filtRs       <span class="ot">&lt;-</span> filtRs[<span class="sc">!</span>empty_files]</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>sample.names <span class="ot">&lt;-</span> sample.names[<span class="sc">!</span>empty_files]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <hr>
 </section>
 <section id="inspección-de-calidad" class="level2">
 <h2 class="anchored" data-anchor-id="inspección-de-calidad">Inspección de calidad</h2>
-<p>Las gráficas se guardan como PNG porque en el servidor no hay pantalla:</p>
+<p>Antes de decidir dónde truncar, visualizamos los perfiles de calidad. Estas gráficas muestran cómo varía la calidad Phred (Q) a lo largo de la lectura — típicamente la calidad es alta al inicio y decae hacia el final, especialmente en las lecturas reverse (R2).</p>
+<p>Las gráficas se guardan como PNG porque en el servidor no hay pantalla gráfica:</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="at">filename =</span> <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_forward.png"</span>)))</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotQualityProfile</span>(fnFs[<span class="fu">seq_len</span>(<span class="fu">min</span>(<span class="dv">10</span>, <span class="fu">length</span>(fnFs)))])</span>
@@ -303,20 +338,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_reverse.png"</span>)))</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plotQualityProfile</span>(fnRs[<span class="fu">seq_len</span>(<span class="fu">min</span>(<span class="dv">10</span>, <span class="fu">length</span>(fnRs)))])</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <p>Para descargar las gráficas a tu computadora:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/logs/<span class="pp">*</span>quality<span class="pp">*</span>.png ~/Downloads/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Cómo leer las gráficas:</strong></p>
 <ul>
-<li>El eje Y muestra la calidad Phred (Q), el eje X la posición en la lectura</li>
-<li>Busca donde la <strong>línea verde</strong> (mediana) cae por debajo de <strong>Q30</strong> — ese es el punto de truncamiento ideal</li>
-<li>Las lecturas Reverse (R2) típicamente degradan más rápido que las Forward (R1)</li>
+<li>La <strong>línea verde</strong> es la mediana de calidad por posición</li>
+<li>La <strong>zona gris</strong> muestra los cuartiles (variabilidad entre lecturas)</li>
+<li>Busca dónde la mediana cae por debajo de <strong>Q30</strong> — ese es el punto de truncamiento ideal</li>
+<li>Las lecturas R2 suelen degradar más rápido que R1; es normal que su punto de truncamiento sea menor</li>
 </ul>
+</div>
+</div>
 <hr>
 </section>
 <section id="cálculo-automático-del-punto-de-truncamiento" class="level2">
 <h2 class="anchored" data-anchor-id="cálculo-automático-del-punto-de-truncamiento">Cálculo automático del punto de truncamiento</h2>
-<p>El script calcula el punto de truncamiento usando una ventana móvil sobre la calidad mediana, limitado por <code>max_trim</code> para preservar el solapamiento F/R.</p>
+<p>En lugar de elegir manualmente dónde truncar, el script lo calcula automáticamente. Usa una <strong>ventana móvil</strong> de 10 posiciones sobre la calidad mediana: cuando la calidad promedio de la ventana cae por debajo de Q30, marca ese punto como truncamiento.</p>
+<p>El valor se limita por <code>max_trim</code> de <code>primer_data.csv</code> para garantizar que quede suficiente solapamiento entre las lecturas F y R para el merge posterior.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500000</span>; window_size <span class="ot">&lt;-</span> <span class="dv">10</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>trimsF <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(fnFs))</span>
@@ -344,29 +397,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (where_trim_all_Rs <span class="sc">&gt;</span> primer.data<span class="sc">$</span>max_trim[i]) where_trim_all_Rs <span class="ot">&lt;-</span> primer.data<span class="sc">$</span>max_trim[i]</span>
 <span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Puntos de truncamiento: F="</span>, where_trim_all_Fs, <span class="st">" | R="</span>, where_trim_all_Rs)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <hr>
 </section>
 <section id="filtrado-y-truncamiento" class="level2">
 <h2 class="anchored" data-anchor-id="filtrado-y-truncamiento">Filtrado y truncamiento</h2>
+<p>Este es el paso central de esta sección. <code>filterAndTrim()</code> aplica varios filtros simultáneamente a cada par de lecturas (F y R):</p>
+<ul>
+<li><strong><code>truncLen</code></strong>: trunca las lecturas a la longitud especificada — elimina la cola de baja calidad</li>
+<li><strong><code>maxN = 0</code></strong>: descarta cualquier lectura que tenga bases ambiguas (N)</li>
+<li><strong><code>maxEE = c(2, 2)</code></strong>: descarta lecturas con más de 2 errores esperados — es un filtro más informativo que un umbral de calidad fijo porque considera la calidad de <em>todas</em> las bases, no solo la peor</li>
+<li><strong><code>rm.phix = TRUE</code></strong>: remueve lecturas del genoma PhiX, que Illumina usa como control interno de calidad</li>
+</ul>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  fnFs, filtFs, fnRs, filtRs,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(<span class="dv">65</span>, <span class="dv">65</span>),   <span class="co"># ajustar según perfiles de calidad</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,           <span class="co"># elimina lecturas con Ns</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),     <span class="co"># máximo 2 errores esperados por lectura</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,           <span class="co"># trunca si calidad &lt; 2</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,        <span class="co"># remueve contaminación PhiX</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">multithread =</span> <span class="dv">4</span>,</span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">matchIDs    =</span> <span class="cn">TRUE</span>         <span class="co"># asegura pareado correcto F/R</span></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
+<p>Los archivos filtrados se guardan en <code>for_dada2/filtered/</code>.</p>
 <hr>
 </section>
 <section id="verificar-retención" class="level2">
 <h2 class="anchored" data-anchor-id="verificar-retención">Verificar retención</h2>
+<p>Después de filtrar, verificamos qué porcentaje de lecturas pasó los filtros. Una retención muy baja indica problemas de calidad o parámetros demasiado estrictos.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -374,6 +442,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <table class="caption-top table">
 <thead>
@@ -389,35 +458,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td style="text-align: left;">50–70%</td>
-<td style="text-align: left;">Aceptable — revisar parámetros</td>
+<td style="text-align: left;">Aceptable — considerar relajar <code>truncLen</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">&lt; 50%</td>
-<td style="text-align: left;">Bajo — relajar <code>maxEE</code> o <code>truncLen</code></td>
+<td style="text-align: left;">Bajo — relajar <code>maxEE</code> o revisar calidad de la corrida</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">&lt; 30% en una muestra</td>
-<td style="text-align: left;">Muestra problemática — revisar QC</td>
+<td style="text-align: left;">Muestra problemática — revisar con FastQC</td>
 </tr>
 </tbody>
 </table>
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si la retención es muy baja en todas las muestras, lo más común es que <code>truncLen</code> sea demasiado corto. Revisa las gráficas de calidad y ajusta los valores.</p>
+</div>
+</div>
 <hr>
 </section>
 <section id="guardar-checkpoint" class="level2">
 <h2 class="anchored" data-anchor-id="guardar-checkpoint">Guardar checkpoint</h2>
+<p>El pipeline guarda un checkpoint después del filtrado. Esto permite reanudar el análisis desde este punto sin repetir el filtrado — útil si necesitas ajustar parámetros en pasos posteriores o si la sesión se interrumpe.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>     fastq_location, output_location, metadata_location,</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 1 guardado"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <p>Para reanudar desde este punto en otra sesión:</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 
 
