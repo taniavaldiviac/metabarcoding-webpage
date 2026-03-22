@@ -356,7 +356,7 @@ out <- filterAndTrim(
   truncQ      = 2,
   rm.phix     = TRUE,
   compress    = TRUE,
-  multithread = 4,
+  multithread = 2,
   matchIDs    = TRUE
 )
 ```

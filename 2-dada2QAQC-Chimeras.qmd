@@ -16,7 +16,7 @@ Las **quimeras** son secuencias artificiales producidas durante la amplificació
 seqtab.nochim <- removeBimeraDenovo(
   seqtab,
   method      = "consensus",
-  multithread = TRUE,
+  multithread = 2,
   verbose     = TRUE
 )
 ```

@@ -93,20 +93,20 @@ Los parámetros clave son:
 |:---|:---|:---|
 | `nbases` | `1e8` (100M) | Número de bases a usar para aprender el modelo. DADA2 toma tantas muestras como necesite para alcanzar ese total. Aumentar a `2e8` si tienes > 50 muestras |
 | `randomize` | `TRUE` | Selecciona lecturas al azar en lugar de tomar siempre las primeras. Produce un modelo más representativo |
-| `multithread` | `TRUE` | Usa todos los núcleos disponibles del servidor para acelerar el cálculo |
+| `multithread` | `2` | Número de núcleos a usar. Con ~30 personas en el servidor, usamos 2 para no saturarlo |
 | `MAX_CONSIST` | `25` | Número máximo de iteraciones del algoritmo. El default de DADA2 es 10; aquí se aumenta a 25 para garantizar convergencia |
 
 ```{r eval=FALSE}
 errF <- tryCatch({
   learnErrors(filtFs, nbases = nbases_target, randomize = TRUE,
-              multithread = TRUE, MAX_CONSIST = max_consist, verbose = TRUE)
+              multithread = 2, MAX_CONSIST = max_consist, verbose = TRUE)
 }, error = function(e) {
   stop("Error al aprender modelo Forward: ", conditionMessage(e))
 })
 
 errR <- tryCatch({
   learnErrors(filtRs, nbases = nbases_target, randomize = TRUE,
-              multithread = TRUE, MAX_CONSIST = max_consist, verbose = TRUE)
+              multithread = 2, MAX_CONSIST = max_consist, verbose = TRUE)
 }, error = function(e) {
   stop("Error al aprender modelo Reverse: ", conditionMessage(e))
 })
@@ -245,8 +245,8 @@ load(file.path(output_location, "rdata_output",
 Con el modelo de error aprendido, `dada()` infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.
 
 ```{r eval=FALSE}
-dadaFs <- dada(derepFs, err = errF, multithread = TRUE)
-dadaRs <- dada(derepRs, err = errR, multithread = TRUE)
+dadaFs <- dada(derepFs, err = errF, multithread = 2)
+dadaRs <- dada(derepRs, err = errR, multithread = 2)
 ```
 
 Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo:

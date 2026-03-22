@@ -41,7 +41,7 @@ at <- assignTaxonomy(
   colnames(cleaned.seqtab.nochim),
   tax_location,
   tryRC            = TRUE,
-  multithread      = TRUE,
+  multithread      = 2,
   outputBootstraps = TRUE,
   verbose          = TRUE
 )
