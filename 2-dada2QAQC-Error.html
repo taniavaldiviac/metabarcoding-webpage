@@ -483,8 +483,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><code>multithread</code></td>
-<td style="text-align: left;"><code>TRUE</code></td>
-<td style="text-align: left;">Usa todos los núcleos disponibles del servidor para acelerar el cálculo</td>
+<td style="text-align: left;"><code>2</code></td>
+<td style="text-align: left;">Número de núcleos a usar. Con ~30 personas en el servidor, usamos 2 para no saturarlo</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>MAX_CONSIST</code></td>
@@ -498,14 +498,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>errF <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtFs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="dv">2</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Forward: "</span>, <span class="fu">conditionMessage</span>(e))</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>errR <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtRs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="dv">2</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Reverse: "</span>, <span class="fu">conditionMessage</span>(e))</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -704,8 +704,8 @@ Tip
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="dv">2</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo: <code>Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.</code></p>
