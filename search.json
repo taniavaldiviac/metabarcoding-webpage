@@ -1020,7 +1020,7 @@
     "href": "2-dada2QAQC-Prep.html",
     "title": "DADA2 — Filtrado inicial",
     "section": "",
-    "text": "Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline.\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
+    "text": "Antes de comenzar, abre R desde la terminal:\ncd ~/metabarcoding-code\nR\nCargamos las librerías que usaremos a lo largo del pipeline:\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
     "crumbs": [
       "Sesiones",
       "Día 3",
@@ -1032,7 +1032,7 @@
     "href": "2-dada2QAQC-Prep.html#configuración-del-entorno",
     "title": "DADA2 — Filtrado inicial",
     "section": "",
-    "text": "Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline.\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
+    "text": "Antes de comenzar, abre R desde la terminal:\ncd ~/metabarcoding-code\nR\nCargamos las librerías que usaremos a lo largo del pipeline:\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
     "crumbs": [
       "Sesiones",
       "Día 3",
