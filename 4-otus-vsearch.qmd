@@ -1,0 +1,198 @@
+---
+title: "OTUs: agrupamiento por similitud con VSEARCH"
+author: "Miguel Martinez Mercado (marmigues@gmail.com)"
+execute:
+  echo: true
+  warning: false
+  eval: false
+---
+
+Las ASVs son secuencias únicas — entre dos ASVs puede haber solo 1 base de diferencia. Esto es un gran poder de resolución, pero nos lleva a preguntarnos:
+
+- ¿Existe 1 base de diferencia entre secuencias de especies diferentes?
+- ¿Cuál es el impacto en las estimaciones de la diversidad?
+
+Este es el problema de encontrar un parámetro óptimo de aglomeración o división (*lumping or splitting*).
+
+En esta sección utilizaremos `vsearch` ([Rognes et al., 2016](https://doi.org/10.7717/peerj.2584)) para formar **OTUs** (Operational Taxonomic Units) a partir de las ASVs, reconstruiremos un objeto `phyloseq` con la nueva información y compararemos la resolución taxonómica de ambas estrategias.
+
+---
+
+## Agrupamiento de ASVs en OTUs
+
+`vsearch` agrupa secuencias similares en clusters. El parámetro principal es el **porcentaje de similitud** para agrupar, en escala de 0.00 a 1.00. El estándar para OTUs es **97%** (0.97).
+
+```bash
+cd ~/metabarcoding-code
+bash scripts/08b-vsearch.sh 0.97
+```
+
+A cada grupo (o cluster) se le asigna una secuencia representante llamada **oturep**.
+
+Como resultado obtendremos tres archivos:
+
+| Archivo | Contenido |
+|:--------|:----------|
+| `_oturep.fasta` | Secuencias representantes en formato FASTA |
+| `.uc` | Relación de las agrupaciones en formato uclust |
+| `.log` | Registro de la ejecución de vsearch |
+
+---
+
+## Reconstrucción del objeto phyloseq
+
+Procesaremos el archivo `.uc` para organizar la información de los OTUs en un nuevo objeto `phyloseq`.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(tibble)
+library(phyloseq)
+```
+
+### Procesar archivo uc
+
+El archivo `.uc` es una tabla separada por tabuladores con un renglón por cada secuencia analizada:
+
+| Columna | Descripción |
+|:-------:|:------------|
+| 1 | Tipo de secuencia: `S` (centroide/oturep), `H` (hit/miembro), `C` (registro de cluster) |
+| 2 | Número de cluster (base 0) |
+| 3 | Longitud de la secuencia |
+| 4 | Porcentaje de identidad con el centroide (solo tipo H) |
+| 9 | Etiqueta de la secuencia |
+| 10 | Etiqueta del centroide (solo tipo H) |
+
+Ejemplo:
+
+```
+S   0   313   *   *   *   *   *   ASV_0001   *
+S   1   313   *   *   *   *   *   ASV_0002   *
+H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002
+```
+
+Las primeras dos líneas son otureps (tipo S). La tercera es un miembro del cluster 1 (tipo H) con 99% de identidad con ASV_0002.
+
+```{r}
+uc_file <- file.path("otus_vsearch/fish_0.97.uc")
+
+uc_names <- c("Type", "clus_ID", "len", "id_pct", "strand",
+              "NA1", "NA2", "aln", "ASV_ID", "centroid")
+
+uc.df <- readr::read_tsv(uc_file, col_names = uc_names, show_col_types = FALSE) |>
+  select(-NA1, -NA2) |>
+  filter(!Type %in% "C") |>
+  dplyr::relocate(ASV_ID)
+
+# Número de OTUs (otureps)
+table(uc.df$Type)
+```
+
+```{r}
+# Identificar otureps y su cluster
+oturep.df <- uc.df |> filter(Type %in% "S") |> select(clus_ID, ASV_ID)
+oturepID <- oturep.df |> pull(ASV_ID)
+length(oturepID)
+```
+
+---
+
+### Cargar objeto phyloseq inicial
+
+Cargamos el objeto phyloseq generado por el pipeline DADA2 y extraemos los componentes correspondientes a los otureps:
+
+```{r}
+# Cargar objeto phyloseq del pipeline DADA2
+rdata_in <- file.path("final_data/rdata_output/phyloseq_inputs.RData")
+load(rdata_in)
+
+ps.asv <- ps  # ajustar según el nombre del objeto en tu .RData
+ps.asv
+```
+
+```{r}
+# Subset: solo los otureps
+ps.sub <- subset_taxa(ps.asv, taxa_names(ps.asv) %in% oturepID)
+
+oturep.seq <- refseq(ps.sub)
+oturep.tax <- tax_table(ps.sub)
+oturep.md  <- sample_data(ps.sub)
+```
+
+---
+
+### Colapsar conteos por OTU
+
+Agrupamos (sumamos) las lecturas de todas las ASVs que pertenecen al mismo cluster:
+
+```{r}
+# Tabla de conteos original
+conteos.ini <- data.frame(otu_table(ps.asv), stringsAsFactors = FALSE)
+
+# Formato largo y agregar info de clusters
+conteos.ini.long <- conteos.ini |>
+  rownames_to_column(var = "SampleID") |>
+  pivot_longer(-SampleID, names_to = "ASV_ID", values_to = "conteo")
+
+conteos.ini.long <- left_join(conteos.ini.long, uc.df, by = "ASV_ID")
+
+# Sumar conteos por muestra y cluster
+conteos.sum.long <- conteos.ini.long |>
+  group_by(SampleID, clus_ID) |>
+  summarise(conteo_cluster = sum(conteo), .groups = "drop")
+
+# Remplazar cluster_ID por ASV_ID del oturep
+conteos.sum.long <- left_join(conteos.sum.long, oturep.df, by = "clus_ID")
+
+# Convertir a matriz muestras × OTUs
+conteos.sum <- conteos.sum.long |>
+  select(-clus_ID) |>
+  pivot_wider(names_from = ASV_ID, values_from = conteo_cluster, values_fill = 0) |>
+  column_to_rownames(var = "SampleID")
+conteos.sum <- as.matrix(conteos.sum)
+dim(conteos.sum)
+```
+
+---
+
+### Construir nuevo objeto phyloseq
+
+```{r}
+ASV  <- phyloseq::otu_table(conteos.sum, taxa_are_rows = FALSE)
+TAXA <- phyloseq::tax_table(oturep.tax)
+SEQ  <- phyloseq::refseq(oturep.seq)
+MD   <- phyloseq::sample_data(oturep.md)
+
+ps.otu <- phyloseq::phyloseq(ASV, TAXA, SEQ, MD)
+ps.otu
+```
+
+---
+
+## Comparar resolución taxonómica: ASVs vs OTUs
+
+```{r}
+asv.tax <- data.frame(tax_table(ps.asv), stringsAsFactors = FALSE)
+otu.tax <- data.frame(tax_table(ps.otu), stringsAsFactors = FALSE)
+
+df1 <- data.frame(
+  ASVs = apply(asv.tax, 2, function(x) length(unique(na.omit(x)))),
+  OTUs = apply(otu.tax, 2, function(x) length(unique(na.omit(x))))
+)
+
+df1 <- rownames_to_column(df1, var = "Nivel") |>
+  pivot_longer(-Nivel, names_to = "Estrategia", values_to = "Conteo") |>
+  mutate(Nivel = factor(Nivel,
+    levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
+    ordered = TRUE))
+
+ggplot(df1, aes(x = Nivel, y = Conteo, group = Estrategia, color = Estrategia)) +
+  geom_line(linewidth = 1.5, alpha = 0.5) +
+  labs(title = "Número de taxones identificados por tipo de análisis",
+       x = "", y = "Número de taxones")
+```
+
+::: {.callout-note icon="false"}
+En cada nivel puede haber asignaciones `NA` que cuentan como 1 taxón.
+:::

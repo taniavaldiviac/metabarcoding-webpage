@@ -49,6 +49,10 @@ website:
         contents:
           - 3-reporte.qmd
           - 3-reporte-v2.qmd
+          - 4-otus-vsearch.qmd
+      - section: "Día 5"
+        contents:
+          - 5-decontam.qmd
       - section: "Lecturas recomendadas"
         contents:
           - Referencias.qmd

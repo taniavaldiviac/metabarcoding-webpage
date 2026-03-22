@@ -48,12 +48,12 @@ execute:
 - [De los resultados de DADA2 a las tablas de análisis](3-reporte.qmd)
 - [El objeto phyloseq: construcción y manipulación](3-reporte.qmd)
 - [Diversidad α, diversidad β y visualización](3-reporte.qmd)
-- OTUs: agrupamiento por similitud con VSEARCH
+- [OTUs: agrupamiento por similitud con VSEARCH](4-otus-vsearch.qmd)
 
 ---
 
 ## Día 5 — Temas avanzados
 
 - Bases de datos de referencia personalizadas
-- Detección y remoción de contaminantes con `decontam`
+- [Detección y remoción de contaminantes con decontam](5-decontam.qmd)
 - Temas auxiliares y dudas del curso
