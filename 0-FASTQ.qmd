@@ -52,14 +52,12 @@ En secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos 
 - `_R1_001.fastq` — lectura **forward** (de 5' a 3')
 - `_R2_001.fastq` — lectura **reverse** (de 3' a 5')
 
-```{mermaid}
-flowchart LR
-    F["→ R1 (forward)"] --> A["Fragmento de ADN"]
-    A --> R["← R2 (reverse)"]
-
-    style F fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
-    style R fill:#fef3c7,stroke:#f59e0b,color:#78350f
-    style A fill:#f3f4f6,stroke:#6b7280,color:#1f2937
+```
+        ├──── R1 (forward) ────→
+5' ─────┤                       ├───── 3'
+        │    ◄── solapamiento ──►     │
+3' ─────┤                       ├───── 5'
+        ←──── R2 (reverse) ────┤
 ```
 
 Las dos lecturas se **solapan** en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (*merge*) para reconstruir la secuencia completa.
