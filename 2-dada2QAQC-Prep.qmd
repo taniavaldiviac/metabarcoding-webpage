@@ -141,12 +141,12 @@ Las gráficas se guardan como PNG porque en el servidor no hay pantalla gráfica
 
 ```{r eval=FALSE}
 png(filename = file.path(output_location, "logs",
-              paste0(run_name, "_", primer.data$locus_shorthand[i], "_forward.png")))
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_forward.png")))
 plotQualityProfile(fnFs[seq_len(min(10, length(fnFs)))])
 dev.off()
 
 png(filename = file.path(output_location, "logs",
-              paste0(run_name, "_", primer.data$locus_shorthand[i], "_reverse.png")))
+              paste0(run_name, "_", primer.data$locus_shorthand[i], "_quality_reverse.png")))
 plotQualityProfile(fnRs[seq_len(min(10, length(fnRs)))])
 dev.off()
 ```
