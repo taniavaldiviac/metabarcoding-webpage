@@ -201,7 +201,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>dada2</strong>: el motor del pipeline — infiere ASVs, filtra lecturas, modela errores y asigna taxonomía</li>
 <li><strong>tidyverse</strong>: manipulación y visualización de datos (incluye <code>dplyr</code>, <code>ggplot2</code>, <code>readr</code>, etc.)</li>
 <li><strong>ShortRead</strong>: lectura y control de calidad de archivos FASTQ</li>
-<li><strong>here</strong>: manejo de rutas relativas al proyecto, independiente de dónde ejecutes el script</li>
 <li><strong>seqinr</strong> y <strong>digest</strong>: utilidades para trabajar con secuencias FASTA y generar identificadores únicos (hashes) para las ASVs</li>
 </ul>
 <div class="cell">
@@ -212,11 +211,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(seqinr)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ShortRead)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(digest)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Si no hay errores, todas las librerías están disponibles en el servidor.</p>
@@ -224,20 +222,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="definir-rutas-y-parámetros" class="level2">
 <h2 class="anchored" data-anchor-id="definir-rutas-y-parámetros">Definir rutas y parámetros</h2>
-<p>Definimos las rutas principales del proyecto. Usamos <code>here::here()</code> para que el script funcione sin importar desde qué directorio se ejecute — detecta automáticamente la raíz del proyecto (donde está el <code>.Rproj</code>).</p>
+<p>Definimos las rutas principales del proyecto. Todas son relativas a <code>~/metabarcoding-code/</code>, que es el directorio de trabajo.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>proj_root <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(proj_root)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>fastq_location    <span class="ot">&lt;-</span> <span class="fu">file.path</span>(proj_root, <span class="st">"for_dada2"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>output_location   <span class="ot">&lt;-</span> <span class="fu">file.path</span>(proj_root, <span class="st">"final_data"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>metadata_location <span class="ot">&lt;-</span> <span class="fu">file.path</span>(proj_root, <span class="st">"metadata"</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>primer_csv        <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, <span class="st">"primer_data.csv"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>i        <span class="ot">&lt;-</span> <span class="dv">1</span>          <span class="co"># fila de primer_data.csv a procesar</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>run_name <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">"%Y%m%d_%H%M"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"~/metabarcoding-code"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>fastq_location    <span class="ot">&lt;-</span> <span class="st">"for_dada2"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>output_location   <span class="ot">&lt;-</span> <span class="st">"final_data"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>metadata_location <span class="ot">&lt;-</span> <span class="st">"metadata"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>primer_csv        <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, <span class="st">"primer_data.csv"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>i        <span class="ot">&lt;-</span> <span class="dv">1</span>          <span class="co"># fila de primer_data.csv a procesar</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>run_name <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">"%Y%m%d_%H%M"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <ul>
