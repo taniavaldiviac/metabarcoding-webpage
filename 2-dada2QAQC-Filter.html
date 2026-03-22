@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Dada2 - Filter and Trim – Metabarcoding de comunidades de eucariontes</title>
+<title>DADA2 — Filter and Trim – Metabarcoding de comunidades de eucariontes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +22,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -124,21 +159,17 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-hace-el-código-en-este-paso" id="toc-qué-hace-el-código-en-este-paso" class="nav-link active" data-scroll-target="#qué-hace-el-código-en-este-paso">¿Qué hace el código en este paso?</a>
+  <li><a href="#los-parámetros-de-filterandtrim" id="toc-los-parámetros-de-filterandtrim" class="nav-link active" data-scroll-target="#los-parámetros-de-filterandtrim">Los parámetros de <code>filterAndTrim()</code></a>
   <ul class="collapse">
-  <li><a href="#cálculo-de-puntos-de-truncamiento-trunclen" id="toc-cálculo-de-puntos-de-truncamiento-trunclen" class="nav-link" data-scroll-target="#cálculo-de-puntos-de-truncamiento-trunclen">1. Cálculo de puntos de truncamiento (<code>truncLen</code>)</a></li>
-  <li><a href="#limitación-del-recorte-máximo-max_trim" id="toc-limitación-del-recorte-máximo-max_trim" class="nav-link" data-scroll-target="#limitación-del-recorte-máximo-max_trim">2. Limitación del recorte máximo (<code>max_trim</code>)</a></li>
-  <li><a href="#verificación-de-primers" id="toc-verificación-de-primers" class="nav-link" data-scroll-target="#verificación-de-primers">3. Verificación de primers</a></li>
-  <li><a href="#filtrado-y-trimming" id="toc-filtrado-y-trimming" class="nav-link" data-scroll-target="#filtrado-y-trimming">4. Filtrado y trimming</a></li>
-  <li><a href="#diagnóstico-y-reporte-de-retención" id="toc-diagnóstico-y-reporte-de-retención" class="nav-link" data-scroll-target="#diagnóstico-y-reporte-de-retención">4. Diagnóstico y reporte de retención</a></li>
-  <li><a href="#guardado-de-estadísticas" id="toc-guardado-de-estadísticas" class="nav-link" data-scroll-target="#guardado-de-estadísticas">5. Guardado de estadísticas</a></li>
+  <li><a href="#trunclen-longitud-de-truncamiento" id="toc-trunclen-longitud-de-truncamiento" class="nav-link" data-scroll-target="#trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</a></li>
+  <li><a href="#maxn-bases-ambiguas" id="toc-maxn-bases-ambiguas" class="nav-link" data-scroll-target="#maxn-bases-ambiguas"><code>maxN</code> — Bases ambiguas</a></li>
+  <li><a href="#maxee-errores-esperados" id="toc-maxee-errores-esperados" class="nav-link" data-scroll-target="#maxee-errores-esperados"><code>maxEE</code> — Errores esperados</a></li>
+  <li><a href="#truncq-truncamiento-por-calidad" id="toc-truncq-truncamiento-por-calidad" class="nav-link" data-scroll-target="#truncq-truncamiento-por-calidad"><code>truncQ</code> — Truncamiento por calidad</a></li>
+  <li><a href="#rm.phix-control-phix" id="toc-rm.phix-control-phix" class="nav-link" data-scroll-target="#rm.phix-control-phix"><code>rm.phix</code> — Control PhiX</a></li>
+  <li><a href="#matchids-pareado-de-lecturas" id="toc-matchids-pareado-de-lecturas" class="nav-link" data-scroll-target="#matchids-pareado-de-lecturas"><code>matchIDs</code> — Pareado de lecturas</a></li>
   </ul></li>
-  <li><a href="#explicación-de-los-parámetros-principales" id="toc-explicación-de-los-parámetros-principales" class="nav-link" data-scroll-target="#explicación-de-los-parámetros-principales">Explicación de los parámetros principales</a></li>
-  <li><a href="#por-qué-es-importante-este-paso" id="toc-por-qué-es-importante-este-paso" class="nav-link" data-scroll-target="#por-qué-es-importante-este-paso">¿Por qué es importante este paso?</a></li>
-  <li><a href="#recomendaciónes-para-el-análisis" id="toc-recomendaciónes-para-el-análisis" class="nav-link" data-scroll-target="#recomendaciónes-para-el-análisis">Recomendaciónes para el análisis</a></li>
-  <li><a href="#resumen" id="toc-resumen" class="nav-link" data-scroll-target="#resumen">Resumen</a></li>
-  <li><a href="#ejercicios-prácticos" id="toc-ejercicios-prácticos" class="nav-link" data-scroll-target="#ejercicios-prácticos">Ejercicios prácticos</a></li>
-  <li><a href="#notas-finales" id="toc-notas-finales" class="nav-link" data-scroll-target="#notas-finales">Notas finales</a></li>
+  <li><a href="#verificar-retención" id="toc-verificar-retención" class="nav-link" data-scroll-target="#verificar-retención">Verificar retención</a></li>
+  <li><a href="#guardar-checkpoint" id="toc-guardar-checkpoint" class="nav-link" data-scroll-target="#guardar-checkpoint">Guardar checkpoint</a></li>
   </ul>
 </nav>
     </div>
@@ -147,7 +178,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Dada2 - Filter and Trim</h1>
+<h1 class="title">DADA2 — Filter and Trim</h1>
 </div>
 
 
@@ -164,200 +195,190 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>El paso <strong>Filter and Trim</strong> es el primer gran filtro de calidad en el pipeline de dada2.<br>
-Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.</p>
+<p>El paso <code>filterAndTrim()</code> es el primer gran filtro de calidad en el pipeline. Su objetivo es eliminar lecturas de baja calidad y truncar las secuencias, asegurando que solo las regiones confiables pasen a los análisis posteriores.</p>
 <hr>
-<section id="qué-hace-el-código-en-este-paso" class="level2">
-<h2 class="anchored" data-anchor-id="qué-hace-el-código-en-este-paso">¿Qué hace el código en este paso?</h2>
-<section id="cálculo-de-puntos-de-truncamiento-trunclen" class="level3">
-<h3 class="anchored" data-anchor-id="cálculo-de-puntos-de-truncamiento-trunclen">1. Cálculo de puntos de truncamiento (<code>truncLen</code>)</h3>
-<ul>
-<li>El pipeline analiza los perfiles de calidad de las lecturas forward y reverse.</li>
-<li>Se determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (<code>F_qual</code>, <code>R_qual</code>).</li>
-<li>Se usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.</li>
-</ul>
+<section id="los-parámetros-de-filterandtrim" class="level2">
+<h2 class="anchored" data-anchor-id="los-parámetros-de-filterandtrim">Los parámetros de <code>filterAndTrim()</code></h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  fnFs, filtFs, fnRs, filtRs,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(<span class="dv">65</span>, <span class="dv">65</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">multithread =</span> <span class="dv">4</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">matchIDs    =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="trunclen-longitud-de-truncamiento" class="level3">
+<h3 class="anchored" data-anchor-id="trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</h3>
+<p>Trunca cada lectura a la longitud especificada. El primer valor es para forward (R1), el segundo para reverse (R2). Todo lo que quede después de ese punto se descarta.</p>
+<p><strong>¿Cómo elegir el valor?</strong> Usa las gráficas de calidad del paso anterior. Busca el punto donde la calidad mediana cae por debajo de Q30 y trunca ahí. Recuerda verificar que quede suficiente solapamiento para el merge:</p>
+<pre><code>solapamiento = truncLen_F + truncLen_R - longitud_amplicón</code></pre>
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si el solapamiento es menor a 20 bp, el merge puede fallar o producir pocos resultados. En ese caso, aumenta <code>truncLen</code> aunque implique incluir algunas bases de menor calidad.</p>
+</div>
+</div>
 </section>
-<section id="limitación-del-recorte-máximo-max_trim" class="level3">
-<h3 class="anchored" data-anchor-id="limitación-del-recorte-máximo-max_trim">2. Limitación del recorte máximo (<code>max_trim</code>)</h3>
-<ul>
-<li>Se compara el punto de truncamiento calculado con el valor máximo permitido (<code>max_trim</code>) para evitar perder el solapamiento necesario entre lecturas forward y reverse.</li>
-</ul>
+<section id="maxn-bases-ambiguas" class="level3">
+<h3 class="anchored" data-anchor-id="maxn-bases-ambiguas"><code>maxN</code> — Bases ambiguas</h3>
+<p>Número máximo de bases <code>N</code> (ambiguas) permitidas por lectura. DADA2 <strong>requiere</strong> que sea 0 — no puede modelar errores en posiciones ambiguas. Si una lectura tiene al menos una N, se descarta.</p>
 </section>
-<section id="verificación-de-primers" class="level3">
-<h3 class="anchored" data-anchor-id="verificación-de-primers">3. Verificación de primers</h3>
-<p>Antes de filtrar, el pipeline verifica que los primers esperados estén presentes en las lecturas. Esto detecta errores de configuración (por ejemplo, si <code>locus_shorthand</code> no corresponde al locus real):</p>
-<p>Si el primer F <strong>no</strong> aparece al inicio de R1, probablemente los primers ya fueron removidos por cutadapt (lo esperado) o hay un error en la secuencia del primer.</p>
-</section>
-<section id="filtrado-y-trimming" class="level3">
-<h3 class="anchored" data-anchor-id="filtrado-y-trimming">4. Filtrado y trimming</h3>
-<ul>
-<li>Se ejecuta el filtrado usando los parámetros:
-<ul>
-<li><strong><code>truncLen</code></strong>: recorta las lecturas en los puntos calculados.</li>
-<li><strong><code>maxEE</code></strong>: define el máximo de errores esperados permitidos por lectura (usualmente 2).</li>
-<li><strong><code>maxN</code></strong>: no permite bases ambiguas (N).</li>
-<li><strong><code>truncQ</code></strong>: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).</li>
-<li><strong><code>rm.phix</code></strong>: elimina lecturas que corresponden al control PhiX de Illumina.</li>
-</ul></li>
-<li>El código válida que los puntos de truncamiento sean razonables (no menores a 50 bp).</li>
-</ul>
-</section>
-<section id="diagnóstico-y-reporte-de-retención" class="level3">
-<h3 class="anchored" data-anchor-id="diagnóstico-y-reporte-de-retención">4. Diagnóstico y reporte de retención</h3>
-<ul>
-<li>Se calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).</li>
-<li>Si la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.</li>
-<li>Se identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.</li>
-</ul>
-</section>
-<section id="guardado-de-estadísticas" class="level3">
-<h3 class="anchored" data-anchor-id="guardado-de-estadísticas">5. Guardado de estadísticas</h3>
-<ul>
-<li>Se guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico.</li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="explicación-de-los-parámetros-principales" class="level2">
-<h2 class="anchored" data-anchor-id="explicación-de-los-parámetros-principales">Explicación de los parámetros principales</h2>
+<section id="maxee-errores-esperados" class="level3">
+<h3 class="anchored" data-anchor-id="maxee-errores-esperados"><code>maxEE</code> — Errores esperados</h3>
+<p>Es el filtro más importante después de <code>truncLen</code>. Define el máximo de <strong>errores esperados</strong> permitidos por lectura. Se calcula sumando las probabilidades de error de cada base:</p>
+<pre><code>EE = Σ 10^(-Q/10)</code></pre>
+<p>Por ejemplo, una lectura de 100 bases todas con Q30 tiene EE = 100 × 0.001 = 0.1. Una lectura con varias bases de Q10–Q15 acumula errores rápidamente.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 14%">
-<col style="width: 85%">
+<col style="width: 42%">
+<col style="width: 57%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Parámetro</th>
-<th>Descripción</th>
+<th style="text-align: left;"><code>maxEE</code></th>
+<th style="text-align: left;">Qué filtra</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>truncLen</code></td>
-<td>Posición donde se recorta cada lectura (Forward y Reverse), calculada según calidad</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Muy estricto — solo lecturas de alta calidad</td>
 </tr>
 <tr class="even">
-<td><code>maxEE</code></td>
-<td>Máximo número de errores esperados permitidos por lectura (por dirección)</td>
+<td style="text-align: left;"><strong>2</strong></td>
+<td style="text-align: left;"><strong>Valor recomendado</strong> — buen balance entre calidad y retención</td>
 </tr>
 <tr class="odd">
-<td><code>maxN</code></td>
-<td>Número máximo de bases ambiguas permitidas (usualmente 0)</td>
-</tr>
-<tr class="even">
-<td><code>truncQ</code></td>
-<td>Recorta la lectura si encuentra una base con calidad menor a este valor</td>
-</tr>
-<tr class="odd">
-<td><code>rm.phix</code></td>
-<td>Elimina lecturas que corresponden al control PhiX de Illumina</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">Más permisivo — útil si la retención es muy baja</td>
 </tr>
 </tbody>
 </table>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>maxEE</code> es mejor que un umbral de calidad fijo (como “descartar si Q &lt; 20”) porque considera la calidad acumulada de <em>todas</em> las bases, no solo la peor.</p>
+</div>
+</div>
+</section>
+<section id="truncq-truncamiento-por-calidad" class="level3">
+<h3 class="anchored" data-anchor-id="truncq-truncamiento-por-calidad"><code>truncQ</code> — Truncamiento por calidad</h3>
+<p>Si una base individual tiene calidad menor a este valor, la lectura se trunca en ese punto (y todo lo que sigue se descarta). Con <code>truncQ = 2</code>, solo bases extremadamente malas (Q ≤ 2, &gt;60% de probabilidad de error) causan truncamiento.</p>
+<p>En la práctica, <code>truncLen</code> hace la mayor parte del trabajo y <code>truncQ</code> actúa como red de seguridad para lecturas individuales con caídas abruptas de calidad.</p>
+</section>
+<section id="rm.phix-control-phix" class="level3">
+<h3 class="anchored" data-anchor-id="rm.phix-control-phix"><code>rm.phix</code> — Control PhiX</h3>
+<p>Illumina agrega lecturas del genoma PhiX como control interno de calidad en cada corrida de secuenciación. Estas lecturas no son biológicas y deben eliminarse. Con <code>rm.phix = TRUE</code>, DADA2 las detecta y descarta automáticamente.</p>
+</section>
+<section id="matchids-pareado-de-lecturas" class="level3">
+<h3 class="anchored" data-anchor-id="matchids-pareado-de-lecturas"><code>matchIDs</code> — Pareado de lecturas</h3>
+<p>Asegura que cada lectura forward tenga su par reverse correspondiente en el archivo de salida. Si una lectura R1 pasa los filtros pero su R2 no (o viceversa), ambas se descartan. Esto es necesario porque DADA2 necesita los pares completos para el merge.</p>
 <hr>
 </section>
-<section id="por-qué-es-importante-este-paso" class="level2">
-<h2 class="anchored" data-anchor-id="por-qué-es-importante-este-paso">¿Por qué es importante este paso?</h2>
-<ul>
-<li>Elimina lecturas que podrían introducir errores técnicos en el análisis.</li>
-<li>Asegura que solo las regiones de alta calidad sean usadas para inferir variantes.</li>
-<li>Reduce el ruido y la probabilidad de obtener variantes falsas.</li>
-<li>Permite un diagnóstico temprano de problemas de calidad en la secuenciación.</li>
-</ul>
-<hr>
 </section>
-<section id="recomendaciónes-para-el-análisis" class="level2">
-<h2 class="anchored" data-anchor-id="recomendaciónes-para-el-análisis">Recomendaciónes para el análisis</h2>
-<ul>
-<li>Revisa los gráficos de calidad antes de definir los parámetros de recorte.</li>
-<li>Si la retención de lecturas es baja, considera relajar los parámetros (<code>maxEE</code>, <code>truncLen</code>) o revisar la calidad de la secuenciación.</li>
-<li>Usa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.</li>
-</ul>
-<hr>
-</section>
-<section id="resumen" class="level2">
-<h2 class="anchored" data-anchor-id="resumen">Resumen</h2>
+<section id="verificar-retención" class="level2">
+<h2 class="anchored" data-anchor-id="verificar-retención">Verificar retención</h2>
+<p>Después de filtrar, revisamos qué porcentaje de lecturas pasó todos los filtros:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>low_retention <span class="ot">&lt;-</span> out[,<span class="st">"reads.out"</span>] <span class="sc">/</span> out[,<span class="st">"reads.in"</span>] <span class="sc">&lt;</span> <span class="fl">0.3</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 40%">
-<col style="width: 59%">
+<col style="width: 28%">
+<col style="width: 42%">
+<col style="width: 28%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Aspecto</th>
-<th>Explicación</th>
+<th style="text-align: left;">Retención</th>
+<th style="text-align: left;">Interpretación</th>
+<th style="text-align: left;">Qué hacer</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Qué es</strong></td>
-<td>Primer filtro de calidad y recorte de lecturas en dada2</td>
+<td style="text-align: left;">&gt; 70%</td>
+<td style="text-align: left;">Normal</td>
+<td style="text-align: left;">Continuar</td>
 </tr>
 <tr class="even">
-<td><strong>Cómo se calcula</strong></td>
-<td>Analiza perfiles de calidad, define puntos de truncamiento y aplica filtros</td>
+<td style="text-align: left;">50–70%</td>
+<td style="text-align: left;">Aceptable</td>
+<td style="text-align: left;">Revisar <code>truncLen</code></td>
 </tr>
 <tr class="odd">
-<td><strong>Valores normales</strong></td>
-<td>Retención global &gt; 50%, truncLen &gt; 50 bp</td>
+<td style="text-align: left;">&lt; 50%</td>
+<td style="text-align: left;">Bajo</td>
+<td style="text-align: left;">Aumentar <code>maxEE</code> a 3–5, o relajar <code>truncLen</code></td>
 </tr>
 <tr class="even">
-<td><strong>Por qué importa</strong></td>
-<td>Evita errores técnicos y mejora la precisión de los ASVs</td>
-</tr>
-<tr class="odd">
-<td><strong>Qué hacer</strong></td>
-<td>Ajusta parámetros según calidad, revisa diagnósticos y gráficos</td>
+<td style="text-align: left;">&lt; 30% en una muestra</td>
+<td style="text-align: left;">Problemática</td>
+<td style="text-align: left;">Revisar con FastQC, considerar excluir</td>
 </tr>
 </tbody>
 </table>
-<hr>
-</section>
-<section id="ejercicios-prácticos" class="level2">
-<h2 class="anchored" data-anchor-id="ejercicios-prácticos">Ejercicios prácticos</h2>
-<ol type="1">
-<li><strong>Identifica el punto de truncamiento óptimo</strong> usando los gráficos de calidad generados por el pipeline.</li>
-<li><strong>Revisa la tabla de filtrado</strong>: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?</li>
-<li><strong>Compara la retención global</strong> entre runs diferentes. ¿Qué parámetros afectan más la retención?</li>
-</ol>
-<hr>
-</section>
-<section id="notas-finales" class="level2">
-<h2 class="anchored" data-anchor-id="notas-finales">Notas finales</h2>
-<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class="callout-icon"></i>
+<i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Recuerda
+Advertencia
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<ul>
-<li>El paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.</li>
-<li>Ajusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.</li>
-</ul>
+<p><strong>¿Retención baja en todas las muestras?</strong> Lo más común es que <code>truncLen</code> sea demasiado corto. Prueba aumentándolo y verifica que la calidad sea aceptable en las gráficas.</p>
+<p><strong>¿Retención baja en pocas muestras?</strong> Probablemente son muestras con problemas de secuenciación. Revísalas individualmente con FastQC antes de decidir si excluirlas.</p>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<hr>
+</section>
+<section id="guardar-checkpoint" class="level2">
+<h2 class="anchored" data-anchor-id="guardar-checkpoint">Guardar checkpoint</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     fastq_location, output_location, metadata_location,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 1 guardado"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Para el curso
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Los gráficos de calidad antes y después del filtrado.</li>
-<li>La tabla de filtrado y retención por muestra.</li>
-<li>Cómo interpretar valores “normales” vs “problemáticos”.</li>
-<li>Qué hacer si hay valores bajos de retención.</li>
-</ol>
-</div>
-</div>
+<p>Este checkpoint permite reanudar desde aquí sin repetir el filtrado — útil para probar diferentes parámetros en los pasos siguientes.</p>
 
 
 </section>

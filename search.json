@@ -310,58 +310,30 @@
   {
     "objectID": "2-dada2QAQC-Filter.html",
     "href": "2-dada2QAQC-Filter.html",
-    "title": "Dada2 - Filter and Trim",
+    "title": "DADA2 — Filter and Trim",
     "section": "",
-    "text": "El paso Filter and Trim es el primer gran filtro de calidad en el pipeline de dada2.\nSu objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores."
+    "text": "El paso filterAndTrim() es el primer gran filtro de calidad en el pipeline. Su objetivo es eliminar lecturas de baja calidad y truncar las secuencias, asegurando que solo las regiones confiables pasen a los análisis posteriores."
   },
   {
-    "objectID": "2-dada2QAQC-Filter.html#qué-hace-el-código-en-este-paso",
-    "href": "2-dada2QAQC-Filter.html#qué-hace-el-código-en-este-paso",
-    "title": "Dada2 - Filter and Trim",
-    "section": "¿Qué hace el código en este paso?",
-    "text": "¿Qué hace el código en este paso?\n\n1. Cálculo de puntos de truncamiento (truncLen)\n\nEl pipeline analiza los perfiles de calidad de las lecturas forward y reverse.\nSe determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (F_qual, R_qual).\nSe usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.\n\n\n\n2. Limitación del recorte máximo (max_trim)\n\nSe compara el punto de truncamiento calculado con el valor máximo permitido (max_trim) para evitar perder el solapamiento necesario entre lecturas forward y reverse.\n\n\n\n3. Verificación de primers\nAntes de filtrar, el pipeline verifica que los primers esperados estén presentes en las lecturas. Esto detecta errores de configuración (por ejemplo, si locus_shorthand no corresponde al locus real):\nSi el primer F no aparece al inicio de R1, probablemente los primers ya fueron removidos por cutadapt (lo esperado) o hay un error en la secuencia del primer.\n\n\n4. Filtrado y trimming\n\nSe ejecuta el filtrado usando los parámetros:\n\ntruncLen: recorta las lecturas en los puntos calculados.\nmaxEE: define el máximo de errores esperados permitidos por lectura (usualmente 2).\nmaxN: no permite bases ambiguas (N).\ntruncQ: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).\nrm.phix: elimina lecturas que corresponden al control PhiX de Illumina.\n\nEl código válida que los puntos de truncamiento sean razonables (no menores a 50 bp).\n\n\n\n4. Diagnóstico y reporte de retención\n\nSe calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).\nSi la retención es baja (&lt; 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.\nSe identifican muestras con retención muy baja (&lt; 30%), lo que puede indicar problemas de calidad o contaminación.\n\n\n\n5. Guardado de estadísticas\n\nSe guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico."
+    "objectID": "2-dada2QAQC-Filter.html#los-parámetros-de-filterandtrim",
+    "href": "2-dada2QAQC-Filter.html#los-parámetros-de-filterandtrim",
+    "title": "DADA2 — Filter and Trim",
+    "section": "Los parámetros de filterAndTrim()",
+    "text": "Los parámetros de filterAndTrim()\n\n\nCódigo\nout &lt;- filterAndTrim(\n  fnFs, filtFs, fnRs, filtRs,\n  truncLen    = c(65, 65),\n  maxN        = 0,\n  maxEE       = c(2, 2),\n  truncQ      = 2,\n  rm.phix     = TRUE,\n  compress    = TRUE,\n  multithread = 4,\n  matchIDs    = TRUE\n)\n\n\n\ntruncLen — Longitud de truncamiento\nTrunca cada lectura a la longitud especificada. El primer valor es para forward (R1), el segundo para reverse (R2). Todo lo que quede después de ese punto se descarta.\n¿Cómo elegir el valor? Usa las gráficas de calidad del paso anterior. Busca el punto donde la calidad mediana cae por debajo de Q30 y trunca ahí. Recuerda verificar que quede suficiente solapamiento para el merge:\nsolapamiento = truncLen_F + truncLen_R - longitud_amplicón\n\n\n\n\n\n\nAdvertencia\n\n\n\nSi el solapamiento es menor a 20 bp, el merge puede fallar o producir pocos resultados. En ese caso, aumenta truncLen aunque implique incluir algunas bases de menor calidad.\n\n\n\n\nmaxN — Bases ambiguas\nNúmero máximo de bases N (ambiguas) permitidas por lectura. DADA2 requiere que sea 0 — no puede modelar errores en posiciones ambiguas. Si una lectura tiene al menos una N, se descarta.\n\n\nmaxEE — Errores esperados\nEs el filtro más importante después de truncLen. Define el máximo de errores esperados permitidos por lectura. Se calcula sumando las probabilidades de error de cada base:\nEE = Σ 10^(-Q/10)\nPor ejemplo, una lectura de 100 bases todas con Q30 tiene EE = 100 × 0.001 = 0.1. Una lectura con varias bases de Q10–Q15 acumula errores rápidamente.\n\n\n\n\n\n\n\nmaxEE\nQué filtra\n\n\n\n\n1\nMuy estricto — solo lecturas de alta calidad\n\n\n2\nValor recomendado — buen balance entre calidad y retención\n\n\n5\nMás permisivo — útil si la retención es muy baja\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nmaxEE es mejor que un umbral de calidad fijo (como “descartar si Q &lt; 20”) porque considera la calidad acumulada de todas las bases, no solo la peor.\n\n\n\n\ntruncQ — Truncamiento por calidad\nSi una base individual tiene calidad menor a este valor, la lectura se trunca en ese punto (y todo lo que sigue se descarta). Con truncQ = 2, solo bases extremadamente malas (Q ≤ 2, &gt;60% de probabilidad de error) causan truncamiento.\nEn la práctica, truncLen hace la mayor parte del trabajo y truncQ actúa como red de seguridad para lecturas individuales con caídas abruptas de calidad.\n\n\nrm.phix — Control PhiX\nIllumina agrega lecturas del genoma PhiX como control interno de calidad en cada corrida de secuenciación. Estas lecturas no son biológicas y deben eliminarse. Con rm.phix = TRUE, DADA2 las detecta y descarta automáticamente.\n\n\nmatchIDs — Pareado de lecturas\nAsegura que cada lectura forward tenga su par reverse correspondiente en el archivo de salida. Si una lectura R1 pasa los filtros pero su R2 no (o viceversa), ambas se descartan. Esto es necesario porque DADA2 necesita los pares completos para el merge."
   },
   {
-    "objectID": "2-dada2QAQC-Filter.html#explicación-de-los-parámetros-principales",
-    "href": "2-dada2QAQC-Filter.html#explicación-de-los-parámetros-principales",
-    "title": "Dada2 - Filter and Trim",
-    "section": "Explicación de los parámetros principales",
-    "text": "Explicación de los parámetros principales\n\n\n\n\n\n\n\nParámetro\nDescripción\n\n\n\n\ntruncLen\nPosición donde se recorta cada lectura (Forward y Reverse), calculada según calidad\n\n\nmaxEE\nMáximo número de errores esperados permitidos por lectura (por dirección)\n\n\nmaxN\nNúmero máximo de bases ambiguas permitidas (usualmente 0)\n\n\ntruncQ\nRecorta la lectura si encuentra una base con calidad menor a este valor\n\n\nrm.phix\nElimina lecturas que corresponden al control PhiX de Illumina"
+    "objectID": "2-dada2QAQC-Filter.html#verificar-retención",
+    "href": "2-dada2QAQC-Filter.html#verificar-retención",
+    "title": "DADA2 — Filter and Trim",
+    "section": "Verificar retención",
+    "text": "Verificar retención\nDespués de filtrar, revisamos qué porcentaje de lecturas pasó todos los filtros:\n\n\nCódigo\npct_retained &lt;- round(sum(out[,\"reads.out\"]) / sum(out[,\"reads.in\"]) * 100, 2)\nmessage(\"Retención global: \", pct_retained, \"%\")\n\nlow_retention &lt;- out[,\"reads.out\"] / out[,\"reads.in\"] &lt; 0.3\nif (any(low_retention)) warning(\"Muestras &lt; 30%: \", paste(rownames(out)[low_retention], collapse=\", \"))\n\nhead(out)\n\n\n\n\n\n\n\n\n\n\nRetención\nInterpretación\nQué hacer\n\n\n\n\n&gt; 70%\nNormal\nContinuar\n\n\n50–70%\nAceptable\nRevisar truncLen\n\n\n&lt; 50%\nBajo\nAumentar maxEE a 3–5, o relajar truncLen\n\n\n&lt; 30% en una muestra\nProblemática\nRevisar con FastQC, considerar excluir\n\n\n\n\n\n\n\n\n\nAdvertencia\n\n\n\n¿Retención baja en todas las muestras? Lo más común es que truncLen sea demasiado corto. Prueba aumentándolo y verifica que la calidad sea aceptable en las gráficas.\n¿Retención baja en pocas muestras? Probablemente son muestras con problemas de secuenciación. Revísalas individualmente con FastQC antes de decidir si excluirlas."
   },
   {
-    "objectID": "2-dada2QAQC-Filter.html#por-qué-es-importante-este-paso",
-    "href": "2-dada2QAQC-Filter.html#por-qué-es-importante-este-paso",
-    "title": "Dada2 - Filter and Trim",
-    "section": "¿Por qué es importante este paso?",
-    "text": "¿Por qué es importante este paso?\n\nElimina lecturas que podrían introducir errores técnicos en el análisis.\nAsegura que solo las regiones de alta calidad sean usadas para inferir variantes.\nReduce el ruido y la probabilidad de obtener variantes falsas.\nPermite un diagnóstico temprano de problemas de calidad en la secuenciación."
-  },
-  {
-    "objectID": "2-dada2QAQC-Filter.html#recomendaciónes-para-el-análisis",
-    "href": "2-dada2QAQC-Filter.html#recomendaciónes-para-el-análisis",
-    "title": "Dada2 - Filter and Trim",
-    "section": "Recomendaciónes para el análisis",
-    "text": "Recomendaciónes para el análisis\n\nRevisa los gráficos de calidad antes de definir los parámetros de recorte.\nSi la retención de lecturas es baja, considera relajar los parámetros (maxEE, truncLen) o revisar la calidad de la secuenciación.\nUsa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis."
-  },
-  {
-    "objectID": "2-dada2QAQC-Filter.html#resumen",
-    "href": "2-dada2QAQC-Filter.html#resumen",
-    "title": "Dada2 - Filter and Trim",
-    "section": "Resumen",
-    "text": "Resumen\n\n\n\n\n\n\n\nAspecto\nExplicación\n\n\n\n\nQué es\nPrimer filtro de calidad y recorte de lecturas en dada2\n\n\nCómo se calcula\nAnaliza perfiles de calidad, define puntos de truncamiento y aplica filtros\n\n\nValores normales\nRetención global &gt; 50%, truncLen &gt; 50 bp\n\n\nPor qué importa\nEvita errores técnicos y mejora la precisión de los ASVs\n\n\nQué hacer\nAjusta parámetros según calidad, revisa diagnósticos y gráficos"
-  },
-  {
-    "objectID": "2-dada2QAQC-Filter.html#ejercicios-prácticos",
-    "href": "2-dada2QAQC-Filter.html#ejercicios-prácticos",
-    "title": "Dada2 - Filter and Trim",
-    "section": "Ejercicios prácticos",
-    "text": "Ejercicios prácticos\n\nIdentifica el punto de truncamiento óptimo usando los gráficos de calidad generados por el pipeline.\nRevisa la tabla de filtrado: ¿Qué muestras tienen retención &lt; 30%? ¿Por qué?\nCompara la retención global entre runs diferentes. ¿Qué parámetros afectan más la retención?"
-  },
-  {
-    "objectID": "2-dada2QAQC-Filter.html#notas-finales",
-    "href": "2-dada2QAQC-Filter.html#notas-finales",
-    "title": "Dada2 - Filter and Trim",
-    "section": "Notas finales",
-    "text": "Notas finales\n\n\n\n\n\n\nNotaRecuerda\n\n\n\n\nEl paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.\nAjusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.\n\n\n\n\n\n\n\n\n\nTipPara el curso\n\n\n\n\nLos gráficos de calidad antes y después del filtrado.\nLa tabla de filtrado y retención por muestra.\nCómo interpretar valores “normales” vs “problemáticos”.\nQué hacer si hay valores bajos de retención."
+    "objectID": "2-dada2QAQC-Filter.html#guardar-checkpoint",
+    "href": "2-dada2QAQC-Filter.html#guardar-checkpoint",
+    "title": "DADA2 — Filter and Trim",
+    "section": "Guardar checkpoint",
+    "text": "Guardar checkpoint\n\n\nCódigo\nsave(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,\n     fastq_location, output_location, metadata_location,\n     file = file.path(output_location, \"rdata_output\",\n                      paste0(run_name, \"_\", primer.data$locus_shorthand[i],\n                             \"_checkpoint1_filterAndTrim.RData\")))\nmessage(\"Checkpoint 1 guardado\")\n\n\nEste checkpoint permite reanudar desde aquí sin repetir el filtrado — útil para probar diferentes parámetros en los pasos siguientes."
   },
   {
     "objectID": "2-dada2QAQC-Chimeras.html",
