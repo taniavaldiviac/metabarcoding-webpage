@@ -159,7 +159,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#los-parámetros-de-filterandtrim" id="toc-los-parámetros-de-filterandtrim" class="nav-link active" data-scroll-target="#los-parámetros-de-filterandtrim">Los parámetros de <code>filterAndTrim()</code></a>
+  <li><a href="#distribución-de-longitudes-de-lecturas-opcional" id="toc-distribución-de-longitudes-de-lecturas-opcional" class="nav-link active" data-scroll-target="#distribución-de-longitudes-de-lecturas-opcional">Distribución de longitudes de lecturas (opcional)</a></li>
+  <li><a href="#verificación-de-primers" id="toc-verificación-de-primers" class="nav-link" data-scroll-target="#verificación-de-primers">Verificación de primers</a></li>
+  <li><a href="#los-parámetros-de-filterandtrim" id="toc-los-parámetros-de-filterandtrim" class="nav-link" data-scroll-target="#los-parámetros-de-filterandtrim">Los parámetros de <code>filterAndTrim()</code></a>
   <ul class="collapse">
   <li><a href="#trunclen-longitud-de-truncamiento" id="toc-trunclen-longitud-de-truncamiento" class="nav-link" data-scroll-target="#trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</a></li>
   <li><a href="#maxn-bases-ambiguas" id="toc-maxn-bases-ambiguas" class="nav-link" data-scroll-target="#maxn-bases-ambiguas"><code>maxN</code> — Bases ambiguas</a></li>
@@ -197,22 +199,134 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>El paso <code>filterAndTrim()</code> es el primer gran filtro de calidad en el pipeline. Su objetivo es eliminar lecturas de baja calidad y truncar las secuencias, asegurando que solo las regiones confiables pasen a los análisis posteriores.</p>
 <hr>
+<section id="distribución-de-longitudes-de-lecturas-opcional" class="level2">
+<h2 class="anchored" data-anchor-id="distribución-de-longitudes-de-lecturas-opcional">Distribución de longitudes de lecturas (opcional)</h2>
+<p>Antes de filtrar, es útil revisar la distribución de longitudes de las lecturas crudas. Este diagnóstico permite detectar problemas de secuenciación como mezclas inesperadas de longitudes o lecturas truncadas prematuramente. No afecta el pipeline — es solo informativo.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>PLOT_RAW_LENGTHS <span class="ot">&lt;-</span> <span class="cn">TRUE</span>  <span class="co"># cambiar a FALSE para saltar este paso</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (PLOT_RAW_LENGTHS) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  sample_n_reads <span class="ot">&lt;-</span> <span class="dv">100000</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  get_lengths <span class="ot">&lt;-</span> <span class="cf">function</span>(fq_file, <span class="at">n =</span> sample_n_reads) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    streamer <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">FastqStreamer</span>(fq_file, <span class="at">n =</span> n)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="fu">close</span>(streamer))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    chunk <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">yield</span>(streamer)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(chunk) <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="fu">integer</span>(<span class="dv">0</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    ShortRead<span class="sc">::</span><span class="fu">width</span>(ShortRead<span class="sc">::</span><span class="fu">sread</span>(chunk))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  lengths_F <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_df</span>(fnFs, <span class="sc">~</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">ReadType =</span> <span class="st">"Forward"</span>, <span class="at">File =</span> <span class="fu">basename</span>(.x), <span class="at">Length =</span> <span class="fu">get_lengths</span>(.x)))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  lengths_R <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_df</span>(fnRs, <span class="sc">~</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ReadType =</span> <span class="st">"Reverse"</span>, <span class="at">File =</span> <span class="fu">basename</span>(.x), <span class="at">Length =</span> <span class="fu">get_lengths</span>(.x)))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  lengths_all <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(lengths_F, lengths_R)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_raw_read_lengths.png"</span>)),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">width =</span> <span class="dv">2000</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">300</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(lengths_all, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">fill =</span> ReadType)) <span class="sc">+</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> ReadType, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribución de longitudes de lecturas crudas"</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                    <span class="at">x =</span> <span class="st">"Longitud (bp)"</span>, <span class="at">y =</span> <span class="st">"Frecuencia"</span>) <span class="sc">+</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Qué buscar en la gráfica?</strong> Lo normal es ver un pico concentrado en una sola longitud (la longitud completa de la lectura). Si ves múltiples picos o una distribución muy dispersa, puede indicar problemas en la secuenciación o mezcla de librerías con diferentes longitudes.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="verificación-de-primers" class="level2">
+<h2 class="anchored" data-anchor-id="verificación-de-primers">Verificación de primers</h2>
+<p>Antes de filtrar, verificamos que los primers hayan sido removidos correctamente por Cutadapt. Si los primers siguen presentes al inicio de las lecturas, el análisis se verá afectado porque DADA2 interpretará las secuencias de primer como parte de la secuencia biológica.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Biostrings)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>check_primers <span class="ot">&lt;-</span> <span class="cf">function</span>(fastq_file, primer_seq, <span class="at">n =</span> <span class="dv">1000</span>) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  streamer <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">FastqStreamer</span>(fastq_file, <span class="at">n =</span> n)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">close</span>(streamer))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  chunk <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">yield</span>(streamer)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  seqs <span class="ot">&lt;-</span> <span class="fu">as.character</span>(ShortRead<span class="sc">::</span><span class="fu">sread</span>(chunk))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  exact_match <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="fu">paste0</span>(<span class="st">"^"</span>, primer_seq), seqs))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  substr_seqs <span class="ot">&lt;-</span> <span class="fu">substr</span>(seqs, <span class="dv">1</span>, <span class="dv">50</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  anywhere_match <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(primer_seq, substr_seqs))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">exact =</span> exact_match, <span class="at">anywhere =</span> anywhere_match, <span class="at">total =</span> <span class="fu">length</span>(seqs))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Secuencias de primers (ajustar según tu marcador)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>primer_F <span class="ot">&lt;-</span> <span class="st">"TTAGATACCCCACTATGC"</span>  <span class="co"># ejemplo 12S</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>primer_R <span class="ot">&lt;-</span> <span class="st">"TAGAACAGGCTCCTCTAG"</span>  <span class="co"># ejemplo 12S</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar en R1 (forward)</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>check_F_in_R1   <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnFs[<span class="dv">1</span>], primer_F)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>check_R_RC_in_R1 <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnFs[<span class="dv">1</span>], <span class="fu">as.character</span>(</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                      Biostrings<span class="sc">::</span><span class="fu">reverseComplement</span>(Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(primer_R))))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar en R2 (reverse)</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>check_R_in_R2   <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnRs[<span class="dv">1</span>], primer_R)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>check_F_RC_in_R2 <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnRs[<span class="dv">1</span>], <span class="fu">as.character</span>(</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>                      Biostrings<span class="sc">::</span><span class="fu">reverseComplement</span>(Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(primer_F))))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R1 — Primer F al inicio: "</span>, check_F_in_R1<span class="sc">$</span>exact, <span class="st">"/"</span>, check_F_in_R1<span class="sc">$</span>total)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R1 — Primer R-RC al inicio: "</span>, check_R_RC_in_R1<span class="sc">$</span>exact, <span class="st">"/"</span>, check_R_RC_in_R1<span class="sc">$</span>total)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R2 — Primer R al inicio: "</span>, check_R_in_R2<span class="sc">$</span>exact, <span class="st">"/"</span>, check_R_in_R2<span class="sc">$</span>total)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R2 — Primer F-RC al inicio: "</span>, check_F_RC_in_R2<span class="sc">$</span>exact, <span class="st">"/"</span>, check_F_RC_in_R2<span class="sc">$</span>total)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Interpretación:</strong></p>
+<ul>
+<li>Si los conteos son <strong>0 o cercanos a 0</strong>: Cutadapt removió los primers correctamente. Esto es lo esperado.</li>
+<li>Si los conteos son <strong>altos</strong> (cercanos al total): los primers no fueron removidos. Revisa la configuración de Cutadapt o verifica que las secuencias de primer en <code>primer_data.csv</code> sean correctas.</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
 <section id="los-parámetros-de-filterandtrim" class="level2">
 <h2 class="anchored" data-anchor-id="los-parámetros-de-filterandtrim">Los parámetros de <code>filterAndTrim()</code></h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  fnFs, filtFs, fnRs, filtRs,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(where_trim_all_Fs, where_trim_all_Rs),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">multithread =</span> <span class="dv">4</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">matchIDs    =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  fnFs, filtFs, fnRs, filtRs,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(where_trim_all_Fs, where_trim_all_Rs),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">multithread =</span> <span class="dv">4</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">matchIDs    =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <section id="trunclen-longitud-de-truncamiento" class="level3">
@@ -305,13 +419,13 @@ Tip
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>low_retention <span class="ot">&lt;-</span> out[,<span class="st">"reads.out"</span>] <span class="sc">/</span> out[,<span class="st">"reads.in"</span>] <span class="sc">&lt;</span> <span class="fl">0.3</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>low_retention <span class="ot">&lt;-</span> out[,<span class="st">"reads.out"</span>] <span class="sc">/</span> out[,<span class="st">"reads.in"</span>] <span class="sc">&lt;</span> <span class="fl">0.3</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <table class="caption-top table">
@@ -371,12 +485,12 @@ Advertencia
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     fastq_location, output_location, metadata_location,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 1 guardado"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>     fastq_location, output_location, metadata_location,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 1 guardado"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Este checkpoint permite reanudar desde aquí sin repetir el filtrado — útil para probar diferentes parámetros en los pasos siguientes.</p>
