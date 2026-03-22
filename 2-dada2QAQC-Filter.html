@@ -204,7 +204,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  fnFs, filtFs, fnRs, filtRs,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(<span class="dv">65</span>, <span class="dv">65</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(where_trim_all_Fs, where_trim_all_Rs),</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,</span>
@@ -218,7 +218,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="trunclen-longitud-de-truncamiento" class="level3">
 <h3 class="anchored" data-anchor-id="trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</h3>
 <p>Trunca cada lectura a la longitud especificada. El primer valor es para forward (R1), el segundo para reverse (R2). Todo lo que quede después de ese punto se descarta.</p>
-<p><strong>¿Cómo elegir el valor?</strong> Usa las gráficas de calidad del paso anterior. Busca el punto donde la calidad mediana cae por debajo de Q30 y trunca ahí. Recuerda verificar que quede suficiente solapamiento para el merge:</p>
+<p>Los valores <code>where_trim_all_Fs</code> y <code>where_trim_all_Rs</code> se calcularon automáticamente en el paso anterior a partir de los perfiles de calidad. Si prefieres ajustarlos manualmente, puedes reemplazarlos por valores fijos (ej. <code>c(120, 100)</code>).</p>
+<p>Recuerda verificar que quede suficiente solapamiento para el merge:</p>
 <pre><code>solapamiento = truncLen_F + truncLen_R - longitud_amplicón</code></pre>
 <div class="callout callout-style-default callout-warning no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
