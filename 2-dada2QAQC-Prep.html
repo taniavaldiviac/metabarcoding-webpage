@@ -165,6 +165,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#localizar-archivos-fastq" id="toc-localizar-archivos-fastq" class="nav-link" data-scroll-target="#localizar-archivos-fastq">Localizar archivos FASTQ</a></li>
   <li><a href="#preparar-rutas-de-archivos-filtrados" id="toc-preparar-rutas-de-archivos-filtrados" class="nav-link" data-scroll-target="#preparar-rutas-de-archivos-filtrados">Preparar rutas de archivos filtrados</a></li>
   <li><a href="#inspección-de-calidad" id="toc-inspección-de-calidad" class="nav-link" data-scroll-target="#inspección-de-calidad">Inspección de calidad</a></li>
+  <li><a href="#distribución-de-longitudes-de-lecturas-opcional" id="toc-distribución-de-longitudes-de-lecturas-opcional" class="nav-link" data-scroll-target="#distribución-de-longitudes-de-lecturas-opcional">Distribución de longitudes de lecturas (opcional)</a></li>
+  <li><a href="#verificación-de-primers" id="toc-verificación-de-primers" class="nav-link" data-scroll-target="#verificación-de-primers">Verificación de primers</a></li>
   <li><a href="#determinar-el-punto-de-truncamiento" id="toc-determinar-el-punto-de-truncamiento" class="nav-link" data-scroll-target="#determinar-el-punto-de-truncamiento">Determinar el punto de truncamiento</a>
   <ul class="collapse">
   <li><a href="#qué-considerar" id="toc-qué-considerar" class="nav-link" data-scroll-target="#qué-considerar">¿Qué considerar?</a></li>
@@ -172,7 +174,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#cómo-verificar-que-el-truncamiento-es-razonable" id="toc-cómo-verificar-que-el-truncamiento-es-razonable" class="nav-link" data-scroll-target="#cómo-verificar-que-el-truncamiento-es-razonable">¿Cómo verificar que el truncamiento es razonable?</a></li>
   <li><a href="#cuándo-ajustar-manualmente" id="toc-cuándo-ajustar-manualmente" class="nav-link" data-scroll-target="#cuándo-ajustar-manualmente">¿Cuándo ajustar manualmente?</a></li>
   </ul></li>
-  <li><a href="#filtrado-y-truncamiento" id="toc-filtrado-y-truncamiento" class="nav-link" data-scroll-target="#filtrado-y-truncamiento">Filtrado y truncamiento</a></li>
+  <li><a href="#filtrado-y-truncamiento-filterandtrim" id="toc-filtrado-y-truncamiento-filterandtrim" class="nav-link" data-scroll-target="#filtrado-y-truncamiento-filterandtrim">Filtrado y truncamiento (<code>filterAndTrim</code>)</a>
+  <ul class="collapse">
+  <li><a href="#trunclen-longitud-de-truncamiento" id="toc-trunclen-longitud-de-truncamiento" class="nav-link" data-scroll-target="#trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</a></li>
+  <li><a href="#maxn-bases-ambiguas" id="toc-maxn-bases-ambiguas" class="nav-link" data-scroll-target="#maxn-bases-ambiguas"><code>maxN</code> — Bases ambiguas</a></li>
+  <li><a href="#maxee-errores-esperados" id="toc-maxee-errores-esperados" class="nav-link" data-scroll-target="#maxee-errores-esperados"><code>maxEE</code> — Errores esperados</a></li>
+  <li><a href="#truncq-truncamiento-por-calidad" id="toc-truncq-truncamiento-por-calidad" class="nav-link" data-scroll-target="#truncq-truncamiento-por-calidad"><code>truncQ</code> — Truncamiento por calidad</a></li>
+  <li><a href="#rm.phix-control-phix" id="toc-rm.phix-control-phix" class="nav-link" data-scroll-target="#rm.phix-control-phix"><code>rm.phix</code> — Control PhiX</a></li>
+  <li><a href="#matchids-pareado-de-lecturas" id="toc-matchids-pareado-de-lecturas" class="nav-link" data-scroll-target="#matchids-pareado-de-lecturas"><code>matchIDs</code> — Pareado de lecturas</a></li>
+  </ul></li>
   <li><a href="#verificar-retención" id="toc-verificar-retención" class="nav-link" data-scroll-target="#verificar-retención">Verificar retención</a></li>
   <li><a href="#guardar-checkpoint" id="toc-guardar-checkpoint" class="nav-link" data-scroll-target="#guardar-checkpoint">Guardar checkpoint</a></li>
   </ul>
@@ -359,13 +369,125 @@ Tip
 </div>
 <hr>
 </section>
+<section id="distribución-de-longitudes-de-lecturas-opcional" class="level2">
+<h2 class="anchored" data-anchor-id="distribución-de-longitudes-de-lecturas-opcional">Distribución de longitudes de lecturas (opcional)</h2>
+<p>Este diagnóstico permite detectar problemas de secuenciación como mezclas inesperadas de longitudes o lecturas truncadas prematuramente. No afecta el pipeline — es solo informativo.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>PLOT_RAW_LENGTHS <span class="ot">&lt;-</span> <span class="cn">TRUE</span>  <span class="co"># cambiar a FALSE para saltar este paso</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (PLOT_RAW_LENGTHS) {</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  sample_n_reads <span class="ot">&lt;-</span> <span class="dv">100000</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  get_lengths <span class="ot">&lt;-</span> <span class="cf">function</span>(fq_file, <span class="at">n =</span> sample_n_reads) {</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    streamer <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">FastqStreamer</span>(fq_file, <span class="at">n =</span> n)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="fu">close</span>(streamer))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    chunk <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">yield</span>(streamer)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(chunk) <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="fu">integer</span>(<span class="dv">0</span>))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    ShortRead<span class="sc">::</span><span class="fu">width</span>(ShortRead<span class="sc">::</span><span class="fu">sread</span>(chunk))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  lengths_F <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_df</span>(fnFs, <span class="sc">~</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">ReadType =</span> <span class="st">"Forward"</span>, <span class="at">File =</span> <span class="fu">basename</span>(.x), <span class="at">Length =</span> <span class="fu">get_lengths</span>(.x)))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  lengths_R <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_df</span>(fnRs, <span class="sc">~</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ReadType =</span> <span class="st">"Reverse"</span>, <span class="at">File =</span> <span class="fu">basename</span>(.x), <span class="at">Length =</span> <span class="fu">get_lengths</span>(.x)))</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  lengths_all <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(lengths_F, lengths_R)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>                <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_raw_read_lengths.png"</span>)),</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">width =</span> <span class="dv">2000</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">300</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(lengths_all, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">fill =</span> ReadType)) <span class="sc">+</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> ReadType, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribución de longitudes de lecturas crudas"</span>,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                    <span class="at">x =</span> <span class="st">"Longitud (bp)"</span>, <span class="at">y =</span> <span class="st">"Frecuencia"</span>) <span class="sc">+</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dev.off</span>()</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Qué buscar en la gráfica?</strong> Lo normal es ver un pico concentrado en una sola longitud (la longitud completa de la lectura). Si ves múltiples picos o una distribución muy dispersa, puede indicar problemas en la secuenciación o mezcla de librerías con diferentes longitudes.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="verificación-de-primers" class="level2">
+<h2 class="anchored" data-anchor-id="verificación-de-primers">Verificación de primers</h2>
+<p>Verificamos que los primers hayan sido removidos correctamente por Cutadapt. Si siguen presentes, DADA2 los interpretará como parte de la secuencia biológica y afectará el análisis.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Biostrings)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>check_primers <span class="ot">&lt;-</span> <span class="cf">function</span>(fastq_file, primer_seq, <span class="at">n =</span> <span class="dv">1000</span>) {</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  streamer <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">FastqStreamer</span>(fastq_file, <span class="at">n =</span> n)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">close</span>(streamer))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  chunk <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">yield</span>(streamer)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  seqs <span class="ot">&lt;-</span> <span class="fu">as.character</span>(ShortRead<span class="sc">::</span><span class="fu">sread</span>(chunk))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  exact_match <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="fu">paste0</span>(<span class="st">"^"</span>, primer_seq), seqs))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  substr_seqs <span class="ot">&lt;-</span> <span class="fu">substr</span>(seqs, <span class="dv">1</span>, <span class="dv">50</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  anywhere_match <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(primer_seq, substr_seqs))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">exact =</span> exact_match, <span class="at">anywhere =</span> anywhere_match, <span class="at">total =</span> <span class="fu">length</span>(seqs))</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Secuencias de primers (ajustar según tu marcador)</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>primer_F <span class="ot">&lt;-</span> <span class="st">"TTAGATACCCCACTATGC"</span>  <span class="co"># ejemplo 12S</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>primer_R <span class="ot">&lt;-</span> <span class="st">"TAGAACAGGCTCCTCTAG"</span>  <span class="co"># ejemplo 12S</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar en R1 (forward)</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>check_F_in_R1   <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnFs[<span class="dv">1</span>], primer_F)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>check_R_RC_in_R1 <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnFs[<span class="dv">1</span>], <span class="fu">as.character</span>(</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>                      Biostrings<span class="sc">::</span><span class="fu">reverseComplement</span>(Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(primer_R))))</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar en R2 (reverse)</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>check_R_in_R2   <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnRs[<span class="dv">1</span>], primer_R)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>check_F_RC_in_R2 <span class="ot">&lt;-</span> <span class="fu">check_primers</span>(fnRs[<span class="dv">1</span>], <span class="fu">as.character</span>(</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>                      Biostrings<span class="sc">::</span><span class="fu">reverseComplement</span>(Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(primer_F))))</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R1 — Primer F al inicio: "</span>, check_F_in_R1<span class="sc">$</span>exact, <span class="st">"/"</span>, check_F_in_R1<span class="sc">$</span>total)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R1 — Primer R-RC al inicio: "</span>, check_R_RC_in_R1<span class="sc">$</span>exact, <span class="st">"/"</span>, check_R_RC_in_R1<span class="sc">$</span>total)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R2 — Primer R al inicio: "</span>, check_R_in_R2<span class="sc">$</span>exact, <span class="st">"/"</span>, check_R_in_R2<span class="sc">$</span>total)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"R2 — Primer F-RC al inicio: "</span>, check_F_RC_in_R2<span class="sc">$</span>exact, <span class="st">"/"</span>, check_F_RC_in_R2<span class="sc">$</span>total)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Interpretación:</strong></p>
+<ul>
+<li>Si los conteos son <strong>0 o cercanos a 0</strong>: Cutadapt removió los primers correctamente. Esto es lo esperado.</li>
+<li>Si los conteos son <strong>altos</strong> (cercanos al total): los primers no fueron removidos. Revisa la configuración de Cutadapt o las secuencias de primer en <code>primer_data.csv</code>.</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
 <section id="determinar-el-punto-de-truncamiento" class="level2">
 <h2 class="anchored" data-anchor-id="determinar-el-punto-de-truncamiento">Determinar el punto de truncamiento</h2>
 <p>Elegir dónde truncar las lecturas es una de las decisiones más importantes del pipeline. Si truncas demasiado pronto, pierdes información; si truncas demasiado tarde, incluyes bases de baja calidad que introducen errores falsos.</p>
 <section id="qué-considerar" class="level3">
 <h3 class="anchored" data-anchor-id="qué-considerar">¿Qué considerar?</h3>
 <ol type="1">
-<li><p><strong>Calidad Phred</strong>: el truncamiento debe hacerse donde la calidad mediana cae por debajo de <strong>Q30</strong> (99.9% de precisión). Esto se observa en las gráficas de calidad del paso anterior.</p></li>
+<li><p><strong>Calidad Phred</strong>: el truncamiento debe hacerse donde la calidad mediana cae por debajo de <strong>Q30</strong> (99.9% de precisión). Esto se observa en las gráficas de calidad.</p></li>
 <li><p><strong>Solapamiento para el merge</strong>: las lecturas forward y reverse deben solaparse lo suficiente para poder unirlas después. Si el amplicón mide 170 bp y truncas ambas lecturas a 100 bp, tendrás 100 + 100 - 170 = 30 bp de solapamiento. DADA2 requiere al menos 12 bp, pero más solapamiento es mejor.</p></li>
 <li><p><strong><code>max_trim</code> en <code>primer_data.csv</code></strong>: este valor define la longitud máxima de truncamiento permitida para tu marcador, calculada para garantizar suficiente solapamiento.</p></li>
 </ol>
@@ -376,41 +498,41 @@ Tip
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500000</span>; window_size <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Forward ---</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>trimsF <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(fnFs))</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (f <span class="cf">in</span> <span class="fu">seq_along</span>(fnFs)) {</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  srqa   <span class="ot">&lt;-</span> <span class="fu">qa</span>(fnFs[f], <span class="at">n =</span> n)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  df     <span class="ot">&lt;-</span> srqa[[<span class="st">"perCycle"</span>]]<span class="sc">$</span>quality</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  means  <span class="ot">&lt;-</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Score <span class="sc">*</span> df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle) <span class="sc">/</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  window_values <span class="ot">&lt;-</span> <span class="fu">vapply</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(means) <span class="sc">-</span> window_size),</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                          <span class="cf">function</span>(j) <span class="fu">mean</span>(means[j<span class="sc">:</span>(j <span class="sc">+</span> window_size)]), <span class="fu">numeric</span>(<span class="dv">1</span>))</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  trimsF[f] <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">which</span>(window_values <span class="sc">&lt;</span> <span class="dv">30</span>))</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>where_trim_all_Fs <span class="ot">&lt;-</span> <span class="fu">median</span>(trimsF, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (where_trim_all_Fs <span class="sc">&gt;</span> primer.data<span class="sc">$</span>max_trim[i]) where_trim_all_Fs <span class="ot">&lt;-</span> primer.data<span class="sc">$</span>max_trim[i]</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Reverse ---</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>trimsR <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(fnRs))</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (r <span class="cf">in</span> <span class="fu">seq_along</span>(fnRs)) {</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  srqa   <span class="ot">&lt;-</span> <span class="fu">qa</span>(fnRs[r], <span class="at">n =</span> n)</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  df     <span class="ot">&lt;-</span> srqa[[<span class="st">"perCycle"</span>]]<span class="sc">$</span>quality</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  means  <span class="ot">&lt;-</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Score <span class="sc">*</span> df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle) <span class="sc">/</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle)</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  window_values <span class="ot">&lt;-</span> <span class="fu">vapply</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(means) <span class="sc">-</span> window_size),</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                          <span class="cf">function</span>(j) <span class="fu">mean</span>(means[j<span class="sc">:</span>(j <span class="sc">+</span> window_size)]), <span class="fu">numeric</span>(<span class="dv">1</span>))</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  trimsR[r] <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">which</span>(window_values <span class="sc">&lt;</span> <span class="dv">30</span>))</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>where_trim_all_Rs <span class="ot">&lt;-</span> <span class="fu">median</span>(trimsR, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (where_trim_all_Rs <span class="sc">&gt;</span> primer.data<span class="sc">$</span>max_trim[i]) where_trim_all_Rs <span class="ot">&lt;-</span> primer.data<span class="sc">$</span>max_trim[i]</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Puntos de truncamiento: F="</span>, where_trim_all_Fs, <span class="st">" | R="</span>, where_trim_all_Rs)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500000</span>; window_size <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Forward ---</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>trimsF <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(fnFs))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (f <span class="cf">in</span> <span class="fu">seq_along</span>(fnFs)) {</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  srqa   <span class="ot">&lt;-</span> <span class="fu">qa</span>(fnFs[f], <span class="at">n =</span> n)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  df     <span class="ot">&lt;-</span> srqa[[<span class="st">"perCycle"</span>]]<span class="sc">$</span>quality</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  means  <span class="ot">&lt;-</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Score <span class="sc">*</span> df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle) <span class="sc">/</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  window_values <span class="ot">&lt;-</span> <span class="fu">vapply</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(means) <span class="sc">-</span> window_size),</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                          <span class="cf">function</span>(j) <span class="fu">mean</span>(means[j<span class="sc">:</span>(j <span class="sc">+</span> window_size)]), <span class="fu">numeric</span>(<span class="dv">1</span>))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  trimsF[f] <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">which</span>(window_values <span class="sc">&lt;</span> <span class="dv">30</span>))</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>where_trim_all_Fs <span class="ot">&lt;-</span> <span class="fu">median</span>(trimsF, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (where_trim_all_Fs <span class="sc">&gt;</span> primer.data<span class="sc">$</span>max_trim[i]) where_trim_all_Fs <span class="ot">&lt;-</span> primer.data<span class="sc">$</span>max_trim[i]</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Reverse ---</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>trimsR <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(fnRs))</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (r <span class="cf">in</span> <span class="fu">seq_along</span>(fnRs)) {</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  srqa   <span class="ot">&lt;-</span> <span class="fu">qa</span>(fnRs[r], <span class="at">n =</span> n)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  df     <span class="ot">&lt;-</span> srqa[[<span class="st">"perCycle"</span>]]<span class="sc">$</span>quality</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  means  <span class="ot">&lt;-</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Score <span class="sc">*</span> df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle) <span class="sc">/</span> <span class="fu">rowsum</span>(df<span class="sc">$</span>Count, df<span class="sc">$</span>Cycle)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  window_values <span class="ot">&lt;-</span> <span class="fu">vapply</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(means) <span class="sc">-</span> window_size),</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                          <span class="cf">function</span>(j) <span class="fu">mean</span>(means[j<span class="sc">:</span>(j <span class="sc">+</span> window_size)]), <span class="fu">numeric</span>(<span class="dv">1</span>))</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  trimsR[r] <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">which</span>(window_values <span class="sc">&lt;</span> <span class="dv">30</span>))</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>where_trim_all_Rs <span class="ot">&lt;-</span> <span class="fu">median</span>(trimsR, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (where_trim_all_Rs <span class="sc">&gt;</span> primer.data<span class="sc">$</span>max_trim[i]) where_trim_all_Rs <span class="ot">&lt;-</span> primer.data<span class="sc">$</span>max_trim[i]</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Puntos de truncamiento: F="</span>, where_trim_all_Fs, <span class="st">" | R="</span>, where_trim_all_Rs)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
 <section id="cómo-verificar-que-el-truncamiento-es-razonable" class="level3">
 <h3 class="anchored" data-anchor-id="cómo-verificar-que-el-truncamiento-es-razonable">¿Cómo verificar que el truncamiento es razonable?</h3>
-<p>Puedes calcular el solapamiento esperado con esta fórmula:</p>
+<p>Calcula el solapamiento esperado:</p>
 <pre><code>solapamiento = truncLen_F + truncLen_R - longitud_amplicón</code></pre>
 <div class="callout callout-style-default callout-warning no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -443,72 +565,140 @@ Advertencia
 <hr>
 </section>
 </section>
-<section id="filtrado-y-truncamiento" class="level2">
-<h2 class="anchored" data-anchor-id="filtrado-y-truncamiento">Filtrado y truncamiento</h2>
-<p>Este es el paso central de esta sección. <code>filterAndTrim()</code> aplica varios filtros simultáneamente a cada par de lecturas (F y R):</p>
-<ul>
-<li><strong><code>truncLen</code></strong>: trunca las lecturas a la longitud especificada — elimina la cola de baja calidad</li>
-<li><strong><code>maxN = 0</code></strong>: descarta cualquier lectura que tenga bases ambiguas (N)</li>
-<li><strong><code>maxEE = c(2, 2)</code></strong>: descarta lecturas con más de 2 errores esperados — es un filtro más informativo que un umbral de calidad fijo porque considera la calidad de <em>todas</em> las bases, no solo la peor</li>
-<li><strong><code>rm.phix = TRUE</code></strong>: remueve lecturas del genoma PhiX, que Illumina usa como control interno de calidad</li>
-</ul>
+<section id="filtrado-y-truncamiento-filterandtrim" class="level2">
+<h2 class="anchored" data-anchor-id="filtrado-y-truncamiento-filterandtrim">Filtrado y truncamiento (<code>filterAndTrim</code>)</h2>
+<p>Este es el paso central. <code>filterAndTrim()</code> aplica varios filtros simultáneamente a cada par de lecturas:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  fnFs, filtFs, fnRs, filtRs,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(where_trim_all_Fs, where_trim_all_Rs),</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">multithread =</span> <span class="dv">4</span>,</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">matchIDs    =</span> <span class="cn">TRUE</span>         <span class="co"># asegura pareado correcto F/R</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">filterAndTrim</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  fnFs, filtFs, fnRs, filtRs,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen    =</span> <span class="fu">c</span>(where_trim_all_Fs, where_trim_all_Rs),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxN        =</span> <span class="dv">0</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxEE       =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncQ      =</span> <span class="dv">2</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rm.phix     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">compress    =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">multithread =</span> <span class="dv">4</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">matchIDs    =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Los archivos filtrados se guardan en <code>for_dada2/filtered/</code>.</p>
+<section id="trunclen-longitud-de-truncamiento" class="level3">
+<h3 class="anchored" data-anchor-id="trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</h3>
+<p>Trunca cada lectura a la longitud especificada. El primer valor es para forward (R1), el segundo para reverse (R2). Los valores <code>where_trim_all_Fs</code> y <code>where_trim_all_Rs</code> se calcularon automáticamente en el paso anterior. Si prefieres ajustarlos manualmente, puedes reemplazarlos por valores fijos (ej. <code>c(120, 100)</code>).</p>
+</section>
+<section id="maxn-bases-ambiguas" class="level3">
+<h3 class="anchored" data-anchor-id="maxn-bases-ambiguas"><code>maxN</code> — Bases ambiguas</h3>
+<p>Número máximo de bases <code>N</code> (ambiguas) permitidas por lectura. DADA2 <strong>requiere</strong> que sea 0 — no puede modelar errores en posiciones ambiguas. Si una lectura tiene al menos una N, se descarta.</p>
+</section>
+<section id="maxee-errores-esperados" class="level3">
+<h3 class="anchored" data-anchor-id="maxee-errores-esperados"><code>maxEE</code> — Errores esperados</h3>
+<p>Es el filtro más importante después de <code>truncLen</code>. Define el máximo de <strong>errores esperados</strong> permitidos por lectura. Se calcula sumando las probabilidades de error de cada base:</p>
+<pre><code>EE = Σ 10^(-Q/10)</code></pre>
+<p>Por ejemplo, una lectura de 100 bases todas con Q30 tiene EE = 100 × 0.001 = 0.1. Una lectura con varias bases de Q10–Q15 acumula errores rápidamente.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><code>maxEE</code></th>
+<th style="text-align: left;">Qué filtra</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Muy estricto — solo lecturas de alta calidad</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>2</strong></td>
+<td style="text-align: left;"><strong>Valor recomendado</strong> — buen balance entre calidad y retención</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">Más permisivo — útil si la retención es muy baja</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>maxEE</code> es mejor que un umbral de calidad fijo (como “descartar si Q &lt; 20”) porque considera la calidad acumulada de <em>todas</em> las bases, no solo la peor.</p>
+</div>
+</div>
+</section>
+<section id="truncq-truncamiento-por-calidad" class="level3">
+<h3 class="anchored" data-anchor-id="truncq-truncamiento-por-calidad"><code>truncQ</code> — Truncamiento por calidad</h3>
+<p>Si una base individual tiene calidad menor a este valor, la lectura se trunca en ese punto. Con <code>truncQ = 2</code>, solo bases extremadamente malas (Q ≤ 2, &gt;60% de probabilidad de error) causan truncamiento. En la práctica, <code>truncLen</code> hace la mayor parte del trabajo y <code>truncQ</code> actúa como red de seguridad.</p>
+</section>
+<section id="rm.phix-control-phix" class="level3">
+<h3 class="anchored" data-anchor-id="rm.phix-control-phix"><code>rm.phix</code> — Control PhiX</h3>
+<p>Illumina agrega lecturas del genoma PhiX como control interno de calidad en cada corrida. Estas lecturas no son biológicas y deben eliminarse.</p>
+</section>
+<section id="matchids-pareado-de-lecturas" class="level3">
+<h3 class="anchored" data-anchor-id="matchids-pareado-de-lecturas"><code>matchIDs</code> — Pareado de lecturas</h3>
+<p>Asegura que cada lectura forward tenga su par reverse correspondiente. Si una lectura R1 pasa los filtros pero su R2 no (o viceversa), ambas se descartan. DADA2 necesita los pares completos para el merge.</p>
 <hr>
+</section>
 </section>
 <section id="verificar-retención" class="level2">
 <h2 class="anchored" data-anchor-id="verificar-retención">Verificar retención</h2>
-<p>Después de filtrar, verificamos qué porcentaje de lecturas pasó los filtros. Una retención muy baja indica problemas de calidad o parámetros demasiado estrictos.</p>
+<p>Después de filtrar, revisamos qué porcentaje de lecturas pasó todos los filtros:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>low_retention <span class="ot">&lt;-</span> out[,<span class="st">"reads.out"</span>] <span class="sc">/</span> out[,<span class="st">"reads.in"</span>] <span class="sc">&lt;</span> <span class="fl">0.3</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pct_retained <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sum</span>(out[,<span class="st">"reads.out"</span>]) <span class="sc">/</span> <span class="fu">sum</span>(out[,<span class="st">"reads.in"</span>]) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Retención global: "</span>, pct_retained, <span class="st">"%"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>low_retention <span class="ot">&lt;-</span> out[,<span class="st">"reads.out"</span>] <span class="sc">/</span> out[,<span class="st">"reads.in"</span>] <span class="sc">&lt;</span> <span class="fl">0.3</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">any</span>(low_retention)) <span class="fu">warning</span>(<span class="st">"Muestras &lt; 30%: "</span>, <span class="fu">paste</span>(<span class="fu">rownames</span>(out)[low_retention], <span class="at">collapse=</span><span class="st">", "</span>))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 42%">
+<col style="width: 28%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">Retención global</th>
+<th style="text-align: left;">Retención</th>
 <th style="text-align: left;">Interpretación</th>
+<th style="text-align: left;">Qué hacer</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">&gt; 70%</td>
 <td style="text-align: left;">Normal</td>
+<td style="text-align: left;">Continuar</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">50–70%</td>
-<td style="text-align: left;">Aceptable — considerar relajar <code>truncLen</code></td>
+<td style="text-align: left;">Aceptable</td>
+<td style="text-align: left;">Revisar <code>truncLen</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">&lt; 50%</td>
-<td style="text-align: left;">Bajo — relajar <code>maxEE</code> o revisar calidad de la corrida</td>
+<td style="text-align: left;">Bajo</td>
+<td style="text-align: left;">Aumentar <code>maxEE</code> a 3–5, o relajar <code>truncLen</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">&lt; 30% en una muestra</td>
-<td style="text-align: left;">Muestra problemática — revisar con FastQC</td>
+<td style="text-align: left;">Problemática</td>
+<td style="text-align: left;">Revisar con FastQC, considerar excluir</td>
 </tr>
 </tbody>
 </table>
@@ -522,7 +712,8 @@ Advertencia
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si la retención es muy baja en todas las muestras, lo más común es que <code>truncLen</code> sea demasiado corto. Revisa las gráficas de calidad y ajusta los valores.</p>
+<p><strong>¿Retención baja en todas las muestras?</strong> Lo más común es que <code>truncLen</code> sea demasiado corto. Prueba aumentándolo y verifica que la calidad sea aceptable en las gráficas.</p>
+<p><strong>¿Retención baja en pocas muestras?</strong> Probablemente son muestras con problemas de secuenciación. Revísalas individualmente con FastQC antes de decidir si excluirlas.</p>
 </div>
 </div>
 <hr>
@@ -533,21 +724,21 @@ Advertencia
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>     fastq_location, output_location, metadata_location,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 1 guardado"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>     fastq_location, output_location, metadata_location,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 1 guardado"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Para reanudar desde este punto en otra sesión:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"_checkpoint1_filterAndTrim.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 
