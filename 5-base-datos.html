@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Dada2 - Asignación taxonómica y guardado de resultados – Metabarcoding de comunidades de eucariontes</title>
+<title>Bases de datos de referencia personalizadas – Metabarcoding de comunidades de eucariontes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -68,8 +68,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./3-reporte.html" rel="next">
-<link href="./2-dada2QAQC-Chimeras.html" rel="prev">
+<link href="./Referencias.html" rel="next">
+<link href="./5-decontam.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -107,6 +107,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
@@ -154,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2-dada2QAQC-Prep.html">Día 3</a></li><li class="breadcrumb-item"><a href="./2-dada2QAQC-Taxonomy.html">Dada2 - Asignación taxonómica y guardado de resultados</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5-decontam.html">Día 5</a></li><li class="breadcrumb-item"><a href="./5-base-datos.html">Bases de datos de referencia personalizadas</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -271,7 +274,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./2-dada2QAQC-Taxonomy.html" class="sidebar-item-text sidebar-link active">
+  <a href="./2-dada2QAQC-Taxonomy.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dada2 - Asignación taxonómica y guardado de resultados</span></a>
   </div>
 </li>
@@ -323,7 +326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./5-base-datos.html" class="sidebar-item-text sidebar-link">
+  <a href="./5-base-datos.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Bases de datos de referencia personalizadas</span></a>
   </div>
 </li>
@@ -355,9 +358,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content column-page-right" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2-dada2QAQC-Prep.html">Día 3</a></li><li class="breadcrumb-item"><a href="./2-dada2QAQC-Taxonomy.html">Dada2 - Asignación taxonómica y guardado de resultados</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5-decontam.html">Día 5</a></li><li class="breadcrumb-item"><a href="./5-base-datos.html">Bases de datos de referencia personalizadas</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Dada2 - Asignación taxonómica y guardado de resultados</h1>
+<h1 class="title">Bases de datos de referencia personalizadas</h1>
 </div>
 
 
@@ -374,254 +377,266 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>La <strong>asignación taxonómica</strong> convierte secuencias anónimas (ASVs) en información biológica: géneros, familias, órdenes y, cuando es posible, especies. Es el puente entre el análisis bioinformático y la ecología de comunidades.</p>
+<p>La asignación taxonómica en DADA2 depende de una <strong>base de datos de referencia</strong> en formato FASTA. Para muchos estudios, las bases de datos genéricas (SILVA, BOLD, MitoFish) son suficientes. Sin embargo, cuando trabajamos con marcadores específicos o regiones geográficas particulares, puede ser necesario construir una base de datos personalizada.</p>
+<p>En esta sección aprenderemos a construir una base de datos de referencia para el marcador <strong>12S</strong> a partir de secuencias disponibles en NCBI.</p>
 <hr>
-<section id="cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian" class="level2">
-<h2 class="anchored" data-anchor-id="cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian">¿Cómo funciona <code>assignTaxonomy()</code>? — El clasificador Naive Bayesian</h2>
-<p><code>assignTaxonomy()</code> implementa el clasificador bayesiano ingenuo (<em>Naive Bayesian Classifier</em>) del RDP (<em>Ribosomal Database Project</em>), adaptado por el equipo de DADA2.</p>
-<p>El proceso funciona así:</p>
-<ol type="1">
-<li><p><strong>Fragmentación en k-mers</strong> — Cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (<em>8-mers</em>). Por ejemplo, la secuencia <code>ATCGGCTA</code> genera los 8-mers <code>ATCGGCTA</code>, <code>TCGGCTAG</code>, etc.</p></li>
-<li><p><strong>Comparación con la base de datos</strong> — La base de datos de referencia (por ejemplo, una base de 12S o 18S) también está indexada en 8-mers por cada grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo.</p></li>
-<li><p><strong>Por qué “ingenuo”</strong> — Se llama “naive” porque asume que cada 8-mer es <em>independiente</em> de los demás, lo cual no es biológicamente cierto, pero hace el cálculo computacionalmente muy eficiente y funciona bien en la práctica.</p></li>
-<li><p><strong>Asignación jerárquica</strong> — La clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de <strong>bootstrap</strong> (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como <code>NA</code>.</p></li>
-<li><p><strong>Por qué bajan las asignaciones en niveles finos</strong> — A nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado, la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.</p></li>
-</ol>
-<hr>
-</section>
-<section id="paso-1-asignar-taxonomía-con-assigntaxonomy" class="level2">
-<h2 class="anchored" data-anchor-id="paso-1-asignar-taxonomía-con-assigntaxonomy">Paso 1 — Asignar taxonomía con <code>assignTaxonomy()</code></h2>
-<div class="cell">
+<section id="visión-general-del-flujo-de-trabajo" class="level2">
+<h2 class="anchored" data-anchor-id="visión-general-del-flujo-de-trabajo">Visión general del flujo de trabajo</h2>
+<div class="cell" data-layout-align="default">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tax_location <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, primer.data<span class="sc">$</span>db_name[i])</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(tax_location)) {</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"No se encuentra la base de taxonomía: "</span>, tax_location)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>at <span class="ot">&lt;-</span> <span class="fu">assignTaxonomy</span>(</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(cleaned.seqtab.nochim),</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  tax_location,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">tryRC            =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">multithread      =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputBootstraps =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose          =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>flowchart TD</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    A[Paso 1: Búsqueda en NCBI]:::step --&gt; B[Paso 2: PCR virtual]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    B:::step --&gt; C[Paso 3: Asignación de taxonomía]:::step</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    C --&gt; D[FASTA con taxonomía listo para DADA2]:::output</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    classDef step fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    classDef output fill:#d1fae5,stroke:#10b981,color:#064e3b</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+
 </div>
-<ul>
-<li><code>tryRC = TRUE</code>: prueba también el complemento reverso de cada ASV — importante para marcadores que pueden amplificarse en cualquier orientación</li>
-<li><code>outputBootstraps = TRUE</code>: devuelve los valores de confianza por nivel taxonómico</li>
-<li>La base de datos está definida en <code>primer_data.csv</code> (columna <code>db_name</code>)</li>
-</ul>
-<p>Este paso puede tardar varios minutos dependiendo del número de ASVs y la base de datos.</p>
-<hr>
-</section>
-<section id="paso-2-verificar-el-resultado" class="level2">
-<h2 class="anchored" data-anchor-id="paso-2-verificar-el-resultado">Paso 2 — Verificar el resultado</h2>
-<div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Separar taxonomía y bootstraps</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tax_mat  <span class="ot">&lt;-</span> at<span class="sc">$</span>tax</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>boot_mat <span class="ot">&lt;-</span> at<span class="sc">$</span>boot</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>tax_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(tax_mat) <span class="sc">%&gt;%</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"Sequence"</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tax_df)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<p></p></figure><p></p>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Porcentaje de ASVs asignados por nivel taxonómico</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ranks <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Kingdom"</span>, <span class="st">"Phylum"</span>, <span class="st">"Class"</span>, <span class="st">"Order"</span>, <span class="st">"Family"</span>, <span class="st">"Genus"</span>, <span class="st">"Species"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pct_assigned <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="sc">!</span><span class="fu">is.na</span>(tax_mat)) <span class="sc">/</span> <span class="fu">nrow</span>(tax_mat) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(pct_assigned, <span class="dv">1</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
-<p>El pipeline guarda automáticamente el porcentaje de ASVs <strong>sin</strong> asignación por nivel en <code>final_data/logs/</code>:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pct_unassigned <span class="ot">&lt;-</span> <span class="fu">vapply</span>(ranks, <span class="cf">function</span>(rk) {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  col <span class="ot">&lt;-</span> tax_df[[rk]]</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(<span class="fu">is.na</span>(col) <span class="sc">|</span> col <span class="sc">==</span> <span class="st">""</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>}, <span class="fu">numeric</span>(<span class="dv">1</span>))</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">level =</span> ranks, <span class="at">pct_unassigned =</span> pct_unassigned),</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_pct_unassigned.csv"</span>))</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
-<hr>
-</section>
-<section id="paso-3-guardar-archivos-de-taxonomía" class="level2">
-<h2 class="anchored" data-anchor-id="paso-3-guardar-archivos-de-taxonomía">Paso 3 — Guardar archivos de taxonomía</h2>
-<div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>taxonomy_file  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_taxonomy_output.csv"</span>))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>bootstrap_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_tax_bootstrap.csv"</span>))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de taxonomía</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>joined_old_new_taxa <span class="ot">&lt;-</span> tax_df <span class="sc">%&gt;%</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(dplyr<span class="sc">::</span><span class="fu">any_of</span>(<span class="fu">c</span>(<span class="st">"Sequence"</span>, ranks)))</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(joined_old_new_taxa, taxonomy_file)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de bootstraps unida a taxonomía</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>boot_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(boot_mat) <span class="sc">%&gt;%</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"Sequence"</span>)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(boot_df)[<span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"boot."</span>, <span class="fu">names</span>(boot_df)[<span class="sc">-</span><span class="dv">1</span>])</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>ready_new_taxa <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(boot_df, joined_old_new_taxa, <span class="at">by =</span> <span class="st">"Sequence"</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(ready_new_taxa, bootstrap_file)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Taxonomía guardada en: "</span>, taxonomy_file)</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Bootstraps guardados en: "</span>, bootstrap_file)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
-<hr>
-</section>
-<section id="paso-4-guardar-insumos-para-phyloseq-.rdata" class="level2">
-<h2 class="anchored" data-anchor-id="paso-4-guardar-insumos-para-phyloseq-.rdata">Paso 4 — Guardar insumos para phyloseq (.RData)</h2>
-<p>El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo <code>.RData</code>. Esto permite continuar el análisis en otra sesión sin repetir los pasos anteriores.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparar matrices para phyloseq</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>otu_mat <span class="ot">&lt;-</span> cleaned.seqtab.nochim</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">storage.mode</span>(otu_mat) <span class="ot">&lt;-</span> <span class="st">"integer"</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>tax_mat <span class="ot">&lt;-</span> joined_old_new_taxa <span class="sc">%&gt;%</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"Sequence"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar metadatos — detecta automáticamente columna sample_id o Sample_name</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>meta_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, <span class="st">"metadata.csv"</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(meta_path)) <span class="fu">stop</span>(<span class="st">"No se encontró metadata.csv en: "</span>, meta_path)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(meta_path, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>id_col <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sample_id"</span>   <span class="sc">%in%</span> <span class="fu">names</span>(sample_meta) <span class="sc">~</span> <span class="st">"sample_id"</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Sample_name"</span> <span class="sc">%in%</span> <span class="fu">names</span>(sample_meta) <span class="sc">~</span> <span class="st">"Sample_name"</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(id_col)) <span class="fu">stop</span>(<span class="st">"metadata.csv debe tener columna 'sample_id' o 'Sample_name'."</span>)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta <span class="sc">%&gt;%</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="sc">!!</span><span class="at">id_col :=</span> <span class="fu">trimws</span>(<span class="fu">as.character</span>(.data[[id_col]]))) <span class="sc">%&gt;%</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">SampleID =</span> <span class="sc">!!</span>id_col) <span class="sc">%&gt;%</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"SampleID"</span>)</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Alinear con otu_mat y advertir si hay muestras sin metadata</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>faltan    <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(otu_mat), <span class="fu">rownames</span>(sample_meta))</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>sobrantes <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(sample_meta), <span class="fu">rownames</span>(otu_mat))</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(faltan))    <span class="fu">warning</span>(<span class="st">"Faltan en metadata: "</span>, <span class="fu">paste</span>(faltan, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(sobrantes)) <span class="fu">message</span>(<span class="st">"En metadata pero no en datos: "</span>, <span class="fu">paste</span>(sobrantes, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta[<span class="fu">rownames</span>(otu_mat), , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Parámetros del run (para trazabilidad)</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">run_name   =</span> run_name,</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">locus      =</span> primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen_F =</span> where_trim_all_Fs,</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">truncLen_R =</span> where_trim_all_Rs,</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_len    =</span> min_len,</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_len    =</span> max_len,</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">date       =</span> <span class="fu">as.character</span>(<span class="fu">Sys.time</span>())</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar todo en un .RData</span></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>rdata_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_phyloseq_inputs.RData"</span>))</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(otu_mat, tax_mat, sample_meta, track,</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>     <span class="at">seqtab_raw =</span> seqtab.nochim, <span class="at">seqtab_clean =</span> cleaned.seqtab.nochim,</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>     <span class="at">taxonomy_df =</span> joined_old_new_taxa, <span class="at">bootstrap_df =</span> ready_new_taxa,</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>     params,</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> rdata_path, <span class="at">compress =</span> <span class="st">"xz"</span>)</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"RData guardado en: "</span>, rdata_path)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
-<p>El <code>.RData</code> contiene los tres objetos principales para phyloseq (<code>otu_mat</code>, <code>tax_mat</code>, <code>sample_meta</code>) más objetos adicionales para reproducibilidad: <code>track</code>, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).</p>
-<hr>
-</section>
-<section id="causas-de-baja-asignación-taxonómica" class="level2">
-<h2 class="anchored" data-anchor-id="causas-de-baja-asignación-taxonómica">Causas de baja asignación taxonómica</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 28%">
-<col style="width: 36%">
-<col style="width: 36%">
+<col style="width: 25%">
+<col style="width: 33%">
+<col style="width: 41%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Causa</th>
-<th>Síntoma</th>
-<th>Solución</th>
+<th style="text-align: left;">Paso</th>
+<th style="text-align: left;">Script</th>
+<th style="text-align: left;">Qué hace</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Base de datos desactualizada</td>
-<td>Muchos NA en filo</td>
-<td>Usar versión más reciente</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><code>04-base-datos-ncbi.qmd</code></td>
+<td style="text-align: left;">Descarga amplicones y mitogenomas de NCBI</td>
 </tr>
 <tr class="even">
-<td>Marcador poco representado</td>
-<td>% bajos en todos los niveles</td>
-<td>Considerar BD más específica</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"><code>05-base-datos-pcr-virtual.qmd</code></td>
+<td style="text-align: left;">Extrae la región del amplicón usando los primers (PCR virtual)</td>
 </tr>
 <tr class="odd">
-<td><code>minBoot</code> muy alto</td>
-<td>Muchos NA en niveles medios</td>
-<td>Bajar a 60 con precaución</td>
-</tr>
-<tr class="even">
-<td>Quimeras no removidas</td>
-<td>Asignaciones inconsistentes</td>
-<td>Verificar paso anterior</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><code>06-base-datos-paso3.R</code></td>
+<td style="text-align: left;">Asigna taxonomía completa y genera el FASTA final</td>
 </tr>
 </tbody>
 </table>
 <hr>
-<div class="callout callout-style-default callout-note callout-titled">
+</section>
+<section id="paso-1-búsqueda-y-descarga-de-ncbi" class="level2">
+<h2 class="anchored" data-anchor-id="paso-1-búsqueda-y-descarga-de-ncbi">Paso 1: Búsqueda y descarga de NCBI</h2>
+<p>Usamos el paquete <code>rentrez</code> para buscar en GenBank todas las secuencias de un grupo taxonómico y marcador específicos. La búsqueda descarga dos tipos de secuencias:</p>
+<ul>
+<li><strong>Amplicones</strong>: secuencias cortas del marcador (100–1000 bp)</li>
+<li><strong>Mitogenomas completos</strong>: genomas mitocondriales (15,000–16,000 bp) de los cuales se extraerá la región del amplicón en el paso siguiente</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(insect)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Biostrings)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rentrez)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>locus_name     <span class="ot">&lt;-</span> <span class="st">"12S"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>restrict_taxon <span class="ot">&lt;-</span> <span class="st">"Chordata[ORGN]"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>amp_len_min    <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>amp_len_max    <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>mito_len_min   <span class="ot">&lt;-</span> <span class="dv">15000</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>mito_len_max   <span class="ot">&lt;-</span> <span class="dv">16000</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>La búsqueda se construye combinando filtros:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>amp_query <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  restrict_taxon,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"(%s[All Fields] AND rRNA[Feature Key])"</span>, locus_name),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"mitochondrion[Filter]"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"%d:%d[SLEN]"</span>, amp_len_min, amp_len_max),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"biomol_genomic[PROP]"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">" AND "</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>mito_query <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  restrict_taxon, <span class="st">"mitochondrion[Filter]"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"%d:%d[SLEN]"</span>, mito_len_min, mito_len_max),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"biomol_genomic[PROP]"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">" AND "</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Las secuencias se descargan en lotes y se guardan en un solo archivo FASTA:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>s_amp  <span class="ot">&lt;-</span> rentrez<span class="sc">::</span><span class="fu">entrez_search</span>(<span class="at">db =</span> <span class="st">"nucleotide"</span>, <span class="at">term =</span> amp_query,  <span class="at">retmax =</span> <span class="dv">0</span>, <span class="at">use_history =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>s_mito <span class="ot">&lt;-</span> rentrez<span class="sc">::</span><span class="fu">entrez_search</span>(<span class="at">db =</span> <span class="st">"nucleotide"</span>, <span class="at">term =</span> mito_query, <span class="at">retmax =</span> <span class="dv">0</span>, <span class="at">use_history =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Hits amplicón: "</span>, s_amp<span class="sc">$</span>count, <span class="st">" | Hits mitogenomas: "</span>, s_mito<span class="sc">$</span>count)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>El resultado es un archivo FASTA con todas las secuencias descargadas en <code>metadata/All_Chordata_12S_Amplicon_plus_Mitogenomes.fasta</code>.</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class="callout-icon"></i>
+<i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Recuerda
+Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningún método puede asignar correctamente un organismo que no está representado en la referencia. Siempre reporta la versión de la base de datos que usaste en la sección de métodos.</p>
+<p><strong>API Key de NCBI</strong>: si tienes una cuenta en NCBI, puedes obtener una API key para aumentar la velocidad de descarga (de 3 a 10 requests/segundo). Configúrala con la variable de entorno <code>NCBI_API_KEY</code>.</p>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<hr>
+</section>
+<section id="paso-2-pcr-virtual" class="level2">
+<h2 class="anchored" data-anchor-id="paso-2-pcr-virtual">Paso 2: PCR virtual</h2>
+<p>De las secuencias descargadas, muchas son mitogenomas completos. Necesitamos extraer solo la región que amplifican nuestros primers — esto es una <strong>PCR virtual</strong> (<em>in silico</em>).</p>
+<p>El script busca las posiciones de los primers forward y reverse en cada secuencia y extrae la región entre ellos:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Primers del marcador 12S (ajustar según tu estudio)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>primer_F <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(<span class="fu">toupper</span>(<span class="st">"ACACCGCCCGTCACTCT"</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>primer_R <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(<span class="fu">toupper</span>(<span class="st">"CTTCCGGTACACTTACCATG"</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>primer_Rc <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">reverseComplement</span>(primer_R)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Para el curso
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<p>El proceso:</p>
 <ol type="1">
-<li>¿Qué porcentaje de ASVs se asignan a nivel de filo? ¿Y a nivel de género?</li>
-<li>¿Hay ASVs sin asignación a ningún nivel? ¿Cuántos son?</li>
-<li>Revisa los valores de bootstrap en <code>ready_new_taxa</code> — ¿Hay asignaciones con baja confianza?</li>
-<li>¿El <code>.RData</code> fue creado correctamente en <code>final_data/rdata_output/</code>?</li>
+<li><strong>Prefiltrado</strong>: identifica secuencias que contienen ambos primers (F y R) vs solo el forward</li>
+<li><strong>Extracción</strong>: para cada secuencia con ambos primers, extrae la región entre F y R</li>
+<li><strong>Fallback</strong>: para secuencias con solo el primer forward, extrae desde F hasta un máximo de 500 bp</li>
+<li><strong>Renombrado</strong>: cada secuencia se renombra con formato <code>Especie|Accession</code> consultando NCBI</li>
 </ol>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Buscar primers en las secuencias</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fasta_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"metadata"</span>, <span class="st">"All_Chordata_12S_Amplicon_plus_Mitogenomes.fasta"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>seqs <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">readDNAStringSet</span>(fasta_file)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>max_mm <span class="ot">&lt;-</span> <span class="dv">6</span>  <span class="co"># mismatches permitidos</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>has_F  <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">vcountPattern</span>(primer_F,  seqs, <span class="at">max.mismatch =</span> max_mm) <span class="sc">&gt;</span> <span class="dv">0</span>L</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>has_Rc <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">vcountPattern</span>(primer_Rc, seqs, <span class="at">max.mismatch =</span> max_mm) <span class="sc">&gt;</span> <span class="dv">0</span>L</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>seqs_both <span class="ot">&lt;-</span> seqs[has_F <span class="sc">&amp;</span> has_Rc]</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>seqs_forward_only <span class="ot">&lt;-</span> seqs[has_F <span class="sc">&amp;</span> <span class="sc">!</span>has_Rc]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Con ambos primers: "</span>, <span class="fu">length</span>(seqs_both), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Solo forward:      "</span>, <span class="fu">length</span>(seqs_forward_only), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>El resultado es un FASTA con los amplicones extraídos: <code>metadata/Amplicons_12S_virtualPCR_renamed.fasta</code>.</p>
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Este paso puede tardar varios minutos dependiendo del número de secuencias descargadas y las consultas a NCBI para el renombrado.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="paso-3-asignación-de-taxonomía" class="level2">
+<h2 class="anchored" data-anchor-id="paso-3-asignación-de-taxonomía">Paso 3: Asignación de taxonomía</h2>
+<p>El último paso toma los amplicones renombrados y les asigna la taxonomía completa (Kingdom → Species) usando la base de datos de NCBI. El resultado es un FASTA donde cada header contiene la taxonomía separada por punto y coma, en el formato que DADA2 espera para <code>assignTaxonomy()</code>:</p>
+<pre><code>&gt;Kingdom;Phylum;Class;Order;Family;Genus;Species
+ACGTACGT...</code></pre>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(taxize)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Clasificación taxonómica por lotes</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>species.list.ch <span class="ot">&lt;-</span> <span class="fu">as.character</span>(species.list<span class="sc">$</span>species)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>batch_results <span class="ot">&lt;-</span> <span class="fu">classification</span>(species.list.ch, <span class="at">db =</span> <span class="st">"ncbi"</span>, <span class="at">rows =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>El script procesa los resultados por lotes y genera el archivo final: <code>metadata/12S_fish_taxonomy.fasta</code>.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Este archivo es el que se usa en el parámetro <code>db_name</code> de <code>primer_data.csv</code> y es la base de datos que <code>assignTaxonomy()</code> de DADA2 utiliza para la asignación taxonómica.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="resumen" class="level2">
+<h2 class="anchored" data-anchor-id="resumen">Resumen</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 39%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Paso</th>
+<th style="text-align: left;">Entrada</th>
+<th style="text-align: left;">Salida</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1. NCBI</td>
+<td style="text-align: left;">Query de búsqueda</td>
+<td style="text-align: left;">FASTA con amplicones + mitogenomas</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2. PCR virtual</td>
+<td style="text-align: left;">FASTA + primers</td>
+<td style="text-align: left;">FASTA con amplicones extraídos y renombrados</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3. Taxonomía</td>
+<td style="text-align: left;">FASTA renombrado</td>
+<td style="text-align: left;">FASTA con taxonomía (listo para DADA2)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Para el curso</strong>, la base de datos ya está construida y lista en <code>metadata/</code>. Estos scripts son para cuando necesites crear tu propia base de datos para un marcador o grupo taxonómico diferente.</p>
 </div>
 </div>
 
@@ -1031,13 +1046,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation column-page-right">
   <div class="nav-page nav-page-previous">
-      <a href="./2-dada2QAQC-Chimeras.html" class="pagination-link" aria-label="Dada2 - Remoción de quimeras y seguimiento de lecturas">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Dada2 - Remoción de quimeras y seguimiento de lecturas</span>
+      <a href="./5-decontam.html" class="pagination-link" aria-label="Detección y remoción de contaminantes con decontam">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Detección y remoción de contaminantes con decontam</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./3-reporte.html" class="pagination-link" aria-label="Comunidades de peces del Golfo de California">
-        <span class="nav-page-text">Comunidades de peces del Golfo de California</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Referencias.html" class="pagination-link" aria-label="Referencias">
+        <span class="nav-page-text">Referencias</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
