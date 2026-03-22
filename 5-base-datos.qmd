@@ -1,0 +1,174 @@
+---
+title: "Bases de datos de referencia personalizadas"
+execute:
+  echo: true
+  warning: false
+  eval: false
+---
+
+La asignación taxonómica en DADA2 depende de una **base de datos de referencia** en formato FASTA. Para muchos estudios, las bases de datos genéricas (SILVA, BOLD, MitoFish) son suficientes. Sin embargo, cuando trabajamos con marcadores específicos o regiones geográficas particulares, puede ser necesario construir una base de datos personalizada.
+
+En esta sección aprenderemos a construir una base de datos de referencia para el marcador **12S** a partir de secuencias disponibles en NCBI.
+
+---
+
+## Visión general del flujo de trabajo
+
+```{mermaid}
+flowchart TD
+    A[Paso 1: Búsqueda en NCBI]:::step --> B[Paso 2: PCR virtual]
+    B:::step --> C[Paso 3: Asignación de taxonomía]:::step
+    C --> D[FASTA con taxonomía listo para DADA2]:::output
+
+    classDef step fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    classDef output fill:#d1fae5,stroke:#10b981,color:#064e3b
+```
+
+| Paso | Script | Qué hace |
+|:-----|:-------|:---------|
+| 1 | `04-base-datos-ncbi.qmd` | Descarga amplicones y mitogenomas de NCBI |
+| 2 | `05-base-datos-pcr-virtual.qmd` | Extrae la región del amplicón usando los primers (PCR virtual) |
+| 3 | `06-base-datos-paso3.R` | Asigna taxonomía completa y genera el FASTA final |
+
+---
+
+## Paso 1: Búsqueda y descarga de NCBI
+
+Usamos el paquete `rentrez` para buscar en GenBank todas las secuencias de un grupo taxonómico y marcador específicos. La búsqueda descarga dos tipos de secuencias:
+
+- **Amplicones**: secuencias cortas del marcador (100–1000 bp)
+- **Mitogenomas completos**: genomas mitocondriales (15,000–16,000 bp) de los cuales se extraerá la región del amplicón en el paso siguiente
+
+```{r}
+library(insect)
+library(tidyverse)
+library(Biostrings)
+library(rentrez)
+library(ape)
+
+locus_name     <- "12S"
+restrict_taxon <- "Chordata[ORGN]"
+amp_len_min    <- 100
+amp_len_max    <- 1000
+mito_len_min   <- 15000
+mito_len_max   <- 16000
+```
+
+La búsqueda se construye combinando filtros:
+
+```{r}
+amp_query <- paste(
+  restrict_taxon,
+  sprintf("(%s[All Fields] AND rRNA[Feature Key])", locus_name),
+  "mitochondrion[Filter]",
+  sprintf("%d:%d[SLEN]", amp_len_min, amp_len_max),
+  "biomol_genomic[PROP]",
+  sep = " AND "
+)
+
+mito_query <- paste(
+  restrict_taxon, "mitochondrion[Filter]",
+  sprintf("%d:%d[SLEN]", mito_len_min, mito_len_max),
+  "biomol_genomic[PROP]",
+  sep = " AND "
+)
+```
+
+Las secuencias se descargan en lotes y se guardan en un solo archivo FASTA:
+
+```{r}
+s_amp  <- rentrez::entrez_search(db = "nucleotide", term = amp_query,  retmax = 0, use_history = TRUE)
+s_mito <- rentrez::entrez_search(db = "nucleotide", term = mito_query, retmax = 0, use_history = TRUE)
+
+message("Hits amplicón: ", s_amp$count, " | Hits mitogenomas: ", s_mito$count)
+```
+
+El resultado es un archivo FASTA con todas las secuencias descargadas en `metadata/All_Chordata_12S_Amplicon_plus_Mitogenomes.fasta`.
+
+::: {.callout-tip icon="false"}
+**API Key de NCBI**: si tienes una cuenta en NCBI, puedes obtener una API key para aumentar la velocidad de descarga (de 3 a 10 requests/segundo). Configúrala con la variable de entorno `NCBI_API_KEY`.
+:::
+
+---
+
+## Paso 2: PCR virtual
+
+De las secuencias descargadas, muchas son mitogenomas completos. Necesitamos extraer solo la región que amplifican nuestros primers — esto es una **PCR virtual** (*in silico*).
+
+El script busca las posiciones de los primers forward y reverse en cada secuencia y extrae la región entre ellos:
+
+```{r}
+# Primers del marcador 12S (ajustar según tu estudio)
+primer_F <- Biostrings::DNAString(toupper("ACACCGCCCGTCACTCT"))
+primer_R <- Biostrings::DNAString(toupper("CTTCCGGTACACTTACCATG"))
+primer_Rc <- Biostrings::reverseComplement(primer_R)
+```
+
+El proceso:
+
+1. **Prefiltrado**: identifica secuencias que contienen ambos primers (F y R) vs solo el forward
+2. **Extracción**: para cada secuencia con ambos primers, extrae la región entre F y R
+3. **Fallback**: para secuencias con solo el primer forward, extrae desde F hasta un máximo de 500 bp
+4. **Renombrado**: cada secuencia se renombra con formato `Especie|Accession` consultando NCBI
+
+```{r}
+# Buscar primers en las secuencias
+fasta_file <- file.path("metadata", "All_Chordata_12S_Amplicon_plus_Mitogenomes.fasta")
+seqs <- Biostrings::readDNAStringSet(fasta_file)
+
+max_mm <- 6  # mismatches permitidos
+has_F  <- Biostrings::vcountPattern(primer_F,  seqs, max.mismatch = max_mm) > 0L
+has_Rc <- Biostrings::vcountPattern(primer_Rc, seqs, max.mismatch = max_mm) > 0L
+
+seqs_both <- seqs[has_F & has_Rc]
+seqs_forward_only <- seqs[has_F & !has_Rc]
+
+cat("Con ambos primers: ", length(seqs_both), "\n")
+cat("Solo forward:      ", length(seqs_forward_only), "\n")
+```
+
+El resultado es un FASTA con los amplicones extraídos: `metadata/Amplicons_12S_virtualPCR_renamed.fasta`.
+
+::: {.callout-warning icon="false"}
+Este paso puede tardar varios minutos dependiendo del número de secuencias descargadas y las consultas a NCBI para el renombrado.
+:::
+
+---
+
+## Paso 3: Asignación de taxonomía
+
+El último paso toma los amplicones renombrados y les asigna la taxonomía completa (Kingdom → Species) usando la base de datos de NCBI. El resultado es un FASTA donde cada header contiene la taxonomía separada por punto y coma, en el formato que DADA2 espera para `assignTaxonomy()`:
+
+```
+>Kingdom;Phylum;Class;Order;Family;Genus;Species
+ACGTACGT...
+```
+
+```{r}
+library(taxize)
+library(data.table)
+
+# Clasificación taxonómica por lotes
+species.list.ch <- as.character(species.list$species)
+batch_results <- classification(species.list.ch, db = "ncbi", rows = 1)
+```
+
+El script procesa los resultados por lotes y genera el archivo final: `metadata/12S_fish_taxonomy.fasta`.
+
+::: {.callout-note icon="false"}
+Este archivo es el que se usa en el parámetro `db_name` de `primer_data.csv` y es la base de datos que `assignTaxonomy()` de DADA2 utiliza para la asignación taxonómica.
+:::
+
+---
+
+## Resumen
+
+| Paso | Entrada | Salida |
+|:-----|:--------|:-------|
+| 1. NCBI | Query de búsqueda | FASTA con amplicones + mitogenomas |
+| 2. PCR virtual | FASTA + primers | FASTA con amplicones extraídos y renombrados |
+| 3. Taxonomía | FASTA renombrado | FASTA con taxonomía (listo para DADA2) |
+
+::: {.callout-tip icon="false"}
+**Para el curso**, la base de datos ya está construida y lista en `metadata/`. Estos scripts son para cuando necesites crear tu propia base de datos para un marcador o grupo taxonómico diferente.
+:::

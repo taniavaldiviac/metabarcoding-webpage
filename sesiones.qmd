@@ -54,6 +54,6 @@ execute:
 
 ## Día 5 — Temas avanzados
 
-- Bases de datos de referencia personalizadas
+- [Bases de datos de referencia personalizadas](5-base-datos.qmd)
 - [Detección y remoción de contaminantes con decontam](5-decontam.qmd)
 - Temas auxiliares y dudas del curso

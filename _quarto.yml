@@ -53,6 +53,7 @@ website:
       - section: "Día 5"
         contents:
           - 5-decontam.qmd
+          - 5-base-datos.qmd
       - section: "Lecturas recomendadas"
         contents:
           - Referencias.qmd
