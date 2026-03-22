@@ -180,11 +180,16 @@ Para descargar las gráficas a tu computadora:
 scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/logs/*quality*.png ~/Downloads/
 ```
 
+Ejemplo de la gráfica paired (Muestra 1, Forward vs Reverse):
+
+![Perfiles de calidad — Muestra 1](img/quality_paired_example.png)
+
 ::: {.callout-tip icon="false"}
 **Cómo leer las gráficas:**
 
 - La **línea verde** es la mediana de calidad por posición
 - La **zona gris** muestra los cuartiles (variabilidad entre lecturas)
+- La **línea roja** (eje derecho) muestra el porcentaje de lecturas que llegan a esa posición — cuando cae a 0%, las lecturas ya terminaron
 - Busca dónde la mediana cae por debajo de **Q30** — ese es el punto de truncamiento ideal
 - Las lecturas R2 suelen degradar más rápido que R1; es normal que su punto de truncamiento sea menor
 :::
