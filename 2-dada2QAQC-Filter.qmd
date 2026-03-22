@@ -1,151 +1,122 @@
 ---
-title: "Dada2 - Filter and Trim"
-#subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
+title: "DADA2 — Filter and Trim"
 execute:
-  echo: false
+  echo: true
   warning: false
 ---
 
-
-El paso **Filter and Trim** es el primer gran filtro de calidad en el pipeline de dada2.  
-Su objetivo es eliminar lecturas de baja calidad, bases ambiguas y recortar las secuencias en los puntos donde la calidad cae, asegurando que solo las regiones confiables sean usadas en los análisis posteriores.
+El paso `filterAndTrim()` es el primer gran filtro de calidad en el pipeline. Su objetivo es eliminar lecturas de baja calidad y truncar las secuencias, asegurando que solo las regiones confiables pasen a los análisis posteriores.
 
 ---
 
-## ¿Qué hace el código en este paso?
-
-### 1. Cálculo de puntos de truncamiento (`truncLen`)
-
-- El pipeline analiza los perfiles de calidad de las lecturas forward y reverse.
-- Se determina el ciclo donde la calidad promedio cae por debajo de un umbral definido en la tabla de parámetros (`F_qual`, `R_qual`).
-- Se usa la mediana entre muestras para definir el punto global de recorte, evitando que lecturas de baja calidad afecten el análisis.
-
-### 2. Limitación del recorte máximo (`max_trim`)
-
-- Se compara el punto de truncamiento calculado con el valor máximo permitido (`max_trim`) para evitar perder el solapamiento necesario entre lecturas forward y reverse.
-
-### 3. Verificación de primers
-
-Antes de filtrar, el pipeline verifica que los primers esperados estén presentes en las lecturas. Esto detecta errores de configuración (por ejemplo, si `locus_shorthand` no corresponde al locus real):
+## Los parámetros de `filterAndTrim()`
 
 ```{r eval=FALSE}
-library(Biostrings)
-
-check_primers <- function(fastq_file, primer_seq, n = 1000) {
-  streamer <- ShortRead::FastqStreamer(fastq_file, n = n)
-  on.exit(close(streamer))
-  chunk <- ShortRead::yield(streamer)
-  seqs <- as.character(ShortRead::sread(chunk))
-  exact_match <- sum(grepl(paste0("^", primer_seq), seqs))
-  substr_seqs  <- substr(seqs, 1, 50)
-  anywhere_match <- sum(grepl(primer_seq, substr_seqs))
-  list(exact = exact_match, anywhere = anywhere_match, total = length(seqs))
-}
-
-# Ajusta estas secuencias al locus del curso
-primer_F <- "TTAGATACCCCACTATGC"  # ejemplo 12S
-primer_R <- "TAGAACAGGCTCCTCTAG"  # ejemplo 12S
-
-check_F_in_R1   <- check_primers(fnFs[1], primer_F)
-check_R_RC_in_R1 <- check_primers(fnFs[1], as.character(
-                      Biostrings::reverseComplement(Biostrings::DNAString(primer_R))))
-check_R_in_R2   <- check_primers(fnRs[1], primer_R)
-check_F_RC_in_R2 <- check_primers(fnRs[1], as.character(
-                      Biostrings::reverseComplement(Biostrings::DNAString(primer_F))))
-
-message("R1 — Primer F al inicio: ", check_F_in_R1$exact, "/", check_F_in_R1$total)
-message("R1 — Primer R-RC al inicio: ", check_R_RC_in_R1$exact, "/", check_R_RC_in_R1$total)
-message("R2 — Primer R al inicio: ", check_R_in_R2$exact, "/", check_R_in_R2$total)
-message("R2 — Primer F-RC al inicio: ", check_F_RC_in_R2$exact, "/", check_F_RC_in_R2$total)
+out <- filterAndTrim(
+  fnFs, filtFs, fnRs, filtRs,
+  truncLen    = c(65, 65),
+  maxN        = 0,
+  maxEE       = c(2, 2),
+  truncQ      = 2,
+  rm.phix     = TRUE,
+  compress    = TRUE,
+  multithread = 4,
+  matchIDs    = TRUE
+)
 ```
 
-Si el primer F **no** aparece al inicio de R1, probablemente los primers ya fueron removidos por cutadapt (lo esperado) o hay un error en la secuencia del primer.
+### `truncLen` — Longitud de truncamiento
 
-### 4. Filtrado y trimming
+Trunca cada lectura a la longitud especificada. El primer valor es para forward (R1), el segundo para reverse (R2). Todo lo que quede después de ese punto se descarta.
 
-- Se ejecuta el filtrado usando los parámetros:
-  - **`truncLen`**: recorta las lecturas en los puntos calculados.
-  - **`maxEE`**: define el máximo de errores esperados permitidos por lectura (usualmente 2).
-  - **`maxN`**: no permite bases ambiguas (N).
-  - **`truncQ`**: recorta la lectura si encuentra una base con calidad menor a este valor (usualmente 2).
-  - **`rm.phix`**: elimina lecturas que corresponden al control PhiX de Illumina.
-- El código válida que los puntos de truncamiento sean razonables (no menores a 50 bp).
+**¿Cómo elegir el valor?** Usa las gráficas de calidad del paso anterior. Busca el punto donde la calidad mediana cae por debajo de Q30 y trunca ahí. Recuerda verificar que quede suficiente solapamiento para el merge:
 
-### 4. Diagnóstico y reporte de retención
+```
+solapamiento = truncLen_F + truncLen_R - longitud_amplicón
+```
 
-- Se calcula la retención global de lecturas (porcentaje de lecturas que pasan el filtro).
-- Si la retención es baja (< 50%), se advierte al usuario para que revise los parámetros o la calidad de los datos.
-- Se identifican muestras con retención muy baja (< 30%), lo que puede indicar problemas de calidad o contaminación.
-
-### 5. Guardado de estadísticas
-
-- Se guarda una tabla con las estadísticas de filtrado para inspección posterior y diagnóstico.
-
----
-
-## Explicación de los parámetros principales
-
-| Parámetro   | Descripción                                                                 |
-|-------------|-----------------------------------------------------------------------------|
-| `truncLen`  | Posición donde se recorta cada lectura (Forward y Reverse), calculada según calidad |
-| `maxEE`     | Máximo número de errores esperados permitidos por lectura (por dirección)   |
-| `maxN`      | Número máximo de bases ambiguas permitidas (usualmente 0)                   |
-| `truncQ`    | Recorta la lectura si encuentra una base con calidad menor a este valor     |
-| `rm.phix`   | Elimina lecturas que corresponden al control PhiX de Illumina               |
-
----
-
-## ¿Por qué es importante este paso?
-
-- Elimina lecturas que podrían introducir errores técnicos en el análisis.
-- Asegura que solo las regiones de alta calidad sean usadas para inferir variantes.
-- Reduce el ruido y la probabilidad de obtener variantes falsas.
-- Permite un diagnóstico temprano de problemas de calidad en la secuenciación.
-
----
-
-## Recomendaciónes para el análisis
-
-- Revisa los gráficos de calidad antes de definir los parámetros de recorte.
-- Si la retención de lecturas es baja, considera relajar los parámetros (`maxEE`, `truncLen`) o revisar la calidad de la secuenciación.
-- Usa la tabla de filtrado para identificar muestras problemáticas y tomar decisiones informadas sobre el análisis.
-
----
-
-## Resumen
-
-| Aspecto | Explicación |
-|---------|-------------|
-| **Qué es** | Primer filtro de calidad y recorte de lecturas en dada2 |
-| **Cómo se calcula** | Analiza perfiles de calidad, define puntos de truncamiento y aplica filtros |
-| **Valores normales** | Retención global > 50%, truncLen > 50 bp |
-| **Por qué importa** | Evita errores técnicos y mejora la precisión de los ASVs |
-| **Qué hacer** | Ajusta parámetros según calidad, revisa diagnósticos y gráficos |
-
----
-
-## Ejercicios prácticos
-
-1. **Identifica el punto de truncamiento óptimo** usando los gráficos de calidad generados por el pipeline.
-2. **Revisa la tabla de filtrado**: ¿Qué muestras tienen retención < 30%? ¿Por qué?
-3. **Compara la retención global** entre runs diferentes. ¿Qué parámetros afectan más la retención?
-
----
-
-## Notas finales
-
-:::{.callout-note}
-## Recuerda
-
-- El paso Filter and Trim es esencial para obtener datos confiables en metabarcoding.
-- Ajusta los parámetros según la calidad de tus datos y revisa siempre los diagnósticos y gráficos generados por el pipeline.
+::: {.callout-warning icon="false"}
+Si el solapamiento es menor a 20 bp, el merge puede fallar o producir pocos resultados. En ese caso, aumenta `truncLen` aunque implique incluir algunas bases de menor calidad.
 :::
 
-:::{.callout-tip}
-## Para el curso
+### `maxN` — Bases ambiguas
 
-1. Los gráficos de calidad antes y después del filtrado.
-2. La tabla de filtrado y retención por muestra.
-3. Cómo interpretar valores "normales" vs "problemáticos".
-4. Qué hacer si hay valores bajos de retención.
+Número máximo de bases `N` (ambiguas) permitidas por lectura. DADA2 **requiere** que sea 0 — no puede modelar errores en posiciones ambiguas. Si una lectura tiene al menos una N, se descarta.
+
+### `maxEE` — Errores esperados
+
+Es el filtro más importante después de `truncLen`. Define el máximo de **errores esperados** permitidos por lectura. Se calcula sumando las probabilidades de error de cada base:
+
+```
+EE = Σ 10^(-Q/10)
+```
+
+Por ejemplo, una lectura de 100 bases todas con Q30 tiene EE = 100 × 0.001 = 0.1. Una lectura con varias bases de Q10–Q15 acumula errores rápidamente.
+
+| `maxEE` | Qué filtra |
+|:--------|:-----------|
+| 1 | Muy estricto — solo lecturas de alta calidad |
+| **2** | **Valor recomendado** — buen balance entre calidad y retención |
+| 5 | Más permisivo — útil si la retención es muy baja |
+
+::: {.callout-tip icon="false"}
+`maxEE` es mejor que un umbral de calidad fijo (como "descartar si Q < 20") porque considera la calidad acumulada de *todas* las bases, no solo la peor.
 :::
+
+### `truncQ` — Truncamiento por calidad
+
+Si una base individual tiene calidad menor a este valor, la lectura se trunca en ese punto (y todo lo que sigue se descarta). Con `truncQ = 2`, solo bases extremadamente malas (Q ≤ 2, >60% de probabilidad de error) causan truncamiento.
+
+En la práctica, `truncLen` hace la mayor parte del trabajo y `truncQ` actúa como red de seguridad para lecturas individuales con caídas abruptas de calidad.
+
+### `rm.phix` — Control PhiX
+
+Illumina agrega lecturas del genoma PhiX como control interno de calidad en cada corrida de secuenciación. Estas lecturas no son biológicas y deben eliminarse. Con `rm.phix = TRUE`, DADA2 las detecta y descarta automáticamente.
+
+### `matchIDs` — Pareado de lecturas
+
+Asegura que cada lectura forward tenga su par reverse correspondiente en el archivo de salida. Si una lectura R1 pasa los filtros pero su R2 no (o viceversa), ambas se descartan. Esto es necesario porque DADA2 necesita los pares completos para el merge.
+
+---
+
+## Verificar retención
+
+Después de filtrar, revisamos qué porcentaje de lecturas pasó todos los filtros:
+
+```{r eval=FALSE}
+pct_retained <- round(sum(out[,"reads.out"]) / sum(out[,"reads.in"]) * 100, 2)
+message("Retención global: ", pct_retained, "%")
+
+low_retention <- out[,"reads.out"] / out[,"reads.in"] < 0.3
+if (any(low_retention)) warning("Muestras < 30%: ", paste(rownames(out)[low_retention], collapse=", "))
+
+head(out)
+```
+
+| Retención | Interpretación | Qué hacer |
+|:----------|:---------------|:----------|
+| > 70% | Normal | Continuar |
+| 50–70% | Aceptable | Revisar `truncLen` |
+| < 50% | Bajo | Aumentar `maxEE` a 3–5, o relajar `truncLen` |
+| < 30% en una muestra | Problemática | Revisar con FastQC, considerar excluir |
+
+::: {.callout-warning icon="false"}
+**¿Retención baja en todas las muestras?** Lo más común es que `truncLen` sea demasiado corto. Prueba aumentándolo y verifica que la calidad sea aceptable en las gráficas.
+
+**¿Retención baja en pocas muestras?** Probablemente son muestras con problemas de secuenciación. Revísalas individualmente con FastQC antes de decidir si excluirlas.
+:::
+
+---
+
+## Guardar checkpoint
+
+```{r eval=FALSE}
+save(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,
+     fastq_location, output_location, metadata_location,
+     file = file.path(output_location, "rdata_output",
+                      paste0(run_name, "_", primer.data$locus_shorthand[i],
+                             "_checkpoint1_filterAndTrim.RData")))
+message("Checkpoint 1 guardado")
+```
+
+Este checkpoint permite reanudar desde aquí sin repetir el filtrado — útil para probar diferentes parámetros en los pasos siguientes.
