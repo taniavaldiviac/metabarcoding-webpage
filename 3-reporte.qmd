@@ -3,7 +3,7 @@ title: "Comunidades de peces del Golfo de California"
 #subtitle: "24–28 de noviembre de 2025<br>Instituto de Ciencias del Mar y Limnología (UNAM)"
 format:
   html:
-    toc: true
+    toc: false
     toc-depth: 2
     toc-location: left
 execute:

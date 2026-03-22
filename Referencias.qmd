@@ -5,7 +5,7 @@ csl: apa.csl
 nocite: '@*'
 format:
   html:
-    toc: true
+    toc: false
     toc-depth: 2
     toc-location: left
 execute:

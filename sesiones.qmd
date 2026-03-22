@@ -4,9 +4,7 @@ title: "Metabarcoding de comunidades de eucariontes"
 author: "Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)"
 format:
   html:
-    toc: true
-    toc-depth: 2
-    toc-location: right
+    toc: false
 execute:
   echo: false
   warning: false

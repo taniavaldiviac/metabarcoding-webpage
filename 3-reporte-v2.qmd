@@ -3,7 +3,7 @@ title: "Análisis ecológico de comunidades de peces"
 subtitle: "Golfo de California — Metabarcoding 12S rDNA"
 format:
   html:
-    toc: true
+    toc: false
     toc-depth: 3
     toc-location: left
     code-fold: true
