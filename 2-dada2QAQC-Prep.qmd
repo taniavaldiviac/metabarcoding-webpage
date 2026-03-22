@@ -43,6 +43,11 @@ output_location   <- "final_data"
 metadata_location <- "metadata"
 primer_csv        <- file.path(metadata_location, "primer_data.csv")
 
+# Crear directorios de salida
+dir.create(file.path(output_location, "logs"), recursive = TRUE, showWarnings = FALSE)
+dir.create(file.path(output_location, "csv_output"), recursive = TRUE, showWarnings = FALSE)
+dir.create(file.path(output_location, "rdata_output"), recursive = TRUE, showWarnings = FALSE)
+
 i        <- 1          # fila de primer_data.csv a procesar
 run_name <- format(Sys.time(), "%Y%m%d_%H%M")
 ```
