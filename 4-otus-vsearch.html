@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)">
+<meta name="author" content="Miguel Martinez Mercado (marmigues@gmail.com)">
 
-<title>Metabarcoding de comunidades de eucariontes</title>
+<title>OTUs: agrupamiento por similitud con VSEARCH – Metabarcoding de comunidades de eucariontes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -34,6 +69,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./5-decontam.html" rel="next">
+<link href="./3-reporte-v2.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -71,6 +108,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Buscar"
   }
 }</script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -93,11 +132,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./sesiones.html" aria-current="page"> 
+    <a class="nav-link" href="./sesiones.html"> 
 <span class="menu-text">Sesiones</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Referencias.html"> 
+    <a class="nav-link active" href="./Referencias.html" aria-current="page"> 
 <span class="menu-text">Lecturas recomendadas</span></a>
   </li>  
   <li class="nav-item compact">
@@ -116,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Metabarcoding de comunidades de eucariontes</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3-reporte.html">Día 4</a></li><li class="breadcrumb-item"><a href="./4-otus-vsearch.html">OTUs: agrupamiento por similitud con VSEARCH</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -262,7 +301,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./4-otus-vsearch.html" class="sidebar-item-text sidebar-link">
+  <a href="./4-otus-vsearch.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">OTUs: agrupamiento por similitud con VSEARCH</span></a>
   </div>
 </li>
@@ -307,35 +346,23 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">En esta página</h2>
-   
-  <ul class="collapse">
-  <li><a href="#día-1-introducción-teórica-y-fundamentos" id="toc-día-1-introducción-teórica-y-fundamentos" class="nav-link active" data-scroll-target="#día-1-introducción-teórica-y-fundamentos">Día 1 — Introducción teórica y fundamentos</a></li>
-  <li><a href="#día-2-entorno-bioinformático-y-control-de-calidad" id="toc-día-2-entorno-bioinformático-y-control-de-calidad" class="nav-link" data-scroll-target="#día-2-entorno-bioinformático-y-control-de-calidad">Día 2 — Entorno bioinformático y control de calidad</a></li>
-  <li><a href="#día-3-pipeline-dada2" id="toc-día-3-pipeline-dada2" class="nav-link" data-scroll-target="#día-3-pipeline-dada2">Día 3 — Pipeline DADA2</a></li>
-  <li><a href="#día-4-análisis-ecológico-de-comunidades" id="toc-día-4-análisis-ecológico-de-comunidades" class="nav-link" data-scroll-target="#día-4-análisis-ecológico-de-comunidades">Día 4 — Análisis ecológico de comunidades</a></li>
-  <li><a href="#día-5-temas-avanzados" id="toc-día-5-temas-avanzados" class="nav-link" data-scroll-target="#día-5-temas-avanzados">Día 5 — Temas avanzados</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3-reporte.html">Día 4</a></li><li class="breadcrumb-item"><a href="./4-otus-vsearch.html">OTUs: agrupamiento por similitud con VSEARCH</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Metabarcoding de comunidades de eucariontes</h1>
+<h1 class="title">OTUs: agrupamiento por similitud con VSEARCH</h1>
 </div>
 
 
 
-<div class="quarto-title-meta column-body">
+<div class="quarto-title-meta column-page-right">
 
     <div>
     <div class="quarto-title-meta-heading">Autor/a</div>
     <div class="quarto-title-meta-contents">
-             <p>Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx) </p>
+             <p>Miguel Martinez Mercado (marmigues@gmail.com) </p>
           </div>
   </div>
     
@@ -348,56 +375,249 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="día-1-introducción-teórica-y-fundamentos" class="level2">
-<h2 class="anchored" data-anchor-id="día-1-introducción-teórica-y-fundamentos">Día 1 — Introducción teórica y fundamentos</h2>
+<p>Las ASVs son secuencias únicas — entre dos ASVs puede haber solo 1 base de diferencia. Esto es un gran poder de resolución, pero nos lleva a preguntarnos:</p>
 <ul>
-<li>Bienvenida y presentación del curso</li>
-<li><a href="./0-Zoom.html">Conexión a Zoom</a></li>
-<li><a href="./0-Conexion.html">Pruebas de conexión al servidor</a></li>
-<li>Teoría</li>
+<li>¿Existe 1 base de diferencia entre secuencias de especies diferentes?</li>
+<li>¿Cuál es el impacto en las estimaciones de la diversidad?</li>
 </ul>
+<p>Este es el problema de encontrar un parámetro óptimo de aglomeración o división (<em>lumping or splitting</em>).</p>
+<p>En esta sección utilizaremos <code>vsearch</code> (<a href="https://doi.org/10.7717/peerj.2584">Rognes et al., 2016</a>) para formar <strong>OTUs</strong> (Operational Taxonomic Units) a partir de las ASVs, reconstruiremos un objeto <code>phyloseq</code> con la nueva información y compararemos la resolución taxonómica de ambas estrategias.</p>
+<hr>
+<section id="agrupamiento-de-asvs-en-otus" class="level2">
+<h2 class="anchored" data-anchor-id="agrupamiento-de-asvs-en-otus">Agrupamiento de ASVs en OTUs</h2>
+<p><code>vsearch</code> agrupa secuencias similares en clusters. El parámetro principal es el <strong>porcentaje de similitud</strong> para agrupar, en escala de 0.00 a 1.00. El estándar para OTUs es <strong>97%</strong> (0.97).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/metabarcoding-code</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/08b-vsearch.sh 0.97</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A cada grupo (o cluster) se le asigna una secuencia representante llamada <strong>oturep</strong>.</p>
+<p>Como resultado obtendremos tres archivos:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Archivo</th>
+<th style="text-align: left;">Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>_oturep.fasta</code></td>
+<td style="text-align: left;">Secuencias representantes en formato FASTA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>.uc</code></td>
+<td style="text-align: left;">Relación de las agrupaciones en formato uclust</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>.log</code></td>
+<td style="text-align: left;">Registro de la ejecución de vsearch</td>
+</tr>
+</tbody>
+</table>
 <hr>
 </section>
-<section id="día-2-entorno-bioinformático-y-control-de-calidad" class="level2">
-<h2 class="anchored" data-anchor-id="día-2-entorno-bioinformático-y-control-de-calidad">Día 2 — Entorno bioinformático y control de calidad</h2>
-<ul>
-<li><a href="./0b-linux-r-intro.html">Introducción a Linux y R</a></li>
-<li><a href="./0-Preparacion.html">Preparación del entorno</a></li>
-<li><a href="./0-Clonacion.html">Clonación de repositorio</a></li>
-<li><a href="./0-FASTQ.html">Archivos fastq: estructura y organización</a></li>
-<li><a href="./1-qaqc-cutadapt.html">Control de calidad y recorte de primers</a></li>
-<li><a href="./2-dada2QAQC.html">Introducción al pipeline DADA2</a></li>
-</ul>
+<section id="reconstrucción-del-objeto-phyloseq" class="level2">
+<h2 class="anchored" data-anchor-id="reconstrucción-del-objeto-phyloseq">Reconstrucción del objeto phyloseq</h2>
+<p>Procesaremos el archivo <code>.uc</code> para organizar la información de los OTUs en un nuevo objeto <code>phyloseq</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phyloseq)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="procesar-archivo-uc" class="level3">
+<h3 class="anchored" data-anchor-id="procesar-archivo-uc">Procesar archivo uc</h3>
+<p>El archivo <code>.uc</code> es una tabla separada por tabuladores con un renglón por cada secuencia analizada:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 59%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Columna</th>
+<th style="text-align: left;">Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Tipo de secuencia: <code>S</code> (centroide/oturep), <code>H</code> (hit/miembro), <code>C</code> (registro de cluster)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Número de cluster (base 0)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Longitud de la secuencia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Porcentaje de identidad con el centroide (solo tipo H)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">9</td>
+<td style="text-align: left;">Etiqueta de la secuencia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">10</td>
+<td style="text-align: left;">Etiqueta del centroide (solo tipo H)</td>
+</tr>
+</tbody>
+</table>
+<p>Ejemplo:</p>
+<pre><code>S   0   313   *   *   *   *   *   ASV_0001   *
+S   1   313   *   *   *   *   *   ASV_0002   *
+H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
+<p>Las primeras dos líneas son otureps (tipo S). La tercera es un miembro del cluster 1 (tipo H) con 99% de identidad con ASV_0002.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>uc_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"otus_vsearch/fish_0.97.uc"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>uc_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Type"</span>, <span class="st">"clus_ID"</span>, <span class="st">"len"</span>, <span class="st">"id_pct"</span>, <span class="st">"strand"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">"NA1"</span>, <span class="st">"NA2"</span>, <span class="st">"aln"</span>, <span class="st">"ASV_ID"</span>, <span class="st">"centroid"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>uc.df <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(uc_file, <span class="at">col_names =</span> uc_names, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>NA1, <span class="sc">-</span>NA2) <span class="sc">|&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>Type <span class="sc">%in%</span> <span class="st">"C"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(ASV_ID)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de OTUs (otureps)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(uc.df<span class="sc">$</span>Type)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identificar otureps y su cluster</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>oturep.df <span class="ot">&lt;-</span> uc.df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Type <span class="sc">%in%</span> <span class="st">"S"</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(clus_ID, ASV_ID)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>oturepID <span class="ot">&lt;-</span> oturep.df <span class="sc">|&gt;</span> <span class="fu">pull</span>(ASV_ID)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(oturepID)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 <hr>
 </section>
-<section id="día-3-pipeline-dada2" class="level2">
-<h2 class="anchored" data-anchor-id="día-3-pipeline-dada2">Día 3 — Pipeline DADA2</h2>
-<ul>
-<li><a href="./2-dada2QAQC-Prep.html">Filtrado inicial</a></li>
-<li><a href="./2-dada2QAQC-Error.html">Aprendizaje del modelo de error</a></li>
-<li><a href="./2-dada2QAQC-Merge.html">Unión de lecturas paired-end</a></li>
-<li><a href="./2-dada2QAQC-Chimeras.html">Remoción de quimeras</a></li>
-<li><a href="./2-dada2QAQC-Taxonomy.html">Asignación taxonómica</a></li>
-</ul>
+<section id="cargar-objeto-phyloseq-inicial" class="level3">
+<h3 class="anchored" data-anchor-id="cargar-objeto-phyloseq-inicial">Cargar objeto phyloseq inicial</h3>
+<p>Cargamos el objeto phyloseq generado por el pipeline DADA2 y extraemos los componentes correspondientes a los otureps:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar objeto phyloseq del pipeline DADA2</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>rdata_in <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"final_data/rdata_output/phyloseq_inputs.RData"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(rdata_in)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>ps.asv <span class="ot">&lt;-</span> ps  <span class="co"># ajustar según el nombre del objeto en tu .RData</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>ps.asv</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset: solo los otureps</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ps.sub <span class="ot">&lt;-</span> <span class="fu">subset_taxa</span>(ps.asv, <span class="fu">taxa_names</span>(ps.asv) <span class="sc">%in%</span> oturepID)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>oturep.seq <span class="ot">&lt;-</span> <span class="fu">refseq</span>(ps.sub)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>oturep.tax <span class="ot">&lt;-</span> <span class="fu">tax_table</span>(ps.sub)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>oturep.md  <span class="ot">&lt;-</span> <span class="fu">sample_data</span>(ps.sub)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 <hr>
 </section>
-<section id="día-4-análisis-ecológico-de-comunidades" class="level2">
-<h2 class="anchored" data-anchor-id="día-4-análisis-ecológico-de-comunidades">Día 4 — Análisis ecológico de comunidades</h2>
-<ul>
-<li><a href="./3-reporte.html">De los resultados de DADA2 a las tablas de análisis</a></li>
-<li><a href="./3-reporte.html">El objeto phyloseq: construcción y manipulación</a></li>
-<li><a href="./3-reporte.html">Diversidad α, diversidad β y visualización</a></li>
-<li><a href="./4-otus-vsearch.html">OTUs: agrupamiento por similitud con VSEARCH</a></li>
-</ul>
+<section id="colapsar-conteos-por-otu" class="level3">
+<h3 class="anchored" data-anchor-id="colapsar-conteos-por-otu">Colapsar conteos por OTU</h3>
+<p>Agrupamos (sumamos) las lecturas de todas las ASVs que pertenecen al mismo cluster:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de conteos original</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>conteos.ini <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">otu_table</span>(ps.asv), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Formato largo y agregar info de clusters</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>conteos.ini.long <span class="ot">&lt;-</span> conteos.ini <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"SampleID"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>SampleID, <span class="at">names_to =</span> <span class="st">"ASV_ID"</span>, <span class="at">values_to =</span> <span class="st">"conteo"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>conteos.ini.long <span class="ot">&lt;-</span> <span class="fu">left_join</span>(conteos.ini.long, uc.df, <span class="at">by =</span> <span class="st">"ASV_ID"</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Sumar conteos por muestra y cluster</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>conteos.sum.long <span class="ot">&lt;-</span> conteos.ini.long <span class="sc">|&gt;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(SampleID, clus_ID) <span class="sc">|&gt;</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">conteo_cluster =</span> <span class="fu">sum</span>(conteo), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Remplazar cluster_ID por ASV_ID del oturep</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>conteos.sum.long <span class="ot">&lt;-</span> <span class="fu">left_join</span>(conteos.sum.long, oturep.df, <span class="at">by =</span> <span class="st">"clus_ID"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a matriz muestras × OTUs</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>conteos.sum <span class="ot">&lt;-</span> conteos.sum.long <span class="sc">|&gt;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>clus_ID) <span class="sc">|&gt;</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> ASV_ID, <span class="at">values_from =</span> conteo_cluster, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"SampleID"</span>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>conteos.sum <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(conteos.sum)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(conteos.sum)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 <hr>
 </section>
-<section id="día-5-temas-avanzados" class="level2">
-<h2 class="anchored" data-anchor-id="día-5-temas-avanzados">Día 5 — Temas avanzados</h2>
-<ul>
-<li>Bases de datos de referencia personalizadas</li>
-<li><a href="./5-decontam.html">Detección y remoción de contaminantes con decontam</a></li>
-<li>Temas auxiliares y dudas del curso</li>
-</ul>
+<section id="construir-nuevo-objeto-phyloseq" class="level3">
+<h3 class="anchored" data-anchor-id="construir-nuevo-objeto-phyloseq">Construir nuevo objeto phyloseq</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ASV  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(conteos.sum, <span class="at">taxa_are_rows =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>TAXA <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_table</span>(oturep.tax)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>SEQ  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">refseq</span>(oturep.seq)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>MD   <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(oturep.md)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>ps.otu <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">phyloseq</span>(ASV, TAXA, SEQ, MD)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>ps.otu</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+</section>
+</section>
+<section id="comparar-resolución-taxonómica-asvs-vs-otus" class="level2">
+<h2 class="anchored" data-anchor-id="comparar-resolución-taxonómica-asvs-vs-otus">Comparar resolución taxonómica: ASVs vs OTUs</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>asv.tax <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">tax_table</span>(ps.asv), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>otu.tax <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">tax_table</span>(ps.otu), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ASVs =</span> <span class="fu">apply</span>(asv.tax, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(x)))),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">OTUs =</span> <span class="fu">apply</span>(otu.tax, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(x))))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">rownames_to_column</span>(df1, <span class="at">var =</span> <span class="st">"Nivel"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>Nivel, <span class="at">names_to =</span> <span class="st">"Estrategia"</span>, <span class="at">values_to =</span> <span class="st">"Conteo"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Nivel =</span> <span class="fu">factor</span>(Nivel,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Kingdom"</span>, <span class="st">"Phylum"</span>, <span class="st">"Class"</span>, <span class="st">"Order"</span>, <span class="st">"Family"</span>, <span class="st">"Genus"</span>, <span class="st">"Species"</span>),</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">ordered =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df1, <span class="fu">aes</span>(<span class="at">x =</span> Nivel, <span class="at">y =</span> Conteo, <span class="at">group =</span> Estrategia, <span class="at">color =</span> Estrategia)) <span class="sc">+</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.5</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Número de taxones identificados por tipo de análisis"</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Número de taxones"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En cada nivel puede haber asignaciones <code>NA</code> que cuentan como 1 taxón.</p>
+</div>
+</div>
 
 
 </section>
@@ -803,6 +1023,18 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="./3-reporte-v2.html" class="pagination-link" aria-label="Análisis ecológico de comunidades de peces">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Análisis ecológico de comunidades de peces</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./5-decontam.html" class="pagination-link" aria-label="Detección y remoción de contaminantes con decontam">
+        <span class="nav-page-text">Detección y remoción de contaminantes con decontam</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">

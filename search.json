@@ -140,6 +140,78 @@
     "text": "Instructores participantes/Institución\nDra. Tania Valdivia Carrillo, Investigadora postdoctoral CIBNOR SECIHTI\nDr. Miguel A. Martínez Mercado, Investigador postdoctoral CIBNOR SECIHTI\nDr. Fausto Valenzuela Quiñonez, Investigador Titular CIBNOR"
   },
   {
+    "objectID": "5-decontam.html",
+    "href": "5-decontam.html",
+    "title": "Detección y remoción de contaminantes con decontam",
+    "section": "",
+    "text": "El paquete decontam provee métodos estadísticos para la identificación y visualización de secuencias contaminantes en datos de secuenciación masiva de genes marcadores.",
+    "crumbs": [
+      "Sesiones",
+      "Día 5",
+      "Detección y remoción de contaminantes con decontam"
+    ]
+  },
+  {
+    "objectID": "5-decontam.html#datos-que-se-necesitan",
+    "href": "5-decontam.html#datos-que-se-necesitan",
+    "title": "Detección y remoción de contaminantes con decontam",
+    "section": "Datos que se necesitan",
+    "text": "Datos que se necesitan\n\nTabla de conteo de ASVs o OTUs\nTabla de metadatos con al menos uno de:\n\nCuantificación de la concentración de ADN (fluorescencia o qPCR)\nIdentificación de controles negativos (controles de extracción)\n\n\n\n\n\n\n\n\nNota\n\n\n\nEn este ejercicio usamos datos de ejemplo incluidos en el paquete decontam, no los datos del curso.",
+    "crumbs": [
+      "Sesiones",
+      "Día 5",
+      "Detección y remoción de contaminantes con decontam"
+    ]
+  },
+  {
+    "objectID": "5-decontam.html#preparación-del-espacio-de-trabajo",
+    "href": "5-decontam.html#preparación-del-espacio-de-trabajo",
+    "title": "Detección y remoción de contaminantes con decontam",
+    "section": "Preparación del espacio de trabajo",
+    "text": "Preparación del espacio de trabajo\n\n\nCódigo\nlibrary(phyloseq)\nlibrary(ggplot2)\nlibrary(decontam)\n\n\nCargamos un objeto phyloseq de ejemplo con 1951 ASVs y 569 muestras:\n\n\nCódigo\nps &lt;- readRDS(system.file(\"extdata\", \"MUClite.rds\", package = \"decontam\"))\nps\n\n\nLa tabla de metadatos contiene:\n\nquant_reading — concentración de ADN\nSample_or_Control — tipo de muestra (experimental o control)\n\n\n\nCódigo\nhead(sample_data(ps))\nsummary(get_variable(ps, quant_reading))\ntable(get_variable(ps, Sample_or_Control))\n\n\nRevisamos el número de lecturas por muestra:\n\n\nCódigo\ndf &lt;- as.data.frame(sample_data(ps))\ndf$LibrarySize &lt;- sample_sums(ps)\ndf &lt;- df[order(df$LibrarySize), ]\ndf$Index &lt;- seq(nrow(df))\n\nggplot(data = df, aes(x = Index, y = LibrarySize, color = Sample_or_Control)) +\n  geom_point()\n\n\nLas muestras experimentales tienen más de 10,000 lecturas, mientras que los controles tienen menos.",
+    "crumbs": [
+      "Sesiones",
+      "Día 5",
+      "Detección y remoción de contaminantes con decontam"
+    ]
+  },
+  {
+    "objectID": "5-decontam.html#método-1-detección-por-frecuencia",
+    "href": "5-decontam.html#método-1-detección-por-frecuencia",
+    "title": "Detección y remoción de contaminantes con decontam",
+    "section": "Método 1: Detección por frecuencia",
+    "text": "Método 1: Detección por frecuencia\nSe basa en la distribución de la frecuencia de cada ASV en función de la concentración de ADN. Un contaminante tiene frecuencia inversamente proporcional a la concentración: al aumentar el ADN, el contaminante disminuye.\n\n\nCódigo\ncontamdf.freq &lt;- isContaminant(ps, method = \"frequency\", conc = \"quant_reading\")\nhead(contamdf.freq)\ntable(contamdf.freq$contaminant)\n\n\nVisualizamos un ASV no contaminante (seq1) vs uno contaminante (seq3):\n\n\nCódigo\nplot_frequency(ps, taxa_names(ps)[c(1, 3)], conc = \"quant_reading\") +\n  xlab(\"DNA Concentration (PicoGreen fluorescent intensity)\")\n\n\n\nLínea punteada: modelo de secuencia no contaminante (frecuencia independiente de la concentración)\nLínea roja: modelo de secuencia contaminante (frecuencia inversamente proporcional)\n\n\n\nCódigo\nset.seed(100)\nplot_frequency(ps, taxa_names(ps)[sample(which(contamdf.freq$contaminant), 3)],\n               conc = \"quant_reading\") +\n  xlab(\"DNA Concentration (PicoGreen fluorescent intensity)\")\n\n\nPara eliminar los contaminantes:\n\n\nCódigo\nps\nps.noncontam &lt;- prune_taxa(!contamdf.freq$contaminant, ps)\nps.noncontam",
+    "crumbs": [
+      "Sesiones",
+      "Día 5",
+      "Detección y remoción de contaminantes con decontam"
+    ]
+  },
+  {
+    "objectID": "5-decontam.html#método-2-detección-por-prevalencia",
+    "href": "5-decontam.html#método-2-detección-por-prevalencia",
+    "title": "Detección y remoción de contaminantes con decontam",
+    "section": "Método 2: Detección por prevalencia",
+    "text": "Método 2: Detección por prevalencia\nCompara la presencia/ausencia de cada ASV entre muestras experimentales y controles negativos. Una secuencia que aparece más en los controles que en las muestras reales probablemente es contaminante.\n\n\nCódigo\nsample_data(ps)$is.neg &lt;- sample_data(ps)$Sample_or_Control == \"Control Sample\"\n\ncontamdf.prev &lt;- isContaminant(ps, method = \"prevalence\", neg = \"is.neg\")\ntable(contamdf.prev$contaminant)\n\n\nSe puede ajustar el umbral con threshold:\n\n\nCódigo\ncontamdf.prev05 &lt;- isContaminant(ps, method = \"prevalence\", neg = \"is.neg\", threshold = 0.5)\ntable(contamdf.prev05$contaminant)\n\n\nVisualización de prevalencia en controles vs muestras reales:\n\n\nCódigo\nps.pa &lt;- transform_sample_counts(ps, function(abund) 1 * (abund &gt; 0))\nps.pa.neg &lt;- prune_samples(sample_data(ps.pa)$Sample_or_Control == \"Control Sample\", ps.pa)\nps.pa.pos &lt;- prune_samples(sample_data(ps.pa)$Sample_or_Control == \"True Sample\", ps.pa)\n\ndf.pa &lt;- data.frame(\n  pa.pos = taxa_sums(ps.pa.pos),\n  pa.neg = taxa_sums(ps.pa.neg),\n  contaminant = contamdf.prev$contaminant\n)\n\nggplot(data = df.pa, aes(x = pa.neg, y = pa.pos, color = contaminant)) +\n  geom_point() +\n  xlab(\"Prevalencia (Controles negativos)\") +\n  ylab(\"Prevalencia (Muestras reales)\")",
+    "crumbs": [
+      "Sesiones",
+      "Día 5",
+      "Detección y remoción de contaminantes con decontam"
+    ]
+  },
+  {
+    "objectID": "5-decontam.html#otros-métodos-disponibles",
+    "href": "5-decontam.html#otros-métodos-disponibles",
+    "title": "Detección y remoción de contaminantes con decontam",
+    "section": "Otros métodos disponibles",
+    "text": "Otros métodos disponibles\n\n\n\n\n\n\n\nMétodo\nDescripción\n\n\n\n\ncombined\nCombina frecuencia y prevalencia con prueba de Fisher\n\n\nminimum\nUsa el mínimo de las probabilidades de frecuencia y prevalencia\n\n\neither\nContaminante si lo detecta frecuencia o prevalencia\n\n\nboth\nContaminante solo si lo detectan ambos métodos",
+    "crumbs": [
+      "Sesiones",
+      "Día 5",
+      "Detección y remoción de contaminantes con decontam"
+    ]
+  },
+  {
     "objectID": "3-reporte.html",
     "href": "3-reporte.html",
     "title": "Comunidades de peces del Golfo de California",
@@ -1205,6 +1277,54 @@
       "Sesiones",
       "Día 4",
       "Análisis ecológico de comunidades de peces"
+    ]
+  },
+  {
+    "objectID": "4-otus-vsearch.html",
+    "href": "4-otus-vsearch.html",
+    "title": "OTUs: agrupamiento por similitud con VSEARCH",
+    "section": "",
+    "text": "Las ASVs son secuencias únicas — entre dos ASVs puede haber solo 1 base de diferencia. Esto es un gran poder de resolución, pero nos lleva a preguntarnos:\nEste es el problema de encontrar un parámetro óptimo de aglomeración o división (lumping or splitting).\nEn esta sección utilizaremos vsearch (Rognes et al., 2016) para formar OTUs (Operational Taxonomic Units) a partir de las ASVs, reconstruiremos un objeto phyloseq con la nueva información y compararemos la resolución taxonómica de ambas estrategias.",
+    "crumbs": [
+      "Sesiones",
+      "Día 4",
+      "OTUs: agrupamiento por similitud con VSEARCH"
+    ]
+  },
+  {
+    "objectID": "4-otus-vsearch.html#agrupamiento-de-asvs-en-otus",
+    "href": "4-otus-vsearch.html#agrupamiento-de-asvs-en-otus",
+    "title": "OTUs: agrupamiento por similitud con VSEARCH",
+    "section": "Agrupamiento de ASVs en OTUs",
+    "text": "Agrupamiento de ASVs en OTUs\nvsearch agrupa secuencias similares en clusters. El parámetro principal es el porcentaje de similitud para agrupar, en escala de 0.00 a 1.00. El estándar para OTUs es 97% (0.97).\ncd ~/metabarcoding-code\nbash scripts/08b-vsearch.sh 0.97\nA cada grupo (o cluster) se le asigna una secuencia representante llamada oturep.\nComo resultado obtendremos tres archivos:\n\n\n\nArchivo\nContenido\n\n\n\n\n_oturep.fasta\nSecuencias representantes en formato FASTA\n\n\n.uc\nRelación de las agrupaciones en formato uclust\n\n\n.log\nRegistro de la ejecución de vsearch",
+    "crumbs": [
+      "Sesiones",
+      "Día 4",
+      "OTUs: agrupamiento por similitud con VSEARCH"
+    ]
+  },
+  {
+    "objectID": "4-otus-vsearch.html#reconstrucción-del-objeto-phyloseq",
+    "href": "4-otus-vsearch.html#reconstrucción-del-objeto-phyloseq",
+    "title": "OTUs: agrupamiento por similitud con VSEARCH",
+    "section": "Reconstrucción del objeto phyloseq",
+    "text": "Reconstrucción del objeto phyloseq\nProcesaremos el archivo .uc para organizar la información de los OTUs en un nuevo objeto phyloseq.\n\n\nCódigo\nlibrary(dplyr)\nlibrary(tidyr)\nlibrary(ggplot2)\nlibrary(tibble)\nlibrary(phyloseq)\n\n\n\nProcesar archivo uc\nEl archivo .uc es una tabla separada por tabuladores con un renglón por cada secuencia analizada:\n\n\n\n\n\n\n\nColumna\nDescripción\n\n\n\n\n1\nTipo de secuencia: S (centroide/oturep), H (hit/miembro), C (registro de cluster)\n\n\n2\nNúmero de cluster (base 0)\n\n\n3\nLongitud de la secuencia\n\n\n4\nPorcentaje de identidad con el centroide (solo tipo H)\n\n\n9\nEtiqueta de la secuencia\n\n\n10\nEtiqueta del centroide (solo tipo H)\n\n\n\nEjemplo:\nS   0   313   *   *   *   *   *   ASV_0001   *\nS   1   313   *   *   *   *   *   ASV_0002   *\nH   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002\nLas primeras dos líneas son otureps (tipo S). La tercera es un miembro del cluster 1 (tipo H) con 99% de identidad con ASV_0002.\n\n\nCódigo\nuc_file &lt;- file.path(\"otus_vsearch/fish_0.97.uc\")\n\nuc_names &lt;- c(\"Type\", \"clus_ID\", \"len\", \"id_pct\", \"strand\",\n              \"NA1\", \"NA2\", \"aln\", \"ASV_ID\", \"centroid\")\n\nuc.df &lt;- readr::read_tsv(uc_file, col_names = uc_names, show_col_types = FALSE) |&gt;\n  select(-NA1, -NA2) |&gt;\n  filter(!Type %in% \"C\") |&gt;\n  dplyr::relocate(ASV_ID)\n\n# Número de OTUs (otureps)\ntable(uc.df$Type)\n\n\n\n\nCódigo\n# Identificar otureps y su cluster\noturep.df &lt;- uc.df |&gt; filter(Type %in% \"S\") |&gt; select(clus_ID, ASV_ID)\noturepID &lt;- oturep.df |&gt; pull(ASV_ID)\nlength(oturepID)\n\n\n\n\n\nCargar objeto phyloseq inicial\nCargamos el objeto phyloseq generado por el pipeline DADA2 y extraemos los componentes correspondientes a los otureps:\n\n\nCódigo\n# Cargar objeto phyloseq del pipeline DADA2\nrdata_in &lt;- file.path(\"final_data/rdata_output/phyloseq_inputs.RData\")\nload(rdata_in)\n\nps.asv &lt;- ps  # ajustar según el nombre del objeto en tu .RData\nps.asv\n\n\n\n\nCódigo\n# Subset: solo los otureps\nps.sub &lt;- subset_taxa(ps.asv, taxa_names(ps.asv) %in% oturepID)\n\noturep.seq &lt;- refseq(ps.sub)\noturep.tax &lt;- tax_table(ps.sub)\noturep.md  &lt;- sample_data(ps.sub)\n\n\n\n\n\nColapsar conteos por OTU\nAgrupamos (sumamos) las lecturas de todas las ASVs que pertenecen al mismo cluster:\n\n\nCódigo\n# Tabla de conteos original\nconteos.ini &lt;- data.frame(otu_table(ps.asv), stringsAsFactors = FALSE)\n\n# Formato largo y agregar info de clusters\nconteos.ini.long &lt;- conteos.ini |&gt;\n  rownames_to_column(var = \"SampleID\") |&gt;\n  pivot_longer(-SampleID, names_to = \"ASV_ID\", values_to = \"conteo\")\n\nconteos.ini.long &lt;- left_join(conteos.ini.long, uc.df, by = \"ASV_ID\")\n\n# Sumar conteos por muestra y cluster\nconteos.sum.long &lt;- conteos.ini.long |&gt;\n  group_by(SampleID, clus_ID) |&gt;\n  summarise(conteo_cluster = sum(conteo), .groups = \"drop\")\n\n# Remplazar cluster_ID por ASV_ID del oturep\nconteos.sum.long &lt;- left_join(conteos.sum.long, oturep.df, by = \"clus_ID\")\n\n# Convertir a matriz muestras × OTUs\nconteos.sum &lt;- conteos.sum.long |&gt;\n  select(-clus_ID) |&gt;\n  pivot_wider(names_from = ASV_ID, values_from = conteo_cluster, values_fill = 0) |&gt;\n  column_to_rownames(var = \"SampleID\")\nconteos.sum &lt;- as.matrix(conteos.sum)\ndim(conteos.sum)\n\n\n\n\n\nConstruir nuevo objeto phyloseq\n\n\nCódigo\nASV  &lt;- phyloseq::otu_table(conteos.sum, taxa_are_rows = FALSE)\nTAXA &lt;- phyloseq::tax_table(oturep.tax)\nSEQ  &lt;- phyloseq::refseq(oturep.seq)\nMD   &lt;- phyloseq::sample_data(oturep.md)\n\nps.otu &lt;- phyloseq::phyloseq(ASV, TAXA, SEQ, MD)\nps.otu",
+    "crumbs": [
+      "Sesiones",
+      "Día 4",
+      "OTUs: agrupamiento por similitud con VSEARCH"
+    ]
+  },
+  {
+    "objectID": "4-otus-vsearch.html#comparar-resolución-taxonómica-asvs-vs-otus",
+    "href": "4-otus-vsearch.html#comparar-resolución-taxonómica-asvs-vs-otus",
+    "title": "OTUs: agrupamiento por similitud con VSEARCH",
+    "section": "Comparar resolución taxonómica: ASVs vs OTUs",
+    "text": "Comparar resolución taxonómica: ASVs vs OTUs\n\n\nCódigo\nasv.tax &lt;- data.frame(tax_table(ps.asv), stringsAsFactors = FALSE)\notu.tax &lt;- data.frame(tax_table(ps.otu), stringsAsFactors = FALSE)\n\ndf1 &lt;- data.frame(\n  ASVs = apply(asv.tax, 2, function(x) length(unique(na.omit(x)))),\n  OTUs = apply(otu.tax, 2, function(x) length(unique(na.omit(x))))\n)\n\ndf1 &lt;- rownames_to_column(df1, var = \"Nivel\") |&gt;\n  pivot_longer(-Nivel, names_to = \"Estrategia\", values_to = \"Conteo\") |&gt;\n  mutate(Nivel = factor(Nivel,\n    levels = c(\"Kingdom\", \"Phylum\", \"Class\", \"Order\", \"Family\", \"Genus\", \"Species\"),\n    ordered = TRUE))\n\nggplot(df1, aes(x = Nivel, y = Conteo, group = Estrategia, color = Estrategia)) +\n  geom_line(linewidth = 1.5, alpha = 0.5) +\n  labs(title = \"Número de taxones identificados por tipo de análisis\",\n       x = \"\", y = \"Número de taxones\")\n\n\n\n\n\n\n\n\nNota\n\n\n\nEn cada nivel puede haber asignaciones NA que cuentan como 1 taxón.",
+    "crumbs": [
+      "Sesiones",
+      "Día 4",
+      "OTUs: agrupamiento por similitud con VSEARCH"
     ]
   },
   {
