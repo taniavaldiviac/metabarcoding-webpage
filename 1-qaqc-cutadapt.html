@@ -293,19 +293,21 @@ Importante
 </section>
 <section id="crear-directorios-y-correr-fastqc" class="level3">
 <h3 class="anchored" data-anchor-id="crear-directorios-y-correr-fastqc">Crear directorios y correr fastqc</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc raw_fastqs/<span class="pp">*</span>.fastq</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Primero creamos el directorio de salida. <code>final_data/</code> no existe aún en el repositorio — es donde se guardarán todos los resultados del pipeline:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> final_data/fastqc</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc raw_fastqs/<span class="pp">*</span>.fastq</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="verificar-conteo-de-reportes" class="level3">
 <h3 class="anchored" data-anchor-id="verificar-conteo-de-reportes">Verificar conteo de reportes</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"FastQC OK"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> final_data/fastqc/<span class="pp">*</span>_fastqc.html <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"FastQC OK"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="ejecutar-multiqc-resume-todos-los-fastqc" class="level3">
 <h3 class="anchored" data-anchor-id="ejecutar-multiqc-resume-todos-los-fastqc">Ejecutar MultiQC (resume todos los FastQC)</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc <span class="at">-o</span> final_data/multiqc</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc <span class="at">-o</span> final_data/multiqc</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="verificar-reporte-multiqc" class="level3">
 <h3 class="anchored" data-anchor-id="verificar-reporte-multiqc">Verificar reporte MultiQC</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> final_data/multiqc/multiqc_report.html <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"MultiQC OK"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> final_data/multiqc/multiqc_report.html <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"MultiQC OK"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="revisión-de-resultados" class="level3">
 <h3 class="anchored" data-anchor-id="revisión-de-resultados">4. Revisión de resultados</h3>
@@ -313,10 +315,10 @@ Importante
 <section id="transferir-el-html-a-la-computadora-local-usando-scp" class="level3">
 <h3 class="anchored" data-anchor-id="transferir-el-html-a-la-computadora-local-usando-scp">Transferir el HTML a la computadora local usando scp</h3>
 <p><strong>Desde tu terminal local:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Transferir toda la carpeta FastQC:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="line-block"><strong>Tips de revisión en MultiQC:</strong><br>
 - Per base sequence quality: define zonas de truncado (Q≥25–30).<br>
 - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.<br>
@@ -324,7 +326,7 @@ Importante
 </section>
 <section id="cortar-primers-con-cutadapt" class="level3">
 <h3 class="anchored" data-anchor-id="cortar-primers-con-cutadapt">5. Cortar primers con Cutadapt</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -410,7 +412,7 @@ R2:                 ◄----amplicón----[RC del REV primer]</code></pre>
 <li>Resume las estadísticas de todas las muestras en <code>cutadapt_reports/overall_report.txt</code> y <code>overall_summary.tsv</code>.</li>
 </ol>
 <p>Visualiza el contenido del script:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> scripts/02b-cutadapt.sh</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="parámetros-principales" class="level4">
 <h4 class="anchored" data-anchor-id="parámetros-principales">Parámetros principales</h4>
@@ -469,7 +471,7 @@ R2:                 ◄----amplicón----[RC del REV primer]</code></pre>
 <section id="interpretación-del-reporte" class="level4">
 <h4 class="anchored" data-anchor-id="interpretación-del-reporte">Interpretación del reporte</h4>
 <p>Al terminar, revisa el resumen:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> cutadapt_reports/overall_report.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> cutadapt_reports/overall_report.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El reporte por muestra tiene tres métricas clave:</p>
 <table class="caption-top table">
 <colgroup>
@@ -542,10 +544,10 @@ R2:                 ◄----amplicón----[RC del REV primer]</code></pre>
 </section>
 <section id="revisión-de-resultados-1" class="level3">
 <h3 class="anchored" data-anchor-id="revisión-de-resultados-1">6. Revisión de resultados</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Descarga el reporte:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>
