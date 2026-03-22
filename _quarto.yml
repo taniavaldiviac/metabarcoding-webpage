@@ -24,6 +24,35 @@ website:
     right:
       - icon: github
         href: https://github.com/taniavaldiviac/metabarcoding-webpage
+  sidebar:
+    style: floating
+    contents:
+      - section: "Día 1"
+        contents:
+          - 0-Zoom.qmd
+          - 0-Conexion.qmd
+      - section: "Día 2"
+        contents:
+          - 0b-linux-r-intro.qmd
+          - 0-Preparacion.qmd
+          - 0-Clonacion.qmd
+          - 0-FASTQ.qmd
+          - 1-qaqc-cutadapt.qmd
+          - 2-dada2QAQC.qmd
+      - section: "Día 3"
+        contents:
+          - 2-dada2QAQC-Prep.qmd
+          - 2-dada2QAQC-Error.qmd
+          - 2-dada2QAQC-Merge.qmd
+          - 2-dada2QAQC-Chimeras.qmd
+          - 2-dada2QAQC-Taxonomy.qmd
+      - section: "Día 4"
+        contents:
+          - 3-reporte.qmd
+          - 3-reporte-v2.qmd
+      - section: "Referencias"
+        contents:
+          - Referencias.qmd
 
 format:
   html:
