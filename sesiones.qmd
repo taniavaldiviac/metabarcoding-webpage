@@ -36,7 +36,7 @@ execute:
 
 ## Día 3 — Pipeline DADA2
 
-- [Filtrado inicial](2-dada2QAQC-Prep.qmd) · [Filter & Trim](2-dada2QAQC-Filter.qmd)
+- [Filtrado inicial](2-dada2QAQC-Prep.qmd)
 - [Aprendizaje del modelo de error](2-dada2QAQC-Error.qmd)
 - [Unión de lecturas paired-end](2-dada2QAQC-Merge.qmd)
 - [Remoción de quimeras](2-dada2QAQC-Chimeras.qmd)
