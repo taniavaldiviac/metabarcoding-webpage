@@ -7,21 +7,16 @@ execute:
 
 ## Configuración del entorno
 
-Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline. Cada una cumple un rol específico:
-
-- **dada2**: el motor del pipeline — infiere ASVs, filtra lecturas, modela errores y asigna taxonomía
-- **tidyverse**: manipulación y visualización de datos (incluye `dplyr`, `ggplot2`, `readr`, etc.)
-- **ShortRead**: lectura y control de calidad de archivos FASTQ
-- **seqinr** y **digest**: utilidades para trabajar con secuencias FASTA y generar identificadores únicos (hashes) para las ASVs
+Antes de comenzar el análisis, cargamos las librerías que usaremos a lo largo del pipeline.
 
 ```{r eval=FALSE}
-library(dada2, quietly = TRUE)
-library(tidyverse, quietly = TRUE)
-library(seqinr)
-library(ShortRead)
-library(digest)
-library(fs)
-library(readr)
+library(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía
+library(tidyverse, quietly = TRUE) # manipulación y visualización de datos
+library(seqinr)                    # utilidades para secuencias FASTA
+library(ShortRead)                 # lectura y QC de archivos FASTQ
+library(digest)                    # hashes SHA1 para identificar ASVs
+library(fs)                        # operaciones con archivos y rutas
+library(readr)                     # lectura/escritura de CSVs
 
 set.seed(42)
 ```
