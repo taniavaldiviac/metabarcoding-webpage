@@ -6,6 +6,15 @@ execute:
   warning: false
 ---
 
+::: {.callout-important icon="false"}
+**Antes de empezar:** todos los comandos de esta sección usan rutas relativas. Asegúrate de estar en el directorio del proyecto:
+
+``` bash
+cd ~/metabarcoding-code
+conda activate metabarcoding
+```
+:::
+
 ## Objetivo
 
 En esta clase aprenderemos a realizar control de calidad (QA/QC) en
