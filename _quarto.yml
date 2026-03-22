@@ -25,6 +25,7 @@ website:
         href: https://github.com/taniavaldiviac/metabarcoding-webpage
   sidebar:
     style: floating
+    collapse-level: 1
     contents:
       - section: "Día 1"
         contents:
