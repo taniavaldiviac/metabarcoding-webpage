@@ -57,8 +57,7 @@ website:
 format:
   html:
     theme: [litera, styles.scss]
-    toc: true
-    toc-depth: 3
+    toc: false
     number-sections: false
     page-navigation: true
     lang: es
