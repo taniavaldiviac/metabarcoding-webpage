@@ -550,7 +550,7 @@
     "href": "0-FASTQ.html#lecturas-paired-end",
     "title": "Archivos FASTQ: estructura y organización",
     "section": "Lecturas paired-end",
-    "text": "Lecturas paired-end\nEn secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando dos archivos por muestra:\n\n_R1_001.fastq — lectura forward (de 5’ a 3’)\n_R2_001.fastq — lectura reverse (de 3’ a 5’)\n\n\n\nCódigo\nflowchart LR\n    F[\"→ R1 (forward)\"] --&gt; A[\"Fragmento de ADN\"]\n    A --&gt; R[\"← R2 (reverse)\"]\n\n    style F fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f\n    style R fill:#fef3c7,stroke:#f59e0b,color:#78350f\n    style A fill:#f3f4f6,stroke:#6b7280,color:#1f2937\n\n\n\n\n\n\n\n\n\n\n\nLas dos lecturas se solapan en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (merge) para reconstruir la secuencia completa."
+    "text": "Lecturas paired-end\nEn secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando dos archivos por muestra:\n\n_R1_001.fastq — lectura forward (de 5’ a 3’)\n_R2_001.fastq — lectura reverse (de 3’ a 5’)\n\n        ├──── R1 (forward) ────→\n5' ─────┤                       ├───── 3'\n        │    ◄── solapamiento ──►     │\n3' ─────┤                       ├───── 5'\n        ←──── R2 (reverse) ────┤\nLas dos lecturas se solapan en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (merge) para reconstruir la secuencia completa."
   },
   {
     "objectID": "0-FASTQ.html#explorando-tus-archivos-fastq",
