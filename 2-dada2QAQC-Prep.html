@@ -543,6 +543,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Para descargar las gráficas a tu computadora:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/logs/<span class="pp">*</span>quality<span class="pp">*</span>.png ~/Downloads/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ejemplo de la gráfica paired (Muestra 1, Forward vs Reverse):</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/quality_paired_example.png" class="img-fluid figure-img"></p>
+<figcaption>Perfiles de calidad — Muestra 1</figcaption>
+</figure>
+</div>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -557,6 +564,7 @@ Tip
 <ul>
 <li>La <strong>línea verde</strong> es la mediana de calidad por posición</li>
 <li>La <strong>zona gris</strong> muestra los cuartiles (variabilidad entre lecturas)</li>
+<li>La <strong>línea roja</strong> (eje derecho) muestra el porcentaje de lecturas que llegan a esa posición — cuando cae a 0%, las lecturas ya terminaron</li>
 <li>Busca dónde la mediana cae por debajo de <strong>Q30</strong> — ese es el punto de truncamiento ideal</li>
 <li>Las lecturas R2 suelen degradar más rápido que R1; es normal que su punto de truncamiento sea menor</li>
 </ul>
