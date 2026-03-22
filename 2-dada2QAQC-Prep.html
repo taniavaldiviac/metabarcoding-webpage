@@ -324,42 +324,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">En esta página</h2>
-   
-  <ul>
-  <li><a href="#configuración-del-entorno" id="toc-configuración-del-entorno" class="nav-link active" data-scroll-target="#configuración-del-entorno">Configuración del entorno</a></li>
-  <li><a href="#definir-rutas-y-parámetros" id="toc-definir-rutas-y-parámetros" class="nav-link" data-scroll-target="#definir-rutas-y-parámetros">Definir rutas y parámetros</a></li>
-  <li><a href="#leer-parámetros-del-locus" id="toc-leer-parámetros-del-locus" class="nav-link" data-scroll-target="#leer-parámetros-del-locus">Leer parámetros del locus</a></li>
-  <li><a href="#localizar-archivos-fastq" id="toc-localizar-archivos-fastq" class="nav-link" data-scroll-target="#localizar-archivos-fastq">Localizar archivos FASTQ</a></li>
-  <li><a href="#preparar-rutas-de-archivos-filtrados" id="toc-preparar-rutas-de-archivos-filtrados" class="nav-link" data-scroll-target="#preparar-rutas-de-archivos-filtrados">Preparar rutas de archivos filtrados</a></li>
-  <li><a href="#inspección-de-calidad" id="toc-inspección-de-calidad" class="nav-link" data-scroll-target="#inspección-de-calidad">Inspección de calidad</a></li>
-  <li><a href="#distribución-de-longitudes-de-lecturas-opcional" id="toc-distribución-de-longitudes-de-lecturas-opcional" class="nav-link" data-scroll-target="#distribución-de-longitudes-de-lecturas-opcional">Distribución de longitudes de lecturas (opcional)</a></li>
-  <li><a href="#verificación-de-primers" id="toc-verificación-de-primers" class="nav-link" data-scroll-target="#verificación-de-primers">Verificación de primers</a></li>
-  <li><a href="#determinar-el-punto-de-truncamiento" id="toc-determinar-el-punto-de-truncamiento" class="nav-link" data-scroll-target="#determinar-el-punto-de-truncamiento">Determinar el punto de truncamiento</a>
-  <ul class="collapse">
-  <li><a href="#qué-considerar" id="toc-qué-considerar" class="nav-link" data-scroll-target="#qué-considerar">¿Qué considerar?</a></li>
-  <li><a href="#cálculo-automático" id="toc-cálculo-automático" class="nav-link" data-scroll-target="#cálculo-automático">Cálculo automático</a></li>
-  <li><a href="#cómo-verificar-que-el-truncamiento-es-razonable" id="toc-cómo-verificar-que-el-truncamiento-es-razonable" class="nav-link" data-scroll-target="#cómo-verificar-que-el-truncamiento-es-razonable">¿Cómo verificar que el truncamiento es razonable?</a></li>
-  <li><a href="#cuándo-ajustar-manualmente" id="toc-cuándo-ajustar-manualmente" class="nav-link" data-scroll-target="#cuándo-ajustar-manualmente">¿Cuándo ajustar manualmente?</a></li>
-  </ul></li>
-  <li><a href="#filtrado-y-truncamiento-filterandtrim" id="toc-filtrado-y-truncamiento-filterandtrim" class="nav-link" data-scroll-target="#filtrado-y-truncamiento-filterandtrim">Filtrado y truncamiento (<code>filterAndTrim</code>)</a>
-  <ul class="collapse">
-  <li><a href="#trunclen-longitud-de-truncamiento" id="toc-trunclen-longitud-de-truncamiento" class="nav-link" data-scroll-target="#trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</a></li>
-  <li><a href="#maxn-bases-ambiguas" id="toc-maxn-bases-ambiguas" class="nav-link" data-scroll-target="#maxn-bases-ambiguas"><code>maxN</code> — Bases ambiguas</a></li>
-  <li><a href="#maxee-errores-esperados" id="toc-maxee-errores-esperados" class="nav-link" data-scroll-target="#maxee-errores-esperados"><code>maxEE</code> — Errores esperados</a></li>
-  <li><a href="#truncq-truncamiento-por-calidad" id="toc-truncq-truncamiento-por-calidad" class="nav-link" data-scroll-target="#truncq-truncamiento-por-calidad"><code>truncQ</code> — Truncamiento por calidad</a></li>
-  <li><a href="#rm.phix-control-phix" id="toc-rm.phix-control-phix" class="nav-link" data-scroll-target="#rm.phix-control-phix"><code>rm.phix</code> — Control PhiX</a></li>
-  <li><a href="#matchids-pareado-de-lecturas" id="toc-matchids-pareado-de-lecturas" class="nav-link" data-scroll-target="#matchids-pareado-de-lecturas"><code>matchIDs</code> — Pareado de lecturas</a></li>
-  </ul></li>
-  <li><a href="#verificar-retención" id="toc-verificar-retención" class="nav-link" data-scroll-target="#verificar-retención">Verificar retención</a></li>
-  <li><a href="#guardar-checkpoint" id="toc-guardar-checkpoint" class="nav-link" data-scroll-target="#guardar-checkpoint">Guardar checkpoint</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2-dada2QAQC-Prep.html">Día 3</a></li><li class="breadcrumb-item"><a href="./2-dada2QAQC-Prep.html">DADA2 — Filtrado inicial</a></li></ol></nav>
 <div class="quarto-title">
@@ -368,7 +335,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-title-meta column-body">
+<div class="quarto-title-meta column-page-right">
 
     
   
@@ -1316,7 +1283,7 @@ Advertencia
     }
   });
   </script>
-<nav class="page-navigation column-body">
+<nav class="page-navigation column-page-right">
   <div class="nav-page nav-page-previous">
       <a href="./2-dada2QAQC.html" class="pagination-link" aria-label="Introducción al pipeline DADA2">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introducción al pipeline DADA2</span>
