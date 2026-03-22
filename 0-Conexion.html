@@ -158,7 +158,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#conéctate-a-la-vpn" id="toc-conéctate-a-la-vpn" class="nav-link active" data-scroll-target="#conéctate-a-la-vpn">1. Conéctate a la VPN</a></li>
-  <li><a href="#conéctate-al-servidor-por-ssh" id="toc-conéctate-al-servidor-por-ssh" class="nav-link" data-scroll-target="#conéctate-al-servidor-por-ssh">2. Conéctate al servidor por SSH</a></li>
+  <li><a href="#conéctate-al-servidor-por-ssh" id="toc-conéctate-al-servidor-por-ssh" class="nav-link" data-scroll-target="#conéctate-al-servidor-por-ssh">2. Conéctate al servidor por SSH</a>
+  <ul class="collapse">
+  <li><a href="#mantener-la-conexión-activa" id="toc-mantener-la-conexión-activa" class="nav-link" data-scroll-target="#mantener-la-conexión-activa">Mantener la conexión activa</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -204,8 +207,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>Si es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe <code>yes</code> y presiona Enter.</li>
 </ul>
+<section id="mantener-la-conexión-activa" class="level3">
+<h3 class="anchored" data-anchor-id="mantener-la-conexión-activa">Mantener la conexión activa</h3>
+<p>Las conexiones SSH pueden cerrarse automáticamente después de un periodo de inactividad (por ejemplo, mientras lees documentación o esperas que un análisis termine). Para evitarlo, agrega la opción <code>-o ServerAliveInterval=60</code> al conectarte:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-o</span> ServerAliveInterval=60 usrXX@200.23.162.240</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esto le indica a tu computadora que envíe una señal al servidor cada 60 segundos para mantener la conexión abierta. Es especialmente útil cuando corres análisis largos como el pipeline de DADA2.</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Recomendación:</strong> usa siempre esta opción durante el curso para evitar desconexiones inesperadas.</p>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

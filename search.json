@@ -515,7 +515,7 @@
     "href": "0-Conexion.html#conéctate-al-servidor-por-ssh",
     "title": "Conexión al servidor",
     "section": "2. Conéctate al servidor por SSH",
-    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter."
+    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter.\n\n\nMantener la conexión activa\nLas conexiones SSH pueden cerrarse automáticamente después de un periodo de inactividad (por ejemplo, mientras lees documentación o esperas que un análisis termine). Para evitarlo, agrega la opción -o ServerAliveInterval=60 al conectarte:\nssh -o ServerAliveInterval=60 usrXX@200.23.162.240\nEsto le indica a tu computadora que envíe una señal al servidor cada 60 segundos para mantener la conexión abierta. Es especialmente útil cuando corres análisis largos como el pipeline de DADA2.\n\n\n\n\n\n\nTip\n\n\n\nRecomendación: usa siempre esta opción durante el curso para evitar desconexiones inesperadas."
   },
   {
     "objectID": "0-Preparacion.html",
