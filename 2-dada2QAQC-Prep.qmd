@@ -14,7 +14,6 @@ library(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores
 library(tidyverse, quietly = TRUE) # manipulación y visualización de datos
 library(seqinr)                    # utilidades para secuencias FASTA
 library(ShortRead)                 # lectura y QC de archivos FASTQ
-library(digest)                    # hashes SHA1 para identificar ASVs
 library(fs)                        # operaciones con archivos y rutas
 library(readr)                     # lectura/escritura de CSVs
 
