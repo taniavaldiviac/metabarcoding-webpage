@@ -9,6 +9,97 @@ El paso `filterAndTrim()` es el primer gran filtro de calidad en el pipeline. Su
 
 ---
 
+## Distribución de longitudes de lecturas (opcional)
+
+Antes de filtrar, es útil revisar la distribución de longitudes de las lecturas crudas. Este diagnóstico permite detectar problemas de secuenciación como mezclas inesperadas de longitudes o lecturas truncadas prematuramente. No afecta el pipeline — es solo informativo.
+
+```{r eval=FALSE}
+PLOT_RAW_LENGTHS <- TRUE  # cambiar a FALSE para saltar este paso
+
+if (PLOT_RAW_LENGTHS) {
+  sample_n_reads <- 100000
+  get_lengths <- function(fq_file, n = sample_n_reads) {
+    streamer <- ShortRead::FastqStreamer(fq_file, n = n)
+    on.exit(close(streamer))
+    chunk <- ShortRead::yield(streamer)
+    if (length(chunk) == 0) return(integer(0))
+    ShortRead::width(ShortRead::sread(chunk))
+  }
+
+  lengths_F <- purrr::map_df(fnFs, ~ tibble::tibble(
+    ReadType = "Forward", File = basename(.x), Length = get_lengths(.x)))
+  lengths_R <- purrr::map_df(fnRs, ~ tibble::tibble(
+    ReadType = "Reverse", File = basename(.x), Length = get_lengths(.x)))
+  lengths_all <- dplyr::bind_rows(lengths_F, lengths_R)
+
+  png(file.path(output_location, "logs",
+                paste0(run_name, "_", primer.data$locus_shorthand[i], "_raw_read_lengths.png")),
+      width = 2000, height = 1200, res = 300)
+  print(
+    ggplot2::ggplot(lengths_all, ggplot2::aes(x = Length, fill = ReadType)) +
+      ggplot2::geom_histogram(alpha = 0.6, position = "identity", binwidth = 1, color = "black") +
+      ggplot2::facet_wrap(~ ReadType, ncol = 1, scales = "free_y") +
+      ggplot2::labs(title = "Distribución de longitudes de lecturas crudas",
+                    x = "Longitud (bp)", y = "Frecuencia") +
+      ggplot2::theme_minimal()
+  )
+  dev.off()
+}
+```
+
+::: {.callout-tip icon="false"}
+**¿Qué buscar en la gráfica?** Lo normal es ver un pico concentrado en una sola longitud (la longitud completa de la lectura). Si ves múltiples picos o una distribución muy dispersa, puede indicar problemas en la secuenciación o mezcla de librerías con diferentes longitudes.
+:::
+
+---
+
+## Verificación de primers
+
+Antes de filtrar, verificamos que los primers hayan sido removidos correctamente por Cutadapt. Si los primers siguen presentes al inicio de las lecturas, el análisis se verá afectado porque DADA2 interpretará las secuencias de primer como parte de la secuencia biológica.
+
+```{r eval=FALSE}
+library(Biostrings)
+
+check_primers <- function(fastq_file, primer_seq, n = 1000) {
+  streamer <- ShortRead::FastqStreamer(fastq_file, n = n)
+  on.exit(close(streamer))
+  chunk <- ShortRead::yield(streamer)
+  seqs <- as.character(ShortRead::sread(chunk))
+  exact_match <- sum(grepl(paste0("^", primer_seq), seqs))
+  substr_seqs <- substr(seqs, 1, 50)
+  anywhere_match <- sum(grepl(primer_seq, substr_seqs))
+  list(exact = exact_match, anywhere = anywhere_match, total = length(seqs))
+}
+
+# Secuencias de primers (ajustar según tu marcador)
+primer_F <- "TTAGATACCCCACTATGC"  # ejemplo 12S
+primer_R <- "TAGAACAGGCTCCTCTAG"  # ejemplo 12S
+
+# Verificar en R1 (forward)
+check_F_in_R1   <- check_primers(fnFs[1], primer_F)
+check_R_RC_in_R1 <- check_primers(fnFs[1], as.character(
+                      Biostrings::reverseComplement(Biostrings::DNAString(primer_R))))
+
+# Verificar en R2 (reverse)
+check_R_in_R2   <- check_primers(fnRs[1], primer_R)
+check_F_RC_in_R2 <- check_primers(fnRs[1], as.character(
+                      Biostrings::reverseComplement(Biostrings::DNAString(primer_F))))
+
+message("R1 — Primer F al inicio: ", check_F_in_R1$exact, "/", check_F_in_R1$total)
+message("R1 — Primer R-RC al inicio: ", check_R_RC_in_R1$exact, "/", check_R_RC_in_R1$total)
+message("R2 — Primer R al inicio: ", check_R_in_R2$exact, "/", check_R_in_R2$total)
+message("R2 — Primer F-RC al inicio: ", check_F_RC_in_R2$exact, "/", check_F_RC_in_R2$total)
+```
+
+::: {.callout-note icon="false"}
+**Interpretación:**
+
+- Si los conteos son **0 o cercanos a 0**: Cutadapt removió los primers correctamente. Esto es lo esperado.
+- Si los conteos son **altos** (cercanos al total): los primers no fueron removidos. Revisa la configuración de Cutadapt o verifica que las secuencias de primer en `primer_data.csv` sean correctas.
+:::
+
+---
+
 ## Los parámetros de `filterAndTrim()`
 
 ```{r eval=FALSE}
