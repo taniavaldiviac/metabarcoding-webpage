@@ -28,8 +28,7 @@ execute:
 - [Preparación del entorno](0-Preparacion.qmd)
 - [Clonación de repositorio](0-Clonacion.qmd)
 - [Archivos fastq: estructura y organización](0-FASTQ.qmd)
-- [Control de calidad con FastQC y MultiQC](1-qaqc-cutadapt.qmd)
-- [Recorte de primers con Cutadapt](1-qaqc-cutadapt.qmd)
+- [Control de calidad y recorte de primers](1-qaqc-cutadapt.qmd)
 - [Introducción al pipeline DADA2](2-dada2QAQC.qmd)
 
 ---
