@@ -156,15 +156,26 @@ scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/logs/*quality
 
 ---
 
-## Cálculo automático del punto de truncamiento
+## Determinar el punto de truncamiento
 
-En lugar de elegir manualmente dónde truncar, el script lo calcula automáticamente. Usa una **ventana móvil** de 10 posiciones sobre la calidad mediana: cuando la calidad promedio de la ventana cae por debajo de Q30, marca ese punto como truncamiento.
+Elegir dónde truncar las lecturas es una de las decisiones más importantes del pipeline. Si truncas demasiado pronto, pierdes información; si truncas demasiado tarde, incluyes bases de baja calidad que introducen errores falsos.
 
-El valor se limita por `max_trim` de `primer_data.csv` para garantizar que quede suficiente solapamiento entre las lecturas F y R para el merge posterior.
+### ¿Qué considerar?
+
+1. **Calidad Phred**: el truncamiento debe hacerse donde la calidad mediana cae por debajo de **Q30** (99.9% de precisión). Esto se observa en las gráficas de calidad del paso anterior.
+
+2. **Solapamiento para el merge**: las lecturas forward y reverse deben solaparse lo suficiente para poder unirlas después. Si el amplicón mide 170 bp y truncas ambas lecturas a 100 bp, tendrás 100 + 100 - 170 = 30 bp de solapamiento. DADA2 requiere al menos 12 bp, pero más solapamiento es mejor.
+
+3. **`max_trim` en `primer_data.csv`**: este valor define la longitud máxima de truncamiento permitida para tu marcador, calculada para garantizar suficiente solapamiento.
+
+### Cálculo automático
+
+El script calcula el punto de truncamiento de forma automática usando una **ventana móvil** de 10 posiciones. Recorre la calidad mediana de cada muestra y marca el primer punto donde la calidad promedio de la ventana cae por debajo de Q30. Luego toma la **mediana** de todos los puntos calculados como valor final.
 
 ```{r eval=FALSE}
 n <- 500000; window_size <- 10
 
+# --- Forward ---
 trimsF <- numeric(length(fnFs))
 for (f in seq_along(fnFs)) {
   srqa   <- qa(fnFs[f], n = n)
@@ -177,6 +188,7 @@ for (f in seq_along(fnFs)) {
 where_trim_all_Fs <- median(trimsF, na.rm = TRUE)
 if (where_trim_all_Fs > primer.data$max_trim[i]) where_trim_all_Fs <- primer.data$max_trim[i]
 
+# --- Reverse ---
 trimsR <- numeric(length(fnRs))
 for (r in seq_along(fnRs)) {
   srqa   <- qa(fnRs[r], n = n)
@@ -191,6 +203,32 @@ if (where_trim_all_Rs > primer.data$max_trim[i]) where_trim_all_Rs <- primer.dat
 
 message("Puntos de truncamiento: F=", where_trim_all_Fs, " | R=", where_trim_all_Rs)
 ```
+
+### ¿Cómo verificar que el truncamiento es razonable?
+
+Puedes calcular el solapamiento esperado con esta fórmula:
+
+```
+solapamiento = truncLen_F + truncLen_R - longitud_amplicón
+```
+
+::: {.callout-warning icon="false"}
+**Ejemplo con nuestros datos:**
+
+- Amplicón 12S ≈ 170 bp
+- Si `truncLen_F = 65` y `truncLen_R = 65`: solapamiento = 65 + 65 - 170 = **-40 bp** (no hay solapamiento, el merge fallará)
+- Si `truncLen_F = 120` y `truncLen_R = 120`: solapamiento = 120 + 120 - 170 = **70 bp** (excelente)
+
+Apunta a un solapamiento de al menos **20 bp** para un merge confiable.
+:::
+
+### ¿Cuándo ajustar manualmente?
+
+El cálculo automático funciona bien en la mayoría de los casos, pero conviene ajustar manualmente si:
+
+- El solapamiento calculado es menor a 20 bp — intenta truncar menos (acepta un poco más de ruido)
+- La retención después del filtrado es muy baja — relaja `truncLen` o `maxEE`
+- Las gráficas de calidad muestran un patrón inusual (caída abrupta, recuperación, etc.)
 
 ---
 
