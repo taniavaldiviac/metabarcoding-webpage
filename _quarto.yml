@@ -16,12 +16,11 @@ website:
   navbar:
     background: primary
     foreground: light
-    left:
+    right:
       - href: sesiones.qmd
         text: Sesiones
       - href: Referencias.qmd
         text: Lecturas recomendadas
-    right:
       - icon: github
         href: https://github.com/taniavaldiviac/metabarcoding-webpage
   sidebar:
