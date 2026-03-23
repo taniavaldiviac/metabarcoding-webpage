@@ -508,8 +508,14 @@ Nota
 </section>
 <section id="paso-2-aprender-el-modelo-de-error" class="level2">
 <h2 class="anchored" data-anchor-id="paso-2-aprender-el-modelo-de-error">Paso 2 — Aprender el modelo de error</h2>
-<p>La secuenciadora Illumina comete errores al leer las bases (una A real puede leerse como C, G o T). <code>learnErrors()</code> estima estas tasas para cada tipo de transicion (A-&gt;C, A-&gt;G, etc.) en función de la calidad Phred de cada posición.</p>
-<p>El pipeline primero verifica que haya suficientes datos para estimar el modelo:</p>
+<section id="por-qué-necesitamos-un-modelo-de-error" class="level3">
+<h3 class="anchored" data-anchor-id="por-qué-necesitamos-un-modelo-de-error">¿Por qué necesitamos un modelo de error?</h3>
+<p>La secuenciadora Illumina comete errores al leer las bases — una A real puede leerse como C, G o T. Estos errores no son aleatorios: dependen del tipo de transición (A→C es más frecuente que A→T) y de la calidad Phred de cada posición. Si no corregimos estos errores, los confundiríamos con variantes biológicas reales y sobreestimaríamos la diversidad de nuestra muestra.</p>
+<p><code>learnErrors()</code> estima las tasas de error específicas de <strong>tu</strong> run de secuenciación. Esto es importante porque cada corrida tiene un perfil de error ligeramente diferente — depende del estado del equipo, los reactivos, la densidad del cluster, etc. Por eso DADA2 no usa tasas genéricas, sino que las <strong>aprende directamente de tus datos</strong>.</p>
+</section>
+<section id="preparación-definir-parámetros-y-validar-datos" class="level3">
+<h3 class="anchored" data-anchor-id="preparación-definir-parámetros-y-validar-datos">Preparación: definir parámetros y validar datos</h3>
+<p>Antes de lanzar <code>learnErrors()</code>, el pipeline define los parámetros de entrenamiento y verifica que haya suficientes datos para construir un modelo confiable:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
@@ -526,7 +532,27 @@ Nota
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Datos muy limitados (&lt; 1 MB). El modelo puede ser inestable."</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Los parámetros clave son:</p>
+<p>En nuestros datos, la salida se ve así:</p>
+<pre><code>Forward disponible: ~95.2 MB
+Reverse disponible: ~96.1 MB</code></pre>
+<p><strong>¿Qué nos dicen estos números?</strong> Los ~95 MB por dirección representan el tamaño total de los archivos FASTQ filtrados. Esto es una estimación indirecta de cuántas bases tenemos disponibles — como regla general, un archivo FASTQ de 95 MB contiene aproximadamente 100–150 millones de bases (cada base ocupa ~1 byte de secuencia más metadatos de calidad y encabezados). Con 95 MB tenemos datos más que suficientes para alcanzar nuestro objetivo de <code>nbases_target = 1e8</code> (100 millones de bases).</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Cuándo preocuparte?</strong> Si ves valores menores a 1 MB, el pipeline lanza una advertencia porque no habrá suficientes bases para estimar las 12 tasas de error con precisión. Esto puede pasar cuando muchas muestras fueron descartadas en el filtrado, o cuando trabajas con un subconjunto muy pequeño de datos. En ese caso, reduce <code>nbases_target</code> (por ejemplo a <code>1e7</code>) para que DADA2 no intente usar más datos de los que existen.</p>
+</div>
+</div>
+</section>
+<section id="parámetros-clave" class="level3">
+<h3 class="anchored" data-anchor-id="parámetros-clave">Parámetros clave</h3>
+<p>Los parámetros que controlan el aprendizaje del modelo son:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -566,30 +592,95 @@ Nota
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>errF <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtFs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="dv">2</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Forward: "</span>, <span class="fu">conditionMessage</span>(e))</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>errR <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtRs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="dv">2</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Reverse: "</span>, <span class="fu">conditionMessage</span>(e))</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>errF <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtFs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="dv">2</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Forward: "</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>errR <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtRs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="dv">2</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Reverse: "</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Este paso puede tardar varios minutos. La salida indica cuántas bases y muestras se usaron, y cuántas rondas necesitó el algoritmo para converger. Por ejemplo:</p>
+<p>Este paso puede tardar varios minutos dependiendo del volumen de datos y el número de núcleos disponibles. La salida en consola te da información importante sobre cómo se construyó el modelo:</p>
 <pre><code>103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.
 Initializing error rates to maximum possible estimate.
 selfConsist step 1 ............
    selfConsist step 2
-   ...
-Convergence after 10 rounds.</code></pre>
-<p><strong>¿Qué significa “convergencia”?</strong></p>
-<p><code>learnErrors()</code> trabaja de forma iterativa: en cada ronda estima las tasas de error → infiere ASVs con esas tasas → re-estima los errores con las ASVs inferidas. Cuando las estimaciones dejan de cambiar entre rondas, el modelo <strong>convergió</strong>. Convergencia en menos de 10 rondas es ideal; si no converge en 25 hay un problema con los datos o los parámetros.</p>
+   selfConsist step 3
+   selfConsist step 4
+   selfConsist step 5
+   selfConsist step 6
+   selfConsist step 7
+   selfConsist step 8
+   selfConsist step 9
+   selfConsist step 10
+Convergence after  10  rounds.
+105668355 total bases in 1625667 reads from 13 samples will be used for learning the error rates.
+Initializing error rates to maximum possible estimate.
+selfConsist step 1 .............
+   selfConsist step 2
+   selfConsist step 3
+   selfConsist step 4
+   selfConsist step 5
+   selfConsist step 6
+   selfConsist step 7
+   selfConsist step 8
+   selfConsist step 9
+Convergence after  9  rounds.</code></pre>
+</section>
+<section id="cómo-leer-esta-salida" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-leer-esta-salida">¿Cómo leer esta salida?</h3>
+<p>Cada bloque corresponde a una dirección (Forward primero, Reverse después). Desglosemos la primera línea:</p>
+<p><strong><code>103156235 total bases in 1587019 reads from 12 samples</code></strong> — DADA2 necesitaba 100 millones de bases (<code>nbases_target = 1e8</code>) y encontró 103 millones en 1.59 millones de lecturas, tomadas de 12 de nuestras muestras. No necesitó usar todas las muestras porque alcanzó el objetivo con 12. Para Reverse, necesitó 13 muestras para llegar a 105 millones — esto es normal porque las lecturas Reverse pueden tener longitudes ligeramente distintas después del filtrado.</p>
+<p><strong><code>Initializing error rates to maximum possible estimate</code></strong> — El algoritmo comienza asumiendo el peor escenario: que todas las diferencias entre lecturas son errores. A partir de ahí, va refinando.</p>
+<p><strong><code>selfConsist step 1 ............</code></strong> — Los puntos representan las muestras que se procesan en cada iteración. En el step 1 aparecen 12 puntos (uno por muestra usada en Forward).</p>
+</section>
+<section id="qué-significa-convergencia" class="level3">
+<h3 class="anchored" data-anchor-id="qué-significa-convergencia">¿Qué significa “convergencia”?</h3>
+<p><code>learnErrors()</code> trabaja de forma iterativa — en cada ronda:</p>
+<ol type="1">
+<li><strong>Estima</strong> las tasas de error con los datos actuales</li>
+<li><strong>Infiere</strong> ASVs preliminares usando esas tasas</li>
+<li><strong>Re-estima</strong> los errores separando las variantes reales de los errores</li>
+</ol>
+<p>Cuando las estimaciones dejan de cambiar significativamente entre rondas, el modelo <strong>convergió</strong> — es decir, encontró tasas de error estables que explican bien los patrones en tus datos.</p>
+<p>En nuestro caso: Forward convergió en <strong>10 rondas</strong> y Reverse en <strong>9 rondas</strong>. Ambos están en el rango ideal.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 66%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Rondas</th>
+<th style="text-align: left;">Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">3–5</td>
+<td style="text-align: left;">Convergencia muy rápida — datos de excelente calidad o poca complejidad</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5–15</td>
+<td style="text-align: left;">Rango típico — el modelo se ajustó bien</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15–25</td>
+<td style="text-align: left;">Convergencia lenta — datos complejos o ruidosos, pero el modelo es válido</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">No converge (alcanza MAX_CONSIST)</td>
+<td style="text-align: left;">Problema: aumenta <code>MAX_CONSIST</code> a 50 o revisa la calidad de tus datos</td>
+</tr>
+</tbody>
+</table>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -600,39 +691,94 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Resultado esperado:</strong> convergencia en 5–15 rondas para Forward y Reverse. Es normal que Reverse necesite una o dos rondas más que Forward, ya que sus lecturas tienen mayor tasa de error.</p>
+<p><strong>¿Por qué Reverse convergió más rápido que Forward?</strong> No siempre es así. A veces Reverse tarda más porque tiene mayor tasa de error, pero en nuestros datos la diferencia es mínima (10 vs 9 rondas). Lo importante es que <strong>ambos convergieron</strong> dentro del límite de <code>MAX_CONSIST = 25</code>.</p>
 </div>
 </div>
-<p>Después de aprender los modelos, el pipeline los valida automáticamente:</p>
+</section>
+<section id="validación-automática-del-modelo" class="level3">
+<h3 class="anchored" data-anchor-id="validación-automática-del-modelo">Validación automática del modelo</h3>
+<p>Después de aprender los modelos, el pipeline valida que las tasas de error estimadas sean razonables. ¿Por qué es necesario? Porque <code>learnErrors()</code> siempre produce un resultado — incluso con datos malos — pero eso no garantiza que el modelo sea confiable. La validación revisa la <strong>matriz de errores</strong> (<code>err_out</code>) que contiene las tasas estimadas para cada tipo de transición en cada nivel de calidad.</p>
+<p><strong>¿Qué es <code>err_out</code>?</strong> Es una matriz de 16 filas × 41 columnas:</p>
+<ul>
+<li><strong>16 filas</strong> = todas las combinaciones posibles de base real → base leída (A2A, A2C, A2G, A2T, C2A, C2C, …, T2T)</li>
+<li><strong>41 columnas</strong> = los Q-scores de 0 a 40</li>
+</ul>
+<p>Cada celda contiene la probabilidad estimada de esa transición en ese nivel de calidad. Por ejemplo, la celda <code>[A2C, Q30]</code> dice “la probabilidad de que una A real se lea como C cuando la calidad es Q30”.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar modelo Forward</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># err_out: matriz 16×41 — filas = transiciones (A2A, A2C, …), columnas = Q-scores (0–40)</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Las transiciones correctas (A2A, C2C, G2G, T2T) tienen probabilidad ≈ 1.0 → excluir.</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Las tasas altas en Q&lt;20 son normales (bases de baja calidad son intrínsecamente inciertas).</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Solo se evalúa Q≥20, donde vive la mayoría de las lecturas filtradas.</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(errF<span class="sc">$</span>err_out)) {</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  rn         <span class="ot">&lt;-</span> <span class="fu">rownames</span>(errF<span class="sc">$</span>err_out)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  error_rows <span class="ot">&lt;-</span> rn[<span class="fu">substr</span>(rn, <span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">!=</span> <span class="fu">substr</span>(rn, <span class="dv">3</span>, <span class="dv">3</span>)]   <span class="co"># A2C, A2G, etc.</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  q_cols     <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">colnames</span>(errF<span class="sc">$</span>err_out))</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  hq_cols    <span class="ot">&lt;-</span> <span class="fu">which</span>(q_cols <span class="sc">&gt;=</span> <span class="dv">20</span>)                          <span class="co"># columnas Q≥20</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  err_hq  <span class="ot">&lt;-</span> errF<span class="sc">$</span>err_out[error_rows, hq_cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  max_err <span class="ot">&lt;-</span> <span class="fu">max</span>(err_hq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tipos de transición de error: "</span>, <span class="fu">length</span>(error_rows), <span class="st">" (de 16 posibles)"</span>)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tasa de error máxima en Q≥20: "</span>, <span class="fu">round</span>(max_err, <span class="dv">5</span>),</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>          <span class="st">" (normal si &lt; 0.05; preocupante si &gt; 0.10)"</span>)</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (max_err <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Tasa de error &gt; 10% en Q≥20. Revisa el perfil de calidad del run."</span>)</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"Modelo de error OK."</span>)</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar modelo Forward</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(errF<span class="sc">$</span>err_out)) {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  rn         <span class="ot">&lt;-</span> <span class="fu">rownames</span>(errF<span class="sc">$</span>err_out)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  error_rows <span class="ot">&lt;-</span> rn[<span class="fu">substr</span>(rn, <span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">!=</span> <span class="fu">substr</span>(rn, <span class="dv">3</span>, <span class="dv">3</span>)]   <span class="co"># A2C, A2G, etc.</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  q_cols     <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">colnames</span>(errF<span class="sc">$</span>err_out))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  hq_cols    <span class="ot">&lt;-</span> <span class="fu">which</span>(q_cols <span class="sc">&gt;=</span> <span class="dv">20</span>)                          <span class="co"># columnas Q≥20</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  err_hq  <span class="ot">&lt;-</span> errF<span class="sc">$</span>err_out[error_rows, hq_cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  max_err <span class="ot">&lt;-</span> <span class="fu">max</span>(err_hq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tipos de transición de error: "</span>, <span class="fu">length</span>(error_rows), <span class="st">" (de 16 posibles)"</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Tasa de error máxima en Q≥20: "</span>, <span class="fu">round</span>(max_err, <span class="dv">5</span>),</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>          <span class="st">" (normal si &lt; 0.05; preocupante si &gt; 0.10)"</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (max_err <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Tasa de error &gt; 10% en Q≥20. Revisa el perfil de calidad del run."</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"Modelo de error OK."</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
+<p><strong>¿Qué hace este código paso a paso?</strong></p>
+<ol type="1">
+<li><p><strong>Filtra las transiciones de error</strong> — De las 16 filas, excluye las 4 diagonales (A2A, C2C, G2G, T2T) porque representan lecturas <em>correctas</em>, no errores. Quedan <strong>12 transiciones de error</strong> reales (A2C, A2G, A2T, C2A, C2G, etc.)</p></li>
+<li><p><strong>Selecciona solo calidades Q≥20</strong> — Las bases con Q &lt; 20 ya fueron eliminadas en el filtrado (<code>filterAndTrim</code>), así que las tasas de error en calidades bajas no son relevantes para nuestros datos. Evaluar solo Q≥20 evita alarmas falsas por tasas altas en bins de calidad que no usamos</p></li>
+<li><p><strong>Calcula la tasa máxima</strong> — Busca el peor caso entre todas las transiciones de error en calidades altas. Si esa tasa máxima es &lt; 5%, el modelo es confiable. Si supera el 10%, algo anda mal</p></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 57%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tasa máxima en Q≥20</th>
+<th style="text-align: left;">Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">&lt; 0.01 (1%)</td>
+<td style="text-align: left;">Excelente — tasas de error muy bajas en calidades altas</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.01–0.05 (1–5%)</td>
+<td style="text-align: left;">Normal — rango típico para datos de Illumina</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.05–0.10 (5–10%)</td>
+<td style="text-align: left;">Aceptable pero marginal — revisa los gráficos de error</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&gt; 0.10 (&gt;10%)</td>
+<td style="text-align: left;">Problemático — una base de alta calidad tiene &gt;10% de probabilidad de ser un error. Revisa la calidad del run o el filtrado</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Por qué 12 transiciones y no 16?</strong> Hay 4 bases (A, C, G, T) y cada una puede leerse como cualquiera de las 4, dando 4×4 = 16 combinaciones. Pero 4 de ellas son la base leyéndose <em>correctamente</em> (A→A, C→C, G→G, T→T). Estas tienen probabilidades cercanas a 1.0 y no representan errores, por eso se excluyen de la validación.</p>
+</div>
+</div>
 <hr>
+</section>
 </section>
 <section id="paso-3-visualizar-el-modelo-de-error" class="level2">
 <h2 class="anchored" data-anchor-id="paso-3-visualizar-el-modelo-de-error">Paso 3 — Visualizar el modelo de error</h2>
@@ -640,95 +786,21 @@ Tip
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>El pipeline guarda estas gráficas automáticamente en <code>final_data/logs/</code>:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errF.png"</span>)),</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errR.png"</span>)),</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
-<section id="que-buscar-en-el-gráfico" class="level3">
-<h3 class="anchored" data-anchor-id="que-buscar-en-el-gráfico">¿Que buscar en el gráfico?</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 31%">
-<col style="width: 68%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Senal</th>
-<th>Interpretación</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Puntos grises cerca de la linea negra</td>
-<td>Buen ajuste del modelo [OK]</td>
-</tr>
-<tr class="even">
-<td>Puntos muy dispersos</td>
-<td>Datos insuficientes o calidad variable en ese bin de Q</td>
-</tr>
-<tr class="odd">
-<td>Tasas de error &gt; 10% en Q≥20 (A-&gt;C, etc.)</td>
-<td>Posible problema de calidad del run</td>
-</tr>
-<tr class="even">
-<td>Transiciones correctas (A-&gt;A, C-&gt;C…) altas y planas</td>
-<td>Normal — no son errores</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="los-tres-elementos-del-gráfico" class="level3">
-<h3 class="anchored" data-anchor-id="los-tres-elementos-del-gráfico">Los tres elementos del gráfico</h3>
-<p>La gráfica tiene 16 paneles — uno por cada posible transición entre bases (4 bases × 4 posibles lecturas). Se organizan en una cuadrícula de 4×4:</p>
+<p>Al ejecutar estas líneas verás advertencias como estas:</p>
+<pre><code>Warning messages:
+1: In scale_y_log10() :
+  log-10 transformation introduced infinite values.
+2: Removed 164 rows containing missing values or values outside the scale range (`geom_line()`).
+3: Removed 164 rows containing missing values or values outside the scale range (`geom_line()`).</code></pre>
+<p><strong>Estas advertencias son normales y no indican un problema.</strong> Ocurren porque:</p>
 <ul>
-<li><p><strong>Diagonal (A2A, C2C, G2G, T2T):</strong> lectura <em>correcta</em> — la base real y la leída son la misma. La probabilidad es alta (cerca de 1.0) y se mantiene plana conforme sube el Q-score. Estos paneles no representan errores; son la referencia de que el modelo funciona.</p></li>
-<li><p><strong>Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):</strong> errores reales — la secuenciadora leyó una base distinta a la real. La tasa debe <strong>bajar</strong> conforme sube el Q-score (eje X): a mayor calidad Phred, menos errores de ese tipo.</p></li>
+<li><p><strong><code>log-10 transformation introduced infinite values</code></strong> — Algunas transiciones tienen tasa de error = 0 (cero errores observados en ciertos bins de calidad). El logaritmo de 0 es −∞, y ggplot simplemente omite esos puntos del gráfico. Esto es esperado, especialmente en calidades altas donde ciertos tipos de error son extremadamente raros.</p></li>
+<li><p><strong><code>Removed 164 rows containing missing values</code></strong> — Consecuencia de lo anterior: los 164 puntos con valores infinitos o ausentes se excluyen de las líneas del gráfico. El número exacto varía según tus datos, pero valores entre 100 y 300 son típicos. Que aparezca el mismo mensaje dos veces es porque <code>plotErrors()</code> dibuja dos capas de líneas (el modelo ajustado y la tasa nominal).</p></li>
 </ul>
-<p>Cada panel tiene tres elementos:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 40%">
-<col style="width: 60%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Elemento</th>
-<th>Qué representa</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Puntos grises</td>
-<td>Tasas de error <strong>observadas</strong> en tus datos, agrupadas por Q-score</td>
-</tr>
-<tr class="even">
-<td>Línea negra</td>
-<td>Modelo ajustado por DADA2 — lo que aprendió <code>learnErrors()</code></td>
-</tr>
-<tr class="odd">
-<td>Línea roja</td>
-<td>Tasa teórica según la definición nominal del Q-score (Q20 = 1 error/100 bases, Q30 = 1/1000, etc.)</td>
-</tr>
-</tbody>
-</table>
-<p>La línea negra no tiene que coincidir con la línea roja: la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real. Lo que importa es que la <strong>línea negra siga los puntos grises</strong>.</p>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -739,7 +811,88 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Ondulaciones en la línea negra</strong> en calidades intermedias (Q15–Q25) son normales cuando hay pocos reads en esos bins. No indican un problema si el patrón general sigue siendo decreciente.</p>
+<p><strong>Regla práctica:</strong> si <code>plotErrors()</code> produce una gráfica visible con el patrón esperado (tasas decrecientes), las advertencias de <code>scale_y_log10</code> se pueden ignorar con confianza. Solo preocúpate si la gráfica aparece vacía o si las líneas no se dibujan en absoluto.</p>
+</div>
+</div>
+<p>El pipeline guarda estas gráficas automáticamente en <code>final_data/logs/</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errF.png"</span>)),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errR.png"</span>)),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>En nuestros datos, la gráfica Forward se ve así:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/errF_plot.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Modelo de error Forward estimado por learnErrors(). Cada panel muestra una transición entre bases.</figcaption>
+</figure>
+</div>
+<section id="cómo-leer-esta-gráfica" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-leer-esta-gráfica">Cómo leer esta gráfica</h3>
+<p>La gráfica tiene <strong>16 paneles</strong> organizados en una cuadrícula de 4×4. Cada panel representa una transición entre bases — la fila indica la base real y la columna la base leída por la secuenciadora:</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Cómo leer las gráficas:</strong></p>
+<ul>
+<li>Los <strong>puntos grises</strong> son las tasas de error <strong>observadas</strong> en tus datos, agrupadas por Q-score. El <strong>tamaño</strong> del punto indica cuántas bases hay en ese bin — puntos grandes = muchos datos (estimación confiable), puntos pequeños = pocos datos (más incertidumbre)</li>
+<li>La <strong>línea negra</strong> es el modelo de error ajustado por DADA2 — lo que aprendió <code>learnErrors()</code>. Esta es la curva que DADA2 usará para corregir errores en el paso <code>dada()</code></li>
+<li>La <strong>línea roja</strong> es la tasa de error teórica según la definición nominal del Q-score (Q20 = 1 error en 100 bases, Q30 = 1 en 1,000, Q40 = 1 en 10,000)</li>
+<li>El <strong>eje X</strong> (Consensus quality score) va de 0 a 40 — a mayor Q-score, mayor confianza en la base</li>
+<li>El <strong>eje Y</strong> (Error frequency) está en <strong>escala logarítmica</strong> — cada marca representa un cambio de 100×. Esto permite ver tanto errores frecuentes (1e-01 = 10%) como errores raros (1e-05 = 0.001%)</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="los-dos-tipos-de-paneles" class="level3">
+<h3 class="anchored" data-anchor-id="los-dos-tipos-de-paneles">Los dos tipos de paneles</h3>
+<p><strong>Diagonal (A2A, C2C, G2G, T2T):</strong> la base real y la leída son la misma — representan lecturas <em>correctas</em>. Nota que en nuestra gráfica estos paneles aparecen <strong>vacíos</strong> o con muy pocos puntos. Esto es normal: <code>plotErrors()</code> grafica la frecuencia de <em>error</em>, y una lectura correcta no es un error, así que la frecuencia es cercana a 0 (o exactamente 0, lo que genera los valores infinitos en log10 que vimos en las advertencias).</p>
+<p><strong>Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):</strong> errores reales — la secuenciadora leyó una base distinta a la real. Aquí es donde debemos fijarnos. En cada panel:</p>
+<ul>
+<li>La tasa de error debe <strong>bajar de izquierda a derecha</strong> — a mayor calidad Phred, menos errores</li>
+<li>La <strong>línea negra debe seguir los puntos grises</strong> — esto significa que el modelo se ajustó bien a los datos observados</li>
+<li>La <strong>línea negra no tiene que coincidir con la línea roja</strong> — la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real</li>
+</ul>
+</section>
+<section id="qué-vemos-en-nuestros-datos" class="level3">
+<h3 class="anchored" data-anchor-id="qué-vemos-en-nuestros-datos">¿Qué vemos en nuestros datos?</h3>
+<p>Mirando los paneles de error (fuera de la diagonal):</p>
+<ul>
+<li><strong>Tendencia decreciente clara</strong>: en todos los paneles (A2C, A2G, G2A, T2C, etc.) la tasa de error baja conforme aumenta el Q-score. Por ejemplo, en G2A la tasa cae de ~1e-02 (1%) en Q10 a ~1e-04 (0.01%) en Q35. Esto es exactamente lo que esperamos</li>
+<li><strong>La línea negra sigue los puntos grises</strong>: el modelo captura bien el patrón de los datos observados. No hay paneles donde la línea se desvíe sistemáticamente de los puntos</li>
+<li><strong>Puntos grandes en Q bajos</strong>: los puntos más grandes están en calidades bajas (Q &lt; 15), donde se concentran más datos de error. A calidades altas los puntos son más pequeños porque hay menos errores que contar</li>
+<li><strong>Ondulaciones en la línea negra</strong>: en algunos paneles (como T2C o A2T) la línea negra tiene pequeños “brincos” en calidades intermedias. Esto es normal cuando hay pocos reads en esos bins de Q — no indica un problema si el patrón general sigue siendo decreciente</li>
+<li><strong>La línea negra está por encima de la línea roja en Q altos</strong>: en varios paneles (A2C, A2T, C2T, T2C) las tasas observadas son ligeramente mayores que las teóricas en calidades altas. Esto es típico — la definición nominal del Q-score es optimista, y el perfil real de cada run difiere. Precisamente por eso DADA2 aprende su propio modelo en lugar de usar las tasas teóricas</li>
+</ul>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Debo comparar Forward vs Reverse?</strong> Sí. Es normal que la gráfica Reverse tenga tasas de error ligeramente más altas (puntos grises más arriba), especialmente en Q altos. Si Reverse se ve dramáticamente peor (línea negra plana, puntos muy dispersos), considera un truncamiento más agresivo con <code>truncLen</code> en <code>filterAndTrim</code>.</p>
 </div>
 </div>
 <hr>
@@ -751,62 +904,143 @@ Tip
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 2 guardado (learnErrors)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 2 guardado (learnErrors)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Para reanudar desde este punto en otra sesión:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <hr>
 </section>
 <section id="paso-5-inferencia-de-asvs-con-dada" class="level2">
 <h2 class="anchored" data-anchor-id="paso-5-inferencia-de-asvs-con-dada">Paso 5 — Inferencia de ASVs con <code>dada()</code></h2>
-<p>Con el modelo de error aprendido, <code>dada()</code> infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.</p>
+<section id="qué-hace-este-paso" class="level3">
+<h3 class="anchored" data-anchor-id="qué-hace-este-paso">¿Qué hace este paso?</h3>
+<p>Este es el paso central de DADA2 — donde ocurre la “magia”. La función <code>dada()</code> toma las secuencias dereplicadas y el modelo de error que acabamos de aprender, y determina cuáles secuencias únicas son <strong>variantes biológicas reales</strong> (ASVs) y cuáles son <strong>errores de secuenciación</strong>.</p>
+<p>El algoritmo funciona así para cada muestra:</p>
+<ol type="1">
+<li>Toma todas las secuencias únicas y sus abundancias (del paso de dereplicación)</li>
+<li>Compara cada secuencia con las más abundantes usando el modelo de error</li>
+<li>Si la diferencia entre dos secuencias es <strong>consistente</strong> con un error de secuenciación (según las tasas aprendidas), las agrupa — la menos abundante se considera un error de la más abundante</li>
+<li>Si la diferencia <strong>no puede explicarse</strong> por errores de secuenciación, las mantiene separadas — son ASVs distintas</li>
+</ol>
+<p>El resultado es un conjunto de ASVs por muestra: secuencias biológicas reales, corregidas de errores, a resolución de nucleótido único.</p>
+</section>
+<section id="ejecutar-la-inferencia" class="level3">
+<h3 class="anchored" data-anchor-id="ejecutar-la-inferencia">Ejecutar la inferencia</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="dv">2</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="dv">2</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo: <code>Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.</code></p>
+<p>Al finalizar verás para cada muestra un resumen como este:</p>
+<pre><code>Sample 1 - 228534 reads in 17428 unique sequences.
+Sample 2 - 175230 reads in 14302 unique sequences.
+...</code></pre>
+</section>
+<section id="explorar-los-resultados" class="level3">
+<h3 class="anchored" data-anchor-id="explorar-los-resultados">Explorar los resultados</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuantos ASVs se infirieron en la primera muestra</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>dadaFs[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumen de la primera muestra</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dadaFs[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto “colapso” el denoising.</p>
+<p>La salida te muestra cuántas ASVs se infirieron de cuántas secuencias únicas. Por ejemplo:</p>
+<pre><code>dada-class: object describing DADA2 denoising results
+126 sequence variants were inferred from 17428 input unique sequences.</code></pre>
+<p>Esto significa que de las 17,428 secuencias únicas que tenía la muestra 1 después de la dereplicación, DADA2 determinó que solo <strong>126 son variantes biológicas reales</strong>. Las otras ~17,300 son errores de secuenciación de esas 126.</p>
+</section>
+<section id="cómo-interpretar-el-número-de-asvs" class="level3">
+<h3 class="anchored" data-anchor-id="cómo-interpretar-el-número-de-asvs">¿Cómo interpretar el número de ASVs?</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 27%">
+<col style="width: 11%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Secuencias únicas</th>
+<th style="text-align: left;">ASVs inferidas</th>
+<th style="text-align: left;">Ratio</th>
+<th style="text-align: left;">Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">17,428</td>
+<td style="text-align: left;">126</td>
+<td style="text-align: left;">0.7%</td>
+<td style="text-align: left;">Típico — la mayoría de las secuencias únicas son errores</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5,000</td>
+<td style="text-align: left;">200</td>
+<td style="text-align: left;">4%</td>
+<td style="text-align: left;">Mayor proporción de variantes reales — posible alta diversidad</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20,000</td>
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">0.1%</td>
+<td style="text-align: left;">Muy pocas ASVs — muestra dominada por pocas especies</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10,000</td>
+<td style="text-align: left;">5,000</td>
+<td style="text-align: left;">50%</td>
+<td style="text-align: left;">Inusual — revisa el modelo de error o la calidad del filtrado</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Por qué tan pocas ASVs?</strong> En eDNA de peces con el marcador 12S, es normal obtener entre 50 y 200 ASVs por muestra. La mayoría de las secuencias únicas en la dereplicación son variantes con 1-2 bases de diferencia respecto a una ASV abundante — exactamente el tipo de error que el modelo de <code>learnErrors()</code> aprendió a reconocer. El denoising las “colapsa” de vuelta a la secuencia original.</p>
+</div>
+</div>
 <hr>
+</section>
 </section>
 <section id="paso-6-guardar-checkpoint-después-de-dada" class="level2">
 <h2 class="anchored" data-anchor-id="paso-6-guardar-checkpoint-después-de-dada">Paso 6 — Guardar checkpoint después de dada()</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 3 guardado (dada)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 3 guardado (dada)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Para reanudar desde este punto antes de <code>mergePairs()</code>:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint3_dada.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint3_dada.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <hr>
