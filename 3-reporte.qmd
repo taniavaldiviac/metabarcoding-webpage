@@ -262,6 +262,18 @@ El objeto `ps` contiene ahora todos los datos integrados. Algunos accesos útile
 - `sample_data(ps)` — metadata de muestras
 - `refseq(ps)` — secuencias originales de cada ASV
 
+### Guardar objeto phyloseq antes de colapsar (para VSEARCH)
+
+Antes de agrupar las ASVs por especie, guardamos el objeto phyloseq con las ASVs individuales. Este objeto es el que se usará en el Día 4 para el agrupamiento en OTUs con VSEARCH.
+
+```{r Guardar phyloseq para VSEARCH}
+dir.create("final_data/otus_vsearch", recursive = TRUE, showWarnings = FALSE)
+save(ps, file = "final_data/otus_vsearch/phyloseq_pre_collapse.RData")
+message("Phyloseq (ASVs sin colapsar) guardado en final_data/otus_vsearch/")
+```
+
+---
+
 ### Agrupación de ASVs por especie y cálculo de abundancias relativas
 
 Múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, etc.). La función `tax_glom()` colapsa todas las ASVs de una misma especie sumando sus abundancias, produciendo una tabla donde cada fila es una especie única. Sobre ese objeto se calculan las abundancias relativas dividiendo los conteos de cada muestra entre su total de lecturas, de modo que cada muestra suma 1 (o 100%).
