@@ -452,6 +452,18 @@
     ]
   },
   {
+    "objectID": "2-dada2QAQC-Taxonomy.html#exportar-secuencias-asv-a-fasta",
+    "href": "2-dada2QAQC-Taxonomy.html#exportar-secuencias-asv-a-fasta",
+    "title": "Dada2 - Asignación taxonómica y guardado de resultados",
+    "section": "Exportar secuencias ASV a FASTA",
+    "text": "Exportar secuencias ASV a FASTA\nExportamos las secuencias de ASVs en formato FASTA para usarlas en análisis posteriores como el agrupamiento en OTUs con VSEARCH.\n\n\nCódigo\n# Crear directorio de salida\ndir.create(file.path(output_location, \"otus_vsearch\"), recursive = TRUE, showWarnings = FALSE)\n\n# Exportar secuencias ASV a FASTA\nasv_seqs &lt;- colnames(cleaned.seqtab.nochim)\nasv_headers &lt;- paste0(\"ASV_\", sprintf(\"%04d\", seq_along(asv_seqs)))\nasv_fasta &lt;- c(rbind(paste0(\"&gt;\", asv_headers), asv_seqs))\n\nfasta_path &lt;- file.path(output_location, \"otus_vsearch\", \"fish_ASV.fasta\")\nwriteLines(asv_fasta, fasta_path)\n\nmessage(\"FASTA exportado: \", fasta_path)\nmessage(\"Total ASVs: \", length(asv_seqs))\n\n\nEste archivo contiene las secuencias sin taxonomía — solo un identificador (ASV_0001, ASV_0002, …) y la secuencia. VSEARCH lo usará para agrupar ASVs similares en OTUs.",
+    "crumbs": [
+      "Sesiones",
+      "Día 3",
+      "Dada2 - Asignación taxonómica y guardado de resultados"
+    ]
+  },
+  {
     "objectID": "2-dada2QAQC-Taxonomy.html#causas-de-baja-asignación-taxonómica",
     "href": "2-dada2QAQC-Taxonomy.html#causas-de-baja-asignación-taxonómica",
     "title": "Dada2 - Asignación taxonómica y guardado de resultados",
