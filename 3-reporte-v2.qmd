@@ -363,44 +363,56 @@ ggsave("final_data/reporte_ecologico/lecturas_por_muestra.png",
 
 ### Rarefacción y curvas de rarefacción
 
-La **rarefacción** estandariza la profundidad de secuenciación al mismo número de lecturas en todas las muestras. Esto es indispensable antes de comparar índices de diversidad entre sitios, ya que con más lecturas inevitablemente se detectan más especies. Usamos `phyloseq::rarefy_even_depth()` para rarefacer al mínimo de lecturas entre las muestras no-control.
+#### ¿Por qué rarefactar?
 
-Las **curvas de rarefacción** muestran cómo aumenta el número de ASVs detectadas al aumentar el número de lecturas submuestreadas. Una curva que se acerca a una asíntota indica que la muestra está suficientemente cubierta; una curva que sigue subiendo sugiere que hay más diversidad por descubrir con mayor secuenciación.
+Cuando comparamos la diversidad entre muestras, necesitamos que la comparación sea justa. Si una muestra tiene 200,000 lecturas y otra tiene 10,000, la primera detectará más especies simplemente porque tiene más datos — no necesariamente porque sea más diversa. La **rarefacción** resuelve esto submuestreando todas las muestras al mismo número de lecturas.
+
+#### ¿A cuántas lecturas rarefactar?
+
+Rarefactamos al número de lecturas de la **muestra con menos reads** (excluyendo controles). No podemos "inventar" lecturas para las muestras con menos, así que bajamos todas al mismo nivel.
+
+Primero veamos cuántas lecturas tiene cada muestra:
 
 ```{r qc-rarefaccion, fig.width=9, fig.height=6}
-# Excluir controles antes de rarefacer
+# Excluir controles (MOCK, CTR) antes de rarefacer
 ps_filt <- phyloseq::subset_samples(
   ps,
   !grepl("MOCK|CTR", phyloseq::sample_data(ps)$site_id, ignore.case = TRUE)
 )
 ps_filt <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_filt) > 0, ps_filt)
 
-# Rarefacer al mínimo de profundidad
-set.seed(123)
+# Ver las 5 muestras con menos lecturas
+sort(phyloseq::sample_sums(ps_filt))[1:5]
+```
+
+En nuestros datos, la muestra con menos lecturas es GC-024 con 10,024 reads. Las demás tienen 15,000+. Este será nuestro valor de rarefacción.
+
+#### Curvas de rarefacción
+
+Las curvas de rarefacción nos ayudan a evaluar si 10,024 lecturas son suficientes para capturar la diversidad. Cada línea representa una muestra — el eje X muestra cuántas lecturas se submuestrean y el eje Y cuántas ASVs se detectan.
+
+- Si la curva **se aplana** (llega a la asíntota): la muestra está bien cubierta, ya capturamos la mayoría de la diversidad
+- Si la curva **sigue subiendo**: con más lecturas detectaríamos más ASVs — la cobertura es insuficiente
+
+La línea roja vertical marca la profundidad de rarefacción (10,024 lecturas).
+
+```{r curvas-rarefaccion}
+# Preparar datos para vegan::rarecurve
+comm_rare_input <- as.data.frame(as.matrix(phyloseq::otu_table(ps_filt)))
+if (phyloseq::taxa_are_rows(ps_filt)) comm_rare_input <- as.data.frame(t(comm_rare_input))
+
+site_ids <- phyloseq::sample_data(ps_filt)$site_id
+n_samp   <- nrow(comm_rare_input)
+pal      <- viridis::viridis(n_samp, option = "D")
+
 min_depth <- min(phyloseq::sample_sums(ps_filt))
-message("Rarefacción a: ", min_depth, " lecturas por muestra")
-ps_rare <- phyloseq::rarefy_even_depth(
-  ps_filt,
-  sample.size = min_depth,
-  verbose     = FALSE,
-  rngseed     = 123
-)
 
-# Curvas de rarefacción con vegan::rarecurve
-comm_rare_input <- as.matrix(phyloseq::otu_table(ps_filt))
-if (phyloseq::taxa_are_rows(ps_filt)) comm_rare_input <- t(comm_rare_input)
-site_ids        <- phyloseq::sample_data(ps_filt)$site_id
-
-# Paleta de colores por muestra (viridis)
-n_samp <- nrow(comm_rare_input)
-pal    <- viridis::viridis(n_samp, option = "D")
-
-png("final_data/reporte_ecologico/curvas_rarefaccion.png",
+png("final_data/reporte_ecologico/curvas_rarefaccion_vegan.png",
     width = 2400, height = 1600, res = 300)
 par(mar = c(5, 5, 3, 1))
 vegan::rarecurve(
   comm_rare_input,
-  step     = 50,
+  step     = 100,
   col      = pal,
   label    = FALSE,
   main     = "Curvas de rarefacción por muestra",
@@ -411,15 +423,40 @@ vegan::rarecurve(
 )
 abline(v = min_depth, lty = 2, col = "#d73027", lwd = 1.5)
 text(min_depth, par("usr")[4] * 0.95,
-     labels = paste0("Profundidad de rarefacción\n(", scales::comma(min_depth), " lecturas)"),
+     labels = paste0("Rarefacción\n(", scales::comma(min_depth), " lecturas)"),
      pos = 4, col = "#d73027", cex = 0.85)
 legend("bottomright",
        legend = site_ids,
        col    = pal,
        lty    = 1, lwd = 2,
-       cex    = 0.7,
+       cex    = 0.6,
        bty    = "n")
 dev.off()
+```
+
+::: {.callout-tip icon="false"}
+**¿Cómo decidir si el valor de rarefacción es adecuado?**
+
+- Si a 10,024 lecturas las curvas ya se aplanan → el valor es suficiente, no pierdes diversidad significativa
+- Si la muestra GC-024 no llega a la asíntota pero las demás sí → podrías excluirla y rarefactar a 15,827 (la siguiente muestra más baja, GC-007)
+- Con un amplicón corto como 12S (~65 bp) y muestras de eDNA, 10,000 lecturas generalmente son suficientes para capturar la diversidad de peces
+:::
+
+#### Ejecutar la rarefacción
+
+```{r rarefaccion}
+set.seed(123)
+message("Rarefacción a: ", min_depth, " lecturas por muestra")
+
+ps_rare <- phyloseq::rarefy_even_depth(
+  ps_filt,
+  sample.size = min_depth,
+  verbose     = FALSE,
+  rngseed     = 123
+)
+
+message("Muestras después de rarefacción: ", phyloseq::nsamples(ps_rare))
+message("ASVs después de rarefacción: ", phyloseq::ntaxa(ps_rare))
 ```
 
 ::: {.callout-note}
