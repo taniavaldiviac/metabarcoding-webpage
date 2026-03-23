@@ -25,8 +25,7 @@ Cargamos todos los paquetes necesarios al inicio del documento. Usamos `suppress
 
 ```{r paquetes}
 suppressPackageStartupMessages({
-  # Manipulación de datos y rutas
-  library(here)
+  # Manipulación de datos
   library(dplyr)
   library(tidyr)
   library(tibble)
@@ -52,27 +51,26 @@ suppressPackageStartupMessages({
 
 ### Definición de rutas
 
-Centralizamos todas las rutas del proyecto en una sola sección. `here::here()` detecta automáticamente la raíz del proyecto (donde está el archivo `.Rproj` o `.here`), lo que hace el código reproducible en cualquier computadora.
+Todas las rutas son relativas a `~/metabarcoding-code/`, que es el directorio de trabajo.
 
 ```{r rutas}
-proj_root        <- here::here()
-ruta_rdata       <- here::here("final_data", "rdata_output")
-ruta_metadata    <- here::here("metadata", "Fish_speciesGC.csv")
-ruta_csv_output  <- here::here("final_data", "csv_output", "taxon_table.csv")
-ruta_figs_fam    <- here::here("final_data", "figs_families_stacked")
-ruta_figs_sp     <- here::here("final_data", "figs_species_stacked")
+setwd("~/metabarcoding-code")
+
+ruta_rdata       <- "final_data/rdata_output"
+ruta_metadata    <- "metadata/Fish_speciesGC.csv"
+ruta_csv_output  <- "final_data/csv_output/taxon_table.csv"
+ruta_figs_fam    <- "final_data/figs_families_stacked"
+ruta_figs_sp     <- "final_data/figs_species_stacked"
 
 # Crear directorios de salida si no existen
-dir.create(ruta_csv_output |> dirname(), showWarnings = FALSE, recursive = TRUE)
-dir.create(ruta_figs_fam,  showWarnings = FALSE, recursive = TRUE)
-dir.create(ruta_figs_sp,   showWarnings = FALSE, recursive = TRUE)
-
-message("Raíz del proyecto: ", proj_root)
+dir.create(dirname(ruta_csv_output), showWarnings = FALSE, recursive = TRUE)
+dir.create(ruta_figs_fam, showWarnings = FALSE, recursive = TRUE)
+dir.create(ruta_figs_sp,  showWarnings = FALSE, recursive = TRUE)
 ```
 
-### Carga dinámica de datos
+### Carga de datos
 
-Cargamos todos los archivos `.RData` disponibles en el directorio de salida del pipeline DADA2. El uso de un loop con `new.env()` evita que las variables de distintos archivos se sobreescriban en el entorno global. Luego combinamos inteligentemente las tablas `track` de todos los archivos, y seleccionamos el primer `.RData` válido (que contenga `otu_mat`) para construir el objeto *phyloseq*.
+Cargamos el archivo `*phyloseq_inputs.RData` generado por el pipeline DADA2, que contiene las matrices de abundancias, taxonomía y metadata.
 
 ```{r cargar-datos}
 # Buscar específicamente el archivo phyloseq_inputs generado por el pipeline
