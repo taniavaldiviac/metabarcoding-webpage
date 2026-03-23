@@ -680,39 +680,63 @@
     ]
   },
   {
-    "objectID": "0-Conexion.html",
-    "href": "0-Conexion.html",
-    "title": "Conexión al servidor",
+    "objectID": "0-Datos.html",
+    "href": "0-Datos.html",
+    "title": "Nuestros datos: eDNA de peces del Golfo de California",
     "section": "",
-    "text": "Consulta tus credenciales de acceso en la hoja de participantes.",
+    "text": "Los datos que usaremos durante el curso provienen de un estudio de ADN ambiental (eDNA) diseñado para evaluar la biodiversidad de peces en el Golfo de California mediante metabarcoding.\nEl estudio fue publicado en:",
     "crumbs": [
       "Sesiones",
-      "Día 1",
-      "Conexión al servidor"
+      "Día 2",
+      "Nuestros datos: eDNA de peces del Golfo de California"
     ]
   },
   {
-    "objectID": "0-Conexion.html#conéctate-a-la-vpn",
-    "href": "0-Conexion.html#conéctate-a-la-vpn",
-    "title": "Conexión al servidor",
-    "section": "1. Conéctate a la VPN",
-    "text": "1. Conéctate a la VPN\nAntes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor",
+    "objectID": "0-Datos.html#contexto-del-estudio",
+    "href": "0-Datos.html#contexto-del-estudio",
+    "title": "Nuestros datos: eDNA de peces del Golfo de California",
+    "section": "Contexto del estudio",
+    "text": "Contexto del estudio\nLa biodiversidad marina puede evaluarse mediante censos visuales subacuáticos (UVC) y, más recientemente, con metabarcoding de eDNA. Aunque el eDNA es una herramienta prometedora, su escala de detección y el número de especies identificadas pueden variar con respecto a otros métodos de muestreo. Además, la precisión de la asignación taxonómica depende de contar con bases de datos de referencia completas.\nEn este estudio se compararon los resultados de censos visuales subacuáticos y muestreos simultáneos de eDNA para evaluar comunidades de peces, analizando las especies observadas y la composición de comunidades con ambos métodos.",
     "crumbs": [
       "Sesiones",
-      "Día 1",
-      "Conexión al servidor"
+      "Día 2",
+      "Nuestros datos: eDNA de peces del Golfo de California"
     ]
   },
   {
-    "objectID": "0-Conexion.html#conéctate-al-servidor-por-ssh",
-    "href": "0-Conexion.html#conéctate-al-servidor-por-ssh",
-    "title": "Conexión al servidor",
-    "section": "2. Conéctate al servidor por SSH",
-    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter.\n\n\nMantener la conexión activa\nLas conexiones SSH pueden cerrarse automáticamente después de un periodo de inactividad (por ejemplo, mientras lees documentación o esperas que un análisis termine). Para evitarlo, agrega la opción -o ServerAliveInterval=60 al conectarte:\nssh -o ServerAliveInterval=60 usrXX@200.23.162.240\nEsto le indica a tu computadora que envíe una señal al servidor cada 60 segundos para mantener la conexión abierta. Es especialmente útil cuando corres análisis largos como el pipeline de DADA2.\n\n\n\n\n\n\nTip\n\n\n\nRecomendación: usa siempre esta opción durante el curso para evitar desconexiones inesperadas.",
+    "objectID": "0-Datos.html#diseño-de-muestreo",
+    "href": "0-Datos.html#diseño-de-muestreo",
+    "title": "Nuestros datos: eDNA de peces del Golfo de California",
+    "section": "Diseño de muestreo",
+    "text": "Diseño de muestreo\n\n\n\nMapa de sitios de muestreo en el Golfo de California\n\n\n\nRegión: Golfo de California, México\nSitios de muestreo: 24 localidades distribuidas a lo largo del Golfo, cubriendo las regiones Norte, Central y Sur\nTipo de muestra: agua de mar (ADN ambiental)\nMarcador molecular: 12S rRNA (código de barras para peces)\nLongitud del amplicón: ~65 bp (sin primers)\nPlataforma de secuenciación: Illumina MiSeq (lecturas paired-end 2×150 bp)",
     "crumbs": [
       "Sesiones",
-      "Día 1",
-      "Conexión al servidor"
+      "Día 2",
+      "Nuestros datos: eDNA de peces del Golfo de California"
+    ]
+  },
+  {
+    "objectID": "0-Datos.html#principales-hallazgos",
+    "href": "0-Datos.html#principales-hallazgos",
+    "title": "Nuestros datos: eDNA de peces del Golfo de California",
+    "section": "Principales hallazgos",
+    "text": "Principales hallazgos\n\nSe detectaron más especies con eDNA que con censos visuales subacuáticos\nCada método detectó conjuntos diferentes de especies — combinados, duplicaron el número de especies registradas\nAmbos métodos recuperaron un gradiente de biodiversidad conocido y una ruptura biogeográfica en el Golfo\nEl eDNA capturó diversidad en una escala geográfica y batimétrica más amplia\nEl uso de una base de datos de referencia personalizada incrementó significativamente la asignación taxonómica\nLos modelos de ocupación revelaron que el eDNA proporcionó probabilidades de detección similares o superiores a los censos visuales",
+    "crumbs": [
+      "Sesiones",
+      "Día 2",
+      "Nuestros datos: eDNA de peces del Golfo de California"
+    ]
+  },
+  {
+    "objectID": "0-Datos.html#qué-vamos-a-analizar-en-el-curso",
+    "href": "0-Datos.html#qué-vamos-a-analizar-en-el-curso",
+    "title": "Nuestros datos: eDNA de peces del Golfo de California",
+    "section": "¿Qué vamos a analizar en el curso?",
+    "text": "¿Qué vamos a analizar en el curso?\nTrabajaremos con un subconjunto de los datos de este estudio: muestras de agua filtradas en campo, cuyo ADN fue extraído, amplificado con primers para el marcador 12S y secuenciado en Illumina MiSeq.\nA lo largo del curso procesaremos estos datos desde los archivos FASTQ crudos hasta obtener una tabla de ASVs con asignación taxonómica y análisis de diversidad ecológica — replicando el flujo de trabajo bioinformático del estudio original.\n\n\n\n\n\n\nTip\n\n\n\n¿Por qué 12S? El marcador 12S rRNA es uno de los más utilizados para metabarcoding de peces porque produce amplicones cortos (~65 bp) que se amplifican bien a partir de ADN degradado como el que encontramos en muestras ambientales. Su corta longitud permite un solapamiento completo de las lecturas paired-end y una alta tasa de recuperación.",
+    "crumbs": [
+      "Sesiones",
+      "Día 2",
+      "Nuestros datos: eDNA de peces del Golfo de California"
     ]
   },
   {
@@ -773,6 +797,42 @@
       "Sesiones",
       "Día 2",
       "Clonación de repositorio Github"
+    ]
+  },
+  {
+    "objectID": "0-Conexion.html",
+    "href": "0-Conexion.html",
+    "title": "Conexión al servidor",
+    "section": "",
+    "text": "Consulta tus credenciales de acceso en la hoja de participantes.",
+    "crumbs": [
+      "Sesiones",
+      "Día 1",
+      "Conexión al servidor"
+    ]
+  },
+  {
+    "objectID": "0-Conexion.html#conéctate-a-la-vpn",
+    "href": "0-Conexion.html#conéctate-a-la-vpn",
+    "title": "Conexión al servidor",
+    "section": "1. Conéctate a la VPN",
+    "text": "1. Conéctate a la VPN\nAntes de conectarte al servidor necesitas activar la VPN con el cliente Hillstone Secure Connect:\n\nServidor VPN: 200.23.161.197\nPuerto: 4666\nUsuario: BIO\\tu_usuario (por ejemplo, BIO\\usr01)\nContraseña: la que te proporcionó el instructor",
+    "crumbs": [
+      "Sesiones",
+      "Día 1",
+      "Conexión al servidor"
+    ]
+  },
+  {
+    "objectID": "0-Conexion.html#conéctate-al-servidor-por-ssh",
+    "href": "0-Conexion.html#conéctate-al-servidor-por-ssh",
+    "title": "Conexión al servidor",
+    "section": "2. Conéctate al servidor por SSH",
+    "text": "2. Conéctate al servidor por SSH\nAbre la terminal en tu computadora y escribe:\nssh usrXX@200.23.162.240\nReemplaza usrXX por tu usuario (por ejemplo, usr01). Escribe tu contraseña cuando se te pida.\n\nSi es la primera vez que te conectas, puede que te pregunte si confías en el servidor. Escribe yes y presiona Enter.\n\n\nMantener la conexión activa\nLas conexiones SSH pueden cerrarse automáticamente después de un periodo de inactividad (por ejemplo, mientras lees documentación o esperas que un análisis termine). Para evitarlo, agrega la opción -o ServerAliveInterval=60 al conectarte:\nssh -o ServerAliveInterval=60 usrXX@200.23.162.240\nEsto le indica a tu computadora que envíe una señal al servidor cada 60 segundos para mantener la conexión abierta. Es especialmente útil cuando corres análisis largos como el pipeline de DADA2.\n\n\n\n\n\n\nTip\n\n\n\nRecomendación: usa siempre esta opción durante el curso para evitar desconexiones inesperadas.",
+    "crumbs": [
+      "Sesiones",
+      "Día 1",
+      "Conexión al servidor"
     ]
   },
   {
@@ -1437,7 +1497,7 @@
     "href": "sesiones.html#día-2-entorno-bioinformático-y-control-de-calidad",
     "title": "Metabarcoding de comunidades de eucariontes",
     "section": "Día 2 — Entorno bioinformático y control de calidad",
-    "text": "Día 2 — Entorno bioinformático y control de calidad\n\nIntroducción a Linux y R\nPreparación del entorno\nClonación de repositorio\nArchivos fastq: estructura y organización\nControl de calidad y recorte de primers\nIntroducción al pipeline DADA2"
+    "text": "Día 2 — Entorno bioinformático y control de calidad\n\nIntroducción a Linux y R\nNuestros datos\nPreparación del entorno\nClonación de repositorio\nArchivos fastq: estructura y organización\nControl de calidad y recorte de primers\nIntroducción al pipeline DADA2"
   },
   {
     "objectID": "sesiones.html#día-3-pipeline-dada2",

@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx)">
 
-<title>Metabarcoding de comunidades de eucariontes</title>
+<title>Nuestros datos: eDNA de peces del Golfo de California – Metabarcoding de comunidades de eucariontes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -34,6 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./0-Preparacion.html" rel="next">
+<link href="./0b-linux-r-intro.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -93,11 +94,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./sesiones.html" aria-current="page"> 
+    <a class="nav-link" href="./sesiones.html"> 
 <span class="menu-text">Sesiones</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Referencias.html"> 
+    <a class="nav-link active" href="./Referencias.html" aria-current="page"> 
 <span class="menu-text">Lecturas recomendadas</span></a>
   </li>  
   <li class="nav-item compact">
@@ -116,7 +117,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Metabarcoding de comunidades de eucariontes</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0b-linux-r-intro.html">Día 2</a></li><li class="breadcrumb-item"><a href="./0-Datos.html">Nuestros datos: eDNA de peces del Golfo de California</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -153,13 +154,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">Día 2</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./0b-linux-r-intro.html" class="sidebar-item-text sidebar-link">
@@ -168,7 +169,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./0-Datos.html" class="sidebar-item-text sidebar-link">
+  <a href="./0-Datos.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Nuestros datos: eDNA de peces del Golfo de California</span></a>
   </div>
 </li>
@@ -323,21 +324,15 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content column-page-right" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./0b-linux-r-intro.html">Día 2</a></li><li class="breadcrumb-item"><a href="./0-Datos.html">Nuestros datos: eDNA de peces del Golfo de California</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Metabarcoding de comunidades de eucariontes</h1>
+<h1 class="title">Nuestros datos: eDNA de peces del Golfo de California</h1>
 </div>
 
 
 
 <div class="quarto-title-meta column-page-right">
 
-    <div>
-    <div class="quarto-title-meta-heading">Autor/a</div>
-    <div class="quarto-title-meta-contents">
-             <p>Dra. Tania Valdivia Carrillo (tvaldivia@cibnor.mx) </p>
-          </div>
-  </div>
     
   
     
@@ -348,57 +343,65 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="día-1-introducción-teórica-y-fundamentos" class="level2">
-<h2 class="anchored" data-anchor-id="día-1-introducción-teórica-y-fundamentos">Día 1 — Introducción teórica y fundamentos</h2>
+<p>Los datos que usaremos durante el curso provienen de un estudio de ADN ambiental (eDNA) diseñado para evaluar la biodiversidad de peces en el Golfo de California mediante metabarcoding.</p>
+<p>El estudio fue publicado en:</p>
+<blockquote class="blockquote">
+<p>Valdivia-Carrillo T, Rocha-Olivares A, Reyes-Bonilla H, Domínguez-Contreras JF, Munguia-Vega A. (2021). Integrating eDNA metabarcoding and simultaneous underwater visual surveys to describe complex fish communities in a marine biodiversity hotspot. <em>Molecular Ecology Resources</em>, 21(5), 1558–1574. <a href="https://doi.org/10.1111/1755-0998.13375">DOI: 10.1111/1755-0998.13375</a></p>
+</blockquote>
+<hr>
+<section id="contexto-del-estudio" class="level2">
+<h2 class="anchored" data-anchor-id="contexto-del-estudio">Contexto del estudio</h2>
+<p>La biodiversidad marina puede evaluarse mediante censos visuales subacuáticos (UVC) y, más recientemente, con metabarcoding de eDNA. Aunque el eDNA es una herramienta prometedora, su escala de detección y el número de especies identificadas pueden variar con respecto a otros métodos de muestreo. Además, la precisión de la asignación taxonómica depende de contar con bases de datos de referencia completas.</p>
+<p>En este estudio se compararon los resultados de censos visuales subacuáticos y muestreos simultáneos de eDNA para evaluar comunidades de peces, analizando las especies observadas y la composición de comunidades con ambos métodos.</p>
+<hr>
+</section>
+<section id="diseño-de-muestreo" class="level2">
+<h2 class="anchored" data-anchor-id="diseño-de-muestreo">Diseño de muestreo</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/mapa_sitios.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<figcaption>Mapa de sitios de muestreo en el Golfo de California</figcaption>
+</figure>
+</div>
 <ul>
-<li>Bienvenida y presentación del curso</li>
-<li><a href="./0-Zoom.html">Conexión a Zoom</a></li>
-<li><a href="./0-Conexion.html">Pruebas de conexión al servidor</a></li>
-<li>Teoría</li>
+<li><strong>Región</strong>: Golfo de California, México</li>
+<li><strong>Sitios de muestreo</strong>: 24 localidades distribuidas a lo largo del Golfo, cubriendo las regiones Norte, Central y Sur</li>
+<li><strong>Tipo de muestra</strong>: agua de mar (ADN ambiental)</li>
+<li><strong>Marcador molecular</strong>: 12S rRNA (código de barras para peces)</li>
+<li><strong>Longitud del amplicón</strong>: ~65 bp (sin primers)</li>
+<li><strong>Plataforma de secuenciación</strong>: Illumina MiSeq (lecturas paired-end 2×150 bp)</li>
 </ul>
 <hr>
 </section>
-<section id="día-2-entorno-bioinformático-y-control-de-calidad" class="level2">
-<h2 class="anchored" data-anchor-id="día-2-entorno-bioinformático-y-control-de-calidad">Día 2 — Entorno bioinformático y control de calidad</h2>
+<section id="principales-hallazgos" class="level2">
+<h2 class="anchored" data-anchor-id="principales-hallazgos">Principales hallazgos</h2>
 <ul>
-<li><a href="./0b-linux-r-intro.html">Introducción a Linux y R</a></li>
-<li><a href="./0-Datos.html">Nuestros datos</a></li>
-<li><a href="./0-Preparacion.html">Preparación del entorno</a></li>
-<li><a href="./0-Clonacion.html">Clonación de repositorio</a></li>
-<li><a href="./0-FASTQ.html">Archivos fastq: estructura y organización</a></li>
-<li><a href="./1-qaqc-cutadapt.html">Control de calidad y recorte de primers</a></li>
-<li><a href="./2-dada2QAQC.html">Introducción al pipeline DADA2</a></li>
+<li>Se detectaron <strong>más especies con eDNA</strong> que con censos visuales subacuáticos</li>
+<li>Cada método detectó conjuntos diferentes de especies — combinados, <strong>duplicaron</strong> el número de especies registradas</li>
+<li>Ambos métodos recuperaron un <strong>gradiente de biodiversidad conocido</strong> y una ruptura biogeográfica en el Golfo</li>
+<li>El eDNA capturó diversidad en una <strong>escala geográfica y batimétrica más amplia</strong></li>
+<li>El uso de una <strong>base de datos de referencia personalizada</strong> incrementó significativamente la asignación taxonómica</li>
+<li>Los modelos de ocupación revelaron que el eDNA proporcionó probabilidades de detección <strong>similares o superiores</strong> a los censos visuales</li>
 </ul>
 <hr>
 </section>
-<section id="día-3-pipeline-dada2" class="level2">
-<h2 class="anchored" data-anchor-id="día-3-pipeline-dada2">Día 3 — Pipeline DADA2</h2>
-<ul>
-<li><a href="./2-dada2QAQC-Prep.html">Filtrado inicial</a></li>
-<li><a href="./2-dada2QAQC-Error.html">Aprendizaje del modelo de error</a></li>
-<li><a href="./2-dada2QAQC-Merge.html">Unión de lecturas paired-end</a></li>
-<li><a href="./2-dada2QAQC-Chimeras.html">Remoción de quimeras</a></li>
-<li><a href="./2-dada2QAQC-Taxonomy.html">Asignación taxonómica</a></li>
-</ul>
-<hr>
-</section>
-<section id="día-4-análisis-ecológico-de-comunidades" class="level2">
-<h2 class="anchored" data-anchor-id="día-4-análisis-ecológico-de-comunidades">Día 4 — Análisis ecológico de comunidades</h2>
-<ul>
-<li><a href="./3-reporte.html">De los resultados de DADA2 a las tablas de análisis</a></li>
-<li><a href="./3-reporte.html">El objeto phyloseq: construcción y manipulación</a></li>
-<li><a href="./3-reporte.html">Diversidad α, diversidad β y visualización</a></li>
-<li><a href="./4-otus-vsearch.html">OTUs: agrupamiento por similitud con VSEARCH</a></li>
-</ul>
-<hr>
-</section>
-<section id="día-5-temas-avanzados" class="level2">
-<h2 class="anchored" data-anchor-id="día-5-temas-avanzados">Día 5 — Temas avanzados</h2>
-<ul>
-<li><a href="./5-base-datos.html">Bases de datos de referencia personalizadas</a></li>
-<li><a href="./5-decontam.html">Detección y remoción de contaminantes con decontam</a></li>
-<li>Temas auxiliares y dudas del curso</li>
-</ul>
+<section id="qué-vamos-a-analizar-en-el-curso" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vamos-a-analizar-en-el-curso">¿Qué vamos a analizar en el curso?</h2>
+<p>Trabajaremos con un subconjunto de los datos de este estudio: muestras de agua filtradas en campo, cuyo ADN fue extraído, amplificado con primers para el marcador <strong>12S</strong> y secuenciado en Illumina MiSeq.</p>
+<p>A lo largo del curso procesaremos estos datos desde los archivos FASTQ crudos hasta obtener una tabla de ASVs con asignación taxonómica y análisis de diversidad ecológica — replicando el flujo de trabajo bioinformático del estudio original.</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Por qué 12S?</strong> El marcador 12S rRNA es uno de los más utilizados para metabarcoding de peces porque produce amplicones cortos (~65 bp) que se amplifican bien a partir de ADN degradado como el que encontramos en muestras ambientales. Su corta longitud permite un solapamiento completo de las lecturas paired-end y una alta tasa de recuperación.</p>
+</div>
+</div>
 
 
 </section>
@@ -804,6 +807,18 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="./0b-linux-r-intro.html" class="pagination-link" aria-label="Introducción a Linux y R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introducción a Linux y R</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./0-Preparacion.html" class="pagination-link" aria-label="Preparación del entorno">
+        <span class="nav-page-text">Preparación del entorno</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
