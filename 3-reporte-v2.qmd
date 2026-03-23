@@ -394,6 +394,8 @@ site_ids        <- phyloseq::sample_data(ps_filt)$site_id
 n_samp <- nrow(comm_rare_input)
 pal    <- viridis::viridis(n_samp, option = "D")
 
+png("final_data/reporte_ecologico/curvas_rarefaccion.png",
+    width = 2400, height = 1600, res = 300)
 par(mar = c(5, 5, 3, 1))
 vegan::rarecurve(
   comm_rare_input,
@@ -416,6 +418,7 @@ legend("bottomright",
        lty    = 1, lwd = 2,
        cex    = 0.7,
        bty    = "n")
+dev.off()
 ```
 
 ::: {.callout-note}
@@ -892,6 +895,8 @@ pal_ann <- RColorBrewer::brewer.pal(max(3, length(regiones_uniq)), "Set2")[seq_a
 names(pal_ann) <- regiones_uniq
 ann_colors <- list(Región = pal_ann)
 
+png("final_data/reporte_ecologico/heatmap_top20_especies.png",
+    width = 2400, height = 1800, res = 300)
 pheatmap::pheatmap(
   t(mat_heat),
   scale              = "none",
@@ -906,6 +911,7 @@ pheatmap::pheatmap(
   cellwidth          = 18,
   cellheight         = 14
 )
+dev.off()
 ```
 
 ::: {.callout-tip}
