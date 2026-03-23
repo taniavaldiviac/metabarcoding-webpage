@@ -577,8 +577,8 @@ ggsave("final_data/reporte_ecologico/diversidad_alfa_regiones.png",
 :::
 
 ```{r alfa-tabla}
-# Tabla resumen por región
-alpha_df %>%
+# Tabla resumen por región (ASVs)
+alpha_summary <- alpha_df %>%
   dplyr::group_by(region_gc) %>%
   dplyr::summarise(
     dplyr::across(
@@ -588,18 +588,124 @@ alpha_df %>%
       .names = "{.col}_{.fn}"
     ),
     .groups = "drop"
-  ) %>%
-  kable(
-    format   = "html",
-    align    = "c",
-    caption  = "Resumen de diversidad alfa por región (media ± DE)"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = TRUE,
-    font_size  = 10
   )
+
+write.csv(alpha_summary, "final_data/reporte_ecologico/diversidad_alfa_asvs_resumen.csv", row.names = FALSE)
+alpha_summary
 ```
+
+### Diversidad alfa a nivel de especie
+
+El análisis anterior mide diversidad a nivel de **ASVs** — cada variante de secuencia única cuenta como una unidad. Pero múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, haplotipos). Para obtener una medida más interpretable ecológicamente, colapsamos las ASVs por especie con `tax_glom()` y recalculamos los mismos índices.
+
+Esto nos permite comparar:
+
+- **Diversidad de ASVs**: diversidad genética total — incluye variación intraespecífica
+- **Diversidad de especies**: diversidad taxonómica — lo que tradicionalmente se reporta en ecología
+
+```{r alfa-especies, fig.width=11, fig.height=7}
+# Colapsar ASVs por especie en el objeto rarefactado
+ps_rare_sp <- phyloseq::tax_glom(ps_rare, "Species")
+
+message("ASVs antes de colapsar: ", phyloseq::ntaxa(ps_rare))
+message("Especies después de colapsar: ", phyloseq::ntaxa(ps_rare_sp))
+
+# Calcular índices a nivel de especie
+alpha_sp <- phyloseq::estimate_richness(
+  ps_rare_sp,
+  measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson")
+)
+alpha_sp$site_id   <- phyloseq::sample_data(ps_rare_sp)$site_id
+alpha_sp$region_gc <- phyloseq::sample_data(ps_rare_sp)$region_gc
+
+# Reshape para graficar
+alpha_sp_long <- alpha_sp %>%
+  dplyr::select(site_id, region_gc, Observed, Chao1, ACE, Shannon, Simpson, InvSimpson) %>%
+  tidyr::pivot_longer(
+    cols      = -c(site_id, region_gc),
+    names_to  = "index",
+    values_to = "value"
+  ) %>%
+  dplyr::mutate(
+    index = factor(index,
+                   levels = c("Observed","Chao1","ACE","Shannon","Simpson","InvSimpson"))
+  )
+
+# Kruskal-Wallis por índice
+kw_sp <- alpha_sp_long %>%
+  dplyr::group_by(index) %>%
+  dplyr::summarise(
+    p_value = tryCatch(kruskal.test(value ~ region_gc)$p.value, error = function(e) NA_real_),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    label = dplyr::case_when(
+      p_value < 0.001 ~ "p < 0.001 ***",
+      p_value < 0.01  ~ paste0("p = ", round(p_value, 3), " **"),
+      p_value < 0.05  ~ paste0("p = ", round(p_value, 3), " *"),
+      !is.na(p_value) ~ paste0("p = ", round(p_value, 3), " ns"),
+      TRUE            ~ "p = NA"
+    )
+  )
+
+alpha_sp_long <- alpha_sp_long %>% dplyr::left_join(kw_sp, by = "index")
+y_pos_sp <- alpha_sp_long %>%
+  dplyr::group_by(index) %>%
+  dplyr::summarise(y_ann = max(value, na.rm = TRUE) * 1.08, .groups = "drop")
+alpha_sp_long <- alpha_sp_long %>% dplyr::left_join(y_pos_sp, by = "index")
+
+ggplot(alpha_sp_long, aes(x = region_gc, y = value, fill = region_gc)) +
+  geom_boxplot(alpha = 0.75, outlier.shape = 21, outlier.size = 2) +
+  geom_jitter(aes(color = region_gc), width = 0.15, size = 2, alpha = 0.7) +
+  geom_text(
+    data = dplyr::distinct(alpha_sp_long, index, label, y_ann),
+    aes(x = 1.5, y = y_ann, label = label),
+    inherit.aes = FALSE,
+    size = 3, fontface = "italic", color = "gray30"
+  ) +
+  scale_fill_manual(values  = pal_regions) +
+  scale_color_manual(values = pal_regions) +
+  facet_wrap(~index, scales = "free_y", ncol = 3) +
+  labs(
+    title    = "Diversidad alfa por región — nivel de especie",
+    subtitle = "Objeto rarefaccionado y colapsado por especie — Kruskal-Wallis entre regiones",
+    x        = "Región",
+    y        = "Valor del índice"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(face = "bold"),
+    axis.title      = element_text(face = "bold"),
+    strip.text      = element_text(face = "bold"),
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  )
+
+ggsave("final_data/reporte_ecologico/diversidad_alfa_especies.png",
+       width = 12, height = 6, dpi = 300)
+```
+
+```{r alfa-especies-tabla}
+# Tabla resumen por región (especies)
+alpha_sp_summary <- alpha_sp %>%
+  dplyr::group_by(region_gc) %>%
+  dplyr::summarise(
+    dplyr::across(
+      c(Observed, Chao1, Shannon, InvSimpson),
+      list(media = ~round(mean(.x, na.rm=TRUE), 2),
+           sd    = ~round(sd(.x, na.rm=TRUE), 2)),
+      .names = "{.col}_{.fn}"
+    ),
+    .groups = "drop"
+  )
+
+write.csv(alpha_sp_summary, "final_data/reporte_ecologico/diversidad_alfa_especies_resumen.csv", row.names = FALSE)
+alpha_sp_summary
+```
+
+::: {.callout-note icon="false"}
+**¿Qué esperamos ver?** El número de especies ("Observed") será menor que el de ASVs, porque varias ASVs se colapsan en una sola especie. Sin embargo, los patrones de diversidad entre regiones deberían mantenerse — si la región Central es más diversa a nivel de ASVs, también debería serlo a nivel de especie. Si los patrones cambian, puede indicar que hay muchas ASVs sin asignar a nivel de especie que están inflando la diversidad en algunas regiones.
+:::
 
 ---
 
