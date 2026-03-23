@@ -121,8 +121,7 @@ print(
     ggplot2::geom_vline(aes(xintercept = median_len_clean),
                         color = "#ef476f", linetype = "dashed", linewidth = 1) +
     ggplot2::labs(title = "Distribución de Longitudes de Secuencias ASV (Filtradas)",
-                  subtitle = paste0("n = ", length(seq_lengths_clean), " secuencias | ",
-                                    ncol(filteredout.seqtab.nochim), " ASVs removidas"),
+                  subtitle = paste0("n = ", length(seq_lengths_clean), " ASVs retenidas"),
                   x = "Longitud (bp)", y = "Frecuencia") +
     ggplot2::theme_minimal()
 )
