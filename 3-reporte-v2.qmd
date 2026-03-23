@@ -75,28 +75,19 @@ message("Raíz del proyecto: ", proj_root)
 Cargamos todos los archivos `.RData` disponibles en el directorio de salida del pipeline DADA2. El uso de un loop con `new.env()` evita que las variables de distintos archivos se sobreescriban en el entorno global. Luego combinamos inteligentemente las tablas `track` de todos los archivos, y seleccionamos el primer `.RData` válido (que contenga `otu_mat`) para construir el objeto *phyloseq*.
 
 ```{r cargar-datos}
-rdatas <- list.files(ruta_rdata, pattern = "\\.R[Dd]ata$", full.names = TRUE)
-stopifnot("No se encontraron archivos RData." = length(rdatas) > 0)
+# Buscar específicamente el archivo phyloseq_inputs generado por el pipeline
+rdata_file <- list.files(ruta_rdata, pattern = "phyloseq_inputs\\.RData$", full.names = TRUE)
+stopifnot("No se encontró *phyloseq_inputs.RData" = length(rdata_file) > 0)
 
-output_list <- lapply(rdatas, function(f) {
-  e <- new.env()
-  load(f, envir = e)
-  as.list(e)
-})
-names(output_list) <- basename(rdatas)
+# Si hay varios (por múltiples corridas), usar el más reciente
+if (length(rdata_file) > 1) {
+  rdata_file <- rdata_file[which.max(file.info(rdata_file)$mtime)]
+}
+message("Cargando: ", basename(rdata_file))
+load(rdata_file)
 
-# Combinar todas las tablas track disponibles
-track <- do.call(rbind, lapply(output_list, function(x) {
-  if (!is.null(x$track)) x$track else NULL
-}))
-
-# Seleccionar el primer RData con otu_mat válido
-idx_first <- which(sapply(output_list, function(x) !is.null(x$otu_mat)))[1]
-stopifnot("Ningún RData contiene otu_mat." = !is.na(idx_first))
-first <- output_list[[idx_first]]
-
-message("Archivos RData cargados: ", length(rdatas))
-message("Muestras en track: ",      nrow(track))
+message("Objetos cargados: ", paste(ls(), collapse = ", "))
+message("Muestras en track: ", nrow(track))
 ```
 
 ---
@@ -179,25 +170,25 @@ Antes de construir el objeto *phyloseq*, cargamos y cubramos las tablas de taxon
 
 ```{r prep-otu}
 # Matriz de abundancias: ASVs como filas, muestras como columnas
-otu_raw <- if (!is.null(first$otu_mat)) first$otu_mat else first$seqtab_clean
+otu_raw <- if (!is.null(otu_mat)) otu_mat else seqtab_clean
 stopifnot(!is.null(otu_raw))
 ASV_mat <- t(as.matrix(otu_raw))
 ```
 
 ```{r prep-tax}
 # Tabla taxonómica
-if (!is.null(first$tax_mat)) {
-  taxa_df <- as.data.frame(first$tax_mat)
+if (!is.null(tax_mat)) {
+  taxa_df <- as.data.frame(tax_mat)
   for (rk in c("Kingdom","Phylum","Class","Order","Family","Genus","Species")) {
     if (!rk %in% colnames(taxa_df)) taxa_df[[rk]] <- NA_character_
   }
 } else {
-  stopifnot(!is.null(first$taxonomy_df), "Sequence" %in% names(first$taxonomy_df))
+  stopifnot(!is.null(taxonomy_df), "Sequence" %in% names(taxonomy_df))
   keep <- intersect(
     c("Sequence","Kingdom","Phylum","Class","Order","Family","Genus","Species"),
-    names(first$taxonomy_df)
+    names(taxonomy_df)
   )
-  taxa_df <- first$taxonomy_df[, keep, drop = FALSE] %>%
+  taxa_df <- taxonomy_df[, keep, drop = FALSE] %>%
     dplyr::distinct(Sequence, .keep_all = TRUE) %>%
     tibble::column_to_rownames("Sequence")
 }
@@ -209,7 +200,7 @@ taxa_df <- taxa_df[!(taxa_df$Class %in% c("Mammalia", "Aves") | is.na(taxa_df$Cl
 
 ```{r prep-meta}
 # Metadata de muestras
-md <- as.data.frame(first$sample_meta)
+md <- as.data.frame(sample_meta)
 
 # Corrección de site_id donde sea necesario (dinámica, sin hardcoding)
 # Ejemplo: corregir Isla San Marcos Norte si el name es exactamente ese
@@ -288,6 +279,26 @@ message("Objeto phyloseq construido: ",
         phyloseq::nsamples(ps), " muestras, ",
         phyloseq::ntaxa(ps), " ASVs")
 print(ps)
+```
+
+### Guardar phyloseq y FASTA de ASVs (para VSEARCH)
+
+Antes de continuar con los análisis ecológicos, guardamos el objeto phyloseq con las ASVs individuales (sin colapsar por especie) y exportamos las secuencias a FASTA. Estos archivos se usarán en el Día 4 para el agrupamiento en OTUs con VSEARCH.
+
+```{r guardar-vsearch}
+dir.create("final_data/otus_vsearch", recursive = TRUE, showWarnings = FALSE)
+
+# Guardar objeto phyloseq
+save(ps, file = "final_data/otus_vsearch/phyloseq_pre_collapse.RData")
+
+# Exportar secuencias ASV a FASTA
+asv_seqs <- as.character(phyloseq::refseq(ps))
+asv_headers <- phyloseq::taxa_names(ps)
+asv_fasta <- c(rbind(paste0(">", asv_headers), asv_seqs))
+writeLines(asv_fasta, "final_data/otus_vsearch/fish_ASV.fasta")
+
+message("Phyloseq y FASTA guardados en final_data/otus_vsearch/")
+message("Total ASVs exportadas: ", length(asv_seqs))
 ```
 
 ### Reads por muestra (boxplot de cobertura)
