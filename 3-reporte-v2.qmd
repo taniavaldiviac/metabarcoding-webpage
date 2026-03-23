@@ -126,6 +126,10 @@ track_pct %>%
     color = "white",
     background = "#2c7bb6"
   )
+
+# Guardar tabla de rendimiento
+dir.create("final_data/reporte_ecologico", recursive = TRUE, showWarnings = FALSE)
+write.csv(track_pct, "final_data/reporte_ecologico/track_rendimiento.csv", row.names = TRUE)
 ```
 
 ```{r track-suma}
