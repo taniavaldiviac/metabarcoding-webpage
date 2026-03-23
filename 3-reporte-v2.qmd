@@ -24,6 +24,9 @@ Este reporte presenta el flujo completo de análisis ecológico de comunidades d
 Cargamos todos los paquetes necesarios al inicio del documento. Usamos `suppressPackageStartupMessages()` para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.
 
 ```{r paquetes}
+# Evitar que kable intente abrir navegador en el servidor
+options(browser = "false")
+
 suppressPackageStartupMessages({
   # Manipulación de datos
   library(dplyr)
