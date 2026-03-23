@@ -387,7 +387,8 @@ ps_rare <- phyloseq::rarefy_even_depth(
 )
 
 # Curvas de rarefacción con vegan::rarecurve
-comm_rare_input <- t(as.matrix(phyloseq::otu_table(ps_filt)))
+comm_rare_input <- as.matrix(phyloseq::otu_table(ps_filt))
+if (phyloseq::taxa_are_rows(ps_filt)) comm_rare_input <- t(comm_rare_input)
 site_ids        <- phyloseq::sample_data(ps_filt)$site_id
 
 # Paleta de colores por muestra (viridis)
