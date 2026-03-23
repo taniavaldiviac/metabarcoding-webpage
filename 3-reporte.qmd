@@ -68,24 +68,15 @@ El seguimiento del número de lecturas a lo largo del pipeline (*read tracking*)
 La tabla que se genera a continuación consolida los conteos de todas las muestras y permite evaluar de un vistazo la eficiencia global del pipeline. Valores típicos esperados: retención del **70–90%** de las lecturas originales al final del proceso.
 
 ```{r Resumen de rendimiento y filtrado de lecturas,echo=FALSE}
-output.files <- list.files(ruta_rdata, full.names = TRUE, pattern = "\\.R[Dd]ata$")
-
-output.list <- list()
-
-for (i in seq_along(output.files)) {
-  temp_env <- new.env()
-  load(output.files[i], envir = temp_env)
-  output.list[[i]] <- as.list(temp_env)
+# Cargar el archivo phyloseq_inputs generado por el pipeline DADA2
+rdata_file <- list.files(ruta_rdata, full.names = TRUE, pattern = "phyloseq_inputs\\.RData$")
+if (length(rdata_file) == 0) stop("No se encontró *phyloseq_inputs.RData en ", ruta_rdata)
+if (length(rdata_file) > 1) {
+  message("Múltiples archivos encontrados, usando el más reciente:")
+  rdata_file <- rdata_file[which.max(file.info(rdata_file)$mtime)]
 }
-rm(temp_env)
-track <- data.frame()
-
-for (i in seq_along(output.list)) {
-  if ("track" %in% names(output.list[[i]])) {
-    temp.track <- output.list[[i]]$track
-    track <- rbind(track, temp.track)
-  }
-}
+message("Cargando: ", basename(rdata_file))
+load(rdata_file)
 
 track.sum <- dplyr::summarise_all(as.data.frame(track), sum)
 #pander::pander(track.sum, big.mark = ",")
