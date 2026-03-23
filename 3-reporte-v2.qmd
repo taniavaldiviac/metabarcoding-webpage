@@ -339,7 +339,7 @@ ggplot(sample_reads, aes(x = reorder(site_id, reads), y = reads)) +
   coord_flip() +
   labs(
     title = "Lecturas por muestra",
-    subtitle = "Barras rosas indican muestras con baja cobertura (<1,000 lecturas)",
+    subtitle = NULL,
     x = "Sitio",
     y = "Número de lecturas",
     fill = "Cobertura"
