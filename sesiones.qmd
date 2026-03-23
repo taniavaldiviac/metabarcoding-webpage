@@ -44,9 +44,7 @@ execute:
 
 ## Día 4 — Análisis ecológico de comunidades
 
-- [De los resultados de DADA2 a las tablas de análisis](3-reporte.qmd)
-- [El objeto phyloseq: construcción y manipulación](3-reporte.qmd)
-- [Diversidad α, diversidad β y visualización](3-reporte.qmd)
+- [Análisis ecológico de comunidades](3-reporte-v2.qmd)
 - [OTUs: agrupamiento por similitud con VSEARCH](4-otus-vsearch.qmd)
 
 ---

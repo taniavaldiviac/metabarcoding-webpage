@@ -49,7 +49,6 @@ website:
           - 2-dada2QAQC-Taxonomy.qmd
       - section: "Día 4"
         contents:
-          - 3-reporte.qmd
           - 3-reporte-v2.qmd
           - 4-otus-vsearch.qmd
       - section: "Día 5"
