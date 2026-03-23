@@ -830,6 +830,20 @@ Nota
 <td style="text-align: left;">-43 bp</td>
 <td style="text-align: left;">No hay solapamiento — el merge falla</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;"><strong>ITS / 18S</strong></td>
+<td style="text-align: left;">~500 bp</td>
+<td style="text-align: left;">250 / 250</td>
+<td style="text-align: left;">0 bp</td>
+<td style="text-align: left;">No hay solapamiento — imposible con lecturas de 2×250</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>ITS / 18S</strong> (solo forward)</td>
+<td style="text-align: left;">~500 bp</td>
+<td style="text-align: left;">250 / —</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Se usa solo R1 sin merge, se pierde resolución</td>
+</tr>
 </tbody>
 </table>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
@@ -842,8 +856,9 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Con amplicones cortos</strong> (como nuestro 12S), el truncamiento está determinado por la longitud del amplicón, no por la calidad — las lecturas son tan cortas que la calidad se mantiene alta durante todo el amplicón.</p>
-<p><strong>Con amplicones largos</strong> (como COI), el truncamiento está determinado por la calidad — hay que buscar el balance entre quitar bases de baja calidad y mantener suficiente solapamiento para el merge.</p>
+<p><strong>Con amplicones cortos</strong> (como nuestro 12S de ~65 bp), el truncamiento está determinado por la longitud del amplicón, no por la calidad — las lecturas son tan cortas que la calidad se mantiene alta durante todo el amplicón.</p>
+<p><strong>Con amplicones medianos</strong> (como COI de ~313 bp), el truncamiento está determinado por la calidad — hay que buscar el balance entre quitar bases de baja calidad y mantener suficiente solapamiento para el merge.</p>
+<p><strong>Con amplicones largos</strong> (como ITS o 18S de ~500 bp), las lecturas paired-end de Illumina (2×150 o 2×250 bp) no alcanzan a solaparse. En estos casos se trabaja solo con la lectura forward, sin merge, lo que reduce la resolución taxonómica. Una alternativa es usar plataformas de lectura larga (PacBio, Nanopore) o elegir un marcador más corto.</p>
 </div>
 </div>
 <hr>
