@@ -387,11 +387,15 @@ La decisión de truncamiento cambia según la longitud del amplicón. Veamos có
 | **COI** | ~313 bp | 250 / 200 | 137 bp | Buen solapamiento |
 | **COI** (calidad baja) | ~313 bp | 200 / 150 | 37 bp | Ajustado pero funcional |
 | **COI** (muy recortado) | ~313 bp | 150 / 120 | -43 bp | No hay solapamiento — el merge falla |
+| **ITS / 18S** | ~500 bp | 250 / 250 | 0 bp | No hay solapamiento — imposible con lecturas de 2×250 |
+| **ITS / 18S** (solo forward) | ~500 bp | 250 / — | — | Se usa solo R1 sin merge, se pierde resolución |
 
 ::: {.callout-note icon="false"}
-**Con amplicones cortos** (como nuestro 12S), el truncamiento está determinado por la longitud del amplicón, no por la calidad — las lecturas son tan cortas que la calidad se mantiene alta durante todo el amplicón.
+**Con amplicones cortos** (como nuestro 12S de ~65 bp), el truncamiento está determinado por la longitud del amplicón, no por la calidad — las lecturas son tan cortas que la calidad se mantiene alta durante todo el amplicón.
 
-**Con amplicones largos** (como COI), el truncamiento está determinado por la calidad — hay que buscar el balance entre quitar bases de baja calidad y mantener suficiente solapamiento para el merge.
+**Con amplicones medianos** (como COI de ~313 bp), el truncamiento está determinado por la calidad — hay que buscar el balance entre quitar bases de baja calidad y mantener suficiente solapamiento para el merge.
+
+**Con amplicones largos** (como ITS o 18S de ~500 bp), las lecturas paired-end de Illumina (2×150 o 2×250 bp) no alcanzan a solaparse. En estos casos se trabaja solo con la lectura forward, sin merge, lo que reduce la resolución taxonómica. Una alternativa es usar plataformas de lectura larga (PacBio, Nanopore) o elegir un marcador más corto.
 :::
 
 ---
