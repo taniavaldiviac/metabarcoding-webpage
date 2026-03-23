@@ -12,7 +12,11 @@ Este paso tiene dos partes: primero **dereplicamos** las lecturas (eliminamos du
 
 ## Paso 1 — Dereplicación
 
-La dereplicación colapsa lecturas identicas en secuencias únicas y registra cuantas veces aparece cada una. Esto reduce el volumen de datos sin perder información biológica.
+### ¿Qué es la dereplicación?
+
+Después del filtrado, cada muestra tiene miles de lecturas — pero muchas de ellas son **idénticas** entre sí. La dereplicación agrupa todas las lecturas con exactamente la misma secuencia en una sola entrada, y registra cuántas veces apareció cada una (su **abundancia**).
+
+Por ejemplo, si una muestra tiene 200,000 lecturas pero solo 15,000 secuencias únicas, la dereplicación reduce el volumen de datos de 200,000 a 15,000 entradas, cada una con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.
 
 ```{r eval=FALSE}
 exists <- file.exists(filtFs) & file.exists(filtRs)
@@ -26,10 +30,11 @@ names(derepFs) <- sample.names
 names(derepRs) <- sample.names
 ```
 
-Deberías ver para cada muestra: cuantas lecturas únicas quedaron. Un ratio alto de secuencias únicas / total puede indicar alta diversidad o contaminación; un ratio muy bajo es normal en muestras con taxones dominantes.
+### Diagnóstico de la dereplicación
+
+Revisamos los resultados de la primera muestra para entender qué obtenemos:
 
 ```{r eval=FALSE}
-# Diagnóstico rápido de la primera muestra
 n_unique_F     <- length(derepFs[[1]]$uniques)
 total_reads_F  <- sum(derepFs[[1]]$uniques)
 compression_ratio <- round(n_unique_F / total_reads_F * 100, 2)
@@ -43,6 +48,33 @@ if (compression_ratio < 1)
 if (compression_ratio > 50)
   warning("Alta diversidad inusual (> 50% únicas). Revisa calidad del filtrado o contaminación.")
 ```
+
+En nuestros datos, los resultados se ven así:
+
+```
+Secuencias únicas Forward: 17428
+Ratio de compresión: 7.63%
+Top 5 abundancias: 70868, 15720, 12618, 10018, 9878
+```
+
+### ¿Cómo interpretar estos resultados?
+
+- **17,428 secuencias únicas** de ~228,000 lecturas totales — el 7.63% son únicas, el resto son repeticiones
+- **Top 5 abundancias**: la secuencia más abundante apareció 70,868 veces. Estas secuencias dominantes probablemente corresponden a las especies de peces más comunes en la muestra
+- El **ratio de compresión del 7.63%** indica diversidad moderada, lo cual es típico en muestras de eDNA marinas
+
+| Ratio de compresión | Interpretación |
+|:--------------------|:---------------|
+| < 1% | Muy pocas secuencias únicas — la muestra está dominada por pocas especies |
+| 1–10% | Rango típico para eDNA — diversidad normal con especies dominantes |
+| 10–30% | Alta diversidad o amplicones largos con más variación |
+| > 50% | Inusual — posible contaminación, baja calidad de filtrado, o datos de alta diversidad (ej. suelo) |
+
+::: {.callout-note icon="false"}
+La mayoría de las secuencias únicas con pocas lecturas (1–5) probablemente son **errores de secuenciación**, no especies reales. El paso siguiente (modelado de errores) se encargará de distinguirlas de las variantes biológicas verdaderas.
+:::
+
+### Guardar estadísticas
 
 El pipeline guarda las estadísticas de dereplicación para todas las muestras en `final_data/logs/`:
 
