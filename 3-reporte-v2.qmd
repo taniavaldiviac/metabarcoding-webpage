@@ -260,8 +260,54 @@ taxa2$Order   <- sapply(res, `[[`, "order")
 taxa2 <- taxa2 %>%
   dplyr::filter(!(Species == "Eukaryotic synthetic" | grepl("^NA sp$", Species)))
 
+# --- Curación geográfica ---
+# Extraer géneros presentes en la lista del GC
+fish_genera <- unique(sub(" .*", "", fish_species))
+
+# Para cada ASV, decidir qué nivel taxonómico mantener:
+# 1. Si la especie está en la lista del GC → mantener tal cual
+# 2. Si la especie NO está pero el género SÍ → dejar como "Género sp."
+# 3. Si ni especie ni género están → dejar solo hasta familia (limpiar Genus y Species)
+taxa2 <- taxa2 %>%
+  dplyr::mutate(
+    in_gc_species = Species %in% fish_species,
+    in_gc_genus   = Genus %in% fish_genera,
+    # Aplicar reglas de curación
+    Species = dplyr::case_when(
+      is.na(Species)    ~ NA_character_,       # sin asignación, dejar NA
+      in_gc_species     ~ Species,             # especie confirmada en GC
+      in_gc_genus       ~ paste0(Genus, " sp."),  # género en GC, especie no
+      TRUE              ~ NA_character_        # ni género ni especie en GC
+    ),
+    Genus = dplyr::case_when(
+      is.na(Genus)      ~ NA_character_,
+      in_gc_species     ~ Genus,
+      in_gc_genus       ~ Genus,
+      TRUE              ~ NA_character_        # género no está en GC, solo familia
+    )
+  ) %>%
+  dplyr::select(-in_gc_species, -in_gc_genus)
+
+# Resumen de la curación
+n_sp_gc    <- sum(!is.na(taxa2$Species) & !grepl(" sp\\.$", taxa2$Species))
+n_genus_sp <- sum(grepl(" sp\\.$", taxa2$Species), na.rm = TRUE)
+n_familia  <- sum(is.na(taxa2$Species) & !is.na(taxa2$Family))
+message("ASVs con especie confirmada en GC: ", n_sp_gc)
+message("ASVs reducidas a Género sp.: ", n_genus_sp)
+message("ASVs reducidas a familia: ", n_familia)
+
 taxa_mat <- as.matrix(taxa2)
 ```
+
+::: {.callout-note icon="false"}
+**¿Por qué curar geográficamente?**
+
+La base de datos de referencia contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación geográfica contrasta cada asignación contra una lista de especies documentadas para la región:
+
+- **Especie en el GC** → se mantiene (ej. *Mycteroperca rosacea*)
+- **Género en el GC pero especie no** → se deja como *Mycteroperca* sp. (el género es correcto, pero la especie asignada no se distribuye aquí)
+- **Ni género ni especie en el GC** → se mantiene solo la asignación a nivel de familia (la asignación a género/especie no es confiable para esta región)
+:::
 
 ### Construcción del objeto phyloseq
 
