@@ -62,13 +62,11 @@ setwd("~/metabarcoding-code")
 ruta_rdata       <- "final_data/rdata_output"
 ruta_metadata    <- "metadata/Fish_speciesGC.csv"
 ruta_csv_output  <- "final_data/csv_output/taxon_table.csv"
-ruta_figs_fam    <- "final_data/figs_families_stacked"
-ruta_figs_sp     <- "final_data/figs_species_stacked"
+ruta_figs        <- "final_data/reporte_ecologico"
 
 # Crear directorios de salida si no existen
 dir.create(dirname(ruta_csv_output), showWarnings = FALSE, recursive = TRUE)
-dir.create(ruta_figs_fam, showWarnings = FALSE, recursive = TRUE)
-dir.create(ruta_figs_sp,  showWarnings = FALSE, recursive = TRUE)
+dir.create(ruta_figs, showWarnings = FALSE, recursive = TRUE)
 ```
 
 ### Carga de datos
@@ -925,7 +923,7 @@ gp_fam <- ggplot(df_fam, aes(x = site_id, y = Abundance, fill = Family)) +
 
 print(gp_fam)
 ggsave(
-  file.path(ruta_figs_fam, "abundancia_relativa_familia.png"),
+  file.path(ruta_figs, "abundancia_relativa_familia.png"),
   gp_fam, width = 10, height = 6, dpi = 300
 )
 ```
@@ -966,7 +964,7 @@ gp_top5_fam <- df_fam %>%
 
 print(gp_top5_fam)
 ggsave(
-  file.path(ruta_figs_fam, "abundancia_relativa_top5_familias.png"),
+  file.path(ruta_figs, "abundancia_relativa_top5_familias.png"),
   gp_top5_fam, width = 9, height = 5, dpi = 300
 )
 ```
@@ -1010,7 +1008,7 @@ gp_sp <- ggplot(df_sp, aes(x = site_id, y = Abundance, fill = Species)) +
 
 print(gp_sp)
 ggsave(
-  file.path(ruta_figs_sp, "abundancia_relativa_especie.png"),
+  file.path(ruta_figs, "abundancia_relativa_especie.png"),
   gp_sp, width = 12, height = 9, dpi = 300
 )
 ```
@@ -1051,7 +1049,7 @@ gp_top5_sp <- df_sp %>%
 
 print(gp_top5_sp)
 ggsave(
-  file.path(ruta_figs_sp, "abundancia_relativa_top5_especies.png"),
+  file.path(ruta_figs, "abundancia_relativa_top5_especies.png"),
   gp_top5_sp, width = 9, height = 5, dpi = 300
 )
 ```
