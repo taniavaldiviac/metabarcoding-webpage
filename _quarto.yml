@@ -62,7 +62,7 @@ website:
 
 format:
   html:
-    theme: [litera, styles.scss]
+    theme: [zephyr, styles.scss]
     toc: false
     number-sections: false
     page-navigation: true
