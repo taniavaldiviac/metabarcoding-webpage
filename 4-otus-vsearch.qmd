@@ -75,7 +75,7 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002
 Las primeras dos líneas son otureps (tipo S). La tercera es un miembro del cluster 1 (tipo H) con 99% de identidad con ASV_0002.
 
 ```{r}
-uc_file <- file.path("otus_vsearch/fish_0.97.uc")
+uc_file <- file.path("final_data/otus_vsearch/otus_0.97.uc")
 
 uc_names <- c("Type", "clus_ID", "len", "id_pct", "strand",
               "NA1", "NA2", "aln", "ASV_ID", "centroid")
@@ -103,11 +103,10 @@ length(oturepID)
 Cargamos el objeto phyloseq generado por el pipeline DADA2 y extraemos los componentes correspondientes a los otureps:
 
 ```{r}
-# Cargar objeto phyloseq del pipeline DADA2
-rdata_in <- file.path("final_data/rdata_output/phyloseq_inputs.RData")
-load(rdata_in)
+# Cargar objeto phyloseq (guardado antes de colapsar por especie)
+load("final_data/otus_vsearch/phyloseq_pre_collapse.RData")
 
-ps.asv <- ps  # ajustar según el nombre del objeto en tu .RData
+ps.asv <- ps
 ps.asv
 ```
 
