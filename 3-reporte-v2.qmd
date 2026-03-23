@@ -348,6 +348,10 @@ ggplot(sample_reads, aes(x = reorder(site_id, reads), y = reads)) +
     panel.grid.minor = element_blank(),
     legend.position = "bottom"
   )
+
+# Guardar gráfica
+ggsave("final_data/reporte_ecologico/lecturas_por_muestra.png",
+       width = 10, height = 6, dpi = 300)
 ```
 
 ::: {.callout-tip}
