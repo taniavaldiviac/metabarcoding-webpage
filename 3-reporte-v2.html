@@ -789,38 +789,39 @@ Tip
 <span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Curvas de rarefacción con vegan::rarecurve</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>comm_rare_input <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps_filt)))</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>site_ids        <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps_filt)<span class="sc">$</span>site_id</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Paleta de colores por muestra (viridis)</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>n_samp <span class="ot">&lt;-</span> <span class="fu">nrow</span>(comm_rare_input)</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>pal    <span class="ot">&lt;-</span> viridis<span class="sc">::</span><span class="fu">viridis</span>(n_samp, <span class="at">option =</span> <span class="st">"D"</span>)</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">"final_data/reporte_ecologico/curvas_rarefaccion.png"</span>,</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">2400</span>, <span class="at">height =</span> <span class="dv">1600</span>, <span class="at">res =</span> <span class="dv">300</span>)</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>vegan<span class="sc">::</span><span class="fu">rarecurve</span>(</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  comm_rare_input,</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">step     =</span> <span class="dv">50</span>,</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">col      =</span> pal,</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">label    =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">main     =</span> <span class="st">"Curvas de rarefacción por muestra"</span>,</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab     =</span> <span class="st">"Lecturas submuestreadas"</span>,</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab     =</span> <span class="st">"ASVs detectadas"</span>,</span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.main =</span> <span class="fl">1.1</span>,</span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.lab  =</span> <span class="fl">1.0</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> min_depth, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"#d73027"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(min_depth, <span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">4</span>] <span class="sc">*</span> <span class="fl">0.95</span>,</span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="st">"Profundidad de rarefacción</span><span class="sc">\n</span><span class="st">("</span>, scales<span class="sc">::</span><span class="fu">comma</span>(min_depth), <span class="st">" lecturas)"</span>),</span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>     <span class="at">pos =</span> <span class="dv">4</span>, <span class="at">col =</span> <span class="st">"#d73027"</span>, <span class="at">cex =</span> <span class="fl">0.85</span>)</span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"bottomright"</span>,</span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> site_ids,</span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>       <span class="at">col    =</span> pal,</span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty    =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex    =</span> <span class="fl">0.7</span>,</span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty    =</span> <span class="st">"n"</span>)</span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>comm_rare_input <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps_filt))</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (phyloseq<span class="sc">::</span><span class="fu">taxa_are_rows</span>(ps_filt)) comm_rare_input <span class="ot">&lt;-</span> <span class="fu">t</span>(comm_rare_input)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>site_ids        <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps_filt)<span class="sc">$</span>site_id</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Paleta de colores por muestra (viridis)</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>n_samp <span class="ot">&lt;-</span> <span class="fu">nrow</span>(comm_rare_input)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>pal    <span class="ot">&lt;-</span> viridis<span class="sc">::</span><span class="fu">viridis</span>(n_samp, <span class="at">option =</span> <span class="st">"D"</span>)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">"final_data/reporte_ecologico/curvas_rarefaccion.png"</span>,</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">2400</span>, <span class="at">height =</span> <span class="dv">1600</span>, <span class="at">res =</span> <span class="dv">300</span>)</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>vegan<span class="sc">::</span><span class="fu">rarecurve</span>(</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  comm_rare_input,</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">step     =</span> <span class="dv">50</span>,</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">col      =</span> pal,</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">label    =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">main     =</span> <span class="st">"Curvas de rarefacción por muestra"</span>,</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab     =</span> <span class="st">"Lecturas submuestreadas"</span>,</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab     =</span> <span class="st">"ASVs detectadas"</span>,</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.main =</span> <span class="fl">1.1</span>,</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex.lab  =</span> <span class="fl">1.0</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> min_depth, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"#d73027"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(min_depth, <span class="fu">par</span>(<span class="st">"usr"</span>)[<span class="dv">4</span>] <span class="sc">*</span> <span class="fl">0.95</span>,</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="st">"Profundidad de rarefacción</span><span class="sc">\n</span><span class="st">("</span>, scales<span class="sc">::</span><span class="fu">comma</span>(min_depth), <span class="st">" lecturas)"</span>),</span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>     <span class="at">pos =</span> <span class="dv">4</span>, <span class="at">col =</span> <span class="st">"#d73027"</span>, <span class="at">cex =</span> <span class="fl">0.85</span>)</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"bottomright"</span>,</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> site_ids,</span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">col    =</span> pal,</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty    =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex    =</span> <span class="fl">0.7</span>,</span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty    =</span> <span class="st">"n"</span>)</span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
