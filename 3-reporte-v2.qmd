@@ -523,6 +523,9 @@ ggplot(alpha_long, aes(x = region_gc, y = value, fill = region_gc)) +
     legend.position = "none",
     panel.grid.minor = element_blank()
   )
+
+ggsave("final_data/reporte_ecologico/diversidad_alfa_regiones.png",
+       width = 12, height = 6, dpi = 300)
 ```
 
 ::: {.callout-tip}
@@ -611,6 +614,9 @@ ggplot(acc_df, aes(x = muestras, y = riqueza)) +
     axis.title   = element_text(face = "bold"),
     panel.grid.minor = element_blank()
   )
+
+ggsave("final_data/reporte_ecologico/curva_acumulacion.png",
+       width = 8, height = 5, dpi = 300)
 ```
 
 ::: {.callout-tip}
@@ -675,6 +681,9 @@ ggplot(df_lengths, aes(x = Length)) +
   theme_minimal(base_size = 13) +
   theme(plot.title = element_text(face = "bold"),
         panel.grid.minor = element_blank())
+
+ggsave("final_data/reporte_ecologico/distribucion_longitudes_asv.png",
+       width = 8, height = 4, dpi = 300)
 ```
 
 ---
@@ -980,6 +989,9 @@ ggplot(bd_df, aes(x = region_gc, y = Distancia, fill = region_gc)) +
     axis.title      = element_text(face = "bold"),
     legend.position = "none"
   )
+
+ggsave("final_data/reporte_ecologico/betadisper_regiones.png",
+       width = 8, height = 5, dpi = 300)
 ```
 
 ::: {.callout-note}
@@ -1063,6 +1075,9 @@ ggplot(df_dist, aes(x = tipo, y = dist, fill = tipo)) +
     axis.title      = element_text(face = "bold"),
     legend.position = "none"
   )
+
+ggsave("final_data/reporte_ecologico/anosim_jaccard.png",
+       width = 8, height = 5, dpi = 300)
 ```
 
 ::: {.callout-tip}
@@ -1119,6 +1134,9 @@ ggplot(nmds_sp_df, aes(x = MDS1, y = MDS2, color = region_gc, fill = region_gc))
     axis.title       = element_text(face = "bold"),
     panel.grid.minor = element_blank()
   )
+
+ggsave("final_data/reporte_ecologico/nmds_especies.png",
+       width = 9, height = 7, dpi = 300)
 ```
 
 ### NMDS basado en ASVs (enfoque libre de taxonomía)
@@ -1195,6 +1213,9 @@ ggplot(nmds_asv_df, aes(x = MDS1, y = MDS2, color = region_gc, fill = region_gc)
     axis.title       = element_text(face = "bold"),
     panel.grid.minor = element_blank()
   )
+
+ggsave("final_data/reporte_ecologico/nmds_asvs.png",
+       width = 9, height = 7, dpi = 300)
 ```
 
 ::: {.callout-tip}
@@ -1335,6 +1356,9 @@ if (length(mock_samples) > 0) {
       axis.title      = element_text(face = "bold")
     ) +
     guides(fill = guide_legend(ncol = 2))
+
+  ggsave("final_data/reporte_ecologico/control_mock.png",
+         width = 8, height = 6, dpi = 300)
 
 } else {
   cat("No hay muestra MOCK en este dataset para graficar.\n")
