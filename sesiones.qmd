@@ -44,7 +44,7 @@ execute:
 
 ## Día 4 — Análisis ecológico de comunidades
 
-- [Análisis ecológico de comunidades](3-reporte-v2.qmd)
+- [De los resultados de DADA2 al análisis ecológico de comunidades](3-reporte-v2.qmd)
 - [OTUs: agrupamiento por similitud con VSEARCH](4-otus-vsearch.qmd)
 
 ---
