@@ -23,6 +23,7 @@ execute:
 ## Día 2 — Entorno bioinformático y control de calidad
 
 - [Introducción a Linux y R](0b-linux-r-intro.qmd)
+- [Nuestros datos](0-Datos.qmd)
 - [Preparación del entorno](0-Preparacion.qmd)
 - [Clonación de repositorio](0-Clonacion.qmd)
 - [Archivos fastq: estructura y organización](0-FASTQ.qmd)
