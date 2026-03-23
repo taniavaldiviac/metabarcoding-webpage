@@ -184,6 +184,30 @@ El `.RData` contiene los tres objetos principales para phyloseq (`otu_mat`, `tax
 
 ---
 
+## Exportar secuencias ASV a FASTA
+
+Exportamos las secuencias de ASVs en formato FASTA para usarlas en análisis posteriores como el agrupamiento en OTUs con VSEARCH.
+
+```{r eval=FALSE}
+# Crear directorio de salida
+dir.create(file.path(output_location, "otus_vsearch"), recursive = TRUE, showWarnings = FALSE)
+
+# Exportar secuencias ASV a FASTA
+asv_seqs <- colnames(cleaned.seqtab.nochim)
+asv_headers <- paste0("ASV_", sprintf("%04d", seq_along(asv_seqs)))
+asv_fasta <- c(rbind(paste0(">", asv_headers), asv_seqs))
+
+fasta_path <- file.path(output_location, "otus_vsearch", "fish_ASV.fasta")
+writeLines(asv_fasta, fasta_path)
+
+message("FASTA exportado: ", fasta_path)
+message("Total ASVs: ", length(asv_seqs))
+```
+
+Este archivo contiene las secuencias sin taxonomía — solo un identificador (`ASV_0001`, `ASV_0002`, ...) y la secuencia. VSEARCH lo usará para agrupar ASVs similares en OTUs.
+
+---
+
 ## Causas de baja asignación taxonómica
 
 | Causa | Síntoma | Solución |
