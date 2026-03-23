@@ -101,9 +101,15 @@ write.csv(derep_stats,
 
 ## Paso 2 — Aprender el modelo de error
 
-La secuenciadora Illumina comete errores al leer las bases (una A real puede leerse como C, G o T). `learnErrors()` estima estas tasas para cada tipo de transicion (A->C, A->G, etc.) en función de la calidad Phred de cada posición.
+### ¿Por qué necesitamos un modelo de error?
 
-El pipeline primero verifica que haya suficientes datos para estimar el modelo:
+La secuenciadora Illumina comete errores al leer las bases — una A real puede leerse como C, G o T. Estos errores no son aleatorios: dependen del tipo de transición (A→C es más frecuente que A→T) y de la calidad Phred de cada posición. Si no corregimos estos errores, los confundiríamos con variantes biológicas reales y sobreestimaríamos la diversidad de nuestra muestra.
+
+`learnErrors()` estima las tasas de error específicas de **tu** run de secuenciación. Esto es importante porque cada corrida tiene un perfil de error ligeramente diferente — depende del estado del equipo, los reactivos, la densidad del cluster, etc. Por eso DADA2 no usa tasas genéricas, sino que las **aprende directamente de tus datos**.
+
+### Preparación: definir parámetros y validar datos
+
+Antes de lanzar `learnErrors()`, el pipeline define los parámetros de entrenamiento y verifica que haya suficientes datos para construir un modelo confiable:
 
 ```{r eval=FALSE}
 nbases_target <- 1e8   # 100 millones de bases (aumentar si tienes > 50 muestras)
@@ -119,7 +125,22 @@ if (total_bases_F < 1e6 || total_bases_R < 1e6)
   warning("Datos muy limitados (< 1 MB). El modelo puede ser inestable.")
 ```
 
-Los parámetros clave son:
+En nuestros datos, la salida se ve así:
+
+```
+Forward disponible: ~95.2 MB
+Reverse disponible: ~96.1 MB
+```
+
+**¿Qué nos dicen estos números?** Los ~95 MB por dirección representan el tamaño total de los archivos FASTQ filtrados. Esto es una estimación indirecta de cuántas bases tenemos disponibles — como regla general, un archivo FASTQ de 95 MB contiene aproximadamente 100–150 millones de bases (cada base ocupa ~1 byte de secuencia más metadatos de calidad y encabezados). Con 95 MB tenemos datos más que suficientes para alcanzar nuestro objetivo de `nbases_target = 1e8` (100 millones de bases).
+
+::: {.callout-note icon="false"}
+**¿Cuándo preocuparte?** Si ves valores menores a 1 MB, el pipeline lanza una advertencia porque no habrá suficientes bases para estimar las 12 tasas de error con precisión. Esto puede pasar cuando muchas muestras fueron descartadas en el filtrado, o cuando trabajas con un subconjunto muy pequeño de datos. En ese caso, reduce `nbases_target` (por ejemplo a `1e7`) para que DADA2 no intente usar más datos de los que existen.
+:::
+
+### Parámetros clave
+
+Los parámetros que controlan el aprendizaje del modelo son:
 
 | Parámetro | Valor | Qué hace |
 |:---|:---|:---|
@@ -144,33 +165,82 @@ errR <- tryCatch({
 })
 ```
 
-Este paso puede tardar varios minutos. La salida indica cuántas bases y muestras se usaron, y cuántas rondas necesitó el algoritmo para converger. Por ejemplo:
+Este paso puede tardar varios minutos dependiendo del volumen de datos y el número de núcleos disponibles. La salida en consola te da información importante sobre cómo se construyó el modelo:
 
 ```
 103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.
 Initializing error rates to maximum possible estimate.
 selfConsist step 1 ............
    selfConsist step 2
-   ...
-Convergence after 10 rounds.
+   selfConsist step 3
+   selfConsist step 4
+   selfConsist step 5
+   selfConsist step 6
+   selfConsist step 7
+   selfConsist step 8
+   selfConsist step 9
+   selfConsist step 10
+Convergence after  10  rounds.
+105668355 total bases in 1625667 reads from 13 samples will be used for learning the error rates.
+Initializing error rates to maximum possible estimate.
+selfConsist step 1 .............
+   selfConsist step 2
+   selfConsist step 3
+   selfConsist step 4
+   selfConsist step 5
+   selfConsist step 6
+   selfConsist step 7
+   selfConsist step 8
+   selfConsist step 9
+Convergence after  9  rounds.
 ```
 
-**¿Qué significa "convergencia"?**
+### ¿Cómo leer esta salida?
 
-`learnErrors()` trabaja de forma iterativa: en cada ronda estima las tasas de error → infiere ASVs con esas tasas → re-estima los errores con las ASVs inferidas. Cuando las estimaciones dejan de cambiar entre rondas, el modelo **convergió**. Convergencia en menos de 10 rondas es ideal; si no converge en 25 hay un problema con los datos o los parámetros.
+Cada bloque corresponde a una dirección (Forward primero, Reverse después). Desglosemos la primera línea:
+
+**`103156235 total bases in 1587019 reads from 12 samples`** — DADA2 necesitaba 100 millones de bases (`nbases_target = 1e8`) y encontró 103 millones en 1.59 millones de lecturas, tomadas de 12 de nuestras muestras. No necesitó usar todas las muestras porque alcanzó el objetivo con 12. Para Reverse, necesitó 13 muestras para llegar a 105 millones — esto es normal porque las lecturas Reverse pueden tener longitudes ligeramente distintas después del filtrado.
+
+**`Initializing error rates to maximum possible estimate`** — El algoritmo comienza asumiendo el peor escenario: que todas las diferencias entre lecturas son errores. A partir de ahí, va refinando.
+
+**`selfConsist step 1 ............`** — Los puntos representan las muestras que se procesan en cada iteración. En el step 1 aparecen 12 puntos (uno por muestra usada en Forward).
+
+### ¿Qué significa "convergencia"?
+
+`learnErrors()` trabaja de forma iterativa — en cada ronda:
+
+1. **Estima** las tasas de error con los datos actuales
+2. **Infiere** ASVs preliminares usando esas tasas
+3. **Re-estima** los errores separando las variantes reales de los errores
+
+Cuando las estimaciones dejan de cambiar significativamente entre rondas, el modelo **convergió** — es decir, encontró tasas de error estables que explican bien los patrones en tus datos.
+
+En nuestro caso: Forward convergió en **10 rondas** y Reverse en **9 rondas**. Ambos están en el rango ideal.
+
+| Rondas | Interpretación |
+|:-------|:---------------|
+| 3–5 | Convergencia muy rápida — datos de excelente calidad o poca complejidad |
+| 5–15 | Rango típico — el modelo se ajustó bien |
+| 15–25 | Convergencia lenta — datos complejos o ruidosos, pero el modelo es válido |
+| No converge (alcanza MAX_CONSIST) | Problema: aumenta `MAX_CONSIST` a 50 o revisa la calidad de tus datos |
 
 ::: {.callout-tip icon="false"}
-**Resultado esperado:** convergencia en 5–15 rondas para Forward y Reverse. Es normal que Reverse necesite una o dos rondas más que Forward, ya que sus lecturas tienen mayor tasa de error.
+**¿Por qué Reverse convergió más rápido que Forward?** No siempre es así. A veces Reverse tarda más porque tiene mayor tasa de error, pero en nuestros datos la diferencia es mínima (10 vs 9 rondas). Lo importante es que **ambos convergieron** dentro del límite de `MAX_CONSIST = 25`.
 :::
 
-Después de aprender los modelos, el pipeline los valida automáticamente:
+### Validación automática del modelo
+
+Después de aprender los modelos, el pipeline valida que las tasas de error estimadas sean razonables. ¿Por qué es necesario? Porque `learnErrors()` siempre produce un resultado — incluso con datos malos — pero eso no garantiza que el modelo sea confiable. La validación revisa la **matriz de errores** (`err_out`) que contiene las tasas estimadas para cada tipo de transición en cada nivel de calidad.
+
+**¿Qué es `err_out`?** Es una matriz de 16 filas × 41 columnas:
+
+- **16 filas** = todas las combinaciones posibles de base real → base leída (A2A, A2C, A2G, A2T, C2A, C2C, ..., T2T)
+- **41 columnas** = los Q-scores de 0 a 40
+
+Cada celda contiene la probabilidad estimada de esa transición en ese nivel de calidad. Por ejemplo, la celda `[A2C, Q30]` dice "la probabilidad de que una A real se lea como C cuando la calidad es Q30".
 
 ```{r eval=FALSE}
 # Validar modelo Forward
-# err_out: matriz 16×41 — filas = transiciones (A2A, A2C, …), columnas = Q-scores (0–40)
-# Las transiciones correctas (A2A, C2C, G2G, T2T) tienen probabilidad ≈ 1.0 → excluir.
-# Las tasas altas en Q<20 son normales (bases de baja calidad son intrínsecamente inciertas).
-# Solo se evalúa Q≥20, donde vive la mayoría de las lecturas filtradas.
 if (!is.null(errF$err_out)) {
   rn         <- rownames(errF$err_out)
   error_rows <- rn[substr(rn, 1, 1) != substr(rn, 3, 3)]   # A2C, A2G, etc.
@@ -191,6 +261,25 @@ if (!is.null(errF$err_out)) {
 }
 ```
 
+**¿Qué hace este código paso a paso?**
+
+1. **Filtra las transiciones de error** — De las 16 filas, excluye las 4 diagonales (A2A, C2C, G2G, T2T) porque representan lecturas *correctas*, no errores. Quedan **12 transiciones de error** reales (A2C, A2G, A2T, C2A, C2G, etc.)
+
+2. **Selecciona solo calidades Q≥20** — Las bases con Q < 20 ya fueron eliminadas en el filtrado (`filterAndTrim`), así que las tasas de error en calidades bajas no son relevantes para nuestros datos. Evaluar solo Q≥20 evita alarmas falsas por tasas altas en bins de calidad que no usamos
+
+3. **Calcula la tasa máxima** — Busca el peor caso entre todas las transiciones de error en calidades altas. Si esa tasa máxima es < 5%, el modelo es confiable. Si supera el 10%, algo anda mal
+
+| Tasa máxima en Q≥20 | Interpretación |
+|:---------------------|:---------------|
+| < 0.01 (1%) | Excelente — tasas de error muy bajas en calidades altas |
+| 0.01–0.05 (1–5%) | Normal — rango típico para datos de Illumina |
+| 0.05–0.10 (5–10%) | Aceptable pero marginal — revisa los gráficos de error |
+| > 0.10 (>10%) | Problemático — una base de alta calidad tiene >10% de probabilidad de ser un error. Revisa la calidad del run o el filtrado |
+
+::: {.callout-note icon="false"}
+**¿Por qué 12 transiciones y no 16?** Hay 4 bases (A, C, G, T) y cada una puede leerse como cualquiera de las 4, dando 4×4 = 16 combinaciones. Pero 4 de ellas son la base leyéndose *correctamente* (A→A, C→C, G→G, T→T). Estas tienen probabilidades cercanas a 1.0 y no representan errores, por eso se excluyen de la validación.
+:::
+
 ---
 
 ## Paso 3 — Visualizar el modelo de error
@@ -201,6 +290,26 @@ El gráfico de errores muestra las 12 posibles transiciones (A->C, A->G, etc.). 
 plotErrors(errF, nominalQ = TRUE)
 plotErrors(errR, nominalQ = TRUE)
 ```
+
+Al ejecutar estas líneas verás advertencias como estas:
+
+```
+Warning messages:
+1: In scale_y_log10() :
+  log-10 transformation introduced infinite values.
+2: Removed 164 rows containing missing values or values outside the scale range (`geom_line()`).
+3: Removed 164 rows containing missing values or values outside the scale range (`geom_line()`).
+```
+
+**Estas advertencias son normales y no indican un problema.** Ocurren porque:
+
+- **`log-10 transformation introduced infinite values`** — Algunas transiciones tienen tasa de error = 0 (cero errores observados en ciertos bins de calidad). El logaritmo de 0 es −∞, y ggplot simplemente omite esos puntos del gráfico. Esto es esperado, especialmente en calidades altas donde ciertos tipos de error son extremadamente raros.
+
+- **`Removed 164 rows containing missing values`** — Consecuencia de lo anterior: los 164 puntos con valores infinitos o ausentes se excluyen de las líneas del gráfico. El número exacto varía según tus datos, pero valores entre 100 y 300 son típicos. Que aparezca el mismo mensaje dos veces es porque `plotErrors()` dibuja dos capas de líneas (el modelo ajustado y la tasa nominal).
+
+::: {.callout-tip icon="false"}
+**Regla práctica:** si `plotErrors()` produce una gráfica visible con el patrón esperado (tasas decrecientes), las advertencias de `scale_y_log10` se pueden ignorar con confianza. Solo preocúpate si la gráfica aparece vacía o si las líneas no se dibujan en absoluto.
+:::
 
 El pipeline guarda estas gráficas automáticamente en `final_data/logs/`:
 
@@ -218,35 +327,46 @@ print(plotErrors(errR, nominalQ = TRUE))
 dev.off()
 ```
 
-### ¿Que buscar en el gráfico?
+En nuestros datos, la gráfica Forward se ve así:
 
-| Senal | Interpretación |
-|-------|---------------|
-| Puntos grises cerca de la linea negra | Buen ajuste del modelo [OK] |
-| Puntos muy dispersos | Datos insuficientes o calidad variable en ese bin de Q |
-| Tasas de error > 10% en Q≥20 (A->C, etc.) | Posible problema de calidad del run |
-| Transiciones correctas (A->A, C->C…) altas y planas | Normal — no son errores |
+![Modelo de error Forward estimado por learnErrors(). Cada panel muestra una transición entre bases.](img/errF_plot.png){width=100%}
 
-### Los tres elementos del gráfico
+### Cómo leer esta gráfica
 
-La gráfica tiene 16 paneles — uno por cada posible transición entre bases (4 bases × 4 posibles lecturas). Se organizan en una cuadrícula de 4×4:
-
-- **Diagonal (A2A, C2C, G2G, T2T):** lectura *correcta* — la base real y la leída son la misma. La probabilidad es alta (cerca de 1.0) y se mantiene plana conforme sube el Q-score. Estos paneles no representan errores; son la referencia de que el modelo funciona.
-
-- **Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):** errores reales — la secuenciadora leyó una base distinta a la real. La tasa debe **bajar** conforme sube el Q-score (eje X): a mayor calidad Phred, menos errores de ese tipo.
-
-Cada panel tiene tres elementos:
-
-| Elemento | Qué representa |
-|----------|---------------|
-| Puntos grises | Tasas de error **observadas** en tus datos, agrupadas por Q-score |
-| Línea negra | Modelo ajustado por DADA2 — lo que aprendió `learnErrors()` |
-| Línea roja | Tasa teórica según la definición nominal del Q-score (Q20 = 1 error/100 bases, Q30 = 1/1000, etc.) |
-
-La línea negra no tiene que coincidir con la línea roja: la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real. Lo que importa es que la **línea negra siga los puntos grises**.
+La gráfica tiene **16 paneles** organizados en una cuadrícula de 4×4. Cada panel representa una transición entre bases — la fila indica la base real y la columna la base leída por la secuenciadora:
 
 ::: {.callout-tip icon="false"}
-**Ondulaciones en la línea negra** en calidades intermedias (Q15–Q25) son normales cuando hay pocos reads en esos bins. No indican un problema si el patrón general sigue siendo decreciente.
+**Cómo leer las gráficas:**
+
+- Los **puntos grises** son las tasas de error **observadas** en tus datos, agrupadas por Q-score. El **tamaño** del punto indica cuántas bases hay en ese bin — puntos grandes = muchos datos (estimación confiable), puntos pequeños = pocos datos (más incertidumbre)
+- La **línea negra** es el modelo de error ajustado por DADA2 — lo que aprendió `learnErrors()`. Esta es la curva que DADA2 usará para corregir errores en el paso `dada()`
+- La **línea roja** es la tasa de error teórica según la definición nominal del Q-score (Q20 = 1 error en 100 bases, Q30 = 1 en 1,000, Q40 = 1 en 10,000)
+- El **eje X** (Consensus quality score) va de 0 a 40 — a mayor Q-score, mayor confianza en la base
+- El **eje Y** (Error frequency) está en **escala logarítmica** — cada marca representa un cambio de 100×. Esto permite ver tanto errores frecuentes (1e-01 = 10%) como errores raros (1e-05 = 0.001%)
+:::
+
+### Los dos tipos de paneles
+
+**Diagonal (A2A, C2C, G2G, T2T):** la base real y la leída son la misma — representan lecturas *correctas*. Nota que en nuestra gráfica estos paneles aparecen **vacíos** o con muy pocos puntos. Esto es normal: `plotErrors()` grafica la frecuencia de *error*, y una lectura correcta no es un error, así que la frecuencia es cercana a 0 (o exactamente 0, lo que genera los valores infinitos en log10 que vimos en las advertencias).
+
+**Fuera de la diagonal (A2C, A2G, C2A, T2G, etc.):** errores reales — la secuenciadora leyó una base distinta a la real. Aquí es donde debemos fijarnos. En cada panel:
+
+- La tasa de error debe **bajar de izquierda a derecha** — a mayor calidad Phred, menos errores
+- La **línea negra debe seguir los puntos grises** — esto significa que el modelo se ajustó bien a los datos observados
+- La **línea negra no tiene que coincidir con la línea roja** — la roja asume un modelo ideal de Illumina, pero cada run tiene su propio perfil de error real
+
+### ¿Qué vemos en nuestros datos?
+
+Mirando los paneles de error (fuera de la diagonal):
+
+- **Tendencia decreciente clara**: en todos los paneles (A2C, A2G, G2A, T2C, etc.) la tasa de error baja conforme aumenta el Q-score. Por ejemplo, en G2A la tasa cae de ~1e-02 (1%) en Q10 a ~1e-04 (0.01%) en Q35. Esto es exactamente lo que esperamos
+- **La línea negra sigue los puntos grises**: el modelo captura bien el patrón de los datos observados. No hay paneles donde la línea se desvíe sistemáticamente de los puntos
+- **Puntos grandes en Q bajos**: los puntos más grandes están en calidades bajas (Q < 15), donde se concentran más datos de error. A calidades altas los puntos son más pequeños porque hay menos errores que contar
+- **Ondulaciones en la línea negra**: en algunos paneles (como T2C o A2T) la línea negra tiene pequeños "brincos" en calidades intermedias. Esto es normal cuando hay pocos reads en esos bins de Q — no indica un problema si el patrón general sigue siendo decreciente
+- **La línea negra está por encima de la línea roja en Q altos**: en varios paneles (A2C, A2T, C2T, T2C) las tasas observadas son ligeramente mayores que las teóricas en calidades altas. Esto es típico — la definición nominal del Q-score es optimista, y el perfil real de cada run difiere. Precisamente por eso DADA2 aprende su propio modelo en lugar de usar las tasas teóricas
+
+::: {.callout-note icon="false"}
+**¿Debo comparar Forward vs Reverse?** Sí. Es normal que la gráfica Reverse tenga tasas de error ligeramente más altas (puntos grises más arriba), especialmente en Q altos. Si Reverse se ve dramáticamente peor (línea negra plana, puntos muy dispersos), considera un truncamiento más agresivo con `truncLen` en `filterAndTrim`.
 :::
 
 ---
@@ -274,22 +394,62 @@ load(file.path(output_location, "rdata_output",
 
 ## Paso 5 — Inferencia de ASVs con `dada()`
 
-Con el modelo de error aprendido, `dada()` infiere las secuencias biológicas reales (ASVs) corrigiendo los errores de secuenciación muestra por muestra.
+### ¿Qué hace este paso?
+
+Este es el paso central de DADA2 — donde ocurre la "magia". La función `dada()` toma las secuencias dereplicadas y el modelo de error que acabamos de aprender, y determina cuáles secuencias únicas son **variantes biológicas reales** (ASVs) y cuáles son **errores de secuenciación**.
+
+El algoritmo funciona así para cada muestra:
+
+1. Toma todas las secuencias únicas y sus abundancias (del paso de dereplicación)
+2. Compara cada secuencia con las más abundantes usando el modelo de error
+3. Si la diferencia entre dos secuencias es **consistente** con un error de secuenciación (según las tasas aprendidas), las agrupa — la menos abundante se considera un error de la más abundante
+4. Si la diferencia **no puede explicarse** por errores de secuenciación, las mantiene separadas — son ASVs distintas
+
+El resultado es un conjunto de ASVs por muestra: secuencias biológicas reales, corregidas de errores, a resolución de nucleótido único.
+
+### Ejecutar la inferencia
 
 ```{r eval=FALSE}
 dadaFs <- dada(derepFs, err = errF, multithread = 2)
 dadaRs <- dada(derepRs, err = errR, multithread = 2)
 ```
 
-Al finalizar verás el número de ASVs inferidas por muestra, por ejemplo:
-`Sample 1: 1979 reads in 232 unique sequences, 8 sample sequences, 1.2e+04 input unique sequences.`
+Al finalizar verás para cada muestra un resumen como este:
+
+```
+Sample 1 - 228534 reads in 17428 unique sequences.
+Sample 2 - 175230 reads in 14302 unique sequences.
+...
+```
+
+### Explorar los resultados
 
 ```{r eval=FALSE}
-# Cuantos ASVs se infirieron en la primera muestra
+# Resumen de la primera muestra
 dadaFs[[1]]
 ```
 
-Deberías ver el número de secuencias de muestra (ASVs) vs secuencias únicas de entrada. El ratio refleja cuanto "colapso" el denoising.
+La salida te muestra cuántas ASVs se infirieron de cuántas secuencias únicas. Por ejemplo:
+
+```
+dada-class: object describing DADA2 denoising results
+126 sequence variants were inferred from 17428 input unique sequences.
+```
+
+Esto significa que de las 17,428 secuencias únicas que tenía la muestra 1 después de la dereplicación, DADA2 determinó que solo **126 son variantes biológicas reales**. Las otras ~17,300 son errores de secuenciación de esas 126.
+
+### ¿Cómo interpretar el número de ASVs?
+
+| Secuencias únicas | ASVs inferidas | Ratio | Interpretación |
+|:-------------------|:---------------|:------|:---------------|
+| 17,428 | 126 | 0.7% | Típico — la mayoría de las secuencias únicas son errores |
+| 5,000 | 200 | 4% | Mayor proporción de variantes reales — posible alta diversidad |
+| 20,000 | 20 | 0.1% | Muy pocas ASVs — muestra dominada por pocas especies |
+| 10,000 | 5,000 | 50% | Inusual — revisa el modelo de error o la calidad del filtrado |
+
+::: {.callout-note icon="false"}
+**¿Por qué tan pocas ASVs?** En eDNA de peces con el marcador 12S, es normal obtener entre 50 y 200 ASVs por muestra. La mayoría de las secuencias únicas en la dereplicación son variantes con 1-2 bases de diferencia respecto a una ASV abundante — exactamente el tipo de error que el modelo de `learnErrors()` aprendió a reconocer. El denoising las "colapsa" de vuelta a la secuencia original.
+:::
 
 ---
 
