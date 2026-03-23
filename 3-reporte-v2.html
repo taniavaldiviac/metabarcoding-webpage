@@ -646,8 +646,63 @@ Nota
 <span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>taxa2 <span class="ot">&lt;-</span> taxa2 <span class="sc">%&gt;%</span></span>
 <span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(Species <span class="sc">==</span> <span class="st">"Eukaryotic synthetic"</span> <span class="sc">|</span> <span class="fu">grepl</span>(<span class="st">"^NA sp$"</span>, Species)))</span>
 <span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>taxa_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(taxa2)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Curación geográfica ---</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Extraer géneros presentes en la lista del GC</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>fish_genera <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">sub</span>(<span class="st">" .*"</span>, <span class="st">""</span>, fish_species))</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Para cada ASV, decidir qué nivel taxonómico mantener:</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Si la especie está en la lista del GC → mantener tal cual</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Si la especie NO está pero el género SÍ → dejar como "Género sp."</span></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Si ni especie ni género están → dejar solo hasta familia (limpiar Genus y Species)</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>taxa2 <span class="ot">&lt;-</span> taxa2 <span class="sc">%&gt;%</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">in_gc_species =</span> Species <span class="sc">%in%</span> fish_species,</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">in_gc_genus   =</span> Genus <span class="sc">%in%</span> fish_genera,</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Aplicar reglas de curación</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">Species =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(Species)    <span class="sc">~</span> <span class="cn">NA_character_</span>,       <span class="co"># sin asignación, dejar NA</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>      in_gc_species     <span class="sc">~</span> Species,             <span class="co"># especie confirmada en GC</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>      in_gc_genus       <span class="sc">~</span> <span class="fu">paste0</span>(Genus, <span class="st">" sp."</span>),  <span class="co"># género en GC, especie no</span></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>              <span class="sc">~</span> <span class="cn">NA_character_</span>        <span class="co"># ni género ni especie en GC</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genus =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(Genus)      <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>      in_gc_species     <span class="sc">~</span> Genus,</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>      in_gc_genus       <span class="sc">~</span> Genus,</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>              <span class="sc">~</span> <span class="cn">NA_character_</span>        <span class="co"># género no está en GC, solo familia</span></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>in_gc_species, <span class="sc">-</span>in_gc_genus)</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumen de la curación</span></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>n_sp_gc    <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(taxa2<span class="sc">$</span>Species) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">" sp</span><span class="sc">\\</span><span class="st">.$"</span>, taxa2<span class="sc">$</span>Species))</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>n_genus_sp <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="st">" sp</span><span class="sc">\\</span><span class="st">.$"</span>, taxa2<span class="sc">$</span>Species), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>n_familia  <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(taxa2<span class="sc">$</span>Species) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(taxa2<span class="sc">$</span>Family))</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs con especie confirmada en GC: "</span>, n_sp_gc)</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a Género sp.: "</span>, n_genus_sp)</span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a familia: "</span>, n_familia)</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>taxa_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(taxa2)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Por qué curar geográficamente?</strong></p>
+<p>La base de datos de referencia contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación geográfica contrasta cada asignación contra una lista de especies documentadas para la región:</p>
+<ul>
+<li><strong>Especie en el GC</strong> → se mantiene (ej. <em>Mycteroperca rosacea</em>)</li>
+<li><strong>Género en el GC pero especie no</strong> → se deja como <em>Mycteroperca</em> sp. (el género es correcto, pero la especie asignada no se distribuye aquí)</li>
+<li><strong>Ni género ni especie en el GC</strong> → se mantiene solo la asignación a nivel de familia (la asignación a género/especie no es confiable para esta región)</li>
+</ul>
+</div>
 </div>
 </section>
 <section id="construcción-del-objeto-phyloseq" class="level3">
