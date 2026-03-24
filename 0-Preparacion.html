@@ -344,16 +344,6 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="estructura-del-repositorio" class="level2">
 <h2 class="anchored" data-anchor-id="estructura-del-repositorio">Estructura del repositorio</h2>
-<div class="callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Al clonar el repositorio
-</div>
-</div>
-<div class="callout-body-container callout-body">
 <pre><code>metabarcoding-code/
 ├── scripts/                  Scripts numerados en orden de ejecución
 │   ├── 01-conexion-servidor.qmd
@@ -370,31 +360,16 @@ ul.task-list li input[type="checkbox"] {
 │   ├── Fish_speciesGC.csv        Lista de peces del Golfo de California
 │   └── 12S_fish_taxonomy.fasta   Base de datos taxonómica
 ├── raw_fastqs/               Datos crudos (se copian del servidor)
-└── environment.yml           Definición del ambiente conda</code></pre>
-</div>
-</div>
-<div class="callout callout-style-default callout-warning no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>Se generan al correr el pipeline
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<pre><code>metabarcoding-code/
 ├── for_dada2/                FASTQs recortados con Cutadapt
 │   └── filtered/                 FASTQs filtrados por DADA2
 ├── cutadapt_reports/         Reportes de Cutadapt
-└── final_data/               Resultados del análisis
-    ├── logs/                     Gráficas de calidad, estadísticas
-    ├── csv_output/               Tablas de ASVs y taxonomía
-    ├── rdata_output/             Checkpoints .RData
-    ├── reporte_ecologico/        Figuras y tablas del análisis ecológico
-    └── otus_vsearch/             FASTA y resultados de VSEARCH</code></pre>
-</div>
-</div>
+├── final_data/               Resultados del análisis
+│   ├── logs/                     Gráficas de calidad, estadísticas
+│   ├── csv_output/               Tablas de ASVs y taxonomía
+│   ├── rdata_output/             Checkpoints .RData
+│   ├── reporte_ecologico/        Figuras y tablas del análisis ecológico
+│   └── otus_vsearch/             FASTA y resultados de VSEARCH
+└── environment.yml           Definición del ambiente conda</code></pre>
 <section id="flujo-de-datos-entre-carpetas" class="level3">
 <h3 class="anchored" data-anchor-id="flujo-de-datos-entre-carpetas">Flujo de datos entre carpetas</h3>
 <div class="cell" data-layout-align="default">
