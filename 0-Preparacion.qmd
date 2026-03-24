@@ -68,53 +68,35 @@ La carpeta `metadata/` contiene los archivos que el pipeline lee al inicio de ca
 
 Define los parámetros del marcador genético. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice `i` al inicio del script.
 
-**Identificación**
+| Columna | Descripción | Ejemplo |
+|:--------|:------------|:--------|
+| `locus_shorthand` | Nombre corto del marcador | `12S` |
+| `seq_f` / `seq_r` | Secuencias de primers F y R | `ACACCGCCCGTCACTCT` |
+| `F_qual` / `R_qual` | Longitud del primer (para Cutadapt) | `17` / `20` |
+| `amplicon_length` | Longitud esperada del amplicón (bp) | `65` |
+| `max_trim` | Truncamiento máximo permitido | `100` |
+| `overlap` | Solapamiento mínimo F/R para merge | `12` |
+| `db_name` | Archivo FASTA de referencia taxonómica | `12S_fish_taxonomy.fasta` |
 
-- `locus_shorthand` — Identificador corto del marcador (ej. `12S`)
-
-**Primers**
-
-- `seq_f` / `seq_r` — Secuencias de primers forward y reverse
-- `F_qual` / `R_qual` — Longitud del primer para Cutadapt
-
-**Amplicón**
-
-- `amplicon_length` — Longitud esperada (bp)
-- `max_trim` — Truncamiento máximo permitido
-- `overlap` — Solapamiento mínimo para el merge
-
-**Base de datos**
-
-- `db_name` — Archivo FASTA de referencia taxonómica
-
-En el script, el locus a analizar se selecciona con `i <- 1` (primera fila). Si tienes múltiples marcadores, cambia el valor de `i` para procesar el locus correspondiente.
+El locus a analizar se selecciona con `i <- 1` (primera fila). Si tienes múltiples marcadores, cambia `i`.
 
 ### `metadata.csv` — Información de las muestras
 
-Conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq* en la etapa de análisis.
+Conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto *phyloseq*.
 
-**Identificación**
-
-- `sample_id` — Identificador de la muestra (debe coincidir con el nombre del archivo FASTQ)
-- `site_id` — Código del sitio de muestreo (ej. `POR`, `BSS`)
-- `name` — Nombre completo del sitio
-
-**Información ecológica y geográfica**
-
-- `date` — Fecha de colecta
-- `lat` / `lon` — Coordenadas geográficas
-- `region` — Región geográfica del estudio
-
-**Secuenciación**
-
-- `locus_shorthand` — Marcador al que corresponde la muestra
-- `sequencing_lane` — Carril de secuenciación (para estudios multi-lane)
-- `replicate` — Número de réplica técnica (1, 2, 3…)
-
-**Nombres de archivos**
-
-- `filename_base` — Nombre del archivo tal como lo entrega el secuenciador
-- `rename_to` — Nombre generado para entrar al pipeline (ej. `12S-GC-001-d1_1_S1_L001`)
+| Columna | Descripción | Ejemplo |
+|:--------|:------------|:--------|
+| `sample_id` | Identificador de la muestra | `GC-001` |
+| `site_id` | Código del sitio de muestreo | `POR` |
+| `name` | Nombre completo del sitio | `Punta Perico` |
+| `date` | Fecha de colecta | `2019-03-15` |
+| `lat` / `lon` | Coordenadas geográficas | `28.05` / `-112.89` |
+| `region` | Región del estudio | `Norte` |
+| `locus_shorthand` | Marcador de la muestra | `12S` |
+| `sequencing_lane` | Carril de secuenciación | `L001` |
+| `replicate` | Réplica técnica | `1` |
+| `filename_base` | Nombre original del secuenciador | `S1_L001` |
+| `rename_to` | Nombre para el pipeline | `12S-GC-001-d1_1_S1_L001` |
 
 ---
 
