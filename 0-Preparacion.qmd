@@ -44,6 +44,8 @@ flowchart LR
 
     classDef included fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
     classDef generated fill:#fef3c7,stroke:#f59e0b,color:#78350f
+
+    linkStyle default stroke:#333333,stroke-width:2px
 ```
 
 Los datos crudos en `raw_fastqs/` pasan por Cutadapt para remover primers y se guardan en `for_dada2/`. DADA2 toma esos archivos filtrados junto con la configuración de `metadata/` y produce los resultados finales en `final_data/`.
