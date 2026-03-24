@@ -324,7 +324,7 @@
     "href": "2-dada2QAQC-Prep.html",
     "title": "DADA2 — Filtrado inicial",
     "section": "",
-    "text": "Antes de comenzar, abre R desde la terminal:\ncd ~/metabarcoding-code\nR\nCargamos las librerías que usaremos a lo largo del pipeline:\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
+    "text": "Antes de comenzar, reconéctate a tu sesión de screen y abre R:\nscreen -r curso\ncd ~/metabarcoding-code\nR\nCargamos las librerías que usaremos a lo largo del pipeline:\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
     "crumbs": [
       "Sesiones",
       "Día 3",
@@ -336,7 +336,7 @@
     "href": "2-dada2QAQC-Prep.html#configuración-del-entorno",
     "title": "DADA2 — Filtrado inicial",
     "section": "",
-    "text": "Antes de comenzar, abre R desde la terminal:\ncd ~/metabarcoding-code\nR\nCargamos las librerías que usaremos a lo largo del pipeline:\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
+    "text": "Antes de comenzar, reconéctate a tu sesión de screen y abre R:\nscreen -r curso\ncd ~/metabarcoding-code\nR\nCargamos las librerías que usaremos a lo largo del pipeline:\n\n\nCódigo\nlibrary(dada2, quietly = TRUE)     # pipeline principal: ASVs, filtrado, errores, taxonomía\nlibrary(tidyverse, quietly = TRUE) # manipulación y visualización de datos\nlibrary(seqinr)                    # utilidades para secuencias FASTA\nlibrary(ShortRead)                 # lectura y QC de archivos FASTQ\nlibrary(fs)                        # operaciones con archivos y rutas\nlibrary(readr)                     # lectura/escritura de CSVs\n\nset.seed(42)\n\n\nSi no hay errores, todas las librerías están disponibles en el servidor.",
     "crumbs": [
       "Sesiones",
       "Día 3",
@@ -576,7 +576,7 @@
     "href": "1-qaqc-cutadapt.html",
     "title": "Control de calidad y recorte de primers con Cutadapt",
     "section": "",
-    "text": "Importante\n\n\n\nAntes de empezar: todos los comandos de esta sección usan rutas relativas. Asegúrate de estar en el directorio del proyecto:\ncd ~/metabarcoding-code\nconda activate metabarcoding",
+    "text": "Importante\n\n\n\nAntes de empezar: reconéctate a tu sesión de screen y asegúrate de estar en el directorio del proyecto:\nscreen -r curso\ncd ~/metabarcoding-code\nconda activate metabarcoding",
     "crumbs": [
       "Sesiones",
       "Día 2",
@@ -756,7 +756,19 @@
     "href": "0-Clonacion.html",
     "title": "Clonación de repositorio Github",
     "section": "",
-    "text": "git clone https://github.com/taniavaldiviac/metabarcoding-code.git\ncd ~/metabarcoding-code",
+    "text": "Antes de empezar a trabajar, creamos una sesión de screen que mantendrá tu trabajo activo aunque te desconectes del servidor. Esta sesión la usaremos durante todo el curso.\nscreen -S curso\nAl final de cada día, para desconectarte sin cerrar la sesión, presiona:\nCtrl + A, luego D\nAl día siguiente, para reconectarte a tu sesión:\nscreen -r curso",
+    "crumbs": [
+      "Sesiones",
+      "Día 2",
+      "Clonación de repositorio Github"
+    ]
+  },
+  {
+    "objectID": "0-Clonacion.html#crear-sesión-de-screen",
+    "href": "0-Clonacion.html#crear-sesión-de-screen",
+    "title": "Clonación de repositorio Github",
+    "section": "",
+    "text": "Antes de empezar a trabajar, creamos una sesión de screen que mantendrá tu trabajo activo aunque te desconectes del servidor. Esta sesión la usaremos durante todo el curso.\nscreen -S curso\nAl final de cada día, para desconectarte sin cerrar la sesión, presiona:\nCtrl + A, luego D\nAl día siguiente, para reconectarte a tu sesión:\nscreen -r curso",
     "crumbs": [
       "Sesiones",
       "Día 2",
@@ -767,8 +779,8 @@
     "objectID": "0-Clonacion.html#clona-el-repositorio-del-curso",
     "href": "0-Clonacion.html#clona-el-repositorio-del-curso",
     "title": "Clonación de repositorio Github",
-    "section": "",
-    "text": "git clone https://github.com/taniavaldiviac/metabarcoding-code.git\ncd ~/metabarcoding-code",
+    "section": "2. Clona el repositorio del curso",
+    "text": "2. Clona el repositorio del curso\ngit clone https://github.com/taniavaldiviac/metabarcoding-code.git\ncd ~/metabarcoding-code",
     "crumbs": [
       "Sesiones",
       "Día 2",
@@ -779,8 +791,8 @@
     "objectID": "0-Clonacion.html#copia-los-archivos-fastq",
     "href": "0-Clonacion.html#copia-los-archivos-fastq",
     "title": "Clonación de repositorio Github",
-    "section": "2. Copia los archivos FASTQ",
-    "text": "2. Copia los archivos FASTQ\nLos archivos de secuenciación están en el directorio del instructor:\ncp /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/* ~/metabarcoding-code/raw_fastqs/",
+    "section": "3. Copia los archivos FASTQ",
+    "text": "3. Copia los archivos FASTQ\nLos archivos de secuenciación están en el directorio del instructor:\ncp /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/* ~/metabarcoding-code/raw_fastqs/",
     "crumbs": [
       "Sesiones",
       "Día 2",
@@ -791,8 +803,8 @@
     "objectID": "0-Clonacion.html#verifica-los-paquetes-de-r",
     "href": "0-Clonacion.html#verifica-los-paquetes-de-r",
     "title": "Clonación de repositorio Github",
-    "section": "3. Verifica los paquetes de R",
-    "text": "3. Verifica los paquetes de R\nLos paquetes necesarios ya están instalados en el servidor. Tu cuenta está configurada para encontrarlos automáticamente. Verifica abriendo R:\nR\nDentro de R:\nlibrary(dada2)\nlibrary(phyloseq)\nlibrary(tidyverse)\nq()\nSi no hay errores, está todo listo.",
+    "section": "4. Verifica los paquetes de R",
+    "text": "4. Verifica los paquetes de R\nLos paquetes necesarios ya están instalados en el servidor. Tu cuenta está configurada para encontrarlos automáticamente. Verifica abriendo R:\nR\nDentro de R:\nlibrary(dada2)\nlibrary(phyloseq)\nlibrary(tidyverse)\nq()\nSi no hay errores, está todo listo.",
     "crumbs": [
       "Sesiones",
       "Día 2",
@@ -803,8 +815,8 @@
     "objectID": "0-Clonacion.html#ambiente-conda-para-herramientas-de-línea-de-comandos",
     "href": "0-Clonacion.html#ambiente-conda-para-herramientas-de-línea-de-comandos",
     "title": "Clonación de repositorio Github",
-    "section": "4. Ambiente conda para herramientas de línea de comandos",
-    "text": "4. Ambiente conda para herramientas de línea de comandos\nPara los pasos de control de calidad y remoción de adaptadores, activa el ambiente metabarcoding:\nconda activate metabarcoding\nEste ambiente contiene:\n\n\n\nHerramienta\nUso\n\n\n\n\ncutadapt\nRemoción de adaptadores y primers\n\n\nfastqc\nControl de calidad de lecturas\n\n\nmultiqc\nReporte agregado de calidad\n\n\n\nPara desactivarlo cuando termines:\nconda deactivate\n\n\n\n\n\n\n\nNotaRecuerda\n\n\n\n\nUsa siempre ~/metabarcoding-code como tu directorio de proyecto.\nLos paquetes de R están disponibles automáticamente — no necesitas instalar nada.\nActiva conda activate metabarcoding solo para los pasos de QC y Cutadapt.",
+    "section": "5. Ambiente conda para herramientas de línea de comandos",
+    "text": "5. Ambiente conda para herramientas de línea de comandos\nPara los pasos de control de calidad y remoción de adaptadores, activa el ambiente metabarcoding:\nconda activate metabarcoding\nEste ambiente contiene:\n\n\n\nHerramienta\nUso\n\n\n\n\ncutadapt\nRemoción de adaptadores y primers\n\n\nfastqc\nControl de calidad de lecturas\n\n\nmultiqc\nReporte agregado de calidad\n\n\n\nPara desactivarlo cuando termines:\nconda deactivate\n\n\n\n\n\n\n\nNotaRecuerda\n\n\n\n\nUsa siempre ~/metabarcoding-code como tu directorio de proyecto.\nLos paquetes de R están disponibles automáticamente — no necesitas instalar nada.\nActiva conda activate metabarcoding solo para los pasos de QC y Cutadapt.",
     "crumbs": [
       "Sesiones",
       "Día 2",
@@ -1200,7 +1212,7 @@
     "href": "3-reporte-v2.html#preparación",
     "title": "Análisis ecológico de comunidades de peces",
     "section": "1. Preparación",
-    "text": "1. Preparación\n\nCarga de paquetes\nCargamos todos los paquetes necesarios al inicio del documento. Usamos suppressPackageStartupMessages() para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.\n\n\nCódigo\n# Evitar que kable intente abrir navegador en el servidor\noptions(browser = \"false\")\n\nsuppressPackageStartupMessages({\n  # Manipulación de datos\n  library(dplyr)\n  library(tidyr)\n  library(tibble)\n\n  # Bioinformática y ecología de comunidades\n  library(phyloseq)\n  library(Biostrings)\n  library(vegan)\n\n  # Visualización\n  library(ggplot2)\n  library(ggforce)\n  library(viridis)\n  library(RColorBrewer)\n  library(pheatmap)\n  library(colorspace)\n\n  # Tablas\n  library(knitr)\n  library(kableExtra)\n})\n\n\n\n\nDefinición de rutas\nTodas las rutas son relativas a ~/metabarcoding-code/, que es el directorio de trabajo.\n\n\nCódigo\nsetwd(\"~/metabarcoding-code\")\n\nruta_rdata       &lt;- \"final_data/rdata_output\"\nruta_metadata    &lt;- \"metadata/Fish_speciesGC.csv\"\nruta_csv_output  &lt;- \"final_data/csv_output/taxon_table.csv\"\nruta_figs        &lt;- \"final_data/reporte_ecologico\"\n\n# Crear directorios de salida si no existen\ndir.create(dirname(ruta_csv_output), showWarnings = FALSE, recursive = TRUE)\ndir.create(ruta_figs, showWarnings = FALSE, recursive = TRUE)\n\n\n\n\nCarga de datos\nCargamos el archivo *phyloseq_inputs.RData generado por el pipeline DADA2, que contiene las matrices de abundancias, taxonomía y metadata.\n\n\nCódigo\n# Buscar específicamente el archivo phyloseq_inputs generado por el pipeline\nrdata_file &lt;- list.files(ruta_rdata, pattern = \"phyloseq_inputs\\\\.RData$\", full.names = TRUE)\nstopifnot(\"No se encontró *phyloseq_inputs.RData\" = length(rdata_file) &gt; 0)\n\n# Si hay varios (por múltiples corridas), usar el más reciente\nif (length(rdata_file) &gt; 1) {\n  rdata_file &lt;- rdata_file[which.max(file.info(rdata_file)$mtime)]\n}\nmessage(\"Cargando: \", basename(rdata_file))\nload(rdata_file)\n\nmessage(\"Objetos cargados: \", paste(ls(), collapse = \", \"))\nmessage(\"Muestras en track: \", nrow(track))",
+    "text": "1. Preparación\n\nCarga de paquetes\nCargamos todos los paquetes necesarios al inicio del documento. Usamos suppressPackageStartupMessages() para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.\n\n\nCódigo\n# Evitar que kable intente abrir navegador en el servidor\noptions(browser = \"false\")\n\nsuppressPackageStartupMessages({\n  # Manipulación de datos\n  library(dplyr)\n  library(tidyr)\n  library(tibble)\n\n  # Bioinformática y ecología de comunidades\n  library(phyloseq)\n  library(Biostrings)\n  library(vegan)\n\n  # Visualización\n  library(ggplot2)\n  library(ggforce)\n  library(viridis)\n  library(RColorBrewer)\n  library(pheatmap)\n  library(colorspace)\n\n  # Tablas\n  library(knitr)\n  library(kableExtra)\n})\n\n\n\n\nDefinición de rutas\nReconéctate a tu sesión de screen (screen -r curso) y abre R desde ~/metabarcoding-code/.\n\n\nCódigo\nsetwd(\"~/metabarcoding-code\")\n\nruta_rdata       &lt;- \"final_data/rdata_output\"\nruta_metadata    &lt;- \"metadata/Fish_speciesGC.csv\"\nruta_csv_output  &lt;- \"final_data/csv_output/taxon_table.csv\"\nruta_figs        &lt;- \"final_data/reporte_ecologico\"\n\n# Crear directorios de salida si no existen\ndir.create(dirname(ruta_csv_output), showWarnings = FALSE, recursive = TRUE)\ndir.create(ruta_figs, showWarnings = FALSE, recursive = TRUE)\n\n\n\n\nCarga de datos\nCargamos el archivo *phyloseq_inputs.RData generado por el pipeline DADA2, que contiene las matrices de abundancias, taxonomía y metadata.\n\n\nCódigo\n# Buscar específicamente el archivo phyloseq_inputs generado por el pipeline\nrdata_file &lt;- list.files(ruta_rdata, pattern = \"phyloseq_inputs\\\\.RData$\", full.names = TRUE)\nstopifnot(\"No se encontró *phyloseq_inputs.RData\" = length(rdata_file) &gt; 0)\n\n# Si hay varios (por múltiples corridas), usar el más reciente\nif (length(rdata_file) &gt; 1) {\n  rdata_file &lt;- rdata_file[which.max(file.info(rdata_file)$mtime)]\n}\nmessage(\"Cargando: \", basename(rdata_file))\nload(rdata_file)\n\nmessage(\"Objetos cargados: \", paste(ls(), collapse = \", \"))\nmessage(\"Muestras en track: \", nrow(track))",
     "crumbs": [
       "Sesiones",
       "Día 4",
