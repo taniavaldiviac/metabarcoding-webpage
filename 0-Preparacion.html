@@ -344,84 +344,60 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="estructura-del-repositorio" class="level2">
 <h2 class="anchored" data-anchor-id="estructura-del-repositorio">Estructura del repositorio</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    ROOT["metabarcoding-code/"]:::root
+
+    ROOT --- SC["scripts/"]:::included
+    ROOT --- MD["metadata/"]:::included
+    ROOT --- RW["raw_fastqs/"]:::included
+    ROOT --- ENV["environment.yml"]:::included
+    ROOT --- FD["for_dada2/"]:::generated
+    ROOT --- CR["cutadapt_reports/"]:::generated
+    ROOT --- FINAL["final_data/"]:::generated
+
+    SC --- S1["01-conexion-servidor.qmd"]:::file
+    SC --- S2["02-qaqc-fastqc.qmd"]:::file
+    SC --- S3["02b-cutadapt.sh"]:::file
+    SC --- S4["03-dada2-pipeline.R"]:::file
+    SC --- S5["04 al 09 — BD, reporte, OTUs, decontam"]:::file
+
+    MD --- M1["primer_data.csv"]:::file
+    MD --- M2["metadata.csv"]:::file
+    MD --- M3["Fish_speciesGC.csv"]:::file
+    MD --- M4["12S_fish_taxonomy.fasta"]:::file
+
+    FINAL --- FL["logs/"]:::generated
+    FINAL --- FC["csv_output/"]:::generated
+    FINAL --- FR["rdata_output/"]:::generated
+    FINAL --- FE["reporte_ecologico/"]:::generated
+    FINAL --- FV["otus_vsearch/"]:::generated
+
+    classDef root fill:#f3f4f6,stroke:#6b7280,color:#1f2937,font-weight:bold
+    classDef included fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    classDef generated fill:#fef3c7,stroke:#f59e0b,color:#78350f
+    classDef file fill:#ffffff,stroke:#d1d5db,color:#374151,font-size:11px
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Incluidos al clonar el repositorio
+Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 63%">
-<col style="width: 36%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Carpeta / Archivo</th>
-<th style="text-align: left;">Contenido</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><code>scripts/</code></td>
-<td style="text-align: left;">Scripts numerados en orden de ejecución</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>metadata/</code></td>
-<td style="text-align: left;">Configuración: primers, metadatos, listado de especies</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>raw_fastqs/</code></td>
-<td style="text-align: left;">Datos crudos — se copian del servidor durante el curso</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>environment.yml</code></td>
-<td style="text-align: left;">Definición del ambiente conda para reproducibilidad</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="callout callout-style-default callout-warning no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>Se generan al correr el pipeline
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 45%">
-<col style="width: 55%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Carpeta</th>
-<th style="text-align: left;">Contenido</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><code>for_dada2/</code></td>
-<td style="text-align: left;">FASTQs recortados con Cutadapt</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>cutadapt_reports/</code></td>
-<td style="text-align: left;">Reportes de Cutadapt</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>final_data/</code></td>
-<td style="text-align: left;">Resultados del análisis (tablas, figuras, checkpoints)</td>
-</tr>
-</tbody>
-</table>
+<p><strong>Azul</strong> = incluido al clonar el repositorio | <strong>Amarillo</strong> = se genera al correr el pipeline</p>
 </div>
 </div>
 <section id="flujo-de-datos-entre-carpetas" class="level3">
