@@ -34,12 +34,12 @@ website:
       - section: "Día 2"
         contents:
           - 0b-linux-r-intro.qmd
-          - 0-Datos.qmd
-          - 0-Preparacion.qmd
           - 0-Clonacion.qmd
+          - 0-Datos.qmd
+          - 2-dada2QAQC.qmd
+          - 0-Preparacion.qmd
           - 0-FASTQ.qmd
           - 1-qaqc-cutadapt.qmd
-          - 2-dada2QAQC.qmd
       - section: "Día 3"
         contents:
           - 2-dada2QAQC-Prep.qmd
