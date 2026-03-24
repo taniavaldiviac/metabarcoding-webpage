@@ -404,48 +404,73 @@ ul.task-list li input[type="checkbox"] {
 <section id="primer_data.csv-configuración-del-locus" class="level3">
 <h3 class="anchored" data-anchor-id="primer_data.csv-configuración-del-locus"><code>primer_data.csv</code> — Configuración del locus</h3>
 <p>Define los parámetros del marcador genético. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice <code>i</code> al inicio del script.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 39%">
-<col style="width: 60%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Columna</th>
-<th style="text-align: left;">Qué contiene</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><code>locus_shorthand</code></td>
-<td style="text-align: left;">Identificador corto del marcador (ej. <code>12S</code>) — se usa para filtrar los archivos FASTQ y nombrar los outputs</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>seq_f</code> / <code>seq_r</code></td>
-<td style="text-align: left;">Secuencia completa de los primers forward y reverse</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>F_qual</code> / <code>R_qual</code></td>
-<td style="text-align: left;">Longitud del primer usada por Cutadapt para el recorte</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>amplicon_length</code></td>
-<td style="text-align: left;">Longitud esperada del amplicón (bp)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>max_trim</code></td>
-<td style="text-align: left;">Longitud máxima de truncamiento — evita cortar tanto que se pierda el solapamiento F/R</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>overlap</code></td>
-<td style="text-align: left;">Solapamiento mínimo requerido entre lecturas F y R para el merge</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>db_name</code></td>
-<td style="text-align: left;">Nombre del archivo FASTA de la base de datos taxonómica en <code>metadata/</code></td>
-</tr>
-</tbody>
-</table>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Identificación del marcador</strong></p>
+<ul>
+<li><code>locus_shorthand</code> — Identificador corto (ej. <code>12S</code>). Se usa para filtrar archivos FASTQ y nombrar outputs</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Primers</strong></p>
+<ul>
+<li><code>seq_f</code> / <code>seq_r</code> — Secuencia completa de los primers forward y reverse</li>
+<li><code>F_qual</code> / <code>R_qual</code> — Longitud del primer usada por Cutadapt para el recorte</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Parámetros del amplicón</strong></p>
+<ul>
+<li><code>amplicon_length</code> — Longitud esperada del amplicón (bp)</li>
+<li><code>max_trim</code> — Longitud máxima de truncamiento (evita perder el solapamiento F/R)</li>
+<li><code>overlap</code> — Solapamiento mínimo requerido entre lecturas F y R para el merge</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Base de datos</strong></p>
+<ul>
+<li><code>db_name</code> — Nombre del archivo FASTA de la base de datos taxonómica en <code>metadata/</code></li>
+</ul>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -463,64 +488,77 @@ Tip
 <section id="metadata.csv-información-de-las-muestras" class="level3">
 <h3 class="anchored" data-anchor-id="metadata.csv-información-de-las-muestras"><code>metadata.csv</code> — Información de las muestras</h3>
 <p>Conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto <em>phyloseq</em> en la etapa de análisis.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 39%">
-<col style="width: 60%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Columna</th>
-<th style="text-align: left;">Qué contiene</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><code>sample_id</code></td>
-<td style="text-align: left;">Identificador de la muestra — debe coincidir con el nombre del archivo FASTQ</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>site_id</code></td>
-<td style="text-align: left;">Código del sitio de muestreo (ej. <code>POR</code>, <code>BSS</code>)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>name</code></td>
-<td style="text-align: left;">Nombre completo del sitio</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>date</code></td>
-<td style="text-align: left;">Fecha de colecta</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>lat</code> / <code>lon</code></td>
-<td style="text-align: left;">Coordenadas geográficas</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>region</code></td>
-<td style="text-align: left;">Región geográfica del estudio</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>locus_shorthand</code></td>
-<td style="text-align: left;">Marcador al que corresponde la muestra</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>sequencing_lane</code></td>
-<td style="text-align: left;">Carril de secuenciación (para estudios multi-lane)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>replicate</code></td>
-<td style="text-align: left;">Número de réplica técnica (1, 2, 3…)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>filename_base</code></td>
-<td style="text-align: left;">Nombre del archivo tal como lo entrega el secuenciador — se llena manualmente</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>rename_to</code></td>
-<td style="text-align: left;">Nombre generado automáticamente al que se renombrará el archivo para entrar al pipeline (ej. <code>12S-GC-001-d1_1_S1_L001</code>)</td>
-</tr>
-</tbody>
-</table>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Identificación</strong></p>
+<ul>
+<li><code>sample_id</code> — Identificador de la muestra (debe coincidir con el nombre del archivo FASTQ)</li>
+<li><code>site_id</code> — Código del sitio de muestreo (ej. <code>POR</code>, <code>BSS</code>)</li>
+<li><code>name</code> — Nombre completo del sitio</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Información ecológica y geográfica</strong></p>
+<ul>
+<li><code>date</code> — Fecha de colecta</li>
+<li><code>lat</code> / <code>lon</code> — Coordenadas geográficas</li>
+<li><code>region</code> — Región geográfica del estudio</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Secuenciación</strong></p>
+<ul>
+<li><code>locus_shorthand</code> — Marcador al que corresponde la muestra</li>
+<li><code>sequencing_lane</code> — Carril de secuenciación (para estudios multi-lane)</li>
+<li><code>replicate</code> — Número de réplica técnica (1, 2, 3…)</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Nombres de archivos</strong></p>
+<ul>
+<li><code>filename_base</code> — Nombre del archivo tal como lo entrega el secuenciador</li>
+<li><code>rename_to</code> — Nombre generado para entrar al pipeline (ej. <code>12S-GC-001-d1_1_S1_L001</code>)</li>
+</ul>
+</div>
+</div>
 <hr>
 </section>
 </section>
