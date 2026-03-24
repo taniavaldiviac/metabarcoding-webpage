@@ -26,6 +26,30 @@ CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 | 3 | **Separador** — siempre es `+` (opcionalmente seguido del identificador) |
 | 4 | **Calidad** — un carácter ASCII por cada base, codificando el puntaje Phred |
 
+### Desglose del identificador
+
+El identificador de la primera línea contiene toda la información de dónde y cuándo se generó esa lectura:
+
+```
+@M00741:150:000000000-L7YMK:1:1101:15234:1334 1:N:0:1
+```
+
+| Campo | Valor | Significado |
+|:------|:------|:------------|
+| `M00741` | Instrumento | Identificador único del secuenciador MiSeq |
+| `150` | Run | Número de corrida del equipo |
+| `000000000-L7YMK` | Flowcell | ID de la celda de flujo donde se realizó la secuenciación |
+| `1` | Lane | Carril del flowcell (MiSeq tiene 1 solo carril) |
+| `1101` | Tile | Sección (tile) del flowcell donde se leyó esta lectura |
+| `15234` | X | Coordenada X del cluster en el tile |
+| `1334` | Y | Coordenada Y del cluster en el tile |
+| `1` | Read | Dirección de lectura: `1` = forward (R1), `2` = reverse (R2) |
+| `N` | Filtro | `Y` = no pasó filtro de calidad, `N` = sí pasó |
+| `0` | Control | `0` = no es lectura de control |
+| `1` | Index | Número de índice (para demultiplexeo) |
+
+Cada lectura tiene una combinación única de tile + coordenadas X/Y, lo que permite rastrear exactamente de dónde vino en el flowcell.
+
 ---
 
 ## Calidad Phred
