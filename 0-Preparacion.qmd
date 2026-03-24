@@ -11,43 +11,45 @@ Todo lo necesario para correr el flujo de trabajo del curso se encuentra en el r
 
 ## Estructura del repositorio
 
-```{mermaid}
-graph TD
-    ROOT["metabarcoding-code/"]:::root
-
-    ROOT --- SC["scripts/"]:::included
-    ROOT --- MD["metadata/"]:::included
-    ROOT --- RW["raw_fastqs/"]:::included
-    ROOT --- ENV["environment.yml"]:::included
-    ROOT --- FD["for_dada2/"]:::generated
-    ROOT --- CR["cutadapt_reports/"]:::generated
-    ROOT --- FINAL["final_data/"]:::generated
-
-    SC --- S1["01-conexion-servidor.qmd"]:::file
-    SC --- S2["02-qaqc-fastqc.qmd"]:::file
-    SC --- S3["02b-cutadapt.sh"]:::file
-    SC --- S4["03-dada2-pipeline.R"]:::file
-    SC --- S5["04 al 09 — BD, reporte, OTUs, decontam"]:::file
-
-    MD --- M1["primer_data.csv"]:::file
-    MD --- M2["metadata.csv"]:::file
-    MD --- M3["Fish_speciesGC.csv"]:::file
-    MD --- M4["12S_fish_taxonomy.fasta"]:::file
-
-    FINAL --- FL["logs/"]:::generated
-    FINAL --- FC["csv_output/"]:::generated
-    FINAL --- FR["rdata_output/"]:::generated
-    FINAL --- FE["reporte_ecologico/"]:::generated
-    FINAL --- FV["otus_vsearch/"]:::generated
-
-    classDef root fill:#f3f4f6,stroke:#6b7280,color:#1f2937,font-weight:bold
-    classDef included fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
-    classDef generated fill:#fef3c7,stroke:#f59e0b,color:#78350f
-    classDef file fill:#ffffff,stroke:#d1d5db,color:#374151,font-size:11px
-```
-
 ::: {.callout-note icon="false"}
-**Azul** = incluido al clonar el repositorio | **Amarillo** = se genera al correr el pipeline
+## Al clonar el repositorio
+
+```
+metabarcoding-code/
+├── scripts/                  Scripts numerados en orden de ejecución
+│   ├── 01-conexion-servidor.qmd
+│   ├── 02-qaqc-fastqc.qmd
+│   ├── 02b-cutadapt.sh
+│   ├── 03-dada2-pipeline.R
+│   ├── 04 a 06 — Base de datos de referencia
+│   ├── 07-reporte.qmd
+│   ├── 08-otus.qmd / 08b-vsearch.sh
+│   └── 09-decontam.qmd
+├── metadata/                 Archivos de configuración
+│   ├── primer_data.csv           Parámetros del marcador
+│   ├── metadata.csv              Información de muestras
+│   ├── Fish_speciesGC.csv        Lista de peces del Golfo de California
+│   └── 12S_fish_taxonomy.fasta   Base de datos taxonómica
+├── raw_fastqs/               Datos crudos (se copian del servidor)
+└── environment.yml           Definición del ambiente conda
+```
+:::
+
+::: {.callout-warning icon="false"}
+## Se generan al correr el pipeline
+
+```
+metabarcoding-code/
+├── for_dada2/                FASTQs recortados con Cutadapt
+│   └── filtered/                 FASTQs filtrados por DADA2
+├── cutadapt_reports/         Reportes de Cutadapt
+└── final_data/               Resultados del análisis
+    ├── logs/                     Gráficas de calidad, estadísticas
+    ├── csv_output/               Tablas de ASVs y taxonomía
+    ├── rdata_output/             Checkpoints .RData
+    ├── reporte_ecologico/        Figuras y tablas del análisis ecológico
+    └── otus_vsearch/             FASTA y resultados de VSEARCH
+```
 :::
 
 ### Flujo de datos entre carpetas
