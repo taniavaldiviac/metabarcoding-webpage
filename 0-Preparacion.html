@@ -404,53 +404,128 @@ ul.task-list li input[type="checkbox"] {
 <section id="primer_data.csv-configuración-del-locus" class="level3">
 <h3 class="anchored" data-anchor-id="primer_data.csv-configuración-del-locus"><code>primer_data.csv</code> — Configuración del locus</h3>
 <p>Define los parámetros del marcador genético. Contiene una fila por cada locus; si el estudio usa más de un marcador (por ejemplo 12S y COI), cada uno tiene su propia fila y se selecciona con el índice <code>i</code> al inicio del script.</p>
-<p><strong>Identificación</strong></p>
-<ul>
-<li><code>locus_shorthand</code> — Identificador corto del marcador (ej. <code>12S</code>)</li>
-</ul>
-<p><strong>Primers</strong></p>
-<ul>
-<li><code>seq_f</code> / <code>seq_r</code> — Secuencias de primers forward y reverse</li>
-<li><code>F_qual</code> / <code>R_qual</code> — Longitud del primer para Cutadapt</li>
-</ul>
-<p><strong>Amplicón</strong></p>
-<ul>
-<li><code>amplicon_length</code> — Longitud esperada (bp)</li>
-<li><code>max_trim</code> — Truncamiento máximo permitido</li>
-<li><code>overlap</code> — Solapamiento mínimo para el merge</li>
-</ul>
-<p><strong>Base de datos</strong></p>
-<ul>
-<li><code>db_name</code> — Archivo FASTA de referencia taxonómica</li>
-</ul>
-<p>En el script, el locus a analizar se selecciona con <code>i &lt;- 1</code> (primera fila). Si tienes múltiples marcadores, cambia el valor de <code>i</code> para procesar el locus correspondiente.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 41%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Columna</th>
+<th style="text-align: left;">Descripción</th>
+<th style="text-align: left;">Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>locus_shorthand</code></td>
+<td style="text-align: left;">Nombre corto del marcador</td>
+<td style="text-align: left;"><code>12S</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>seq_f</code> / <code>seq_r</code></td>
+<td style="text-align: left;">Secuencias de primers F y R</td>
+<td style="text-align: left;"><code>ACACCGCCCGTCACTCT</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>F_qual</code> / <code>R_qual</code></td>
+<td style="text-align: left;">Longitud del primer (para Cutadapt)</td>
+<td style="text-align: left;"><code>17</code> / <code>20</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>amplicon_length</code></td>
+<td style="text-align: left;">Longitud esperada del amplicón (bp)</td>
+<td style="text-align: left;"><code>65</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>max_trim</code></td>
+<td style="text-align: left;">Truncamiento máximo permitido</td>
+<td style="text-align: left;"><code>100</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>overlap</code></td>
+<td style="text-align: left;">Solapamiento mínimo F/R para merge</td>
+<td style="text-align: left;"><code>12</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>db_name</code></td>
+<td style="text-align: left;">Archivo FASTA de referencia taxonómica</td>
+<td style="text-align: left;"><code>12S_fish_taxonomy.fasta</code></td>
+</tr>
+</tbody>
+</table>
+<p>El locus a analizar se selecciona con <code>i &lt;- 1</code> (primera fila). Si tienes múltiples marcadores, cambia <code>i</code>.</p>
 </section>
 <section id="metadata.csv-información-de-las-muestras" class="level3">
 <h3 class="anchored" data-anchor-id="metadata.csv-información-de-las-muestras"><code>metadata.csv</code> — Información de las muestras</h3>
-<p>Conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto <em>phyloseq</em> en la etapa de análisis.</p>
-<p><strong>Identificación</strong></p>
-<ul>
-<li><code>sample_id</code> — Identificador de la muestra (debe coincidir con el nombre del archivo FASTQ)</li>
-<li><code>site_id</code> — Código del sitio de muestreo (ej. <code>POR</code>, <code>BSS</code>)</li>
-<li><code>name</code> — Nombre completo del sitio</li>
-</ul>
-<p><strong>Información ecológica y geográfica</strong></p>
-<ul>
-<li><code>date</code> — Fecha de colecta</li>
-<li><code>lat</code> / <code>lon</code> — Coordenadas geográficas</li>
-<li><code>region</code> — Región geográfica del estudio</li>
-</ul>
-<p><strong>Secuenciación</strong></p>
-<ul>
-<li><code>locus_shorthand</code> — Marcador al que corresponde la muestra</li>
-<li><code>sequencing_lane</code> — Carril de secuenciación (para estudios multi-lane)</li>
-<li><code>replicate</code> — Número de réplica técnica (1, 2, 3…)</li>
-</ul>
-<p><strong>Nombres de archivos</strong></p>
-<ul>
-<li><code>filename_base</code> — Nombre del archivo tal como lo entrega el secuenciador</li>
-<li><code>rename_to</code> — Nombre generado para entrar al pipeline (ej. <code>12S-GC-001-d1_1_S1_L001</code>)</li>
-</ul>
+<p>Conecta cada archivo FASTQ con su información ecológica y geográfica. El pipeline lo usa para asignar metadatos al objeto <em>phyloseq</em>.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Columna</th>
+<th style="text-align: left;">Descripción</th>
+<th style="text-align: left;">Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>sample_id</code></td>
+<td style="text-align: left;">Identificador de la muestra</td>
+<td style="text-align: left;"><code>GC-001</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>site_id</code></td>
+<td style="text-align: left;">Código del sitio de muestreo</td>
+<td style="text-align: left;"><code>POR</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;">Nombre completo del sitio</td>
+<td style="text-align: left;"><code>Punta Perico</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>date</code></td>
+<td style="text-align: left;">Fecha de colecta</td>
+<td style="text-align: left;"><code>2019-03-15</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>lat</code> / <code>lon</code></td>
+<td style="text-align: left;">Coordenadas geográficas</td>
+<td style="text-align: left;"><code>28.05</code> / <code>-112.89</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>region</code></td>
+<td style="text-align: left;">Región del estudio</td>
+<td style="text-align: left;"><code>Norte</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>locus_shorthand</code></td>
+<td style="text-align: left;">Marcador de la muestra</td>
+<td style="text-align: left;"><code>12S</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>sequencing_lane</code></td>
+<td style="text-align: left;">Carril de secuenciación</td>
+<td style="text-align: left;"><code>L001</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>replicate</code></td>
+<td style="text-align: left;">Réplica técnica</td>
+<td style="text-align: left;"><code>1</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>filename_base</code></td>
+<td style="text-align: left;">Nombre original del secuenciador</td>
+<td style="text-align: left;"><code>S1_L001</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>rename_to</code></td>
+<td style="text-align: left;">Nombre para el pipeline</td>
+<td style="text-align: left;"><code>12S-GC-001-d1_1_S1_L001</code></td>
+</tr>
+</tbody>
+</table>
 <hr>
 </section>
 </section>
