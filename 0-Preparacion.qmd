@@ -11,9 +11,6 @@ Todo lo necesario para correr el flujo de trabajo del curso se encuentra en el r
 
 ## Estructura del repositorio
 
-::: {.callout-note icon="false"}
-## Al clonar el repositorio
-
 ```
 metabarcoding-code/
 ├── scripts/                  Scripts numerados en orden de ejecución
@@ -31,26 +28,17 @@ metabarcoding-code/
 │   ├── Fish_speciesGC.csv        Lista de peces del Golfo de California
 │   └── 12S_fish_taxonomy.fasta   Base de datos taxonómica
 ├── raw_fastqs/               Datos crudos (se copian del servidor)
-└── environment.yml           Definición del ambiente conda
-```
-:::
-
-::: {.callout-warning icon="false"}
-## Se generan al correr el pipeline
-
-```
-metabarcoding-code/
 ├── for_dada2/                FASTQs recortados con Cutadapt
 │   └── filtered/                 FASTQs filtrados por DADA2
 ├── cutadapt_reports/         Reportes de Cutadapt
-└── final_data/               Resultados del análisis
-    ├── logs/                     Gráficas de calidad, estadísticas
-    ├── csv_output/               Tablas de ASVs y taxonomía
-    ├── rdata_output/             Checkpoints .RData
-    ├── reporte_ecologico/        Figuras y tablas del análisis ecológico
-    └── otus_vsearch/             FASTA y resultados de VSEARCH
+├── final_data/               Resultados del análisis
+│   ├── logs/                     Gráficas de calidad, estadísticas
+│   ├── csv_output/               Tablas de ASVs y taxonomía
+│   ├── rdata_output/             Checkpoints .RData
+│   ├── reporte_ecologico/        Figuras y tablas del análisis ecológico
+│   └── otus_vsearch/             FASTA y resultados de VSEARCH
+└── environment.yml           Definición del ambiente conda
 ```
-:::
 
 ### Flujo de datos entre carpetas
 
