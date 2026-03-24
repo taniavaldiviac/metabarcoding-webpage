@@ -410,7 +410,84 @@ CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG</code></pre>
 </tr>
 </tbody>
 </table>
+<section id="desglose-del-identificador" class="level3">
+<h3 class="anchored" data-anchor-id="desglose-del-identificador">Desglose del identificador</h3>
+<p>El identificador de la primera línea contiene toda la información de dónde y cuándo se generó esa lectura:</p>
+<pre><code>@M00741:150:000000000-L7YMK:1:1101:15234:1334 1:N:0:1</code></pre>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 48%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Campo</th>
+<th style="text-align: left;">Valor</th>
+<th style="text-align: left;">Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>M00741</code></td>
+<td style="text-align: left;">Instrumento</td>
+<td style="text-align: left;">Identificador único del secuenciador MiSeq</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>150</code></td>
+<td style="text-align: left;">Run</td>
+<td style="text-align: left;">Número de corrida del equipo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>000000000-L7YMK</code></td>
+<td style="text-align: left;">Flowcell</td>
+<td style="text-align: left;">ID de la celda de flujo donde se realizó la secuenciación</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;">Lane</td>
+<td style="text-align: left;">Carril del flowcell (MiSeq tiene 1 solo carril)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>1101</code></td>
+<td style="text-align: left;">Tile</td>
+<td style="text-align: left;">Sección (tile) del flowcell donde se leyó esta lectura</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>15234</code></td>
+<td style="text-align: left;">X</td>
+<td style="text-align: left;">Coordenada X del cluster en el tile</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>1334</code></td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">Coordenada Y del cluster en el tile</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;">Read</td>
+<td style="text-align: left;">Dirección de lectura: <code>1</code> = forward (R1), <code>2</code> = reverse (R2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>N</code></td>
+<td style="text-align: left;">Filtro</td>
+<td style="text-align: left;"><code>Y</code> = no pasó filtro de calidad, <code>N</code> = sí pasó</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>0</code></td>
+<td style="text-align: left;">Control</td>
+<td style="text-align: left;"><code>0</code> = no es lectura de control</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Número de índice (para demultiplexeo)</td>
+</tr>
+</tbody>
+</table>
+<p>Cada lectura tiene una combinación única de tile + coordenadas X/Y, lo que permite rastrear exactamente de dónde vino en el flowcell.</p>
 <hr>
+</section>
 </section>
 <section id="calidad-phred" class="level2">
 <h2 class="anchored" data-anchor-id="calidad-phred">Calidad Phred</h2>
@@ -490,12 +567,12 @@ Tip
 <section id="explorando-tus-archivos-fastq" class="level2">
 <h2 class="anchored" data-anchor-id="explorando-tus-archivos-fastq">Explorando tus archivos FASTQ</h2>
 <p>Para ver los primeros reads de un archivo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-8</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-8</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto muestra las primeras 2 lecturas (4 líneas cada una).</p>
 <p>Para contar el número de lecturas en un archivo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$((</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq<span class="va">)</span> <span class="op">/</span> <span class="dv">4</span> <span class="va">))</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$((</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq<span class="va">)</span> <span class="op">/</span> <span class="dv">4</span> <span class="va">))</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Para ver cuántos archivos FASTQ tienes:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/metabarcoding-code/raw_fastqs/<span class="pp">*</span>.fastq <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/metabarcoding-code/raw_fastqs/<span class="pp">*</span>.fastq <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
 <section id="organización-de-los-archivos-en-el-curso" class="level2">
