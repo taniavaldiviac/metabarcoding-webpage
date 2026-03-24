@@ -7,9 +7,10 @@ execute:
 
 ## Configuración del entorno
 
-Antes de comenzar, abre R desde la terminal:
+Antes de comenzar, reconéctate a tu sesión de screen y abre R:
 
 ```bash
+screen -r curso
 cd ~/metabarcoding-code
 R
 ```

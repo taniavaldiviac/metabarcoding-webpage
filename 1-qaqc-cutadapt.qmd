@@ -7,9 +7,10 @@ execute:
 ---
 
 ::: {.callout-important icon="false"}
-**Antes de empezar:** todos los comandos de esta sección usan rutas relativas. Asegúrate de estar en el directorio del proyecto:
+**Antes de empezar:** reconéctate a tu sesión de screen y asegúrate de estar en el directorio del proyecto:
 
 ``` bash
+screen -r curso
 cd ~/metabarcoding-code
 conda activate metabarcoding
 ```
