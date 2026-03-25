@@ -176,15 +176,19 @@ Los primers son secuencias artificiales que se añaden durante la PCR para ampli
 
 #### ¿Cómo funciona la búsqueda de primers?
 
-Cutadapt busca la secuencia del primer dentro de cada lectura y recorta todo lo que está antes de ella (incluyendo el primer mismo). Dos conceptos clave:
-
-- **Anchoring (`^`):** El símbolo `^` antes del primer le indica a cutadapt que el primer debe estar exactamente al inicio de la lectura. Sin `^`, buscaría el primer en cualquier posición, lo que puede producir recortes incorrectos.
-- **Complemento reverso en R2:** En secuenciación paired-end, R1 empieza con el primer forward y R2 empieza con el primer reverse. El script usa `-g “^${FWD}”` para R1 y `-G “^${RC_REV}”` para R2, donde `RC_REV` es el complemento reverso del primer reverse — que es lo que realmente aparece al inicio de R2.
+En nuestras lecturas, cada read contiene el amplicón flanqueado por ambos primers. Como las lecturas (150 bp) son más largas que el inserto (~102 bp), el secuenciador lee más allá del amplicón y entra en el primer del otro extremo:
 
 ```
-R1: [FWD primer]----amplicón----►
-R2:                 ◄----amplicón----[RC del REV primer]
+R1: [primer F 17bp]──amplicón 65bp──[primer R-rc 20bp]──adaptador...
+R2: [primer R 20bp]──amplicón 65bp──[primer F-rc 17bp]──adaptador...
 ```
+
+Cutadapt necesita recortar **ambos primers** de cada lectura — el del inicio (5') y el del final (3'). Para esto usamos **linked adapters**, que buscan ambos primers simultáneamente y devuelven solo la secuencia entre ellos:
+
+- **R1**: `-g “^FWD...RC_REV”` — busca primer F al inicio y reverse-complement del primer R al final
+- **R2**: `-G “^REV...RC_FWD”` — busca primer R al inicio y reverse-complement del primer F al final
+
+La sintaxis `^PRIMER1...PRIMER2` le dice a Cutadapt: “encuentra PRIMER1 anclado al inicio (`^`), encuentra PRIMER2 en cualquier posición después, y devuelve solo lo que hay entre ambos”.
 
 - **Tasa de error (`-e`):** Permite hasta un 10% de mismatches al buscar el primer. Esto es necesario porque los primers a veces tienen pequeñas variaciones entre muestras o errores de síntesis.
 
@@ -218,8 +222,8 @@ cat scripts/02b-cutadapt.sh
 | Parámetro | Descripción | Valor por defecto |
 |-----------|-------------|------------------|
 | `-j` | Hilos en paralelo | 4 |
-| `-g “^${FWD}”` | Primer forward anclado al inicio de R1 | — |
-| `-G “^${RC_REV}”` | RC del primer reverse anclado al inicio de R2 | — |
+| `-g “^FWD...RC_REV”` | Linked adapter R1: primer F al inicio + primer R-rc al final | — |
+| `-G “^REV...RC_FWD”` | Linked adapter R2: primer R al inicio + primer F-rc al final | — |
 | `-e` | Tasa máxima de error al buscar el primer | 0.10 (10%) |
 | `-m` | Longitud mínima de la lectura tras el recorte | 40 bp |
 | `--discard-untrimmed` | Descarta lecturas sin primer | Opcional |
