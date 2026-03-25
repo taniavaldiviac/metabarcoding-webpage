@@ -23,38 +23,13 @@ archivos FASTQ usando herramientas bioinformáticas.
 
 ### Pasos principales
 
-1.  **Verificación de integridad de archivos**
-2.  **Conteo de lecturas**
-3.  **Análisis de calidad con FastQC y MultiQC**
-4.  **Revisión de resultados**
-5.  **Cortar primers con cutadapt**
-6.  **Revisión de resultados**
+1.  **Conteo de lecturas**
+2.  **Análisis de calidad con FastQC y MultiQC**
+3.  **Revisión de resultados**
+4.  **Cortar primers con cutadapt**
+5.  **Revisión de resultados**
 
-### **1. Verificación de integridad**
-
-Es una **verificación de integridad** por *checksum*:
-
--   Para cada archivo .fastq, generas un hash (una “huella” única de sus
-    bytes).
-
--   Guardas esas huellas en un manifiesto (checksums.sha256).
-
--   Luego shasum -a 256 -c checksums.sha256 recalcula la huella de cada
-    archivo presente y la compara con la esperada.
-
-``` bash
-find raw_fastqs -type f -name '*.fastq*' -print0 \
-  | sort -z \
-  | xargs -0 shasum -a 256 > checksums.sha256
-```
-
-Para verificar:
-
-``` bash
-shasum -a 256 -c checksums.sha256
-```
-
-### 2. Conteo de lecturas
+### 1. Conteo de lecturas
 
 Cada lectura ocupa 4 líneas en un archivo FASTQ. Para contar lecturas:
 
