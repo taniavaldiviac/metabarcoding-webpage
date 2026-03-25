@@ -470,13 +470,12 @@ Importante
 <section id="revisión-de-resultados-datos-crudos" class="level3">
 <h3 class="anchored" data-anchor-id="revisión-de-resultados-datos-crudos">3. Revisión de resultados (datos crudos)</h3>
 </section>
-<section id="transferir-el-html-a-la-computadora-local-usando-scp" class="level3">
-<h3 class="anchored" data-anchor-id="transferir-el-html-a-la-computadora-local-usando-scp">Transferir el HTML a la computadora local usando scp</h3>
-<p><strong>Desde tu terminal local:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/multiqc_report.html</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Transferir toda la carpeta FastQC:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="descargar-resultados-a-tu-computadora" class="level3">
+<h3 class="anchored" data-anchor-id="descargar-resultados-a-tu-computadora">Descargar resultados a tu computadora</h3>
+<p><strong>Desde tu terminal local</strong>, usa <code>rsync</code> para descargar toda la carpeta <code>final_data/</code>. Solo baja archivos nuevos o modificados:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-avz</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/ ~/Downloads/final_data/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Abre el reporte de MultiQC en tu navegador:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/final_data/multiqc/multiqc_report.html</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="line-block"><strong>Tips de revisión en MultiQC:</strong><br>
 - Per base sequence quality: define zonas de truncado (Q≥25–30).<br>
 - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.<br>
@@ -683,8 +682,9 @@ R2: [primer R 20bp]──amplicón 65bp──[primer F-rc 17bp]──adaptador..
 <h3 class="anchored" data-anchor-id="revisión-de-resultados-datos-recortados">5. Revisión de resultados (datos recortados)</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Descarga el reporte:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Descarga los resultados actualizados (desde tu terminal local):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-avz</span> usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/ ~/Downloads/final_data/</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/Downloads/final_data/multiqc_trimmed/multiqc_report.html</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>
