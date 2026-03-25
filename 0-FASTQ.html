@@ -587,30 +587,25 @@ CCCCCGGGGIII</code></pre>
 <p>En general, un puntaje <strong>Q ≥ 30</strong> se considera buena calidad (99.9% de precisión). En el paso de filtrado con DADA2 usamos este umbral para decidir dónde truncar las lecturas.</p>
 <hr>
 </section>
-<section id="lecturas-paired-end" class="level2">
-<h2 class="anchored" data-anchor-id="lecturas-paired-end">Lecturas paired-end</h2>
-<p>En secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando <strong>dos archivos</strong> por muestra:</p>
-<ul>
-<li><code>_R1_001.fastq</code> — lectura <strong>forward</strong> (de 5’ a 3’)</li>
-<li><code>_R2_001.fastq</code> — lectura <strong>reverse</strong> (de 3’ a 5’)</li>
-</ul>
-<pre><code>        ├──── R1 (forward) ────→
-5' ─────┤                       ├───── 3'
-        │    ◄── solapamiento ──►     │
-3' ─────┤                       ├───── 5'
-        ←──── R2 (reverse) ────┤</code></pre>
-<p>Las dos lecturas se <strong>solapan</strong> en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (<em>merge</em>) para reconstruir la secuencia completa.</p>
+<section id="limitaciones-de-la-calidad-phred" class="level2">
+<h2 class="anchored" data-anchor-id="limitaciones-de-la-calidad-phred">Limitaciones de la calidad Phred</h2>
+<p>La calidad Phred es una <strong>estimación probabilística basada en la señal de fluorescencia</strong>, no una garantía de que la base sea correcta. En general funciona — bases con Q10 tienen más errores que bases con Q30 — pero hay situaciones donde una base se lee mal aunque la señal parezca buena:</p>
+<p><strong>Errores de incorporación</strong>: la polimerasa incorpora el nucleótido equivocado durante la síntesis. La fluorescencia se lee correctamente (señal clara) pero la base ya era incorrecta. Q alto, base errónea.</p>
+<p><strong>Crosstalk de fluorescencia</strong>: los 4 fluoróforos (uno por base) tienen espectros que se solapan. A veces la señal de una G se confunde con T. El base-caller asigna Q alto porque la señal total es fuerte, pero eligió la base equivocada.</p>
+<p><strong>Errores de cluster</strong>: cada punto en el flowcell es un cluster de ~1,000 copias. Si durante la amplificación en puente algunas copias adquieren un error, el cluster emite una señal mixta. Si el error es minoritario, la señal dominante gana y Q es alto, pero la base puede ser incorrecta.</p>
+<p><strong>Errores de PCR</strong>: ocurren <strong>antes</strong> de la secuenciación, durante la amplificación de la librería. La polimerasa introdujo el error, así que todas las copias del cluster tienen el mismo error. Illumina lo lee con Q40 porque la señal es perfecta — pero la base está mal desde el inicio.</p>
+<p>Por estas razones, Illumina tiende a <strong>sobreestimar la calidad</strong> — el error real a Q30 puede ser 0.3-0.5% en vez del 0.1% teórico. Esto es lo que justifica que DADA2 aprenda su propio modelo de error directamente de tus datos, en lugar de confiar solo en los Q-scores.</p>
 <hr>
 </section>
 <section id="explorando-tus-archivos-fastq" class="level2">
 <h2 class="anchored" data-anchor-id="explorando-tus-archivos-fastq">Explorando tus archivos FASTQ</h2>
 <p>Para ver los primeros reads de un archivo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-8</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-8</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto muestra las primeras 2 lecturas (4 líneas cada una).</p>
 <p>Para contar el número de lecturas en un archivo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$((</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq<span class="va">)</span> <span class="op">/</span> <span class="dv">4</span> <span class="va">))</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$((</span> <span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> ~/metabarcoding-code/raw_fastqs/12S-GC-001-d1_1_S1_L001_R1_001.fastq<span class="va">)</span> <span class="op">/</span> <span class="dv">4</span> <span class="va">))</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Para ver cuántos archivos FASTQ tienes:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/metabarcoding-code/raw_fastqs/<span class="pp">*</span>.fastq <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/metabarcoding-code/raw_fastqs/<span class="pp">*</span>.fastq <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
 <section id="organización-de-los-archivos-en-el-curso" class="level2">

@@ -365,7 +365,21 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Longitud del amplicón</strong>: ~65 bp (sin primers)</li>
 <li><strong>Plataforma de secuenciación</strong>: Illumina MiSeq (lecturas paired-end 2×150 bp)</li>
 </ul>
+<section id="lecturas-paired-end" class="level3">
+<h3 class="anchored" data-anchor-id="lecturas-paired-end">Lecturas paired-end</h3>
+<p>En secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando <strong>dos archivos</strong> por muestra:</p>
+<ul>
+<li><code>_R1_001.fastq</code> — lectura <strong>forward</strong> (de 5’ a 3’)</li>
+<li><code>_R2_001.fastq</code> — lectura <strong>reverse</strong> (de 3’ a 5’)</li>
+</ul>
+<pre><code>        ├──── R1 (forward) ────→
+5' ─────┤                       ├───── 3'
+        │    ◄── solapamiento ──►     │
+3' ─────┤                       ├───── 5'
+        ←──── R2 (reverse) ────┤</code></pre>
+<p>Las dos lecturas se solapan en la región central del amplicón. En nuestro caso, con un amplicón de ~65 bp y lecturas de 150 bp, cada lectura cubre el amplicón completo — el solapamiento es total. Más adelante en el pipeline, DADA2 las une (<em>merge</em>) para reconstruir la secuencia completa.</p>
 <hr>
+</section>
 </section>
 <section id="principales-hallazgos" class="level2">
 <h2 class="anchored" data-anchor-id="principales-hallazgos">Principales hallazgos</h2>

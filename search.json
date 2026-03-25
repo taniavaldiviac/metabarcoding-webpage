@@ -680,11 +680,11 @@
     ]
   },
   {
-    "objectID": "0-FASTQ.html#lecturas-paired-end",
-    "href": "0-FASTQ.html#lecturas-paired-end",
+    "objectID": "0-FASTQ.html#limitaciones-de-la-calidad-phred",
+    "href": "0-FASTQ.html#limitaciones-de-la-calidad-phred",
     "title": "Archivos FASTQ: estructura y organización",
-    "section": "Lecturas paired-end",
-    "text": "Lecturas paired-end\nEn secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando dos archivos por muestra:\n\n_R1_001.fastq — lectura forward (de 5’ a 3’)\n_R2_001.fastq — lectura reverse (de 3’ a 5’)\n\n        ├──── R1 (forward) ────→\n5' ─────┤                       ├───── 3'\n        │    ◄── solapamiento ──►     │\n3' ─────┤                       ├───── 5'\n        ←──── R2 (reverse) ────┤\nLas dos lecturas se solapan en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (merge) para reconstruir la secuencia completa.",
+    "section": "Limitaciones de la calidad Phred",
+    "text": "Limitaciones de la calidad Phred\nLa calidad Phred es una estimación probabilística basada en la señal de fluorescencia, no una garantía de que la base sea correcta. En general funciona — bases con Q10 tienen más errores que bases con Q30 — pero hay situaciones donde una base se lee mal aunque la señal parezca buena:\nErrores de incorporación: la polimerasa incorpora el nucleótido equivocado durante la síntesis. La fluorescencia se lee correctamente (señal clara) pero la base ya era incorrecta. Q alto, base errónea.\nCrosstalk de fluorescencia: los 4 fluoróforos (uno por base) tienen espectros que se solapan. A veces la señal de una G se confunde con T. El base-caller asigna Q alto porque la señal total es fuerte, pero eligió la base equivocada.\nErrores de cluster: cada punto en el flowcell es un cluster de ~1,000 copias. Si durante la amplificación en puente algunas copias adquieren un error, el cluster emite una señal mixta. Si el error es minoritario, la señal dominante gana y Q es alto, pero la base puede ser incorrecta.\nErrores de PCR: ocurren antes de la secuenciación, durante la amplificación de la librería. La polimerasa introdujo el error, así que todas las copias del cluster tienen el mismo error. Illumina lo lee con Q40 porque la señal es perfecta — pero la base está mal desde el inicio.\nPor estas razones, Illumina tiende a sobreestimar la calidad — el error real a Q30 puede ser 0.3-0.5% en vez del 0.1% teórico. Esto es lo que justifica que DADA2 aprenda su propio modelo de error directamente de tus datos, en lugar de confiar solo en los Q-scores.",
     "crumbs": [
       "Sesiones",
       "Día 2",
@@ -852,7 +852,7 @@
     "href": "0-Datos.html#diseño-de-muestreo",
     "title": "Nuestros datos: eDNA de peces del Golfo de California",
     "section": "Diseño de muestreo",
-    "text": "Diseño de muestreo\n\n\n\nMapa de sitios de muestreo en el Golfo de California\n\n\n\nRegión: Golfo de California, México\nSitios de muestreo: 24 localidades distribuidas a lo largo del Golfo, cubriendo las regiones Norte, Central y Sur\nTipo de muestra: agua de mar (ADN ambiental)\nMarcador molecular: 12S rRNA (código de barras para peces)\nLongitud del amplicón: ~65 bp (sin primers)\nPlataforma de secuenciación: Illumina MiSeq (lecturas paired-end 2×150 bp)",
+    "text": "Diseño de muestreo\n\n\n\nMapa de sitios de muestreo en el Golfo de California\n\n\n\nRegión: Golfo de California, México\nSitios de muestreo: 24 localidades distribuidas a lo largo del Golfo, cubriendo las regiones Norte, Central y Sur\nTipo de muestra: agua de mar (ADN ambiental)\nMarcador molecular: 12S rRNA (código de barras para peces)\nLongitud del amplicón: ~65 bp (sin primers)\nPlataforma de secuenciación: Illumina MiSeq (lecturas paired-end 2×150 bp)\n\n\nLecturas paired-end\nEn secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando dos archivos por muestra:\n\n_R1_001.fastq — lectura forward (de 5’ a 3’)\n_R2_001.fastq — lectura reverse (de 3’ a 5’)\n\n        ├──── R1 (forward) ────→\n5' ─────┤                       ├───── 3'\n        │    ◄── solapamiento ──►     │\n3' ─────┤                       ├───── 5'\n        ←──── R2 (reverse) ────┤\nLas dos lecturas se solapan en la región central del amplicón. En nuestro caso, con un amplicón de ~65 bp y lecturas de 150 bp, cada lectura cubre el amplicón completo — el solapamiento es total. Más adelante en el pipeline, DADA2 las une (merge) para reconstruir la secuencia completa.",
     "crumbs": [
       "Sesiones",
       "Día 2",
