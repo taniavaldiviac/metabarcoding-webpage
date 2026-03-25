@@ -32,6 +32,23 @@ En este estudio se compararon los resultados de censos visuales subacuáticos y 
 - **Longitud del amplicón**: ~65 bp (sin primers)
 - **Plataforma de secuenciación**: Illumina MiSeq (lecturas paired-end 2×150 bp)
 
+### Lecturas paired-end
+
+En secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando **dos archivos** por muestra:
+
+- `_R1_001.fastq` — lectura **forward** (de 5' a 3')
+- `_R2_001.fastq` — lectura **reverse** (de 3' a 5')
+
+```
+        ├──── R1 (forward) ────→
+5' ─────┤                       ├───── 3'
+        │    ◄── solapamiento ──►     │
+3' ─────┤                       ├───── 5'
+        ←──── R2 (reverse) ────┤
+```
+
+Las dos lecturas se solapan en la región central del amplicón. En nuestro caso, con un amplicón de ~65 bp y lecturas de 150 bp, cada lectura cubre el amplicón completo — el solapamiento es total. Más adelante en el pipeline, DADA2 las une (*merge*) para reconstruir la secuencia completa.
+
 ---
 
 ## Principales hallazgos

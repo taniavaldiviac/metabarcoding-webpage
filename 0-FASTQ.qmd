@@ -84,22 +84,19 @@ En general, un puntaje **Q ≥ 30** se considera buena calidad (99.9% de precisi
 
 ---
 
-## Lecturas paired-end
+## Limitaciones de la calidad Phred
 
-En secuenciación Illumina paired-end, cada fragmento de ADN se lee desde ambos extremos, generando **dos archivos** por muestra:
+La calidad Phred es una **estimación probabilística basada en la señal de fluorescencia**, no una garantía de que la base sea correcta. En general funciona — bases con Q10 tienen más errores que bases con Q30 — pero hay situaciones donde una base se lee mal aunque la señal parezca buena:
 
-- `_R1_001.fastq` — lectura **forward** (de 5' a 3')
-- `_R2_001.fastq` — lectura **reverse** (de 3' a 5')
+**Errores de incorporación**: la polimerasa incorpora el nucleótido equivocado durante la síntesis. La fluorescencia se lee correctamente (señal clara) pero la base ya era incorrecta. Q alto, base errónea.
 
-```
-        ├──── R1 (forward) ────→
-5' ─────┤                       ├───── 3'
-        │    ◄── solapamiento ──►     │
-3' ─────┤                       ├───── 5'
-        ←──── R2 (reverse) ────┤
-```
+**Crosstalk de fluorescencia**: los 4 fluoróforos (uno por base) tienen espectros que se solapan. A veces la señal de una G se confunde con T. El base-caller asigna Q alto porque la señal total es fuerte, pero eligió la base equivocada.
 
-Las dos lecturas se **solapan** en la región central del amplicón. Más adelante en el pipeline, DADA2 las une (*merge*) para reconstruir la secuencia completa.
+**Errores de cluster**: cada punto en el flowcell es un cluster de ~1,000 copias. Si durante la amplificación en puente algunas copias adquieren un error, el cluster emite una señal mixta. Si el error es minoritario, la señal dominante gana y Q es alto, pero la base puede ser incorrecta.
+
+**Errores de PCR**: ocurren **antes** de la secuenciación, durante la amplificación de la librería. La polimerasa introdujo el error, así que todas las copias del cluster tienen el mismo error. Illumina lo lee con Q40 porque la señal es perfecta — pero la base está mal desde el inicio.
+
+Por estas razones, Illumina tiende a **sobreestimar la calidad** — el error real a Q30 puede ser 0.3-0.5% en vez del 0.1% teórico. Esto es lo que justifica que DADA2 aprenda su propio modelo de error directamente de tus datos, en lugar de confiar solo en los Q-scores.
 
 ---
 
