@@ -395,10 +395,10 @@ Importante
 <h3 class="anchored" data-anchor-id="pasos-principales">Pasos principales</h3>
 <ol type="1">
 <li><strong>Conteo de lecturas</strong></li>
-<li><strong>Análisis de calidad con FastQC y MultiQC</strong></li>
-<li><strong>Revisión de resultados</strong></li>
-<li><strong>Cortar primers con cutadapt</strong></li>
-<li><strong>Revisión de resultados</strong></li>
+<li><strong>Control de calidad con FastQC y MultiQC</strong></li>
+<li><strong>Revisión de resultados (datos crudos)</strong></li>
+<li><strong>Recorte de primers con Cutadapt</strong></li>
+<li><strong>Revisión de resultados (datos recortados)</strong></li>
 </ol>
 </section>
 <section id="conteo-de-lecturas" class="level3">
@@ -446,8 +446,8 @@ Importante
 <span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="fu">q</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La línea roja marca 10,000 lecturas — muestras por debajo merecen revisión antes de continuar.</p>
 </section>
-<section id="evaluación-de-calidad-fastqc-y-multiqc" class="level3">
-<h3 class="anchored" data-anchor-id="evaluación-de-calidad-fastqc-y-multiqc">3. Evaluación de calidad: FastQC y MultiQC</h3>
+<section id="control-de-calidad-con-fastqc-y-multiqc" class="level3">
+<h3 class="anchored" data-anchor-id="control-de-calidad-con-fastqc-y-multiqc">2. Control de calidad con FastQC y MultiQC</h3>
 </section>
 <section id="crear-directorios-y-correr-fastqc" class="level3">
 <h3 class="anchored" data-anchor-id="crear-directorios-y-correr-fastqc">Crear directorios y correr fastqc</h3>
@@ -467,8 +467,8 @@ Importante
 <h3 class="anchored" data-anchor-id="verificar-reporte-multiqc">Verificar reporte MultiQC</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> final_data/multiqc/multiqc_report.html <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"MultiQC OK"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="revisión-de-resultados" class="level3">
-<h3 class="anchored" data-anchor-id="revisión-de-resultados">4. Revisión de resultados</h3>
+<section id="revisión-de-resultados-datos-crudos" class="level3">
+<h3 class="anchored" data-anchor-id="revisión-de-resultados-datos-crudos">3. Revisión de resultados (datos crudos)</h3>
 </section>
 <section id="transferir-el-html-a-la-computadora-local-usando-scp" class="level3">
 <h3 class="anchored" data-anchor-id="transferir-el-html-a-la-computadora-local-usando-scp">Transferir el HTML a la computadora local usando scp</h3>
@@ -482,8 +482,8 @@ Importante
 - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.<br>
 - Length distribution: válida rango del amplicón esperado.</div>
 </section>
-<section id="cortar-primers-con-cutadapt" class="level3">
-<h3 class="anchored" data-anchor-id="cortar-primers-con-cutadapt">5. Cortar primers con Cutadapt</h3>
+<section id="recorte-de-primers-con-cutadapt" class="level3">
+<h3 class="anchored" data-anchor-id="recorte-de-primers-con-cutadapt">4. Recorte de primers con Cutadapt</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> scripts/02b-cutadapt.sh</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -537,30 +537,7 @@ R2: [primer R 20bp]──amplicón 65bp──[primer F-rc 17bp]──adaptador..
 </section>
 <section id="qué-pasa-con-lecturas-donde-no-se-encontró-el-primer" class="level4">
 <h4 class="anchored" data-anchor-id="qué-pasa-con-lecturas-donde-no-se-encontró-el-primer">¿Qué pasa con lecturas donde no se encontró el primer?</h4>
-<p>Por defecto, si cutadapt no encuentra el primer en una lectura, la conserva sin modificar. Con <code>--discard-untrimmed</code> esas lecturas se descartan completamente.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 36%">
-<col style="width: 63%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Opción</th>
-<th>Cuándo usarla</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Sin <code>--discard-untrimmed</code> (default)</td>
-<td>Cuando quieres conservar todas las lecturas y revisar después</td>
-</tr>
-<tr class="even">
-<td>Con <code>--discard-untrimmed</code></td>
-<td>Cuando tienes certeza de que todas las lecturas deben tener primer — lecturas sin primer son contaminación o artefactos</td>
-</tr>
-</tbody>
-</table>
-<p>Para metabarcoding con primers específicos se recomienda usar <code>--discard-untrimmed</code>: lecturas sin primer no corresponden al amplicón objetivo.</p>
+<p>Nuestro script usa <code>--discard-untrimmed</code>, que <strong>descarta</strong> las lecturas donde no se encontraron ambos primers. En metabarcoding esto es lo correcto: si una lectura no tiene los primers esperados, no corresponde al amplicón objetivo y es contaminación o un artefacto.</p>
 </section>
 <section id="lo-que-hace-el-script-02b-cutadapt.sh" class="level4">
 <h4 class="anchored" data-anchor-id="lo-que-hace-el-script-02b-cutadapt.sh">Lo que hace el script <code>02b-cutadapt.sh</code></h4>
@@ -617,8 +594,8 @@ R2: [primer R 20bp]──amplicón 65bp──[primer F-rc 17bp]──adaptador..
 </tr>
 <tr class="even">
 <td><code>--discard-untrimmed</code></td>
-<td>Descarta lecturas sin primer</td>
-<td>Opcional</td>
+<td>Descarta lecturas sin ambos primers</td>
+<td>Activado</td>
 </tr>
 <tr class="odd">
 <td><code>-o</code> / <code>-p</code></td>
@@ -702,8 +679,8 @@ R2: [primer R 20bp]──amplicón 65bp──[primer F-rc 17bp]──adaptador..
 </table>
 </section>
 </section>
-<section id="revisión-de-resultados-1" class="level3">
-<h3 class="anchored" data-anchor-id="revisión-de-resultados-1">6. Revisión de resultados</h3>
+<section id="revisión-de-resultados-datos-recortados" class="level3">
+<h3 class="anchored" data-anchor-id="revisión-de-resultados-datos-recortados">5. Revisión de resultados (datos recortados)</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="at">-q</span> <span class="at">-t</span> 4 <span class="at">-o</span> final_data/fastqc_trimmed for_dada2/<span class="pp">*</span>.fastq</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> final_data/fastqc_trimmed <span class="at">-o</span> final_data/multiqc_trimmed</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Descarga el reporte:</p>
