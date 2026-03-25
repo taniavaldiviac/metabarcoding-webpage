@@ -122,19 +122,18 @@ ls final_data/multiqc/multiqc_report.html && echo "MultiQC OK"
 
 ### 3. Revisión de resultados (datos crudos)
 
-### Transferir el HTML a la computadora local usando scp
+### Descargar resultados a tu computadora
 
-**Desde tu terminal local:**
+**Desde tu terminal local**, usa `rsync` para descargar toda la carpeta `final_data/`. Solo baja archivos nuevos o modificados:
 
 ``` bash
-scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc/multiqc_report.html ~/Downloads/
-open ~/Downloads/multiqc_report.html
+rsync -avz usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/ ~/Downloads/final_data/
 ```
 
-**Transferir toda la carpeta FastQC:**
+Abre el reporte de MultiQC en tu navegador:
 
 ``` bash
-scp -r usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/fastqc_local/
+open ~/Downloads/final_data/multiqc/multiqc_report.html
 ```
 
 | **Tips de revisión en MultiQC:**
@@ -259,8 +258,9 @@ fastqc -q -t 4 -o final_data/fastqc_trimmed for_dada2/*.fastq
 multiqc final_data/fastqc_trimmed -o final_data/multiqc_trimmed
 ```
 
-Descarga el reporte:
+Descarga los resultados actualizados (desde tu terminal local):
 
 ``` bash
-scp usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/multiqc_trimmed/multiqc_report.html ~/Downloads/
+rsync -avz usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/ ~/Downloads/final_data/
+open ~/Downloads/final_data/multiqc_trimmed/multiqc_report.html
 ```
