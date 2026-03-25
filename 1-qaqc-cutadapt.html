@@ -522,13 +522,15 @@ Importante
 </section>
 <section id="cómo-funciona-la-búsqueda-de-primers" class="level4">
 <h4 class="anchored" data-anchor-id="cómo-funciona-la-búsqueda-de-primers">¿Cómo funciona la búsqueda de primers?</h4>
-<p>Cutadapt busca la secuencia del primer dentro de cada lectura y recorta todo lo que está antes de ella (incluyendo el primer mismo). Dos conceptos clave:</p>
+<p>En nuestras lecturas, cada read contiene el amplicón flanqueado por ambos primers. Como las lecturas (150 bp) son más largas que el inserto (~102 bp), el secuenciador lee más allá del amplicón y entra en el primer del otro extremo:</p>
+<pre><code>R1: [primer F 17bp]──amplicón 65bp──[primer R-rc 20bp]──adaptador...
+R2: [primer R 20bp]──amplicón 65bp──[primer F-rc 17bp]──adaptador...</code></pre>
+<p>Cutadapt necesita recortar <strong>ambos primers</strong> de cada lectura — el del inicio (5’) y el del final (3’). Para esto usamos <strong>linked adapters</strong>, que buscan ambos primers simultáneamente y devuelven solo la secuencia entre ellos:</p>
 <ul>
-<li><strong>Anchoring (<code>^</code>):</strong> El símbolo <code>^</code> antes del primer le indica a cutadapt que el primer debe estar exactamente al inicio de la lectura. Sin <code>^</code>, buscaría el primer en cualquier posición, lo que puede producir recortes incorrectos.</li>
-<li><strong>Complemento reverso en R2:</strong> En secuenciación paired-end, R1 empieza con el primer forward y R2 empieza con el primer reverse. El script usa <code>-g “^${FWD}”</code> para R1 y <code>-G “^${RC_REV}”</code> para R2, donde <code>RC_REV</code> es el complemento reverso del primer reverse — que es lo que realmente aparece al inicio de R2.</li>
+<li><strong>R1</strong>: <code>-g “^FWD...RC_REV”</code> — busca primer F al inicio y reverse-complement del primer R al final</li>
+<li><strong>R2</strong>: <code>-G “^REV...RC_FWD”</code> — busca primer R al inicio y reverse-complement del primer F al final</li>
 </ul>
-<pre><code>R1: [FWD primer]----amplicón----►
-R2:                 ◄----amplicón----[RC del REV primer]</code></pre>
+<p>La sintaxis <code>^PRIMER1...PRIMER2</code> le dice a Cutadapt: “encuentra PRIMER1 anclado al inicio (<code>^</code>), encuentra PRIMER2 en cualquier posición después, y devuelve solo lo que hay entre ambos”.</p>
 <ul>
 <li><strong>Tasa de error (<code>-e</code>):</strong> Permite hasta un 10% de mismatches al buscar el primer. Esto es necesario porque los primers a veces tienen pequeñas variaciones entre muestras o errores de síntesis.</li>
 </ul>
@@ -594,13 +596,13 @@ R2:                 ◄----amplicón----[RC del REV primer]</code></pre>
 <td>4</td>
 </tr>
 <tr class="even">
-<td><code>-g “^${FWD}”</code></td>
-<td>Primer forward anclado al inicio de R1</td>
+<td><code>-g “^FWD...RC_REV”</code></td>
+<td>Linked adapter R1: primer F al inicio + primer R-rc al final</td>
 <td>—</td>
 </tr>
 <tr class="odd">
-<td><code>-G “^${RC_REV}”</code></td>
-<td>RC del primer reverse anclado al inicio de R2</td>
+<td><code>-G “^REV...RC_FWD”</code></td>
+<td>Linked adapter R2: primer R al inicio + primer F-rc al final</td>
 <td>—</td>
 </tr>
 <tr class="even">
