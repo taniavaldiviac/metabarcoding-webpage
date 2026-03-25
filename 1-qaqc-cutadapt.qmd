@@ -24,10 +24,10 @@ archivos FASTQ usando herramientas bioinformáticas.
 ### Pasos principales
 
 1.  **Conteo de lecturas**
-2.  **Análisis de calidad con FastQC y MultiQC**
-3.  **Revisión de resultados**
-4.  **Cortar primers con cutadapt**
-5.  **Revisión de resultados**
+2.  **Control de calidad con FastQC y MultiQC**
+3.  **Revisión de resultados (datos crudos)**
+4.  **Recorte de primers con Cutadapt**
+5.  **Revisión de resultados (datos recortados)**
 
 ### 1. Conteo de lecturas
 
@@ -88,7 +88,7 @@ q()
 
 La línea roja marca 10,000 lecturas — muestras por debajo merecen revisión antes de continuar.
 
-### 3. Evaluación de calidad: FastQC y MultiQC
+### 2. Control de calidad con FastQC y MultiQC
 
 ### Crear directorios y correr fastqc
 
@@ -120,7 +120,7 @@ multiqc final_data/fastqc -o final_data/multiqc
 ls final_data/multiqc/multiqc_report.html && echo "MultiQC OK"
 ```
 
-### 4. Revisión de resultados
+### 3. Revisión de resultados (datos crudos)
 
 ### Transferir el HTML a la computadora local usando scp
 
@@ -142,7 +142,7 @@ scp -r usrXX@200.23.162.240:/home/usrXX/metabarcoding-code/final_data/fastqc ~/f
 | - Adapter/Overrepresented/Primer content: confirma necesidad de recorte.
 | - Length distribution: válida rango del amplicón esperado.
 
-### 5. Cortar primers con Cutadapt
+### 4. Recorte de primers con Cutadapt
 
 ``` bash
 bash scripts/02b-cutadapt.sh
@@ -194,14 +194,7 @@ La sintaxis `^PRIMER1...PRIMER2` le dice a Cutadapt: “encuentra PRIMER1 anclad
 
 #### ¿Qué pasa con lecturas donde no se encontró el primer?
 
-Por defecto, si cutadapt no encuentra el primer en una lectura, la conserva sin modificar. Con `--discard-untrimmed` esas lecturas se descartan completamente.
-
-| Opción | Cuándo usarla |
-|--------|--------------|
-| Sin `--discard-untrimmed` (default) | Cuando quieres conservar todas las lecturas y revisar después |
-| Con `--discard-untrimmed` | Cuando tienes certeza de que todas las lecturas deben tener primer — lecturas sin primer son contaminación o artefactos |
-
-Para metabarcoding con primers específicos se recomienda usar `--discard-untrimmed`: lecturas sin primer no corresponden al amplicón objetivo.
+Nuestro script usa `--discard-untrimmed`, que **descarta** las lecturas donde no se encontraron ambos primers. En metabarcoding esto es lo correcto: si una lectura no tiene los primers esperados, no corresponde al amplicón objetivo y es contaminación o un artefacto.
 
 #### Lo que hace el script `02b-cutadapt.sh`
 
@@ -226,7 +219,7 @@ cat scripts/02b-cutadapt.sh
 | `-G “^REV...RC_FWD”` | Linked adapter R2: primer R al inicio + primer F-rc al final | — |
 | `-e` | Tasa máxima de error al buscar el primer | 0.10 (10%) |
 | `-m` | Longitud mínima de la lectura tras el recorte | 40 bp |
-| `--discard-untrimmed` | Descarta lecturas sin primer | Opcional |
+| `--discard-untrimmed` | Descarta lecturas sin ambos primers | Activado |
 | `-o` / `-p` | Archivos de salida R1 y R2 recortados | — |
 
 #### Interpretación del reporte
@@ -259,7 +252,7 @@ El reporte por muestra tiene tres métricas clave:
 | `Pairs written` < 30% | Muchas lecturas demasiado cortas tras el recorte — revisar `-m` o longitud del amplicón |
 | `Read 1/2 with adapter` ≈ 0% | La muestra probablemente no contiene el amplicón objetivo — posible blanco, contaminación cruzada o muestra incorrecta |
 
-### 6. Revisión de resultados
+### 5. Revisión de resultados (datos recortados)
 
 ``` bash
 fastqc -q -t 4 -o final_data/fastqc_trimmed for_dada2/*.fastq
