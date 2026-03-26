@@ -418,7 +418,12 @@ Rarefactamos al número de lecturas de la **muestra con menos reads** (excluyend
 Primero veamos cuántas lecturas tiene cada muestra:
 
 ```{r qc-rarefaccion, fig.width=9, fig.height=6}
-# Excluir controles (MOCK, CTR) y sitios SLG, LIB, BSN antes de rarefacer
+# Separar controles (MOCK, CTR) para análisis independiente
+ps_ctrl <- phyloseq::subset_samples(ps, grepl("MOCK|CTR", site_id, ignore.case = TRUE))
+ps_ctrl <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_ctrl) > 0, ps_ctrl)
+message("Muestras control separadas: ", phyloseq::nsamples(ps_ctrl))
+
+# Excluir controles y sitios SLG, LIB, BSN antes de rarefacer
 ps_filt <- phyloseq::subset_samples(
   ps,
   !site_id %in% c("SLG", "LIB", "BSN") & !grepl("MOCK|CTR", site_id, ignore.case = TRUE)
