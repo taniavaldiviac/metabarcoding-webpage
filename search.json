@@ -1212,7 +1212,7 @@
     "href": "3-reporte-v2.html",
     "title": "Análisis ecológico de comunidades de peces",
     "section": "",
-    "text": "Este reporte presenta el flujo completo de análisis ecológico de comunidades de peces en el Golfo de California a partir de datos de metabarcoding del gen 12S rDNA. Partiendo de los archivos .RData generados por el pipeline DADA2, construimos el objeto phyloseq, evaluamos la calidad de los datos, estandarizamos la profundidad de secuenciación y aplicamos análisis de diversidad alfa, composición taxonómica y diversidad beta. Todos los pasos siguen las mejores prácticas actuales para estudios de eDNA en ecología de comunidades.",
+    "text": "Este reporte presenta el flujo completo de análisis ecológico de comunidades de peces en el Golfo de California a partir de datos de metabarcoding del gen 12S rDNA. Partiendo de los archivos .RData generados por el pipeline DADA2, construimos el objeto phyloseq, evaluamos la calidad de los datos y aplicamos análisis de diversidad alfa, composición taxonómica y diversidad beta. En lugar de rarefacción, usamos abundancias relativas para los análisis composicionales e índices robustos (Chao1, ACE) para estimar riqueza, siguiendo las mejores prácticas actuales para estudios de eDNA en ecología de comunidades.",
     "crumbs": [
       "Sesiones",
       "Día 4",
