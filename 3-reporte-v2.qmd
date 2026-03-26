@@ -259,32 +259,38 @@ taxa2 <- taxa2 %>%
   dplyr::filter(!(Species == "Eukaryotic synthetic" | grepl("^NA sp$", Species)))
 
 # --- Curación geográfica ---
-# Extraer géneros presentes en la lista del GC
-fish_genera <- unique(sub(" .*", "", fish_species))
+# Para cada género en la lista del GC, contar cuántas especies tiene
+gc_by_genus <- split(fish_species, sub(" .*", "", fish_species))
+fish_genera <- names(gc_by_genus)
+
+# Géneros con una sola especie en el GC → se puede resolver la especie directamente
+gc_genus_unico <- Filter(function(x) length(x) == 1, gc_by_genus)
+gc_genus_unico_vec <- setNames(sapply(gc_genus_unico, `[[`, 1), names(gc_genus_unico))
 
 # Para cada ASV, decidir qué nivel taxonómico mantener:
-# 1. Si la especie está en la lista del GC → mantener tal cual
-# 2. Si la especie NO está pero el género SÍ → dejar como "Género sp."
-# 3. Si ni especie ni género están → dejar solo hasta familia (limpiar Genus y Species)
+# 1. Especie en la lista del GC → mantener tal cual
+# 2. Especie NO en GC, género SÍ con una sola especie → asignar esa especie
+# 3. Especie NO en GC, género SÍ con varias especies → dejar como "Género sp."
+# 4. Ni especie ni género en GC → limpiar hasta familia
 taxa2 <- taxa2 %>%
   dplyr::mutate(
-    in_gc_species = Species %in% fish_species,
-    in_gc_genus   = Genus %in% fish_genera,
-    # Aplicar reglas de curación
+    in_gc_species  = Species %in% fish_species,
+    in_gc_genus    = Genus %in% fish_genera,
+    genus_unico    = Genus %in% names(gc_genus_unico_vec),
     Species = dplyr::case_when(
-      is.na(Species)    ~ NA_character_,       # sin asignación, dejar NA
-      in_gc_species     ~ Species,             # especie confirmada en GC
-      in_gc_genus       ~ paste0(Genus, " sp."),  # género en GC, especie no
-      TRUE              ~ NA_character_        # ni género ni especie en GC
+      is.na(Species)              ~ NA_character_,
+      in_gc_species               ~ Species,
+      in_gc_genus & genus_unico   ~ gc_genus_unico_vec[Genus],
+      in_gc_genus                 ~ paste0(Genus, " sp."),
+      TRUE                        ~ NA_character_
     ),
     Genus = dplyr::case_when(
-      is.na(Genus)      ~ NA_character_,
-      in_gc_species     ~ Genus,
-      in_gc_genus       ~ Genus,
-      TRUE              ~ NA_character_        # género no está en GC, solo familia
+      is.na(Genus)   ~ NA_character_,
+      in_gc_genus    ~ Genus,
+      TRUE           ~ NA_character_
     )
   ) %>%
-  dplyr::select(-in_gc_species, -in_gc_genus)
+  dplyr::select(-in_gc_species, -in_gc_genus, -genus_unico)
 
 # Resumen de la curación
 n_sp_gc    <- sum(!is.na(taxa2$Species) & !grepl(" sp\\.$", taxa2$Species))
@@ -303,7 +309,8 @@ taxa_mat <- as.matrix(taxa2)
 La base de datos de referencia contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación geográfica contrasta cada asignación contra una lista de especies documentadas para la región:
 
 - **Especie en el GC** → se mantiene (ej. *Mycteroperca rosacea*)
-- **Género en el GC pero especie no** → se deja como *Mycteroperca* sp. (el género es correcto, pero la especie asignada no se distribuye aquí)
+- **Género en el GC, especie no, y el género tiene una sola especie en la lista** → se asigna esa especie (ej. *Elops* solo tiene *Elops affinis* en el GC, así que se resuelve directamente)
+- **Género en el GC, especie no, y el género tiene varias especies** → se deja como *Mycteroperca* sp. (el género es correcto, pero no podemos distinguir la especie)
 - **Ni género ni especie en el GC** → se mantiene solo la asignación a nivel de familia (la asignación a género/especie no es confiable para esta región)
 :::
 
