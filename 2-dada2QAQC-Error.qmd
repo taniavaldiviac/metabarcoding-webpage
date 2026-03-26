@@ -121,7 +121,39 @@ message("Checkpoint 2 guardado (Dereps)")
 
 **Qué hace:** estima las tasas de error específicas de **tu** run de secuenciación. La secuenciadora Illumina comete errores que dependen del tipo de cambio de base (A→C, A→G, etc.) y del Q-score de cada posición. `learnErrors()` aprende estas tasas directamente de tus datos — iterando hasta que las estimaciones estabilicen — para no usar valores genéricos que no reflejan el perfil real de tu equipo y reactivos.
 
-**¿Cómo sabe qué es error y qué es real?** Nunca lo sabe con certeza — usa la **abundancia** como proxy. Una secuencia que aparece 10,000 veces probablemente es real; una que aparece 3 veces y difiere en 1 base de una muy abundante probablemente es un error de esa. El algoritmo itera: en cada ronda usa las tasas actuales para separar errores de variantes reales, luego recalcula las tasas con esa separación. Cuando las tasas dejan de cambiar entre rondas, **convergió**.
+**¿Cómo construye la tabla de tasas?**
+
+Imagina que tienes esta lectura:
+
+```
+Secuencia real:  A T G C A T G
+Secuencia leída: A T G C C T G
+                             ↑
+                        error — leyó C en vez de A
+```
+
+La secuenciadora asigna un Q-score a esa posición — digamos Q20. Eso significa 1% de probabilidad de error. DADA2 registra ese evento: *"con Q20, vi un cambio A→C"*.
+
+Después de millones de bases, cuenta todos esos eventos:
+
+```
+A→C con Q20: ocurrió 500 veces de 50,000 posiciones = 1%
+A→C con Q30: ocurrió 50 veces de 50,000 posiciones  = 0.1%
+A→C con Q40: ocurrió 5 veces de 50,000 posiciones   = 0.01%
+```
+
+Hace eso para los 12 cambios posibles (A→C, A→G, A→T, C→A, C→G, C→T, G→A, G→C, G→T, T→A, T→C, T→G) y para cada nivel Q0–Q40. El resultado es la tabla que ves en `plotErrors` — 16 paneles, uno por cada combinación incluyendo A→A, C→C, etc.
+
+**El problema del huevo y la gallina**
+
+Para contar cuántas veces ocurrió A→C necesitas saber cuál era la base real — pero no la sabes, solo tienes lo que leyó la secuenciadora. ¿El A→C que observas es un error (la base real era A) o una variante real (la base realmente es C en ese organismo)? No puedes saberlo sin el modelo de error, y no puedes tener el modelo sin saberlo. DADA2 lo resuelve iterando:
+
+- **Ronda 0:** asume que TODO es error. Calcula las tasas iniciales con esa suposición
+- **Ronda 1:** con esas tasas evalúa cada secuencia — las muy abundantes probablemente son reales, las separa. Recalcula las tasas usando solo lo que considera errores
+- **Rondas siguientes:** repite. Cada vez la separación es más precisa y las tasas más confiables
+- **Convergencia:** cuando las tasas de la ronda N y N+1 son prácticamente idénticas, el modelo dejó de cambiar
+
+En nuestros datos Forward convergió en 9 rondas, Reverse en 14 — Reverse tarda más porque sus lecturas tienen mayor tasa de error y el modelo necesita más iteraciones para estabilizarse.
 
 Antes de lanzarlo, el pipeline valida que haya suficientes datos:
 
