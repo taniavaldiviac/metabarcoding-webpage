@@ -516,7 +516,7 @@
     "href": "2-dada2QAQC-Error.html#paso-2-guardar-checkpoint-después-de-dereplicación",
     "title": "Dada2 - Dereplicación e Inferencia de Errores",
     "section": "Paso 2 — Guardar checkpoint después de dereplicación",
-    "text": "Paso 2 — Guardar checkpoint después de dereplicación\nGuardamos un checkpoint con los objetos de dereplicación. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el filtrado ni la dereplicación.\n\nsave(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,\n     fastq_location, output_location, metadata_location,\n     derepFs, derepRs, n_unique_F, total_reads_F, compression_ratio,\n     file = file.path(output_location, \"rdata_output\",\n                      paste0(run_name, \"_\", primer.data$locus_shorthand[i], \"_checkpoint2_Dereps.RData\")))\nmessage(\"Checkpoint 2 guardado (Dereps)\")",
+    "text": "Paso 2 — Guardar checkpoint después de dereplicación\nGuardamos un checkpoint con los objetos de dereplicación. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el filtrado ni la dereplicación.\n\nsave(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,\n     fastq_location, output_location, metadata_location,\n     where_trim_all_Fs, where_trim_all_Rs,\n     derepFs, derepRs, n_unique_F, total_reads_F, compression_ratio,\n     file = file.path(output_location, \"rdata_output\",\n                      paste0(run_name, \"_\", primer.data$locus_shorthand[i], \"_checkpoint2_Dereps.RData\")))\nmessage(\"Checkpoint 2 guardado (Dereps)\")",
     "crumbs": [
       "Sesiones",
       "Día 3",

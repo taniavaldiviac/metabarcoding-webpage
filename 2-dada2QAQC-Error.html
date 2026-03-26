@@ -515,10 +515,11 @@ Nota
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>     fastq_location, output_location, metadata_location,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>     derepFs, derepRs, n_unique_F, total_reads_F, compression_ratio,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_Dereps.RData"</span>)))</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 2 guardado (Dereps)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>     where_trim_all_Fs, where_trim_all_Rs,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>     derepFs, derepRs, n_unique_F, total_reads_F, compression_ratio,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_Dereps.RData"</span>)))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 2 guardado (Dereps)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <hr>
 </section>
