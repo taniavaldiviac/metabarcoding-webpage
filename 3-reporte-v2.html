@@ -638,29 +638,28 @@ Nota
 <span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">in_gc_genus    =</span> Genus <span class="sc">%in%</span> fish_genera,</span>
 <span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">genus_unico    =</span> Genus <span class="sc">%in%</span> <span class="fu">names</span>(gc_genus_unico_vec),</span>
 <span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">Species =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(Species)              <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>      in_gc_species               <span class="sc">~</span> Species,</span>
-<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>      in_gc_genus <span class="sc">&amp;</span> genus_unico   <span class="sc">~</span> gc_genus_unico_vec[Genus],</span>
-<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>      in_gc_genus                 <span class="sc">~</span> <span class="fu">paste0</span>(Genus, <span class="st">" sp."</span>),</span>
-<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>                        <span class="sc">~</span> <span class="cn">NA_character_</span></span>
-<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genus =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(Genus)   <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
-<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>      in_gc_genus    <span class="sc">~</span> Genus,</span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>           <span class="sc">~</span> <span class="cn">NA_character_</span></span>
-<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>in_gc_species, <span class="sc">-</span>in_gc_genus, <span class="sc">-</span>genus_unico)</span>
-<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumen de la curación</span></span>
-<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>n_sp_gc    <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(taxa2<span class="sc">$</span>Species) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">" sp</span><span class="sc">\\</span><span class="st">.$"</span>, taxa2<span class="sc">$</span>Species))</span>
-<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>n_genus_sp <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="st">" sp</span><span class="sc">\\</span><span class="st">.$"</span>, taxa2<span class="sc">$</span>Species), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a>n_familia  <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(taxa2<span class="sc">$</span>Species) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(taxa2<span class="sc">$</span>Family))</span>
-<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs con especie confirmada en GC: "</span>, n_sp_gc)</span>
-<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a Género sp.: "</span>, n_genus_sp)</span>
-<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a familia: "</span>, n_familia)</span>
-<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a>taxa_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(taxa2)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>      in_gc_species               <span class="sc">~</span> Species,</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>      in_gc_genus <span class="sc">&amp;</span> genus_unico   <span class="sc">~</span> gc_genus_unico_vec[Genus],</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>      in_gc_genus                 <span class="sc">~</span> <span class="fu">paste0</span>(Genus, <span class="st">" sp."</span>),</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>                        <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genus =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(Genus)   <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>      in_gc_genus    <span class="sc">~</span> Genus,</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>           <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>in_gc_species, <span class="sc">-</span>in_gc_genus, <span class="sc">-</span>genus_unico)</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumen de la curación</span></span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>n_sp_gc    <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(taxa2<span class="sc">$</span>Species) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">" sp</span><span class="sc">\\</span><span class="st">.$"</span>, taxa2<span class="sc">$</span>Species))</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>n_genus_sp <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="st">" sp</span><span class="sc">\\</span><span class="st">.$"</span>, taxa2<span class="sc">$</span>Species), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>n_familia  <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(taxa2<span class="sc">$</span>Species) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(taxa2<span class="sc">$</span>Family))</span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs con especie confirmada en GC: "</span>, n_sp_gc)</span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a Género sp.: "</span>, n_genus_sp)</span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a familia: "</span>, n_familia)</span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>taxa_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(taxa2)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
