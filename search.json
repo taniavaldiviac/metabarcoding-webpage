@@ -480,7 +480,7 @@
     "href": "2-dada2QAQC-Error.html#configuración-del-entorno",
     "title": "Dada2 - Dereplicación e Inferencia de Errores",
     "section": "Configuración del entorno",
-    "text": "Configuración del entorno\n\nlibrary(dada2,     quietly = TRUE)\nlibrary(tidyverse, quietly = TRUE)\nlibrary(ShortRead)\n\nset.seed(42)\n\nCarga el checkpoint guardado al final del filtrado de calidad:\n\nsetwd(\"~/metabarcoding-code\")\n\nload(file.path(output_location, \"rdata_output\",\n               paste0(run_name, \"_\", primer.data$locus_shorthand[i], \"_checkpoint2_Dereps.RData\")))\nmessage(\"Checkpoint 2 cargado\")",
+    "text": "Configuración del entorno\n\nlibrary(dada2,     quietly = TRUE)\nlibrary(tidyverse, quietly = TRUE)\nlibrary(ShortRead)\n\nset.seed(42)\n\nCarga el checkpoint guardado al final del filtrado de calidad:\n\nsetwd(\"~/metabarcoding-code\")\n\noutput_location   &lt;- \"final_data\"\nmetadata_location &lt;- \"metadata\"\nprimer_csv        &lt;- file.path(metadata_location, \"primer_data.csv\")\nprimer.data       &lt;- readr::read_csv(primer_csv, show_col_types = FALSE)\ni                 &lt;- 1\n\n# El archivo se llama: AAAAMMDD_HHMM_12S_checkpoint2_Dereps.RData\n# Listar para ver el nombre exacto de tu corrida:\nlist.files(file.path(output_location, \"rdata_output\"), pattern = \"checkpoint2_Dereps\")\n\n# Reemplaza con el nombre de tu archivo:\nload(file.path(output_location, \"rdata_output\", \"20260325_1430_12S_checkpoint2_Dereps.RData\"))\nmessage(\"Checkpoint 2 cargado\")",
     "crumbs": [
       "Sesiones",
       "Día 3",
