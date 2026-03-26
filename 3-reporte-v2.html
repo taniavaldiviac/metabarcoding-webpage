@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -531,6 +531,59 @@ Nota
 </section>
 <section id="construcción-del-objeto-phyloseq" class="level2">
 <h2 class="anchored" data-anchor-id="construcción-del-objeto-phyloseq">3. Construcción del objeto phyloseq</h2>
+<p><strong>phyloseq</strong> es un paquete de R diseñado para el análisis de datos de secuenciación de amplicones (16S, 18S, ITS, 12S, etc.). Su función principal es integrar en un único objeto todas las capas de información de un estudio de microbiomas o comunidades: las abundancias de secuencias, la taxonomía y los metadatos de las muestras.</p>
+<section id="qué-es-el-objeto-phyloseq" class="level3">
+<h3 class="anchored" data-anchor-id="qué-es-el-objeto-phyloseq">¿Qué es el objeto phyloseq?</h3>
+<p>El objeto phyloseq es un contenedor que agrupa tres tablas que deben estar siempre sincronizadas entre sí:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Componente</th>
+<th>Función</th>
+<th>Dimensiones</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>otu_table</code></td>
+<td>Abundancias de cada ASV en cada muestra</td>
+<td>ASVs × muestras</td>
+</tr>
+<tr class="even">
+<td><code>tax_table</code></td>
+<td>Clasificación taxonómica de cada ASV</td>
+<td>ASVs × niveles taxonómicos</td>
+</tr>
+<tr class="odd">
+<td><code>sample_data</code></td>
+<td>Metadatos de las muestras (sitio, fecha, tratamiento, etc.)</td>
+<td>muestras × variables</td>
+</tr>
+</tbody>
+</table>
+<p>Opcionalmente puede incluir un cuarto componente:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Componente</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>refseq</code></td>
+<td>Secuencia nucleotídica de cada ASV</td>
+</tr>
+</tbody>
+</table>
+<p>La ventaja de este contenedor es que cualquier operación de filtrado o subsetting afecta a todas las tablas simultáneamente y de forma consistente. Por ejemplo, al filtrar para conservar solo muestras de un sitio, la tabla de abundancias, la taxonomía y los metadatos se reducen juntas — sin riesgo de desincronización.</p>
+<hr>
+</section>
 <section id="matrices-de-datos" class="level3">
 <h3 class="anchored" data-anchor-id="matrices-de-datos">Matrices de datos</h3>
 <p>Construimos las tres matrices que necesita phyloseq: abundancias (ASVs × muestras), taxonomía y metadata de muestras.</p>
