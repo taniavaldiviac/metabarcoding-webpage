@@ -254,9 +254,12 @@ res <- mapply(
 taxa2$Species <- sapply(res, `[[`, "species")
 taxa2$Order   <- sapply(res, `[[`, "order")
 
-# Filtrar artefactos
+# Filtrar artefactos (conservar Species=NA — la curación geográfica los resolverá)
 taxa2 <- taxa2 %>%
-  dplyr::filter(!(Species == "Eukaryotic synthetic" | grepl("^NA sp$", Species)))
+  dplyr::filter(
+    is.na(Species) |
+      (Species != "Eukaryotic synthetic" & !grepl("^NA sp$", Species))
+  )
 
 # --- Curación geográfica ---
 # Para cada género en la lista del GC, contar cuántas especies tiene
