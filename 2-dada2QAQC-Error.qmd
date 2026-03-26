@@ -19,24 +19,22 @@ library(ShortRead)
 set.seed(42)
 ```
 
-Carga el checkpoint guardado al final del filtrado de calidad. Como es una sesión nueva, primero define las rutas y luego busca el archivo automáticamente:
+Carga el checkpoint guardado al final del filtrado de calidad:
 
 ```{r eval=FALSE}
 setwd("~/metabarcoding-code")
 
 output_location   <- "final_data"
 metadata_location <- "metadata"
+primer_csv        <- file.path(metadata_location, "primer_data.csv")
+primer.data       <- readr::read_csv(primer_csv, show_col_types = FALSE)
+i                 <- 1
 
-# Buscar el checkpoint más reciente
-checkpoint_file <- tail(sort(
-  list.files(file.path(output_location, "rdata_output"),
-             pattern = "_checkpoint2_Dereps\\.RData$",
-             full.names = TRUE)
-), 1)
+# run_name viene guardado dentro del checkpoint — listar para ver el nombre exacto
+list.files(file.path(output_location, "rdata_output"), pattern = "checkpoint2_Dereps")
 
-stopifnot("No se encontró checkpoint de dereplicación" = length(checkpoint_file) > 0)
-load(checkpoint_file)
-message("Checkpoint cargado: ", basename(checkpoint_file))
+load(file.path(output_location, "rdata_output", "NOMBRE_DEL_ARCHIVO.RData"))
+message("Checkpoint 2 cargado")
 ```
 
 ---
