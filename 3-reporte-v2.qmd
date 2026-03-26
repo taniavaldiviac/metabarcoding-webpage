@@ -433,7 +433,7 @@ depth_df <- data.frame(
   reads   = phyloseq::sample_sums(ps_filt)
 ) %>% dplyr::arrange(reads)
 
-ggplot(depth_df, aes(x = reorder(site_id, reads), y = reads)) +
+gp_depth <- ggplot(depth_df, aes(x = reorder(site_id, reads), y = reads)) +
   geom_col(fill = "#3182bd", alpha = 0.85) +
   geom_hline(yintercept = min(depth_df$reads), linetype = "dashed",
              color = "#e6550d", linewidth = 0.8) +
@@ -445,6 +445,10 @@ ggplot(depth_df, aes(x = reorder(site_id, reads), y = reads)) +
   theme_minimal(base_size = 12) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
         plot.title  = element_text(face = "bold"))
+
+print(gp_depth)
+ggsave("final_data/reporte_ecologico/profundidad_secuenciacion.png",
+       gp_depth, width = 9, height = 5, dpi = 300)
 
 message("Rango de profundidad: ", scales::comma(min(depth_df$reads)),
         " – ", scales::comma(max(depth_df$reads)), " lecturas")
