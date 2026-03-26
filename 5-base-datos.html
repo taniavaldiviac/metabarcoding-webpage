@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -383,8 +383,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="visión-general-del-flujo-de-trabajo" class="level2">
 <h2 class="anchored" data-anchor-id="visión-general-del-flujo-de-trabajo">Visión general del flujo de trabajo</h2>
 <div class="cell" data-layout-align="default">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>flowchart TD</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    A[Paso 1: Búsqueda en NCBI]:::step --&gt; B[Paso 2: PCR virtual]</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    B:::step --&gt; C[Paso 3: Asignación de taxonomía]:::step</span>
@@ -392,7 +390,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    classDef step fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    classDef output fill:#d1fae5,stroke:#10b981,color:#064e3b</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div class="cell-output-display">
 <div>
 <p></p><figure class="figure"><p></p>
@@ -444,8 +441,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Mitogenomas completos</strong>: genomas mitocondriales (15,000–16,000 bp) de los cuales se extraerá la región del amplicón en el paso siguiente</li>
 </ul>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(insect)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Biostrings)</span>
@@ -458,12 +453,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>amp_len_max    <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>mito_len_min   <span class="ot">&lt;-</span> <span class="dv">15000</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>mito_len_max   <span class="ot">&lt;-</span> <span class="dv">16000</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>La búsqueda se construye combinando filtros:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>amp_query <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  restrict_taxon,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"(%s[All Fields] AND rRNA[Feature Key])"</span>, locus_name),</span>
@@ -479,17 +471,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"biomol_genomic[PROP]"</span>,</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">" AND "</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Las secuencias se descargan en lotes y se guardan en un solo archivo FASTA:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>s_amp  <span class="ot">&lt;-</span> rentrez<span class="sc">::</span><span class="fu">entrez_search</span>(<span class="at">db =</span> <span class="st">"nucleotide"</span>, <span class="at">term =</span> amp_query,  <span class="at">retmax =</span> <span class="dv">0</span>, <span class="at">use_history =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>s_mito <span class="ot">&lt;-</span> rentrez<span class="sc">::</span><span class="fu">entrez_search</span>(<span class="at">db =</span> <span class="st">"nucleotide"</span>, <span class="at">term =</span> mito_query, <span class="at">retmax =</span> <span class="dv">0</span>, <span class="at">use_history =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Hits amplicón: "</span>, s_amp<span class="sc">$</span>count, <span class="st">" | Hits mitogenomas: "</span>, s_mito<span class="sc">$</span>count)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>El resultado es un archivo FASTA con todas las secuencias descargadas en <code>metadata/All_Chordata_12S_Amplicon_plus_Mitogenomes.fasta</code>.</p>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
@@ -512,13 +500,10 @@ Tip
 <p>De las secuencias descargadas, muchas son mitogenomas completos. Necesitamos extraer solo la región que amplifican nuestros primers — esto es una <strong>PCR virtual</strong> (<em>in silico</em>).</p>
 <p>El script busca las posiciones de los primers forward y reverse en cada secuencia y extrae la región entre ellos:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Primers del marcador 12S (ajustar según tu estudio)</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>primer_F <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(<span class="fu">toupper</span>(<span class="st">"ACACCGCCCGTCACTCT"</span>))</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>primer_R <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">DNAString</span>(<span class="fu">toupper</span>(<span class="st">"CTTCCGGTACACTTACCATG"</span>))</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>primer_Rc <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">reverseComplement</span>(primer_R)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>El proceso:</p>
 <ol type="1">
@@ -528,8 +513,6 @@ Tip
 <li><strong>Renombrado</strong>: cada secuencia se renombra con formato <code>Especie|Accession</code> consultando NCBI</li>
 </ol>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Buscar primers en las secuencias</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fasta_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"metadata"</span>, <span class="st">"All_Chordata_12S_Amplicon_plus_Mitogenomes.fasta"</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>seqs <span class="ot">&lt;-</span> Biostrings<span class="sc">::</span><span class="fu">readDNAStringSet</span>(fasta_file)</span>
@@ -543,7 +526,6 @@ Tip
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Con ambos primers: "</span>, <span class="fu">length</span>(seqs_both), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Solo forward:      "</span>, <span class="fu">length</span>(seqs_forward_only), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>El resultado es un FASTA con los amplicones extraídos: <code>metadata/Amplicons_12S_virtualPCR_renamed.fasta</code>.</p>
 <div class="callout callout-style-default callout-warning no-icon callout-titled">
@@ -567,15 +549,12 @@ Advertencia
 <pre><code>&gt;Kingdom;Phylum;Class;Order;Family;Genus;Species
 ACGTACGT...</code></pre>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(taxize)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Clasificación taxonómica por lotes</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>species.list.ch <span class="ot">&lt;-</span> <span class="fu">as.character</span>(species.list<span class="sc">$</span>species)</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>batch_results <span class="ot">&lt;-</span> <span class="fu">classification</span>(species.list.ch, <span class="at">db =</span> <span class="st">"ncbi"</span>, <span class="at">rows =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>El script procesa los resultados por lotes y genera el archivo final: <code>metadata/12S_fish_taxonomy.fasta</code>.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">

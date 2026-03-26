@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -380,8 +380,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="paso-1-ensamblar-pares-con-mergepairs">Paso 1 — Ensamblar pares con <code>mergePairs()</code></h2>
 <p><code>mergePairs()</code> une R1 y R2 verificando que coincidan en la zona de solapamiento. Los pares que no coinciden se descartan - esto actua como filtro adicional de calidad.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mergers <span class="ot">&lt;-</span> <span class="fu">mergePairs</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  dadaFs, derepFs,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  dadaRs, derepRs,</span>
@@ -389,7 +387,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxMismatch =</span> <span class="dv">0</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <ul>
 <li><code>minOverlap = 12</code>: mínimo de bases solapantes (recomendado &gt;= 12 bp)</li>
@@ -397,11 +394,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Verás cuantas lecturas se ensamblan exitosamente por muestra. Un porcentaje bajo puede indicar que el recorte en <code>filterAndTrim</code> fue demasiado agresivo.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspeccionar el resultado del merge para la primera muestra</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mergers[[<span class="dv">1</span>]])</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Cada fila es una secuencia ensamblada única. Las columnas mas importantes:</p>
 <table class="caption-top table">
@@ -436,19 +430,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="paso-2-construir-la-tabla-de-secuencias">Paso 2 — Construir la tabla de secuencias</h2>
 <p><code>makeSequenceTable()</code> organiza los mergers en una matriz muestras x ASVs.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>seqtab <span class="ot">&lt;-</span> <span class="fu">makeSequenceTable</span>(mergers)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(seqtab)  <span class="co"># filas = muestras, columnas = ASVs únicos</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Deberías ver el número de muestras y el total de ASVs antes de remover quimeras.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribución de longitudes de las secuencias ensambladas</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">nchar</span>(<span class="fu">getSequences</span>(seqtab)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>La distribución debe estar centrada alrededor de la longitud esperada del amplicón. Si hay muchas secuencias de longitudes muy diferentes, puede indicar artefactos de PCR o problemas de merge.</p>
 <hr>
@@ -456,14 +444,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="paso-3-verificar-eficiencia-del-merge" class="level2">
 <h2 class="anchored" data-anchor-id="paso-3-verificar-eficiencia-del-merge">Paso 3 — Verificar eficiencia del merge</h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Porcentaje de lecturas ensambladas por muestra</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>merge_pct <span class="ot">&lt;-</span> <span class="fu">sapply</span>(mergers, <span class="cf">function</span>(m) {</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="fu">sum</span>(m<span class="sc">$</span>abundance[m<span class="sc">$</span>accept]) <span class="sc">/</span> <span class="fu">sum</span>(m<span class="sc">$</span>abundance) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(merge_pct)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <section id="interpretación" class="level3">
 <h3 class="anchored" data-anchor-id="interpretación">Interpretación</h3>

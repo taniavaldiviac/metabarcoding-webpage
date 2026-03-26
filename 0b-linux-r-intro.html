@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -745,8 +745,6 @@ Advertencia
 <h3 class="anchored" data-anchor-id="uso-general">Uso general</h3>
 <p>Iniciar R desde la terminal:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Desde la terminal de Linux, escribe:</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># R</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -754,7 +752,6 @@ Advertencia
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># El prompt de R es: &gt;</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Para salir de R:</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">q</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Al escribir código, uno o varios <code>#</code> al inicio de una línea hacen que R ignore el texto que le sigue. Usamos <code>#</code> para escribir comentarios y describir el código.</p>
 <hr>
@@ -762,8 +759,6 @@ Advertencia
 <section id="r-como-calculadora" class="level3">
 <h3 class="anchored" data-anchor-id="r-como-calculadora">R como calculadora</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sumar</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span>
@@ -772,17 +767,13 @@ Advertencia
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># restar '-'</span></span>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># multiplicar '*'</span></span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># dividir '/'</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Cuando tecleamos un comando incompleto, el prompt cambia de <code>&gt;</code> a <code>+</code>. No hay de qué preocuparse: podemos completar el comando o cancelarlo con <code>Esc</code> o <code>Ctrl + C</code>.</p>
 <p>R mantiene un historial de los comandos. Podemos acceder al historial con las flechas del cursor arriba y abajo.</p>
 <p>Para pedir ayuda sobre las funciones:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">help</span>(max)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>?max</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -790,20 +781,15 @@ Advertencia
 <h3 class="anchored" data-anchor-id="paquetes-y-librerías">Paquetes y librerías</h3>
 <p>Cada función está en un paquete. Hay paquetes básicos que se instalan por default y paquetes especializados que el usuario instala.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar un paquete para usar sus funciones</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stats)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>))</span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Podemos usar una función SIN cargar el paquete</span></span>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>stats<span class="sc">::</span><span class="fu">sd</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>En bioinformática existe el proyecto <a href="https://www.bioconductor.org/">Bioconductor</a> que desarrolla y comparte software de acceso libre para análisis de datos biológicos.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Instalar paquetes de CRAN (solo una vez)</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -812,7 +798,6 @@ Advertencia
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar paquetes (cada sesión)</span></span>
 <span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -820,18 +805,13 @@ Advertencia
 <h3 class="anchored" data-anchor-id="variables-y-vectores">Variables y vectores</h3>
 <p>Las variables se asignan con el operador <code>&lt;-</code>:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">2</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">3</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>x <span class="sc">+</span> y</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 5</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Los vectores solo pueden contener un tipo de dato:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Numérico</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>)</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(z)</span>
@@ -851,7 +831,6 @@ Advertencia
 <span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Eliminar variables</span></span>
 <span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(x)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Recomendaciones para nombrar variables:</p>
 <ul>
@@ -864,8 +843,6 @@ Advertencia
 <section id="comparaciones-y-operadores-lógicos" class="level3">
 <h3 class="anchored" data-anchor-id="comparaciones-y-operadores-lógicos">Comparaciones y operadores lógicos</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">3</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>a <span class="sc">==</span> pi   <span class="co"># igualdad → FALSE</span></span>
@@ -874,15 +851,12 @@ Advertencia
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>a <span class="sc">&gt;</span> pi    <span class="co"># mayor que → FALSE</span></span>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>a <span class="sc">&lt;=</span> pi   <span class="co"># menor o igual → TRUE</span></span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>a <span class="sc">&gt;=</span> pi   <span class="co"># mayor o igual → FALSE</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
 <section id="seleccionar-elementos-de-un-vector" class="level3">
 <h3 class="anchored" data-anchor-id="seleccionar-elementos-de-un-vector">Seleccionar elementos de un vector</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"E"</span>)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Usar corchetes para indexar</span></span>
@@ -902,15 +876,12 @@ Advertencia
 <span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>z[z <span class="sc">&gt;</span> <span class="dv">3</span>]</span>
 <span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  6</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
 <section id="funciones" class="level3">
 <h3 class="anchored" data-anchor-id="funciones">Funciones</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Una función para calcular el promedio</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>prom <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sum</span>(x) <span class="sc">/</span> <span class="fu">length</span>(x)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -927,15 +898,12 @@ Advertencia
 <span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="fu">prom.long</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">6</span>))</span>
 <span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
 <section id="directorio-de-trabajo" class="level3">
 <h3 class="anchored" data-anchor-id="directorio-de-trabajo">Directorio de trabajo</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtener el directorio de trabajo</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">getwd</span>()</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -948,7 +916,6 @@ Advertencia
 <span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Definir la ruta de un archivo en partes</span></span>
 <span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="fu">file.path</span>(mypath, <span class="st">"mis_datos.csv"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -956,8 +923,6 @@ Advertencia
 <h3 class="anchored" data-anchor-id="matrices-y-data.frames">Matrices y data.frames</h3>
 <p><strong>Matrices:</strong></p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">4</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(m1)</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(m1)</span>
@@ -967,12 +932,9 @@ Advertencia
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>m1[, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>)</span>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(m1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Nones"</span>, <span class="st">"Pares"</span>)</span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>m1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p><strong>Data.frames:</strong></p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear un data.frame</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">muestra =</span> <span class="fu">c</span>(<span class="st">"M1"</span>, <span class="st">"M2"</span>, <span class="st">"M3"</span>),</span>
@@ -986,7 +948,6 @@ Advertencia
 <span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrar filas</span></span>
 <span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>df[df<span class="sc">$</span>lecturas <span class="sc">&gt;</span> <span class="dv">10000</span>, ]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -1034,8 +995,6 @@ Advertencia
 <h3 class="anchored" data-anchor-id="estructura-de-un-script-en-r">Estructura de un script en R</h3>
 <p>Un script bien organizado tiene estas secciones:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================================</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Nombre del script: 03-dada2-pipeline.R</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Descripción: Pipeline DADA2 para metabarcoding</span></span>
@@ -1053,7 +1012,6 @@ Advertencia
 <span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Análisis ------------------------------------------------</span></span>
 <span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ... código del pipeline ...</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>

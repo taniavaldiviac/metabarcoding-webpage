@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -383,8 +383,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Después del filtrado, cada muestra tiene miles de lecturas — pero muchas de ellas son <strong>idénticas</strong> entre sí. La dereplicación agrupa todas las lecturas con exactamente la misma secuencia en una sola entrada, y registra cuántas veces apareció cada una (su <strong>abundancia</strong>).</p>
 <p>Por ejemplo, si una muestra tiene 200,000 lecturas pero solo 15,000 secuencias únicas, la dereplicación reduce el volumen de datos de 200,000 a 15,000 entradas, cada una con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>exists <span class="ot">&lt;-</span> <span class="fu">file.exists</span>(filtFs) <span class="sc">&amp;</span> <span class="fu">file.exists</span>(filtRs)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>filtFs <span class="ot">&lt;-</span> filtFs[exists]</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>filtRs <span class="ot">&lt;-</span> filtRs[exists]</span>
@@ -394,15 +392,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>derepRs <span class="ot">&lt;-</span> <span class="fu">derepFastq</span>(filtRs, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(derepFs) <span class="ot">&lt;-</span> sample.names</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(derepRs) <span class="ot">&lt;-</span> sample.names</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="diagnóstico-de-la-dereplicación" class="level3">
 <h3 class="anchored" data-anchor-id="diagnóstico-de-la-dereplicación">Diagnóstico de la dereplicación</h3>
 <p>Revisamos los resultados de la primera muestra para entender qué obtenemos:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>n_unique_F     <span class="ot">&lt;-</span> <span class="fu">length</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>total_reads_F  <span class="ot">&lt;-</span> <span class="fu">sum</span>(derepFs[[<span class="dv">1</span>]]<span class="sc">$</span>uniques)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>compression_ratio <span class="ot">&lt;-</span> <span class="fu">round</span>(n_unique_F <span class="sc">/</span> total_reads_F <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
@@ -415,7 +410,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"INFO: Baja diversidad (&lt; 1% únicas). Normal en muestras con especies dominantes."</span>)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (compression_ratio <span class="sc">&gt;</span> <span class="dv">50</span>)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Alta diversidad inusual (&gt; 50% únicas). Revisa calidad del filtrado o contaminación."</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>En nuestros datos, los resultados se ven así:</p>
 <pre><code>Secuencias únicas Forward: 17428
@@ -477,8 +471,6 @@ Nota
 <h3 class="anchored" data-anchor-id="guardar-estadísticas">Guardar estadísticas</h3>
 <p>El pipeline guarda las estadísticas de dereplicación para todas las muestras en <code>final_data/logs/</code>:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>derep_stats <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sample        =</span> sample.names,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unique_seqs_F =</span> <span class="fu">sapply</span>(derepFs, <span class="cf">function</span>(x) <span class="fu">length</span>(x<span class="sc">$</span>uniques)),</span>
@@ -495,7 +487,6 @@ Nota
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_derep_stats.csv"</span>)),</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -511,8 +502,6 @@ Nota
 <h3 class="anchored" data-anchor-id="preparación-definir-parámetros-y-validar-datos">Preparación: definir parámetros y validar datos</h3>
 <p>Antes de lanzar <code>learnErrors()</code>, el pipeline define los parámetros de entrenamiento y verifica que haya suficientes datos para construir un modelo confiable:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>nbases_target <span class="ot">&lt;-</span> <span class="fl">1e8</span>   <span class="co"># 100 millones de bases (aumentar si tienes &gt; 50 muestras)</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>max_consist   <span class="ot">&lt;-</span> <span class="dv">25</span>    <span class="co"># más iteraciones que el default (10) para forzar convergencia</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -524,7 +513,6 @@ Nota
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (total_bases_F <span class="sc">&lt;</span> <span class="fl">1e6</span> <span class="sc">||</span> total_bases_R <span class="sc">&lt;</span> <span class="fl">1e6</span>)</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Datos muy limitados (&lt; 1 MB). El modelo puede ser inestable."</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>En nuestros datos, la salida se ve así:</p>
 <pre><code>Forward disponible: ~95.2 MB
@@ -584,8 +572,6 @@ Nota
 </tbody>
 </table>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>errF <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learnErrors</span>(filtFs, <span class="at">nbases =</span> nbases_target, <span class="at">randomize =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">multithread =</span> <span class="dv">2</span>, <span class="at">MAX_CONSIST =</span> max_consist, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
@@ -599,7 +585,6 @@ Nota
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error al aprender modelo Reverse: "</span>, <span class="fu">conditionMessage</span>(e))</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Este paso puede tardar varios minutos dependiendo del volumen de datos y el número de núcleos disponibles. La salida en consola te da información importante sobre cómo se construyó el modelo:</p>
 <pre><code>103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.
@@ -699,8 +684,6 @@ Tip
 </ul>
 <p>Cada celda contiene la probabilidad estimada de esa transición en ese nivel de calidad. Por ejemplo, la celda <code>[A2C, Q30]</code> dice “la probabilidad de que una A real se lea como C cuando la calidad es Q30”.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Validar modelo Forward</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(errF<span class="sc">$</span>err_out)) {</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  rn         <span class="ot">&lt;-</span> <span class="fu">rownames</span>(errF<span class="sc">$</span>err_out)</span>
@@ -720,7 +703,6 @@ Tip
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">"Modelo de error OK."</span>)</span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p><strong>¿Qué hace este código paso a paso?</strong></p>
 <ol type="1">
@@ -778,11 +760,8 @@ Nota
 <h2 class="anchored" data-anchor-id="paso-3-visualizar-el-modelo-de-error">Paso 3 — Visualizar el modelo de error</h2>
 <p>El gráfico de errores muestra las 12 posibles transiciones (A-&gt;C, A-&gt;G, etc.). Los <strong>puntos rojos</strong> son las tasas observadas; la <strong>linea negra</strong> es el modelo ajustado. Deben seguir el mismo patrón: la tasa de error cae conforme aumenta la calidad (Q-score).</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errF, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Al ejecutar estas líneas verás advertencias como estas:</p>
 <pre><code>Warning messages:
@@ -810,8 +789,6 @@ Tip
 </div>
 <p>El pipeline guarda estas gráficas automáticamente en <code>final_data/logs/</code>:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_errF.png"</span>)),</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
@@ -823,7 +800,6 @@ Tip
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">1200</span>, <span class="at">res =</span> <span class="dv">150</span>)</span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">plotErrors</span>(errR, <span class="at">nominalQ =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>En nuestros datos, la gráfica Forward se ve así:</p>
 <div class="quarto-figure quarto-figure-center">
@@ -896,22 +872,16 @@ Nota
 <h2 class="anchored" data-anchor-id="paso-4-guardar-checkpoint-después-de-learnerrors">Paso 4 — Guardar checkpoint después de learnErrors</h2>
 <p>El pipeline guarda automáticamente un checkpoint <code>.RData</code> después de <code>learnErrors()</code>. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el paso más lento.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(errF, errR, derepFs, derepRs, filtFs, filtRs, sample.names, primer.data, run_name, out,</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 2 guardado (learnErrors)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Para reanudar desde este punto en otra sesión:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint2_learnErrors.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -932,11 +902,8 @@ Nota
 <section id="ejecutar-la-inferencia" class="level3">
 <h3 class="anchored" data-anchor-id="ejecutar-la-inferencia">Ejecutar la inferencia</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dadaFs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepFs, <span class="at">err =</span> errF, <span class="at">multithread =</span> <span class="dv">2</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Al finalizar verás para cada muestra un resumen como este:</p>
 <pre><code>Sample 1 - 228534 reads in 17428 unique sequences.
@@ -946,11 +913,8 @@ Sample 2 - 175230 reads in 14302 unique sequences.
 <section id="explorar-los-resultados" class="level3">
 <h3 class="anchored" data-anchor-id="explorar-los-resultados">Explorar los resultados</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumen de la primera muestra</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dadaFs[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>La salida te muestra cuántas ASVs se infirieron de cuántas secuencias únicas. Por ejemplo:</p>
 <pre><code>dada-class: object describing DADA2 denoising results
@@ -1020,22 +984,16 @@ Nota
 <section id="paso-6-guardar-checkpoint-después-de-dada" class="level2">
 <h2 class="anchored" data-anchor-id="paso-6-guardar-checkpoint-después-de-dada">Paso 6 — Guardar checkpoint después de dada()</h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out,</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i],</span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"_checkpoint3_dada.RData"</span>)))</span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Checkpoint 3 guardado (dada)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Para reanudar desde este punto antes de <code>mergePairs()</code>:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_checkpoint3_dada.RData"</span>)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>

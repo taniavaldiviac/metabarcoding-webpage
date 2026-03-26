@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -415,20 +415,14 @@ Nota
 <section id="preparación-del-espacio-de-trabajo" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-del-espacio-de-trabajo">Preparación del espacio de trabajo</h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phyloseq)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(decontam)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Cargamos un objeto <code>phyloseq</code> de ejemplo con 1951 ASVs y 569 muestras:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"MUClite.rds"</span>, <span class="at">package =</span> <span class="st">"decontam"</span>))</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ps</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>La tabla de metadatos contiene:</p>
 <ul>
@@ -436,17 +430,12 @@ Nota
 <li><code>Sample_or_Control</code> — tipo de muestra (experimental o control)</li>
 </ul>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">sample_data</span>(ps))</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">get_variable</span>(ps, quant_reading))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">get_variable</span>(ps, Sample_or_Control))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Revisamos el número de lecturas por muestra:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">sample_data</span>(ps))</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>LibrarySize <span class="ot">&lt;-</span> <span class="fu">sample_sums</span>(ps)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="fu">order</span>(df<span class="sc">$</span>LibrarySize), ]</span>
@@ -454,7 +443,6 @@ Nota
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> Index, <span class="at">y =</span> LibrarySize, <span class="at">color =</span> Sample_or_Control)) <span class="sc">+</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Las muestras experimentales tienen más de 10,000 lecturas, mientras que los controles tienen menos.</p>
 <hr>
@@ -463,42 +451,30 @@ Nota
 <h2 class="anchored" data-anchor-id="método-1-detección-por-frecuencia">Método 1: Detección por frecuencia</h2>
 <p>Se basa en la distribución de la frecuencia de cada ASV en función de la concentración de ADN. Un contaminante tiene frecuencia <strong>inversamente proporcional</strong> a la concentración: al aumentar el ADN, el contaminante disminuye.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>contamdf.freq <span class="ot">&lt;-</span> <span class="fu">isContaminant</span>(ps, <span class="at">method =</span> <span class="st">"frequency"</span>, <span class="at">conc =</span> <span class="st">"quant_reading"</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(contamdf.freq)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(contamdf.freq<span class="sc">$</span>contaminant)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Visualizamos un ASV no contaminante (seq1) vs uno contaminante (seq3):</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_frequency</span>(ps, <span class="fu">taxa_names</span>(ps)[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)], <span class="at">conc =</span> <span class="st">"quant_reading"</span>) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"DNA Concentration (PicoGreen fluorescent intensity)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <ul>
 <li><strong>Línea punteada</strong>: modelo de secuencia no contaminante (frecuencia independiente de la concentración)</li>
 <li><strong>Línea roja</strong>: modelo de secuencia contaminante (frecuencia inversamente proporcional)</li>
 </ul>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_frequency</span>(ps, <span class="fu">taxa_names</span>(ps)[<span class="fu">sample</span>(<span class="fu">which</span>(contamdf.freq<span class="sc">$</span>contaminant), <span class="dv">3</span>)],</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">conc =</span> <span class="st">"quant_reading"</span>) <span class="sc">+</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"DNA Concentration (PicoGreen fluorescent intensity)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Para eliminar los contaminantes:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ps</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ps.noncontam <span class="ot">&lt;-</span> <span class="fu">prune_taxa</span>(<span class="sc">!</span>contamdf.freq<span class="sc">$</span>contaminant, ps)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ps.noncontam</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -506,26 +482,18 @@ Nota
 <h2 class="anchored" data-anchor-id="método-2-detección-por-prevalencia">Método 2: Detección por prevalencia</h2>
 <p>Compara la presencia/ausencia de cada ASV entre muestras experimentales y controles negativos. Una secuencia que aparece más en los controles que en las muestras reales probablemente es contaminante.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span>(ps)<span class="sc">$</span>is.neg <span class="ot">&lt;-</span> <span class="fu">sample_data</span>(ps)<span class="sc">$</span>Sample_or_Control <span class="sc">==</span> <span class="st">"Control Sample"</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>contamdf.prev <span class="ot">&lt;-</span> <span class="fu">isContaminant</span>(ps, <span class="at">method =</span> <span class="st">"prevalence"</span>, <span class="at">neg =</span> <span class="st">"is.neg"</span>)</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(contamdf.prev<span class="sc">$</span>contaminant)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Se puede ajustar el umbral con <code>threshold</code>:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>contamdf.prev05 <span class="ot">&lt;-</span> <span class="fu">isContaminant</span>(ps, <span class="at">method =</span> <span class="st">"prevalence"</span>, <span class="at">neg =</span> <span class="st">"is.neg"</span>, <span class="at">threshold =</span> <span class="fl">0.5</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(contamdf.prev05<span class="sc">$</span>contaminant)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Visualización de prevalencia en controles vs muestras reales:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ps.pa <span class="ot">&lt;-</span> <span class="fu">transform_sample_counts</span>(ps, <span class="cf">function</span>(abund) <span class="dv">1</span> <span class="sc">*</span> (abund <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ps.pa.neg <span class="ot">&lt;-</span> <span class="fu">prune_samples</span>(<span class="fu">sample_data</span>(ps.pa)<span class="sc">$</span>Sample_or_Control <span class="sc">==</span> <span class="st">"Control Sample"</span>, ps.pa)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ps.pa.pos <span class="ot">&lt;-</span> <span class="fu">prune_samples</span>(<span class="fu">sample_data</span>(ps.pa)<span class="sc">$</span>Sample_or_Control <span class="sc">==</span> <span class="st">"True Sample"</span>, ps.pa)</span>
@@ -540,7 +508,6 @@ Nota
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Prevalencia (Controles negativos)"</span>) <span class="sc">+</span></span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Prevalencia (Muestras reales)"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>

@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -424,14 +424,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="reconstrucción-del-objeto-phyloseq">Reconstrucción del objeto phyloseq</h2>
 <p>Procesaremos el archivo <code>.uc</code> para organizar la información de los OTUs en un nuevo objeto <code>phyloseq</code>.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(phyloseq)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <section id="procesar-archivo-uc" class="level3">
 <h3 class="anchored" data-anchor-id="procesar-archivo-uc">Procesar archivo uc</h3>
@@ -480,8 +477,6 @@ S   1   313   *   *   *   *   *   ASV_0002   *
 H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <p>Las primeras dos líneas son otureps (tipo S). La tercera es un miembro del cluster 1 (tipo H) con 99% de identidad con ASV_0002.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>uc_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"final_data/otus_vsearch/otus_0.97.uc"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>uc_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Type"</span>, <span class="st">"clus_ID"</span>, <span class="st">"len"</span>, <span class="st">"id_pct"</span>, <span class="st">"strand"</span>,</span>
@@ -494,16 +489,12 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de OTUs (otureps)</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(uc.df<span class="sc">$</span>Type)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identificar otureps y su cluster</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>oturep.df <span class="ot">&lt;-</span> uc.df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Type <span class="sc">%in%</span> <span class="st">"S"</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(clus_ID, ASV_ID)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>oturepID <span class="ot">&lt;-</span> oturep.df <span class="sc">|&gt;</span> <span class="fu">pull</span>(ASV_ID)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(oturepID)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -511,25 +502,19 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <h3 class="anchored" data-anchor-id="cargar-objeto-phyloseq-inicial">Cargar objeto phyloseq inicial</h3>
 <p>Cargamos el objeto phyloseq generado por el pipeline DADA2 y extraemos los componentes correspondientes a los otureps:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar objeto phyloseq (guardado antes de colapsar por especie)</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"final_data/otus_vsearch/phyloseq_pre_collapse.RData"</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ps.asv <span class="ot">&lt;-</span> ps</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>ps.asv</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset: solo los otureps</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ps.sub <span class="ot">&lt;-</span> <span class="fu">subset_taxa</span>(ps.asv, <span class="fu">taxa_names</span>(ps.asv) <span class="sc">%in%</span> oturepID)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>oturep.seq <span class="ot">&lt;-</span> <span class="fu">refseq</span>(ps.sub)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>oturep.tax <span class="ot">&lt;-</span> <span class="fu">tax_table</span>(ps.sub)</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>oturep.md  <span class="ot">&lt;-</span> <span class="fu">sample_data</span>(ps.sub)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -537,8 +522,6 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <h3 class="anchored" data-anchor-id="colapsar-conteos-por-otu">Colapsar conteos por OTU</h3>
 <p>Agrupamos (sumamos) las lecturas de todas las ASVs que pertenecen al mismo cluster:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de conteos original</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>conteos.ini <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">otu_table</span>(ps.asv), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -564,15 +547,12 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"SampleID"</span>)</span>
 <span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>conteos.sum <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(conteos.sum)</span>
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(conteos.sum)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
 <section id="construir-nuevo-objeto-phyloseq" class="level3">
 <h3 class="anchored" data-anchor-id="construir-nuevo-objeto-phyloseq">Construir nuevo objeto phyloseq</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ASV  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(conteos.sum, <span class="at">taxa_are_rows =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>TAXA <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_table</span>(oturep.tax)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>SEQ  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">refseq</span>(oturep.seq)</span>
@@ -580,7 +560,6 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>ps.otu <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">phyloseq</span>(ASV, TAXA, SEQ, MD)</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>ps.otu</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -588,8 +567,6 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <section id="comparar-resolución-taxonómica-asvs-vs-otus" class="level2">
 <h2 class="anchored" data-anchor-id="comparar-resolución-taxonómica-asvs-vs-otus">Comparar resolución taxonómica: ASVs vs OTUs</h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>asv.tax <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">tax_table</span>(ps.asv), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>otu.tax <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">tax_table</span>(ps.otu), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -608,7 +585,6 @@ H   1   313   99.0  +   0   0   312M  ASV_0004   ASV_0002</code></pre>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.5</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Número de taxones identificados por tipo de análisis"</span>,</span>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Número de taxones"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">

@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -392,8 +392,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="paso-1-asignar-taxonomía-con-assigntaxonomy" class="level2">
 <h2 class="anchored" data-anchor-id="paso-1-asignar-taxonomía-con-assigntaxonomy">Paso 1 — Asignar taxonomía con <code>assignTaxonomy()</code></h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tax_location <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, primer.data<span class="sc">$</span>db_name[i])</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(tax_location)) {</span>
@@ -408,7 +406,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputBootstraps =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose          =</span> <span class="cn">TRUE</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <ul>
 <li><code>tryRC = TRUE</code>: prueba también el complemento reverso de cada ASV — importante para marcadores que pueden amplificarse en cualquier orientación</li>
@@ -421,8 +418,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="paso-2-verificar-el-resultado" class="level2">
 <h2 class="anchored" data-anchor-id="paso-2-verificar-el-resultado">Paso 2 — Verificar el resultado</h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Separar taxonomía y bootstraps</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tax_mat  <span class="ot">&lt;-</span> at<span class="sc">$</span>tax</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>boot_mat <span class="ot">&lt;-</span> at<span class="sc">$</span>boot</span>
@@ -431,21 +426,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"Sequence"</span>)</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tax_df)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Porcentaje de ASVs asignados por nivel taxonómico</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ranks <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Kingdom"</span>, <span class="st">"Phylum"</span>, <span class="st">"Class"</span>, <span class="st">"Order"</span>, <span class="st">"Family"</span>, <span class="st">"Genus"</span>, <span class="st">"Species"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pct_assigned <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="sc">!</span><span class="fu">is.na</span>(tax_mat)) <span class="sc">/</span> <span class="fu">nrow</span>(tax_mat) <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(pct_assigned, <span class="dv">1</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>El pipeline guarda automáticamente el porcentaje de ASVs <strong>sin</strong> asignación por nivel en <code>final_data/logs/</code>:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pct_unassigned <span class="ot">&lt;-</span> <span class="fu">vapply</span>(ranks, <span class="cf">function</span>(rk) {</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  col <span class="ot">&lt;-</span> tax_df[[rk]]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(<span class="fu">is.na</span>(col) <span class="sc">|</span> col <span class="sc">==</span> <span class="st">""</span>)</span>
@@ -456,15 +445,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_location, <span class="st">"logs"</span>,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_pct_unassigned.csv"</span>))</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
 <section id="paso-3-guardar-archivos-de-taxonomía" class="level2">
 <h2 class="anchored" data-anchor-id="paso-3-guardar-archivos-de-taxonomía">Paso 3 — Guardar archivos de taxonomía</h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>taxonomy_file  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_taxonomy_output.csv"</span>))</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>bootstrap_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
@@ -484,7 +470,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Taxonomía guardada en: "</span>, taxonomy_file)</span>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Bootstraps guardados en: "</span>, bootstrap_file)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -492,8 +477,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="paso-4-guardar-insumos-para-phyloseq-.rdata">Paso 4 — Guardar insumos para phyloseq (.RData)</h2>
 <p>El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo <code>.RData</code>. Esto permite continuar el análisis en otra sesión sin repetir los pasos anteriores.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparar matrices para phyloseq</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>otu_mat <span class="ot">&lt;-</span> cleaned.seqtab.nochim</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">storage.mode</span>(otu_mat) <span class="ot">&lt;-</span> <span class="st">"integer"</span></span>
@@ -549,7 +532,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> rdata_path, <span class="at">compress =</span> <span class="st">"xz"</span>)</span>
 <span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"RData guardado en: "</span>, rdata_path)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>El <code>.RData</code> contiene los tres objetos principales para phyloseq (<code>otu_mat</code>, <code>tax_mat</code>, <code>sample_meta</code>) más objetos adicionales para reproducibilidad: <code>track</code>, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).</p>
 <hr>
@@ -558,8 +540,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="exportar-secuencias-asv-a-fasta">Exportar secuencias ASV a FASTA</h2>
 <p>Exportamos las secuencias de ASVs en formato FASTA para usarlas en análisis posteriores como el agrupamiento en OTUs con VSEARCH.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear directorio de salida</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(output_location, <span class="st">"otus_vsearch"</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -573,7 +553,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"FASTA exportado: "</span>, fasta_path)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Total ASVs: "</span>, <span class="fu">length</span>(asv_seqs))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Este archivo contiene las secuencias sin taxonomía — solo un identificador (<code>ASV_0001</code>, <code>ASV_0002</code>, …) y la secuencia. VSEARCH lo usará para agrupar ASVs similares en OTUs.</p>
 <hr>
