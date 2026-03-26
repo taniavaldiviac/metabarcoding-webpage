@@ -5,30 +5,31 @@ execute:
   warning: false
 ---
 
-
 La **asignación taxonómica** convierte secuencias anónimas (ASVs) en información biológica: géneros, familias, órdenes y, cuando es posible, especies. Es el puente entre el análisis bioinformático y la ecología de comunidades.
 
 ---
 
 ## ¿Cómo funciona `assignTaxonomy()`? — El clasificador Naive Bayesian
 
-`assignTaxonomy()` implementa el clasificador bayesiano ingenuo (*Naive Bayesian Classifier*) del RDP (*Ribosomal Database Project*), adaptado por el equipo de DADA2.
+`assignTaxonomy()` implementa el clasificador bayesiano ingenuo (*Naive Bayesian Classifier*) del RDP (*Ribosomal Database Project*), adaptado por el equipo de DADA2. El proceso en cuatro pasos:
 
-El proceso funciona así:
+1. **Fragmentación en k-mers** — cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (*8-mers*). Una secuencia de 62 bp genera ~55 8-mers distintos.
 
-1. **Fragmentación en k-mers** — Cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (*8-mers*). Por ejemplo, la secuencia `ATCGGCTA` genera los 8-mers `ATCGGCTA`, `TCGGCTAG`, etc.
+2. **Comparación con la base de datos** — la base de referencia está indexada en 8-mers por grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo en la base.
 
-2. **Comparación con la base de datos** — La base de datos de referencia (por ejemplo, una base de 12S o 18S) también está indexada en 8-mers por cada grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo.
+3. **Asignación jerárquica con bootstrap** — la clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de **bootstrap** (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como `NA`.
 
-3. **Por qué "ingenuo"** — Se llama "naive" porque asume que cada 8-mer es *independiente* de los demás, lo cual no es biológicamente cierto, pero hace el cálculo computacionalmente muy eficiente y funciona bien en la práctica.
+4. **Por qué bajan las asignaciones en niveles finos** — a nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado, la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.
 
-4. **Asignación jerárquica** — La clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de **bootstrap** (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como `NA`.
-
-5. **Por qué bajan las asignaciones en niveles finos** — A nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado, la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.
+::: {.callout-note icon="false"}
+**¿Por qué "naive" (ingenuo)?** Porque asume que cada 8-mer es *independiente* de los demás, lo cual no es biológicamente cierto — las posiciones en una secuencia están correlacionadas. Pero esta simplificación hace el cálculo muy eficiente y, en la práctica, funciona bien para clasificación taxonómica.
+:::
 
 ---
 
 ## Paso 1 — Asignar taxonomía con `assignTaxonomy()`
+
+**Qué hace:** toma las secuencias de `cleaned.seqtab.nochim` y las compara contra la base de datos de referencia especificada en `primer_data.csv`. Devuelve una tabla de taxonomía y otra de valores de bootstrap por nivel.
 
 ```{r eval=FALSE}
 tax_location <- file.path(metadata_location, primer.data$db_name[i])
@@ -47,15 +48,19 @@ at <- assignTaxonomy(
 )
 ```
 
-- `tryRC = TRUE`: prueba también el complemento reverso de cada ASV — importante para marcadores que pueden amplificarse en cualquier orientación
-- `outputBootstraps = TRUE`: devuelve los valores de confianza por nivel taxonómico
-- La base de datos está definida en `primer_data.csv` (columna `db_name`)
+**Parámetros clave:**
 
-Este paso puede tardar varios minutos dependiendo del número de ASVs y la base de datos.
+- `tryRC = TRUE` — prueba también el complemento reverso de cada ASV. Importante cuando el amplicón puede amplificarse en cualquier orientación según el par de primers.
+- `outputBootstraps = TRUE` — devuelve los valores de confianza (0–100) por nivel taxonómico. Esencial para evaluar la calidad de cada asignación.
+- `multithread = 2` — usa 2 núcleos (límite del servidor con ~30 usuarios concurrentes).
+
+Este paso puede tardar varios minutos dependiendo del número de ASVs y el tamaño de la base de datos.
 
 ---
 
 ## Paso 2 — Verificar el resultado
+
+**Qué hace:** separa la tabla de taxonomía de los valores de bootstrap y calcula el porcentaje de ASVs asignadas por nivel taxonómico.
 
 ```{r eval=FALSE}
 # Separar taxonomía y bootstraps
@@ -75,6 +80,8 @@ pct_assigned <- colSums(!is.na(tax_mat)) / nrow(tax_mat) * 100
 round(pct_assigned, 1)
 ```
 
+**Qué chequear:** es normal que el porcentaje de asignación baje progresivamente de Reino a Especie. Una caída muy brusca en niveles altos (Filo, Clase) puede indicar un problema con la base de datos o contaminación. Ver tabla de referencia al final de la página.
+
 El pipeline guarda automáticamente el porcentaje de ASVs **sin** asignación por nivel en `final_data/logs/`:
 
 ```{r eval=FALSE}
@@ -93,6 +100,11 @@ readr::write_csv(
 ---
 
 ## Paso 3 — Guardar archivos de taxonomía
+
+**Qué hace:** genera dos archivos CSV en `final_data/csv_output/`:
+
+- `_taxonomy_output.csv` — tabla de taxonomía (Sequence + niveles taxonómicos)
+- `_tax_bootstrap.csv` — tabla de bootstraps unida a la taxonomía, para revisar la confianza de cada asignación
 
 ```{r eval=FALSE}
 taxonomy_file  <- file.path(output_location, "csv_output",
@@ -116,11 +128,13 @@ message("Taxonomía guardada en: ", taxonomy_file)
 message("Bootstraps guardados en: ", bootstrap_file)
 ```
 
+**Qué chequear en `_tax_bootstrap.csv`:** busca asignaciones con bootstrap < 80 en niveles altos (Family, Order) — esas son las más inciertas. Un bootstrap alto en Genus pero baja cobertura de esa especie en la base de datos puede resultar en asignaciones incorrectas de especie.
+
 ---
 
 ## Paso 4 — Guardar insumos para phyloseq (.RData)
 
-El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo `.RData`. Esto permite continuar el análisis en otra sesión sin repetir los pasos anteriores.
+**Qué hace:** empaqueta en un único archivo `.RData` todos los objetos necesarios para el análisis ecológico: la matriz de abundancias, la taxonomía, los metadatos y los parámetros del run. Esto permite continuar el análisis en otra sesión sin repetir ningún paso del pipeline.
 
 ```{r eval=FALSE}
 # Preparar matrices para phyloseq
@@ -180,13 +194,22 @@ save(asv_mat, tax_mat, sample_meta, track,
 message("RData guardado en: ", rdata_path)
 ```
 
-El `.RData` contiene los tres objetos principales para phyloseq (`asv_mat`, `tax_mat`, `sample_meta`) más objetos adicionales para reproducibilidad: `track`, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).
+**Qué contiene el `.RData`:**
+
+| Objeto | Contenido |
+|---|---|
+| `asv_mat` | Matriz de abundancias (muestras × ASVs) |
+| `tax_mat` | Taxonomía asignada por DADA2 (sin curación geográfica) |
+| `sample_meta` | Metadatos de muestras alineados con `asv_mat` |
+| `track` | Tabla de seguimiento de lecturas por paso |
+| `params` | Parámetros del run (truncLen, longitudes, fecha) |
+| `taxonomy_df`, `bootstrap_df` | Tablas de taxonomía y bootstraps completas |
 
 ---
 
 ## Exportar secuencias ASV a FASTA
 
-Exportamos las secuencias de ASVs en formato FASTA para usarlas en análisis posteriores como el agrupamiento en OTUs con VSEARCH.
+**Qué hace:** guarda las secuencias de todas las ASVs en formato FASTA con identificadores legibles (`ASV_0001`, `ASV_0002`, …). Este archivo se usa en pasos posteriores como el agrupamiento en OTUs con VSEARCH.
 
 ```{r eval=FALSE}
 # Crear directorio de salida
@@ -204,30 +227,27 @@ message("FASTA exportado: ", fasta_path)
 message("Total ASVs: ", length(asv_seqs))
 ```
 
-Este archivo contiene las secuencias sin taxonomía — solo un identificador (`ASV_0001`, `ASV_0002`, ...) y la secuencia. VSEARCH lo usará para agrupar ASVs similares en OTUs.
-
 ---
 
 ## Causas de baja asignación taxonómica
 
 | Causa | Síntoma | Solución |
-|-------|---------|---------|
-| Base de datos desactualizada | Muchos NA en filo | Usar versión más reciente |
-| Marcador poco representado | % bajos en todos los niveles | Considerar BD más específica |
-| `minBoot` muy alto | Muchos NA en niveles medios | Bajar a 60 con precaución |
-| Quimeras no removidas | Asignaciones inconsistentes | Verificar paso anterior |
+|---|---|---|
+| Base de datos desactualizada | Muchos `NA` en Filo | Usar versión más reciente |
+| Marcador poco representado | % bajos en todos los niveles | Considerar base de datos más específica |
+| `minBoot` muy alto (> 80) | Muchos `NA` en niveles medios | Bajar a 60 con precaución |
+| Quimeras no removidas | Asignaciones inconsistentes entre muestras | Verificar paso anterior |
 
 ---
 
 :::{.callout-note}
-## Recuerda
-La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningún método puede asignar correctamente un organismo que no está representado en la referencia. Siempre reporta la versión de la base de datos que usaste en la sección de métodos.
+La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningún método puede asignar correctamente un organismo que no está representado en la referencia. Siempre reporta el nombre y versión de la base de datos en la sección de métodos de tu artículo.
 :::
 
 :::{.callout-tip}
 ## Para el curso
-1. ¿Qué porcentaje de ASVs se asignan a nivel de filo? ¿Y a nivel de género?
-2. ¿Hay ASVs sin asignación a ningún nivel? ¿Cuántos son?
-3. Revisa los valores de bootstrap en `ready_new_taxa` — ¿Hay asignaciones con baja confianza?
+1. ¿Qué porcentaje de ASVs se asignan a nivel de Filo? ¿Y a nivel de Género?
+2. ¿Hay ASVs sin asignación a ningún nivel (Kingdom = `NA`)? ¿Cuántos son?
+3. Revisa los valores de bootstrap en `ready_new_taxa` — ¿hay asignaciones de Género con bootstrap < 80?
 4. ¿El `.RData` fue creado correctamente en `final_data/rdata_output/`?
 :::
