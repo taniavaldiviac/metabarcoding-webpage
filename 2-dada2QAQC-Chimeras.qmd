@@ -5,12 +5,15 @@ execute:
   warning: false
 ---
 
+Las **quimeras** son secuencias artificiales producidas durante la PCR: una cadena parcialmente extendida se desprende de su molde original y se hibrida con otra molécula diferente, generando una secuencia híbrida que no existe en la naturaleza. Si no se eliminan, inflan artificialmente el número de ASVs y la riqueza de especies observada.
 
-Las **quimeras** son secuencias artificiales producidas durante la amplificación por PCR: una cadena parcialmente extendida se hibrida con otra molecula diferente y se extiende hasta el final, generando una secuencia hibrida que no existe en la naturaleza. Si no se eliminan, inflan artificialmente la riqueza de especies observada.
+DADA2 elimina quimeras **después** del denoising y el merge — no antes. Esto es intencional: el denoising corrige errores de secuenciación y el merge ensamble pares, y solo una vez que tenemos secuencias corregidas y completas tiene sentido buscar híbridos entre ellas.
 
 ---
 
 ## Paso 1 — Remover quimeras con `removeBimeraDenovo()`
+
+**Qué hace:** compara cada ASV contra todas las demás secuencias de mayor abundancia en el dataset. Si una ASV puede explicarse como el híbrido de dos secuencias parentales más abundantes, se considera quimérica y se elimina.
 
 ```{r eval=FALSE}
 seqtab.nochim <- removeBimeraDenovo(
@@ -21,8 +24,10 @@ seqtab.nochim <- removeBimeraDenovo(
 )
 ```
 
-- `method = "consensus"`: cada secuencia candidata se verifica de forma independiente en cada muestra; se elimina si es quimérica en la mayoria de las muestras donde aparece. Es el método recomendado.
-- `method = "pooled"`: evalua todas las muestras en conjunto (mas sensible pero mas lento).
+**Parámetros clave:**
+
+- `method = "consensus"` — cada ASV candidata se evalúa de forma independiente en cada muestra; se elimina solo si es quimérica en la mayoría de muestras donde aparece. Es el método recomendado para la mayoría de los estudios.
+- `method = "pooled"` — evalúa todas las muestras en conjunto; más sensible para detectar quimeras raras, pero más lento y puede ser más agresivo.
 
 ```{r eval=FALSE}
 # Proporción de lecturas que sobreviven
@@ -34,22 +39,22 @@ message("ASVs totales antes: ", ncol(seqtab))
 message("ASVs despues de quimeras: ", ncol(seqtab.nochim))
 ```
 
-Es común que una alta proporción de **secuencias únicas** sea quimérica, pero que la **abundancia** retenida sea alta. Las quimeras suelen ser raras (pocas lecturas).
-
-### Interpretación
+**Qué chequear:** es normal que se elimine una fracción alta de ASVs únicos (secuencias distintas) pero que la proporción de lecturas retenidas sea alta — las quimeras suelen ser raras (pocas lecturas por ASV).
 
 | % lecturas retenidas | Interpretación |
-|----------------------|---------------|
-| > 95% | Normal [OK] |
-| 80-95% | Aceptable  -  revisar parámetros de PCR |
-| < 80% | Preocupante  -  revisar calidad del ADN |
-| < 50% | Grave  -  revisar diseno experimental |
+|---|---|
+| > 95% | Normal |
+| 80–95% | Aceptable — revisar parámetros de PCR |
+| < 80% | Preocupante — revisar calidad del ADN o diseño de primers |
+| < 50% | Grave — revisar el diseño experimental completo |
 
 ---
 
 ## Paso 2 — Distribución de longitudes y filtrado
 
-Antes de filtrar por longitud, visualizamos la distribución de ASVs para identificar el rango esperado del amplicón.
+**Qué hace:** después de remover quimeras, verifica que todas las ASVs tengan la longitud esperada para el amplicón. Secuencias muy cortas o muy largas pueden ser artefactos de ensamblaje, no quimeras verdaderas pero sí ruido.
+
+Primero visualiza la distribución antes de filtrar:
 
 ```{r eval=FALSE}
 seq_lengths <- nchar(colnames(seqtab.nochim))
@@ -86,7 +91,7 @@ print(
 dev.off()
 ```
 
-Luego filtra automáticamente ASVs fuera del rango mediana ± 1 DE:
+**Parámetros clave del filtro:** el pipeline calcula automáticamente el rango aceptable como `mediana ± 1 desviación estándar`. Para 12S (~62 bp) esto es conservador y elimina solo secuencias claramente fuera del rango del amplicón.
 
 ```{r eval=FALSE}
 min_len <- median_len - sd_len
@@ -105,7 +110,7 @@ message("ASVs después del filtro: ", ncol(cleaned.seqtab.nochim))
 message("ASVs filtradas por longitud: ", ncol(filteredout.seqtab.nochim))
 ```
 
-Y guarda una segunda gráfica **después** del filtro:
+Y guarda una segunda gráfica **después** del filtro para confirmar que el resultado es limpio:
 
 ```{r eval=FALSE}
 seq_lengths_clean <- nchar(colnames(cleaned.seqtab.nochim))
@@ -128,13 +133,13 @@ print(
 dev.off()
 ```
 
-Las ASVs filtradas también se guardan en `final_data/logs/` para revisión posterior.
+**Qué chequear:** la gráfica post-filtro debe mostrar un pico estrecho centrado en la longitud esperada del amplicón. Si hay múltiples picos, puede indicar amplificación inespecífica. Las ASVs eliminadas se guardan en `final_data/logs/` para revisión.
 
 ---
 
 ## Paso 3 — Tabla de seguimiento de lecturas (read tracking)
 
-Esta tabla resume cuantas lecturas sobrevivieron cada paso del pipeline. Es la herramienta principal para diagnosticar donde se pierden lecturas.
+**Qué hace:** resume cuántas lecturas sobrevivieron cada paso del pipeline. Es la herramienta diagnóstica más importante — una caída abrupta en cualquier paso señala exactamente dónde hay un problema.
 
 ```{r eval=FALSE}
 getN <- function(x) sum(getUniques(x))
@@ -168,18 +173,31 @@ write.csv(track,
   row.names = TRUE)
 ```
 
-### Valores de referencia
+**Qué significa cada columna:**
 
-| Transicion | Normal | Revisar si |
-|-----------|--------|------------|
-| Input -> filtered | > 70% | < 50% |
-| Filtered -> merged | > 70% | < 50% (truncLen muy agresivo) |
-| Merged -> nonchim | > 85% | < 75% (muchas quimeras) |
-| Total (input -> final) | > 50% | < 30% |
+| Columna | Paso | Pérdida esperada por |
+|---|---|---|
+| `input` | Lecturas crudas | — |
+| `filtered` | Tras filtrado de calidad | Reads de baja calidad o muy cortos |
+| `denoisedF/R` | Tras denoising de F y R | Corrección de errores |
+| `merged` | Tras ensamblaje de pares | Reads sin overlap suficiente |
+| `nonchim` | Tras remoción de quimeras | ASVs quiméricas (raras en lecturas) |
+| `length_filter` | Tras filtro de longitud | ASVs fuera del tamaño del amplicón |
+
+**Valores de referencia por transición:**
+
+| Transición | Normal | Revisar si |
+|---|---|---|
+| Input → filtered | > 70% | < 50% |
+| Filtered → merged | > 70% | < 50% (truncLen muy agresivo o overlap insuficiente) |
+| Merged → nonchim | > 85% | < 75% (muchas quimeras — revisar PCR) |
+| Total (input → final) | > 50% | < 30% |
 
 ---
 
 ## Paso 4 — Generar tabla ASV en formato largo
+
+**Qué hace:** convierte la matriz de abundancias (muestras × ASVs) a formato largo (una fila por muestra-ASV con lecturas > 0) para facilitar el análisis downstream con phyloseq y otras herramientas.
 
 ```{r eval=FALSE}
 ASV_file <- file.path(output_location, "csv_output",
@@ -196,21 +214,16 @@ readr::write_csv(current_asv, ASV_file)
 message("Tabla ASV guardada en: ", ASV_file)
 ```
 
-El archivo resultante tiene una fila por muestra x ASV con lecturas > 0, listo para análisis downstream con phyloseq.
+El archivo resultante tiene una fila por muestra × ASV con lecturas > 0, listo para análisis downstream con phyloseq.
 
 ---
 
-:::{.callout-note}
-## Recuerda
-Las quimeras son artefactos de PCR, no errores de secuenciación. Por eso dada2 las elimina **despues** del denoising (que corrige errores de secuenciación) y del merge (que ensambla los pares). Este orden importa.
-:::
-
 :::{.callout-tip}
 ## Para el curso
-1. ¿Que porcentaje de lecturas se retienen despues de remover quimeras?
-2. ¿Cuantos ASVs quedan antes y despues del filtro de longitud?
-3. Revisa la tabla de tracking  -  ?en que paso se pierde mas lectura?
-4. ¿Hay muestras con retención < 30% en algun paso?
+1. ¿Qué porcentaje de lecturas se retiene después de remover quimeras? ¿Y de ASVs únicos?
+2. ¿Cuántos ASVs quedan antes y después del filtro de longitud? ¿La gráfica post-filtro muestra un pico limpio?
+3. Revisa la tabla de tracking — ¿en qué paso se pierde más lecturas?
+4. ¿Hay muestras con retención < 30% en algún paso? ¿Cuáles y por qué podrían serlo?
 :::
 
 ---
