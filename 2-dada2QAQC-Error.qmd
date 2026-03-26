@@ -38,7 +38,7 @@ message("Checkpoint 2 cargado")
 
 Después del filtrado, cada muestra tiene miles de lecturas — pero muchas de ellas son **idénticas** entre sí. La dereplicación agrupa todas las lecturas con exactamente la misma secuencia en una sola entrada, y registra cuántas veces apareció cada una (su **abundancia**).
 
-Por ejemplo, si una muestra tiene 200,000 lecturas pero solo 15,000 secuencias únicas, la dereplicación reduce el volumen de datos de 200,000 a 15,000 entradas, cada una con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.
+Por ejemplo, en nuestros datos la muestra 1 tiene ~79,661 lecturas pero solo 6,374 secuencias únicas — la dereplicación reduce el volumen de datos en ~12x, cada entrada con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.
 
 ```{r eval=FALSE}
 exists <- file.exists(filtFs) & file.exists(filtRs)
@@ -74,16 +74,16 @@ if (compression_ratio > 50)
 En nuestros datos, los resultados se ven así:
 
 ```
-Secuencias únicas Forward: 17428
+Secuencias únicas Forward: 6374
 Ratio de compresión: 7.63%
 Top 5 abundancias: 70868, 15720, 12618, 10018, 9878
 ```
 
 ### ¿Cómo interpretar estos resultados?
 
-- **17,428 secuencias únicas** de ~228,000 lecturas totales — el 7.63% son únicas, el resto son repeticiones
+- **6,374 secuencias únicas** de ~79,661 lecturas totales — el ~8% son únicas, el resto son repeticiones
 - **Top 5 abundancias**: la secuencia más abundante apareció 70,868 veces. Estas secuencias dominantes probablemente corresponden a las especies de peces más comunes en la muestra
-- El **ratio de compresión del 7.63%** indica diversidad moderada, lo cual es típico en muestras de eDNA marinas
+- El **ratio de compresión del ~8%** indica diversidad moderada, lo cual es típico en muestras de eDNA marinas
 
 | Ratio de compresión | Interpretación |
 |:--------------------|:---------------|
@@ -163,11 +163,11 @@ if (total_bases_F < 1e6 || total_bases_R < 1e6)
 En nuestros datos, la salida se ve así:
 
 ```
-Forward disponible: ~95.2 MB
+Forward disponible: ~54.3 MB
 Reverse disponible: ~96.1 MB
 ```
 
-**¿Qué nos dicen estos números?** Los ~95 MB por dirección representan el tamaño total de los archivos FASTQ filtrados. Esto es una estimación indirecta de cuántas bases tenemos disponibles — como regla general, un archivo FASTQ de 95 MB contiene aproximadamente 100–150 millones de bases (cada base ocupa ~1 byte de secuencia más metadatos de calidad y encabezados). Con 95 MB tenemos datos más que suficientes para alcanzar nuestro objetivo de `nbases_target = 1e8` (100 millones de bases).
+**¿Qué nos dicen estos números?** Los ~54 MB Forward y ~52 MB Reverse representan el tamaño total de los archivos FASTQ filtrados. Como regla general, un archivo FASTQ de 54 MB contiene aproximadamente 100 millones de bases (cada base ocupa ~1 byte de secuencia más metadatos). Con estos valores tenemos suficientes datos para alcanzar nuestro objetivo de `nbases_target = 1e8` (100 millones de bases), usando todas las muestras disponibles.
 
 ::: {.callout-note icon="false"}
 **¿Cuándo preocuparte?** Si ves valores menores a 1 MB, el pipeline lanza una advertencia porque no habrá suficientes bases para estimar las 12 tasas de error con precisión. Esto puede pasar cuando muchas muestras fueron descartadas en el filtrado, o cuando trabajas con un subconjunto muy pequeño de datos. En ese caso, reduce `nbases_target` (por ejemplo a `1e7`) para que DADA2 no intente usar más datos de los que existen.
@@ -203,9 +203,9 @@ errR <- tryCatch({
 Este paso puede tardar varios minutos dependiendo del volumen de datos y el número de núcleos disponibles. La salida en consola te da información importante sobre cómo se construyó el modelo:
 
 ```
-103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.
+103158594 total bases in 1637438 reads from 20 samples will be used for learning the error rates.
 Initializing error rates to maximum possible estimate.
-selfConsist step 1 ............
+selfConsist step 1 ....................
    selfConsist step 2
    selfConsist step 3
    selfConsist step 4
@@ -215,10 +215,12 @@ selfConsist step 1 ............
    selfConsist step 8
    selfConsist step 9
    selfConsist step 10
-Convergence after  10  rounds.
-105668355 total bases in 1625667 reads from 13 samples will be used for learning the error rates.
+   selfConsist step 11
+   selfConsist step 12
+Convergence after  12  rounds.
+100436466 total bases in 1619943 reads from 21 samples will be used for learning the error rates.
 Initializing error rates to maximum possible estimate.
-selfConsist step 1 .............
+selfConsist step 1 .....................
    selfConsist step 2
    selfConsist step 3
    selfConsist step 4
@@ -234,7 +236,7 @@ Convergence after  9  rounds.
 
 Cada bloque corresponde a una dirección (Forward primero, Reverse después). Desglosemos la primera línea:
 
-**`103156235 total bases in 1587019 reads from 12 samples`** — DADA2 necesitaba 100 millones de bases (`nbases_target = 1e8`) y encontró 103 millones en 1.59 millones de lecturas, tomadas de 12 de nuestras muestras. No necesitó usar todas las muestras porque alcanzó el objetivo con 12. Para Reverse, necesitó 13 muestras para llegar a 105 millones — esto es normal porque las lecturas Reverse pueden tener longitudes ligeramente distintas después del filtrado.
+**`103158594 total bases in 1637438 reads from 20 samples`** — DADA2 necesitaba 100 millones de bases (`nbases_target = 1e8`) y encontró 103 millones en 1.64 millones de lecturas, usando las 20 muestras Forward. Para Reverse usó 21 muestras para llegar a 100 millones — esto es normal porque las lecturas Reverse pueden tener longitudes ligeramente distintas después del filtrado.
 
 **`Initializing error rates to maximum possible estimate`** — El algoritmo comienza asumiendo el peor escenario: que todas las diferencias entre lecturas son errores. A partir de ahí, va refinando.
 
@@ -250,7 +252,7 @@ Cada bloque corresponde a una dirección (Forward primero, Reverse después). De
 
 Cuando las estimaciones dejan de cambiar significativamente entre rondas, el modelo **convergió** — es decir, encontró tasas de error estables que explican bien los patrones en tus datos.
 
-En nuestro caso: Forward convergió en **10 rondas** y Reverse en **9 rondas**. Ambos están en el rango ideal.
+En nuestros datos: Forward convergió en **12 rondas** y Reverse en **9 rondas**. Ambos están en el rango típico.
 
 | Rondas | Interpretación |
 |:-------|:---------------|
@@ -427,8 +429,8 @@ dadaRs <- dada(derepRs, err = errR, multithread = 2)
 Al finalizar verás para cada muestra un resumen como este:
 
 ```
-Sample 1 - 228534 reads in 17428 unique sequences.
-Sample 2 - 175230 reads in 14302 unique sequences.
+Sample 1 - 79661 reads in 6374 unique sequences.
+Sample 2 - ...
 ...
 ```
 
@@ -443,16 +445,17 @@ La salida te muestra cuántas ASVs se infirieron de cuántas secuencias únicas.
 
 ```
 dada-class: object describing DADA2 denoising results
-126 sequence variants were inferred from 17428 input unique sequences.
+140 sequence variants were inferred from 6374 input unique sequences.
+Key parameters: OMEGA_A = 1e-40, OMEGA_C = 1e-40, BAND_SIZE = 16
 ```
 
-Esto significa que de las 17,428 secuencias únicas que tenía la muestra 1 después de la dereplicación, DADA2 determinó que solo **126 son variantes biológicas reales**. Las otras ~17,300 son errores de secuenciación de esas 126.
+Esto significa que de las 6,374 secuencias únicas que tenía la muestra 1 después de la dereplicación, DADA2 determinó que solo **140 son variantes biológicas reales (ASVs)**. Las otras ~6,234 son errores de secuenciación de esas 140.
 
 ### ¿Cómo interpretar el número de ASVs?
 
 | Secuencias únicas | ASVs inferidas | Ratio | Interpretación |
 |:-------------------|:---------------|:------|:---------------|
-| 17,428 | 126 | 0.7% | Típico — la mayoría de las secuencias únicas son errores |
+| **6,374** | **140** | **2.2%** | **Nuestros datos — amplicón corto 12S** |
 | 5,000 | 200 | 4% | Mayor proporción de variantes reales — posible alta diversidad |
 | 20,000 | 20 | 0.1% | Muy pocas ASVs — muestra dominada por pocas especies |
 | 10,000 | 5,000 | 50% | Inusual — revisa el modelo de error o la calidad del filtrado |
