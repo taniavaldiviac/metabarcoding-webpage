@@ -8,6 +8,28 @@ execute:
 
 Este paso tiene dos partes: primero **dereplicamos** las lecturas (eliminamos duplicados y contamos abundancias), luego **aprendemos el modelo de error** de la secuenciadora para poder distinguir errores técnicos de variantes biológicas reales.
 
+## Configuración del entorno
+
+Abre R desde el directorio del proyecto y carga los paquetes:
+
+```{r eval=FALSE}
+library(dada2,     quietly = TRUE)
+library(tidyverse, quietly = TRUE)
+library(ShortRead)
+
+set.seed(42)
+```
+
+Carga el checkpoint guardado al final del filtrado:
+
+```{r eval=FALSE}
+setwd("~/metabarcoding-code")
+
+load(file.path(output_location, "rdata_output",
+               paste0(run_name, "_", primer.data$locus_shorthand[i], "_checkpoint1_filterAndTrim.RData")))
+message("Checkpoint 1 cargado")
+```
+
 ---
 
 ## Paso 1 — Dereplicación
