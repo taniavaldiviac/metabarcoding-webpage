@@ -167,6 +167,28 @@ track_sum_pct %>%
 
 ## 3. Construcción del objeto phyloseq
 
+**phyloseq** es un paquete de R diseñado para el análisis de datos de secuenciación de amplicones (16S, 18S, ITS, 12S, etc.). Su función principal es integrar en un único objeto todas las capas de información de un estudio de microbiomas o comunidades: las abundancias de secuencias, la taxonomía y los metadatos de las muestras.
+
+### ¿Qué es el objeto phyloseq?
+
+El objeto phyloseq es un contenedor que agrupa tres tablas que deben estar siempre sincronizadas entre sí:
+
+| Componente | Función | Dimensiones |
+|---|---|---|
+| `otu_table` | Abundancias de cada ASV en cada muestra | ASVs × muestras |
+| `tax_table` | Clasificación taxonómica de cada ASV | ASVs × niveles taxonómicos |
+| `sample_data` | Metadatos de las muestras (sitio, fecha, tratamiento, etc.) | muestras × variables |
+
+Opcionalmente puede incluir un cuarto componente:
+
+| Componente | Función |
+|---|---|
+| `refseq` | Secuencia nucleotídica de cada ASV |
+
+La ventaja de este contenedor es que cualquier operación de filtrado o subsetting afecta a todas las tablas simultáneamente y de forma consistente. Por ejemplo, al filtrar para conservar solo muestras de un sitio, la tabla de abundancias, la taxonomía y los metadatos se reducen juntas — sin riesgo de desincronización.
+
+---
+
 ### Matrices de datos
 
 Construimos las tres matrices que necesita phyloseq: abundancias (ASVs × muestras), taxonomía y metadata de muestras.
