@@ -5,29 +5,7 @@ execute:
   warning: false
 ---
 
-## 1. Crear sesión de screen
-
-Antes de empezar a trabajar, creamos una sesión de `screen` que mantendrá tu trabajo activo aunque te desconectes del servidor. Esta sesión la usaremos durante todo el curso.
-
-``` sh
-screen -S curso
-```
-
-Al final de cada día, para **desconectarte sin cerrar la sesión**, presiona:
-
-```
-Ctrl + A, luego D
-```
-
-Al día siguiente, para **reconectarte** a tu sesión:
-
-``` sh
-screen -r curso
-```
-
----
-
-## 2. Clona el repositorio del curso
+## 1. Clona el repositorio del curso
 
 ``` sh
 git clone https://github.com/taniavaldiviac/metabarcoding-code.git
@@ -36,7 +14,7 @@ cd ~/metabarcoding-code
 
 ---
 
-## 3. Copia los archivos FASTQ
+## 2. Copia los archivos FASTQ
 
 Los archivos de secuenciación están en el directorio del instructor:
 
@@ -46,7 +24,7 @@ cp /home/tvaldivia/metabarcoding-code-cibnor/raw_fastqs/* ~/metabarcoding-code/r
 
 ---
 
-## 4. Verifica los paquetes de R
+## 3. Verifica los paquetes de R
 
 Los paquetes necesarios ya están instalados en el servidor. Tu cuenta está configurada para encontrarlos automáticamente. Verifica abriendo R:
 
@@ -67,7 +45,7 @@ Si no hay errores, está todo listo.
 
 ---
 
-## 5. Ambiente conda para herramientas de línea de comandos
+## 4. Ambiente conda para herramientas de línea de comandos
 
 Para los pasos de control de calidad y remoción de adaptadores, activa el ambiente `metabarcoding`:
 

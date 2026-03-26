@@ -7,10 +7,9 @@ execute:
 
 ## Configuración del entorno
 
-Antes de comenzar, reconéctate a tu sesión de screen y abre R:
+Antes de comenzar, abre R desde el directorio del proyecto:
 
 ```bash
-screen -r curso
 cd ~/metabarcoding-code
 R
 ```

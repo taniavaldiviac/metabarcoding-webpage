@@ -54,7 +54,7 @@ suppressPackageStartupMessages({
 
 ### Definición de rutas
 
-Reconéctate a tu sesión de screen (`screen -r curso`) y abre R desde `~/metabarcoding-code/`.
+Abre R desde `~/metabarcoding-code/`.
 
 ```{r rutas}
 setwd("~/metabarcoding-code")

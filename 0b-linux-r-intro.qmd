@@ -199,32 +199,6 @@ grep "error" logs/*.txt | sort > errores.txt
 
 ---
 
-### Trabajos largos en el servidor — `screen`
-
-Cuando corres un análisis largo (como `learnErrors()` o `assignTaxonomy()`), si cierras la terminal el proceso se interrumpe. `screen` crea una sesión persistente que sigue corriendo aunque te desconectes.
-
-```bash
-# Crear una sesión nueva con nombre
-screen -S dada2
-
-# Dentro de screen: correr el pipeline
-Rscript scripts/03-dada2-pipeline.R
-
-# Desconectarse sin matar el proceso (el análisis sigue corriendo)
-# Ctrl + A, luego D
-
-# Reconectarse a la sesión más tarde
-screen -r dada2
-
-# Ver todas las sesiones activas
-screen -ls
-```
-
-:::{.callout-tip}
-Siempre usa `screen` antes de correr el pipeline completo de DADA2. Si la conexión al servidor se cae o cierras la terminal por accidente, tu análisis no se pierde.
-:::
-
----
 
 ### Atajos de productividad en la terminal
 
