@@ -375,10 +375,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>En secuenciación paired-end cada fragmento de ADN se lee desde ambos extremos: una lectura <strong>forward</strong> (R1) y una <strong>reverse</strong> (R2). Para obtener la secuencia completa del amplicón, ambas lecturas deben ensamblarse aprovechando la región de solapamiento que comparten en el centro.</p>
+<p>El merge ocurre <strong>después del denoising</strong> — es decir, trabaja con lecturas ya corregidas, no con las crudas. Esto es importante: DADA2 no une lecturas con errores y luego las corrige, sino al revés.</p>
 <hr>
 <section id="paso-1-ensamblar-pares-con-mergepairs" class="level2">
 <h2 class="anchored" data-anchor-id="paso-1-ensamblar-pares-con-mergepairs">Paso 1 — Ensamblar pares con <code>mergePairs()</code></h2>
-<p><code>mergePairs()</code> une R1 y R2 verificando que coincidan en la zona de solapamiento. Los pares que no coinciden se descartan - esto actua como filtro adicional de calidad.</p>
+<p><strong>Qué hace:</strong> alinea cada par R1–R2 denoiseado buscando la región de solapamiento. Si R1 y R2 coinciden en esa zona, los une en una sola secuencia. Si no coinciden (o el solapamiento es insuficiente), el par se descarta — lo que actúa como filtro adicional de calidad.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mergers <span class="ot">&lt;-</span> <span class="fu">mergePairs</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  dadaFs, derepFs,</span>
@@ -388,17 +389,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p><strong>Parámetros clave:</strong></p>
 <ul>
-<li><code>minOverlap = 12</code>: mínimo de bases solapantes (recomendado &gt;= 12 bp)</li>
-<li><code>maxMismatch = 0</code>: no se permiten desajustes en la zona de solapamiento</li>
+<li><code>minOverlap = 12</code> — mínimo de bases solapantes requeridas para aceptar el ensamblaje. Valores menores aumentan el número de merges pero también el riesgo de ensamblajes erróneos. Para 12S (~62 bp) con truncLen ajustado, 12 bp es el mínimo razonable.</li>
+<li><code>maxMismatch = 0</code> — no se permiten desajustes en la zona de solapamiento. Un solo mismatch descarta el par. Esto es estricto pero correcto: si el solapamiento tiene diferencias, al menos una de las dos lecturas tiene un error que el denoising no pudo corregir.</li>
 </ul>
-<p>Verás cuantas lecturas se ensamblan exitosamente por muestra. Un porcentaje bajo puede indicar que el recorte en <code>filterAndTrim</code> fue demasiado agresivo.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspeccionar el resultado del merge para la primera muestra</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mergers[[<span class="dv">1</span>]])</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Cada fila es una secuencia ensamblada única. Las columnas mas importantes:</p>
+<p><strong>Qué significa la tabla resultante:</strong> cada fila es una secuencia ensamblada única. Las columnas más importantes:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Columna</th>
@@ -408,7 +413,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>abundance</code></td>
-<td>Lecturas con esa secuencia</td>
+<td>Número de lecturas con esa secuencia ensamblada</td>
 </tr>
 <tr class="even">
 <td><code>accept</code></td>
@@ -416,11 +421,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td><code>nmatch</code></td>
-<td>Bases coincidentes en el solapamiento</td>
+<td>Bases coincidentes en la zona de solapamiento</td>
 </tr>
 <tr class="even">
 <td><code>nmismatch</code></td>
-<td>Desajustes encontrados</td>
+<td>Desajustes encontrados (debe ser 0 con <code>maxMismatch = 0</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -428,17 +433,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="paso-2-construir-la-tabla-de-secuencias" class="level2">
 <h2 class="anchored" data-anchor-id="paso-2-construir-la-tabla-de-secuencias">Paso 2 — Construir la tabla de secuencias</h2>
-<p><code>makeSequenceTable()</code> organiza los mergers en una matriz muestras x ASVs.</p>
+<p><strong>Qué hace:</strong> organiza todos los mergers en una matriz donde las filas son muestras y las columnas son secuencias únicas (futuras ASVs). Esta es la tabla de abundancias antes de remover quimeras.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>seqtab <span class="ot">&lt;-</span> <span class="fu">makeSequenceTable</span>(mergers)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(seqtab)  <span class="co"># filas = muestras, columnas = ASVs únicos</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Deberías ver el número de muestras y el total de ASVs antes de remover quimeras.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribución de longitudes de las secuencias ensambladas</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">nchar</span>(<span class="fu">getSequences</span>(seqtab)))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>La distribución debe estar centrada alrededor de la longitud esperada del amplicón. Si hay muchas secuencias de longitudes muy diferentes, puede indicar artefactos de PCR o problemas de merge.</p>
+<p><strong>Qué chequear:</strong> la distribución de longitudes debe estar centrada en la longitud esperada del amplicón (para 12S, ~62 bp). Un pico limpio y estrecho indica un merge exitoso. Si hay muchas secuencias de longitudes muy diferentes, puede indicar artefactos de PCR o problemas en el ensamblaje.</p>
 <hr>
 </section>
 <section id="paso-3-verificar-eficiencia-del-merge" class="level2">
@@ -450,8 +454,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(merge_pct)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="interpretación" class="level3">
-<h3 class="anchored" data-anchor-id="interpretación">Interpretación</h3>
+<p><strong>Qué chequear:</strong></p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -462,69 +465,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>&gt; 80%</td>
-<td>Normal [OK]</td>
+<td>Normal</td>
 </tr>
 <tr class="even">
-<td>60-80%</td>
-<td>Aceptable - revisar truncLen</td>
+<td>60–80%</td>
+<td>Aceptable — revisar truncLen</td>
 </tr>
 <tr class="odd">
 <td>&lt; 60%</td>
-<td>Bajo - truncLen probablemente muy agresivo</td>
+<td>Bajo — truncLen probablemente muy agresivo</td>
 </tr>
 </tbody>
 </table>
-<p>Si el merge es bajo, verifica que los puntos de truncamiento preservan suficiente solapamiento entre R1 y R2. La longitud del amplicón debe ser: truncLen_F + truncLen_R - longitud_amplicón &gt; 12 bp de overlap.</p>
+<p>Si el merge es bajo, el problema casi siempre está en los puntos de truncamiento del paso anterior. La regla es: <code>truncLen_F + truncLen_R - longitud_amplicón &gt; 12 bp</code>. Si esa diferencia es menor a 12 bp, el solapamiento no es suficiente.</p>
 <hr>
 </section>
-</section>
-<section id="causas-comúnes-de-merge-fallido" class="level2">
-<h2 class="anchored" data-anchor-id="causas-comúnes-de-merge-fallido">Causas comúnes de merge fallido</h2>
+<section id="causas-comunes-de-merge-fallido" class="level2">
+<h2 class="anchored" data-anchor-id="causas-comunes-de-merge-fallido">Causas comunes de merge fallido</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 28%">
-<col style="width: 42%">
-<col style="width: 28%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Problema</th>
 <th>Causa probable</th>
-<th>Solucion</th>
+<th>Solución</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Solapamiento insuficiente</td>
-<td>Amplicón largo o recorte excesivo</td>
+<td>Merge bajo en todas las muestras</td>
+<td>Solapamiento insuficiente por truncLen agresivo</td>
 <td>Reducir truncLen o verificar longitud del amplicón</td>
 </tr>
 <tr class="even">
-<td>Baja recuperacion en una muestra</td>
-<td>Baja calidad o contaminación</td>
-<td>Revisar QC de esa muestra</td>
+<td>Merge bajo en una sola muestra</td>
+<td>Baja calidad o contaminación en esa muestra</td>
+<td>Revisar QC de la muestra</td>
 </tr>
 <tr class="odd">
-<td>Muchas longitudes inesperadas</td>
-<td>Artefactos de PCR</td>
-<td>Aplicar filtro de longitud en el paso siguiente</td>
+<td>Muchas longitudes inesperadas en <code>seqtab</code></td>
+<td>Artefactos de PCR o amplificación inespecífica</td>
+<td>Aplicar filtro de longitud en el paso de quimeras</td>
 </tr>
 </tbody>
 </table>
 <hr>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Recuerda
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>El merge solo funcióna correctamente si los puntos de truncamiento en <code>filterAndTrim</code> preservan suficiente solapamiento entre R1 y R2. Un recorte demasiado agresivo en el paso anterior produce un merge fallido aqui.</p>
-</div>
-</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -536,9 +525,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Revisa el porcentaje de merge por muestra - ¿Hay muestras con &lt; 50%?</li>
-<li>Inspecciona la distribución de longitudes de <code>seqtab</code> - ¿Coincide con el amplicón esperado?</li>
-<li>¿Cuantos ASVs hay antes de remover quimeras (<code>ncol(seqtab)</code>)?</li>
+<li>¿Qué porcentaje de lecturas se ensamblan por muestra? ¿Hay muestras con &lt; 60%?</li>
+<li>Revisa la distribución de longitudes de <code>seqtab</code> — ¿coincide con la longitud esperada del amplicón 12S (~62 bp)?</li>
+<li>¿Cuántos ASVs hay antes de remover quimeras (<code>ncol(seqtab)</code>)? ¿Y después?</li>
 </ol>
 </div>
 </div>

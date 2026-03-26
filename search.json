@@ -1056,7 +1056,7 @@
     "href": "2-dada2QAQC-Merge.html",
     "title": "Dada2 - Unión de lecturas paired-end",
     "section": "",
-    "text": "En secuenciación paired-end cada fragmento de ADN se lee desde ambos extremos: una lectura forward (R1) y una reverse (R2). Para obtener la secuencia completa del amplicón, ambas lecturas deben ensamblarse aprovechando la región de solapamiento que comparten en el centro.",
+    "text": "En secuenciación paired-end cada fragmento de ADN se lee desde ambos extremos: una lectura forward (R1) y una reverse (R2). Para obtener la secuencia completa del amplicón, ambas lecturas deben ensamblarse aprovechando la región de solapamiento que comparten en el centro.\nEl merge ocurre después del denoising — es decir, trabaja con lecturas ya corregidas, no con las crudas. Esto es importante: DADA2 no une lecturas con errores y luego las corrige, sino al revés.",
     "crumbs": [
       "Sesiones",
       "Día 3",
@@ -1068,7 +1068,7 @@
     "href": "2-dada2QAQC-Merge.html#paso-1-ensamblar-pares-con-mergepairs",
     "title": "Dada2 - Unión de lecturas paired-end",
     "section": "Paso 1 — Ensamblar pares con mergePairs()",
-    "text": "Paso 1 — Ensamblar pares con mergePairs()\nmergePairs() une R1 y R2 verificando que coincidan en la zona de solapamiento. Los pares que no coinciden se descartan - esto actua como filtro adicional de calidad.\n\nmergers &lt;- mergePairs(\n  dadaFs, derepFs,\n  dadaRs, derepRs,\n  minOverlap = 12,\n  maxMismatch = 0,\n  verbose = TRUE\n)\n\n\nminOverlap = 12: mínimo de bases solapantes (recomendado &gt;= 12 bp)\nmaxMismatch = 0: no se permiten desajustes en la zona de solapamiento\n\nVerás cuantas lecturas se ensamblan exitosamente por muestra. Un porcentaje bajo puede indicar que el recorte en filterAndTrim fue demasiado agresivo.\n\n# Inspeccionar el resultado del merge para la primera muestra\nhead(mergers[[1]])\n\nCada fila es una secuencia ensamblada única. Las columnas mas importantes:\n\n\n\nColumna\nDescripción\n\n\n\n\nabundance\nLecturas con esa secuencia\n\n\naccept\nTRUE si el par fue ensamblado correctamente\n\n\nnmatch\nBases coincidentes en el solapamiento\n\n\nnmismatch\nDesajustes encontrados",
+    "text": "Paso 1 — Ensamblar pares con mergePairs()\nQué hace: alinea cada par R1–R2 denoiseado buscando la región de solapamiento. Si R1 y R2 coinciden en esa zona, los une en una sola secuencia. Si no coinciden (o el solapamiento es insuficiente), el par se descarta — lo que actúa como filtro adicional de calidad.\n\nmergers &lt;- mergePairs(\n  dadaFs, derepFs,\n  dadaRs, derepRs,\n  minOverlap = 12,\n  maxMismatch = 0,\n  verbose = TRUE\n)\n\nParámetros clave:\n\nminOverlap = 12 — mínimo de bases solapantes requeridas para aceptar el ensamblaje. Valores menores aumentan el número de merges pero también el riesgo de ensamblajes erróneos. Para 12S (~62 bp) con truncLen ajustado, 12 bp es el mínimo razonable.\nmaxMismatch = 0 — no se permiten desajustes en la zona de solapamiento. Un solo mismatch descarta el par. Esto es estricto pero correcto: si el solapamiento tiene diferencias, al menos una de las dos lecturas tiene un error que el denoising no pudo corregir.\n\n\n# Inspeccionar el resultado del merge para la primera muestra\nhead(mergers[[1]])\n\nQué significa la tabla resultante: cada fila es una secuencia ensamblada única. Las columnas más importantes:\n\n\n\n\n\n\n\nColumna\nDescripción\n\n\n\n\nabundance\nNúmero de lecturas con esa secuencia ensamblada\n\n\naccept\nTRUE si el par fue ensamblado correctamente\n\n\nnmatch\nBases coincidentes en la zona de solapamiento\n\n\nnmismatch\nDesajustes encontrados (debe ser 0 con maxMismatch = 0)",
     "crumbs": [
       "Sesiones",
       "Día 3",
@@ -1080,7 +1080,7 @@
     "href": "2-dada2QAQC-Merge.html#paso-2-construir-la-tabla-de-secuencias",
     "title": "Dada2 - Unión de lecturas paired-end",
     "section": "Paso 2 — Construir la tabla de secuencias",
-    "text": "Paso 2 — Construir la tabla de secuencias\nmakeSequenceTable() organiza los mergers en una matriz muestras x ASVs.\n\nseqtab &lt;- makeSequenceTable(mergers)\ndim(seqtab)  # filas = muestras, columnas = ASVs únicos\n\nDeberías ver el número de muestras y el total de ASVs antes de remover quimeras.\n\n# Distribución de longitudes de las secuencias ensambladas\ntable(nchar(getSequences(seqtab)))\n\nLa distribución debe estar centrada alrededor de la longitud esperada del amplicón. Si hay muchas secuencias de longitudes muy diferentes, puede indicar artefactos de PCR o problemas de merge.",
+    "text": "Paso 2 — Construir la tabla de secuencias\nQué hace: organiza todos los mergers en una matriz donde las filas son muestras y las columnas son secuencias únicas (futuras ASVs). Esta es la tabla de abundancias antes de remover quimeras.\n\nseqtab &lt;- makeSequenceTable(mergers)\ndim(seqtab)  # filas = muestras, columnas = ASVs únicos\n\n\n# Distribución de longitudes de las secuencias ensambladas\ntable(nchar(getSequences(seqtab)))\n\nQué chequear: la distribución de longitudes debe estar centrada en la longitud esperada del amplicón (para 12S, ~62 bp). Un pico limpio y estrecho indica un merge exitoso. Si hay muchas secuencias de longitudes muy diferentes, puede indicar artefactos de PCR o problemas en el ensamblaje.",
     "crumbs": [
       "Sesiones",
       "Día 3",
@@ -1092,7 +1092,7 @@
     "href": "2-dada2QAQC-Merge.html#paso-3-verificar-eficiencia-del-merge",
     "title": "Dada2 - Unión de lecturas paired-end",
     "section": "Paso 3 — Verificar eficiencia del merge",
-    "text": "Paso 3 — Verificar eficiencia del merge\n\n# Porcentaje de lecturas ensambladas por muestra\nmerge_pct &lt;- sapply(mergers, function(m) {\n  round(sum(m$abundance[m$accept]) / sum(m$abundance) * 100, 1)\n})\nsummary(merge_pct)\n\n\nInterpretación\n\n\n\n% de merge\nInterpretación\n\n\n\n\n&gt; 80%\nNormal [OK]\n\n\n60-80%\nAceptable - revisar truncLen\n\n\n&lt; 60%\nBajo - truncLen probablemente muy agresivo\n\n\n\nSi el merge es bajo, verifica que los puntos de truncamiento preservan suficiente solapamiento entre R1 y R2. La longitud del amplicón debe ser: truncLen_F + truncLen_R - longitud_amplicón &gt; 12 bp de overlap.",
+    "text": "Paso 3 — Verificar eficiencia del merge\n\n# Porcentaje de lecturas ensambladas por muestra\nmerge_pct &lt;- sapply(mergers, function(m) {\n  round(sum(m$abundance[m$accept]) / sum(m$abundance) * 100, 1)\n})\nsummary(merge_pct)\n\nQué chequear:\n\n\n\n% de merge\nInterpretación\n\n\n\n\n&gt; 80%\nNormal\n\n\n60–80%\nAceptable — revisar truncLen\n\n\n&lt; 60%\nBajo — truncLen probablemente muy agresivo\n\n\n\nSi el merge es bajo, el problema casi siempre está en los puntos de truncamiento del paso anterior. La regla es: truncLen_F + truncLen_R - longitud_amplicón &gt; 12 bp. Si esa diferencia es menor a 12 bp, el solapamiento no es suficiente.",
     "crumbs": [
       "Sesiones",
       "Día 3",
@@ -1100,11 +1100,11 @@
     ]
   },
   {
-    "objectID": "2-dada2QAQC-Merge.html#causas-comúnes-de-merge-fallido",
-    "href": "2-dada2QAQC-Merge.html#causas-comúnes-de-merge-fallido",
+    "objectID": "2-dada2QAQC-Merge.html#causas-comunes-de-merge-fallido",
+    "href": "2-dada2QAQC-Merge.html#causas-comunes-de-merge-fallido",
     "title": "Dada2 - Unión de lecturas paired-end",
-    "section": "Causas comúnes de merge fallido",
-    "text": "Causas comúnes de merge fallido\n\n\n\n\n\n\n\n\nProblema\nCausa probable\nSolucion\n\n\n\n\nSolapamiento insuficiente\nAmplicón largo o recorte excesivo\nReducir truncLen o verificar longitud del amplicón\n\n\nBaja recuperacion en una muestra\nBaja calidad o contaminación\nRevisar QC de esa muestra\n\n\nMuchas longitudes inesperadas\nArtefactos de PCR\nAplicar filtro de longitud en el paso siguiente\n\n\n\n\n\n\n\n\n\n\nNotaRecuerda\n\n\n\nEl merge solo funcióna correctamente si los puntos de truncamiento en filterAndTrim preservan suficiente solapamiento entre R1 y R2. Un recorte demasiado agresivo en el paso anterior produce un merge fallido aqui.\n\n\n\n\n\n\n\n\nTipPara el curso\n\n\n\n\nRevisa el porcentaje de merge por muestra - ¿Hay muestras con &lt; 50%?\nInspecciona la distribución de longitudes de seqtab - ¿Coincide con el amplicón esperado?\n¿Cuantos ASVs hay antes de remover quimeras (ncol(seqtab))?",
+    "section": "Causas comunes de merge fallido",
+    "text": "Causas comunes de merge fallido\n\n\n\n\n\n\n\n\nProblema\nCausa probable\nSolución\n\n\n\n\nMerge bajo en todas las muestras\nSolapamiento insuficiente por truncLen agresivo\nReducir truncLen o verificar longitud del amplicón\n\n\nMerge bajo en una sola muestra\nBaja calidad o contaminación en esa muestra\nRevisar QC de la muestra\n\n\nMuchas longitudes inesperadas en seqtab\nArtefactos de PCR o amplificación inespecífica\nAplicar filtro de longitud en el paso de quimeras\n\n\n\n\n\n\n\n\n\n\nTipPara el curso\n\n\n\n\n¿Qué porcentaje de lecturas se ensamblan por muestra? ¿Hay muestras con &lt; 60%?\nRevisa la distribución de longitudes de seqtab — ¿coincide con la longitud esperada del amplicón 12S (~62 bp)?\n¿Cuántos ASVs hay antes de remover quimeras (ncol(seqtab))? ¿Y después?",
     "crumbs": [
       "Sesiones",
       "Día 3",
