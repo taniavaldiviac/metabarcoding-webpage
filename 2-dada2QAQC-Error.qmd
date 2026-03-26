@@ -97,9 +97,22 @@ write.csv(derep_stats,
   row.names = FALSE)
 ```
 
+## Paso 2 — Guardar checkpoint después de dereplicación
+
+Guardamos un checkpoint con los objetos de dereplicación. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el filtrado ni la dereplicación.
+
+```{r eval=FALSE}
+save(out, filtFs, filtRs, fnFs, fnRs, sample.names, primer.data, run_name,
+     fastq_location, output_location, metadata_location,
+     derepFs, derepRs, n_unique_F, total_reads_F, compression_ratio,
+     file = file.path(output_location, "rdata_output",
+                      paste0(run_name, "_", primer.data$locus_shorthand[i], "_checkpoint2_Dereps.RData")))
+message("Checkpoint 2 guardado (Dereps)")
+```
+
 ---
 
-## Paso 2 — Aprender el modelo de error
+## Paso 3 — Aprender el modelo de error
 
 ### ¿Por qué necesitamos un modelo de error?
 
@@ -282,7 +295,7 @@ if (!is.null(errF$err_out)) {
 
 ---
 
-## Paso 3 — Visualizar el modelo de error
+## Paso 4 — Visualizar el modelo de error
 
 El gráfico de errores muestra las 12 posibles transiciones (A->C, A->G, etc.). Los **puntos rojos** son las tasas observadas; la **linea negra** es el modelo ajustado. Deben seguir el mismo patrón: la tasa de error cae conforme aumenta la calidad (Q-score).
 
@@ -371,7 +384,7 @@ Mirando los paneles de error (fuera de la diagonal):
 
 ---
 
-## Paso 4 — Guardar checkpoint después de learnErrors
+## Paso 5 — Guardar checkpoint después de learnErrors
 
 El pipeline guarda automáticamente un checkpoint `.RData` después de `learnErrors()`. Si el script se interrumpe más adelante, puedes retomar desde aquí sin repetir el paso más lento.
 
@@ -392,7 +405,7 @@ load(file.path(output_location, "rdata_output",
 
 ---
 
-## Paso 5 — Inferencia de ASVs con `dada()`
+## Paso 6 — Inferencia de ASVs con `dada()`
 
 ### ¿Qué hace este paso?
 
@@ -453,7 +466,7 @@ Esto significa que de las 17,428 secuencias únicas que tenía la muestra 1 desp
 
 ---
 
-## Paso 6 — Guardar checkpoint después de dada()
+## Paso 7 — Guardar checkpoint después de dada()
 
 ```{r eval=FALSE}
 save(dadaFs, dadaRs, derepFs, derepRs, errF, errR, sample.names, primer.data, run_name, out,
