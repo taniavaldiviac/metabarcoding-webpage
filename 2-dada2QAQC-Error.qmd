@@ -325,6 +325,8 @@ dada-class: object describing DADA2 denoising results
 
 De 6,374 secuencias únicas (dereplicación), DADA2 determinó que solo **140 son variantes biológicas reales**. Las otras ~6,234 son errores de secuenciación colapsados de vuelta a su ASV de origen.
 
+**¿Cómo decide cuál es real y cuál es error?** Para cada secuencia poco abundante calcula: *¿cuál es la probabilidad de ver esta secuencia por azar, solo por errores de secuenciación?* Si esa probabilidad es menor que `OMEGA_A = 1e-40` — es decir, es tan improbable que sea un error — la declara variante real aunque aparezca pocas veces. `1e-40` es un umbral extremadamente estricto (1 en 10⁴⁰), lo que hace que DADA2 sea muy conservador: prefiere perder una variante rara real antes que incluir un error.
+
 | ASVs / secuencias únicas | Interpretación |
 |---|---|
 | < 5% | Normal para eDNA de peces con 12S — amplicón corto, pocas especies |
