@@ -829,15 +829,20 @@ Tip
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Excluir controles (MOCK, CTR) y sitios SLG, LIB, BSN antes de rarefacer</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ps_filt <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">subset_samples</span>(</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  ps,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span>site_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"SLG"</span>, <span class="st">"LIB"</span>, <span class="st">"BSN"</span>) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"MOCK|CTR"</span>, site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>ps_filt <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">prune_taxa</span>(phyloseq<span class="sc">::</span><span class="fu">taxa_sums</span>(ps_filt) <span class="sc">&gt;</span> <span class="dv">0</span>, ps_filt)</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver las 5 muestras con menos lecturas</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(phyloseq<span class="sc">::</span><span class="fu">sample_sums</span>(ps_filt))[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Separar controles (MOCK, CTR) para análisis independiente</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ps_ctrl <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">subset_samples</span>(ps, <span class="fu">grepl</span>(<span class="st">"MOCK|CTR"</span>, site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ps_ctrl <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">prune_taxa</span>(phyloseq<span class="sc">::</span><span class="fu">taxa_sums</span>(ps_ctrl) <span class="sc">&gt;</span> <span class="dv">0</span>, ps_ctrl)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Muestras control separadas: "</span>, phyloseq<span class="sc">::</span><span class="fu">nsamples</span>(ps_ctrl))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Excluir controles y sitios SLG, LIB, BSN antes de rarefacer</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ps_filt <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">subset_samples</span>(</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  ps,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span>site_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"SLG"</span>, <span class="st">"LIB"</span>, <span class="st">"BSN"</span>) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"MOCK|CTR"</span>, site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>ps_filt <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">prune_taxa</span>(phyloseq<span class="sc">::</span><span class="fu">taxa_sums</span>(ps_filt) <span class="sc">&gt;</span> <span class="dv">0</span>, ps_filt)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver las 5 muestras con menos lecturas</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(phyloseq<span class="sc">::</span><span class="fu">sample_sums</span>(ps_filt))[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>En nuestros datos, la muestra con menos lecturas es GC-024 con 10,024 reads. Las demás tienen 15,000+. Este será nuestro valor de rarefacción.</p>
