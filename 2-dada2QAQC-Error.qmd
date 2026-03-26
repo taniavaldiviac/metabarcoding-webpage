@@ -287,10 +287,10 @@ if (!is.null(errF$err_out)) {
 
   message("Tipos de transición de error: ", length(error_rows), " (de 16 posibles)")
   message("Tasa de error máxima en Q≥20: ", round(max_err, 5),
-          " (normal si < 0.05; preocupante si > 0.10)")
+          " (típico < 0.05; verifica con plotErrors() si > 0.10)")
 
   if (max_err > 0.1)
-    warning("Tasa de error > 10% en Q≥20. Revisa el perfil de calidad del run.")
+    message("Tasa de error > 10% en Q≥20. Verifica con plotErrors() que el modelo ajuste bien los datos.")
   else
     message("Modelo de error OK.")
 }
