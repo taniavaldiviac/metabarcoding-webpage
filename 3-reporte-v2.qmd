@@ -278,7 +278,6 @@ taxa2 <- taxa2 %>%
     in_gc_genus    = Genus %in% fish_genera,
     genus_unico    = Genus %in% names(gc_genus_unico_vec),
     Species = dplyr::case_when(
-      is.na(Species)              ~ NA_character_,
       in_gc_species               ~ Species,
       in_gc_genus & genus_unico   ~ gc_genus_unico_vec[Genus],
       in_gc_genus                 ~ paste0(Genus, " sp."),
