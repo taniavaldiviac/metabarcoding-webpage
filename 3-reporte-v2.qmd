@@ -1082,8 +1082,14 @@ La muestra MOCK es un control positivo que contiene una mezcla conocida de ADN d
 
 **Detección dinámica:** en lugar de usar el nombre exacto de la muestra (que puede cambiar entre corridas), detectamos la muestra MOCK automáticamente usando `grepl("MOCK", site_id, ignore.case=TRUE)`.
 
+::: {.callout-note icon="false"}
+**¿Por qué no aplicar la curación geográfica al MOCK?**
+
+El MOCK es un control de performance del pipeline, no una muestra ambiental del Golfo de California. Contiene especies de laboratorio — algunas pueden no estar en la lista de peces del GC. Si aplicáramos la curación geográfica, esas especies quedarían como `NA` y parecería que no fueron detectadas, cuando en realidad sí lo fueron. Para evaluar el pipeline correctamente, usamos la taxonomía directa del clasificador DADA2 (pre-curación).
+:::
+
 ```{r mock-deteccion}
-# Generar tabla de abundancias por especie y muestra (para el análisis MOCK)
+# Tabla de abundancias curada (para CSV export y análisis principales)
 ASV_df <- as.data.frame(phyloseq::otu_table(ps)) %>%
   tibble::rownames_to_column("seqID") %>%
   tidyr::pivot_longer(cols = -seqID, names_to = "Sample_name", values_to = "nReads")
@@ -1098,8 +1104,23 @@ species_site_reads <- ASV_df %>%
   dplyr::summarise(nReads = sum(nReads), .groups = "drop") %>%
   tidyr::pivot_wider(names_from = Sample_name, values_from = nReads, values_fill = 0)
 
-# Exportar tabla a CSV
 write.csv(species_site_reads, ruta_csv_output, row.names = FALSE)
+
+# Para el MOCK usamos taxonomía PRE-curación (taxa_df, antes de filtro geográfico)
+# para recuperar todas las especies del control positivo, incluso si no están en la lista del GC
+ASV_df_mock <- as.data.frame(ASV_mat) %>%
+  tibble::rownames_to_column("Sequence") %>%
+  tidyr::pivot_longer(cols = -Sequence, names_to = "Sample_name", values_to = "nReads")
+
+TAXA_df_precur <- taxa_df %>%
+  tibble::rownames_to_column("Sequence")
+
+species_site_mock <- ASV_df_mock %>%
+  dplyr::left_join(TAXA_df_precur, by = "Sequence") %>%
+  dplyr::filter(!is.na(Species)) %>%
+  dplyr::group_by(Sample_name, Species) %>%
+  dplyr::summarise(nReads = sum(nReads), .groups = "drop") %>%
+  tidyr::pivot_wider(names_from = Sample_name, values_from = nReads, values_fill = 0)
 
 # Detección dinámica del MOCK
 mock_meta <- data.frame(phyloseq::sample_data(ps), stringsAsFactors = FALSE)
@@ -1118,7 +1139,7 @@ if (length(mock_samples) > 0) {
   # Usar la primera muestra MOCK encontrada
   mock_col <- mock_samples[1]
 
-  df_mock <- species_site_reads %>%
+  df_mock <- species_site_mock %>%
     dplyr::select(Species, dplyr::all_of(mock_col)) %>%
     dplyr::rename(reads = dplyr::all_of(mock_col)) %>%
     dplyr::filter(reads > 0) %>%
