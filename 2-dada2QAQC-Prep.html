@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -736,132 +736,119 @@ Nota
 <span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Truncamiento por calidad: F="</span>, where_trim_all_Fs, <span class="st">" | R="</span>, where_trim_all_Rs)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Observa los valores que obtienes. En nuestro caso, probablemente serán mayores que 65 — el algoritmo detecta dónde cae la calidad, pero no sabe que nuestro amplicón es más corto que eso.</p>
+<p>En nuestros datos, el Forward da ~82–83 y el Reverse da ~62. Pero hay un problema: la ventana móvil busca dónde cae la calidad, y si las lecturas son más cortas que eso, simplemente no hay ciclos para evaluar — el algoritmo reporta un número irreal. Necesitamos verificar qué tan largas son realmente las lecturas.</p>
 </section>
-<section id="paso-2-ajuste-por-longitud-del-amplicón" class="level3">
-<h3 class="anchored" data-anchor-id="paso-2-ajuste-por-longitud-del-amplicón">Paso 2: Ajuste por longitud del amplicón</h3>
-<p>El truncamiento por calidad nos da un límite superior, pero no tiene sentido truncar más allá de donde termina el amplicón. Si el cálculo dice “truncar a 90 bp” pero nuestro amplicón solo tiene 65 bp, las bases 66–90 no son secuencia biológica — son cola del secuenciador.</p>
-<p>Por eso ajustamos: el truncamiento final es el <strong>menor</strong> entre el valor por calidad y la longitud del amplicón.</p>
+<section id="paso-2-distribución-de-longitudes-reales" class="level3">
+<h3 class="anchored" data-anchor-id="paso-2-distribución-de-longitudes-reales">Paso 2: Distribución de longitudes reales</h3>
+<p>Con linked adapters, Cutadapt corta en la posición exacta donde detecta el primer del otro extremo. Esa posición varía lectura a lectura: unas quedan en 62 bp, otras en 63, otras en 64. <strong><code>filterAndTrim</code> descarta cualquier lectura más corta que <code>truncLen</code></strong> — si truncamos a 65 pero la mayoría de lecturas miden 62–64, perdemos casi todo.</p>
+<p>Por eso, antes de fijar <code>truncLen</code>, calculamos la distribución real de longitudes:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>amp_length <span class="ot">&lt;-</span> primer.data<span class="sc">$</span>amplicon_length[i]</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>where_trim_all_Fs <span class="ot">&lt;-</span> <span class="fu">min</span>(where_trim_all_Fs, amp_length)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>where_trim_all_Rs <span class="ot">&lt;-</span> <span class="fu">min</span>(where_trim_all_Rs, amp_length)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Longitud del amplicón: "</span>, amp_length, <span class="st">" bp"</span>)</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Truncamiento ajustado: F="</span>, where_trim_all_Fs, <span class="st">" | R="</span>, where_trim_all_Rs)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sample_n_reads <span class="ot">&lt;-</span> <span class="dv">100000</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>get_lengths <span class="ot">&lt;-</span> <span class="cf">function</span>(fq_file, <span class="at">n =</span> sample_n_reads) {</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  streamer <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">FastqStreamer</span>(fq_file, <span class="at">n =</span> n)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">close</span>(streamer))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  chunk <span class="ot">&lt;-</span> ShortRead<span class="sc">::</span><span class="fu">yield</span>(streamer)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(chunk) <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="fu">integer</span>(<span class="dv">0</span>))</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  ShortRead<span class="sc">::</span><span class="fu">width</span>(ShortRead<span class="sc">::</span><span class="fu">sread</span>(chunk))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>lengths_F <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_df</span>(fnFs, <span class="sc">~</span> {</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  L <span class="ot">&lt;-</span> <span class="fu">get_lengths</span>(.x)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">ReadType =</span> <span class="st">"Forward"</span>, <span class="at">File =</span> <span class="fu">basename</span>(.x), <span class="at">Length =</span> L)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>lengths_R <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_df</span>(fnRs, <span class="sc">~</span> {</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  L <span class="ot">&lt;-</span> <span class="fu">get_lengths</span>(.x)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">ReadType =</span> <span class="st">"Reverse"</span>, <span class="at">File =</span> <span class="fu">basename</span>(.x), <span class="at">Length =</span> L)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>lengths_all <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(lengths_F, lengths_R)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="paso-3-verificación-de-solapamiento" class="level3">
-<h3 class="anchored" data-anchor-id="paso-3-verificación-de-solapamiento">Paso 3: Verificación de solapamiento</h3>
-<p>Finalmente verificamos que las lecturas truncadas se solapen lo suficiente para que DADA2 pueda unirlas (merge). El solapamiento se calcula como:</p>
-<pre><code>solapamiento = truncLen_F + truncLen_R - longitud_amplicón</code></pre>
+<p>Ahora ajustamos <code>truncLen</code> usando el <strong>percentil 5</strong> de las longitudes reales. Esto significa que el 95% de las lecturas son iguales o más largas que este valor — maximizamos la retención sin incluir lecturas muy cortas:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>overlap <span class="ot">&lt;-</span> where_trim_all_Fs <span class="sc">+</span> where_trim_all_Rs <span class="sc">-</span> amp_length</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Solapamiento esperado: "</span>, overlap, <span class="st">" bp"</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (overlap <span class="sc">&lt;</span> <span class="dv">12</span>) {</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Solapamiento &lt; 12 bp. El merge fallará. Aumenta truncLen o revisa el marcador."</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (overlap <span class="sc">&lt;</span> <span class="dv">20</span>) {</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Solapamiento &lt; 20 bp. El merge puede ser inestable."</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Solapamiento suficiente para el merge."</span>)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p5_F <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">quantile</span>(lengths_F<span class="sc">$</span>Length, <span class="fl">0.05</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>p5_R <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">quantile</span>(lengths_R<span class="sc">$</span>Length, <span class="fl">0.05</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>where_trim_all_Fs <span class="ot">&lt;-</span> <span class="fu">min</span>(where_trim_all_Fs, p5_F)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>where_trim_all_Rs <span class="ot">&lt;-</span> <span class="fu">min</span>(where_trim_all_Rs, p5_R)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Percentil 5 de longitudes: F="</span>, p5_F, <span class="st">" bp | R="</span>, p5_R, <span class="st">" bp"</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Truncamiento final (calidad + distribución): F="</span>, where_trim_all_Fs, <span class="st">" | R="</span>, where_trim_all_Rs)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
+<p>Y graficamos la distribución con una línea roja marcando el <code>truncLen</code> elegido:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>vlines <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">ReadType   =</span> <span class="fu">c</span>(<span class="st">"Forward"</span>, <span class="st">"Reverse"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">xintercept =</span> <span class="fu">c</span>(where_trim_all_Fs, where_trim_all_Rs)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(lengths_all, <span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">fill =</span> ReadType)) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">position =</span> <span class="st">"identity"</span>, <span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">data =</span> vlines, <span class="fu">aes</span>(<span class="at">xintercept =</span> xintercept),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> ReadType, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Distribución de longitudes de lecturas"</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">"Línea roja = truncLen (F="</span>, where_trim_all_Fs,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>                      <span class="st">" | R="</span>, where_trim_all_Rs, <span class="st">") — lecturas más cortas se descartan"</span>),</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Longitud (bp)"</span>, <span class="at">y =</span> <span class="st">"Frecuencia"</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>La línea roja muestra el corte: todo lo que está a la izquierda se pierde. Queremos que la línea caiga en la cola izquierda de la distribución, no en el centro.</p>
 </section>
 <section id="qué-pasaría-con-otros-marcadores" class="level3">
 <h3 class="anchored" data-anchor-id="qué-pasaría-con-otros-marcadores">¿Qué pasaría con otros marcadores?</h3>
-<p>La decisión de truncamiento cambia según la longitud del amplicón. Veamos cómo se comporta con marcadores de diferente tamaño:</p>
+<p>La decisión de truncamiento cambia según el marcador. Para amplicones más largos que las lecturas del secuenciador, el truncamiento lo determina la calidad — para amplicones cortos como el nuestro, lo determina la distribución de longitudes reales.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 23%">
-<col style="width: 23%">
-<col style="width: 18%">
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 21%">
+<col style="width: 39%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Marcador</th>
 <th style="text-align: left;">Amplicón</th>
-<th style="text-align: left;">truncLen F/R</th>
-<th style="text-align: left;">Solapamiento</th>
 <th style="text-align: left;">Situación</th>
+<th style="text-align: left;"><code>truncLen</code> lo fija</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>12S (nuestros datos)</strong></td>
 <td style="text-align: left;">~65 bp</td>
-<td style="text-align: left;">65 / 65</td>
-<td style="text-align: left;">65 bp</td>
-<td style="text-align: left;">Solapamiento total — ideal</td>
+<td style="text-align: left;">Lecturas más cortas que el límite de calidad</td>
+<td style="text-align: left;">Distribución real (p5 de longitudes)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>16S</strong></td>
 <td style="text-align: left;">~150 bp</td>
-<td style="text-align: left;">140 / 130</td>
-<td style="text-align: left;">120 bp</td>
-<td style="text-align: left;">Amplio solapamiento</td>
+<td style="text-align: left;">Lecturas caben, calidad se degrada al final</td>
+<td style="text-align: left;">Ventana deslizante de calidad</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>COI</strong></td>
 <td style="text-align: left;">~313 bp</td>
-<td style="text-align: left;">250 / 200</td>
-<td style="text-align: left;">137 bp</td>
-<td style="text-align: left;">Buen solapamiento</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>COI</strong> (calidad baja)</td>
-<td style="text-align: left;">~313 bp</td>
-<td style="text-align: left;">200 / 150</td>
-<td style="text-align: left;">37 bp</td>
-<td style="text-align: left;">Ajustado pero funcional</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><strong>COI</strong> (muy recortado)</td>
-<td style="text-align: left;">~313 bp</td>
-<td style="text-align: left;">150 / 120</td>
-<td style="text-align: left;">-43 bp</td>
-<td style="text-align: left;">No hay solapamiento — el merge falla</td>
+<td style="text-align: left;">Lecturas 2×150 no alcanzan todo el amplicón</td>
+<td style="text-align: left;">Calidad + verificar solapamiento</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>ITS / 18S</strong></td>
 <td style="text-align: left;">~500 bp</td>
-<td style="text-align: left;">250 / 250</td>
-<td style="text-align: left;">0 bp</td>
-<td style="text-align: left;">No hay solapamiento — imposible con lecturas de 2×250</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><strong>ITS / 18S</strong> (solo forward)</td>
-<td style="text-align: left;">~500 bp</td>
-<td style="text-align: left;">250 / —</td>
-<td style="text-align: left;">—</td>
-<td style="text-align: left;">Se usa solo R1 sin merge, se pierde resolución</td>
+<td style="text-align: left;">Lecturas no solapan — solo se usa forward</td>
+<td style="text-align: left;">N/A — sin merge</td>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Nota
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Con amplicones cortos</strong> (como nuestro 12S de ~65 bp), el truncamiento está determinado por la longitud del amplicón, no por la calidad — las lecturas son tan cortas que la calidad se mantiene alta durante todo el amplicón.</p>
-<p><strong>Con amplicones medianos</strong> (como COI de ~313 bp), el truncamiento está determinado por la calidad — hay que buscar el balance entre quitar bases de baja calidad y mantener suficiente solapamiento para el merge.</p>
-<p><strong>Con amplicones largos</strong> (como ITS o 18S de ~500 bp), las lecturas paired-end de Illumina (2×150 o 2×250 bp) no alcanzan a solaparse. En estos casos se trabaja solo con la lectura forward, sin merge, lo que reduce la resolución taxonómica. Una alternativa es usar plataformas de lectura larga (PacBio, Nanopore) o elegir un marcador más corto.</p>
-</div>
-</div>
 <hr>
 </section>
 </section>
@@ -886,7 +873,7 @@ Nota
 </div>
 <section id="trunclen-longitud-de-truncamiento" class="level3">
 <h3 class="anchored" data-anchor-id="trunclen-longitud-de-truncamiento"><code>truncLen</code> — Longitud de truncamiento</h3>
-<p>Trunca cada lectura a la longitud especificada. El primer valor es para forward (R1), el segundo para reverse (R2). Los valores <code>where_trim_all_Fs</code> y <code>where_trim_all_Rs</code> se calcularon automáticamente en el paso anterior. Si prefieres ajustarlos manualmente, puedes reemplazarlos por valores fijos (ej. <code>c(120, 100)</code>).</p>
+<p>Trunca cada lectura a la longitud especificada. El primer valor es para forward (R1), el segundo para reverse (R2). <strong>Cualquier lectura más corta que <code>truncLen</code> se descarta</strong> — por eso calculamos el percentil 5 de la distribución real de longitudes como valor de corte, para retener ~95% de las lecturas. Los valores <code>where_trim_all_Fs</code> y <code>where_trim_all_Rs</code> ya incorporan ese ajuste.</p>
 </section>
 <section id="maxn-bases-ambiguas" class="level3">
 <h3 class="anchored" data-anchor-id="maxn-bases-ambiguas"><code>maxN</code> — Bases ambiguas</h3>
