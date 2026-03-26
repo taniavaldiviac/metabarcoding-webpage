@@ -1525,8 +1525,22 @@ Tip
 <h2 class="anchored" data-anchor-id="control-positivo-mock">8. Control positivo — MOCK</h2>
 <p>La muestra MOCK es un control positivo que contiene una mezcla conocida de ADN de especies en proporciones definidas. Permite validar la fidelidad del pipeline de extremo a extremo: ¿detectamos las especies esperadas? ¿aparecen especies que no deberían estar?</p>
 <p><strong>Detección dinámica:</strong> en lugar de usar el nombre exacto de la muestra (que puede cambiar entre corridas), detectamos la muestra MOCK automáticamente usando <code>grepl("MOCK", site_id, ignore.case=TRUE)</code>.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Por qué no aplicar la curación geográfica al MOCK?</strong></p>
+<p>El MOCK es un control de performance del pipeline, no una muestra ambiental del Golfo de California. Contiene especies de laboratorio — algunas pueden no estar en la lista de peces del GC. Si aplicáramos la curación geográfica, esas especies quedarían como <code>NA</code> y parecería que no fueron detectadas, cuando en realidad sí lo fueron. Para evaluar el pipeline correctamente, usamos la taxonomía directa del clasificador DADA2 (pre-curación).</p>
+</div>
+</div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generar tabla de abundancias por especie y muestra (para el análisis MOCK)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de abundancias curada (para CSV export y análisis principales)</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>ASV_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps)) <span class="sc">%&gt;%</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"seqID"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>seqID, <span class="at">names_to =</span> <span class="st">"Sample_name"</span>, <span class="at">values_to =</span> <span class="st">"nReads"</span>)</span>
@@ -1541,18 +1555,33 @@ Tip
 <span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">nReads =</span> <span class="fu">sum</span>(nReads), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Sample_name, <span class="at">values_from =</span> nReads, <span class="at">values_fill =</span> <span class="dv">0</span>)</span>
 <span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Exportar tabla a CSV</span></span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(species_site_reads, ruta_csv_output, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Detección dinámica del MOCK</span></span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>mock_meta <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>mock_samples <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mock_meta)[<span class="fu">grepl</span>(<span class="st">"MOCK"</span>, mock_meta<span class="sc">$</span>site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)]</span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mock_samples) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"No se detectó ninguna muestra MOCK en este dataset."</span>)</span>
-<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Muestras MOCK detectadas: "</span>, <span class="fu">paste</span>(mock_samples, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(species_site_reads, ruta_csv_output, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Para el MOCK usamos taxonomía PRE-curación (taxa_df, antes de filtro geográfico)</span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="co"># para recuperar todas las especies del control positivo, incluso si no están en la lista del GC</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>ASV_df_mock <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ASV_mat) <span class="sc">%&gt;%</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"Sequence"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>Sequence, <span class="at">names_to =</span> <span class="st">"Sample_name"</span>, <span class="at">values_to =</span> <span class="st">"nReads"</span>)</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>TAXA_df_precur <span class="ot">&lt;-</span> taxa_df <span class="sc">%&gt;%</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"Sequence"</span>)</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>species_site_mock <span class="ot">&lt;-</span> ASV_df_mock <span class="sc">%&gt;%</span></span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(TAXA_df_precur, <span class="at">by =</span> <span class="st">"Sequence"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Species)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(Sample_name, Species) <span class="sc">%&gt;%</span></span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">nReads =</span> <span class="fu">sum</span>(nReads), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Sample_name, <span class="at">values_from =</span> nReads, <span class="at">values_fill =</span> <span class="dv">0</span>)</span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Detección dinámica del MOCK</span></span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>mock_meta <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>mock_samples <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mock_meta)[<span class="fu">grepl</span>(<span class="st">"MOCK"</span>, mock_meta<span class="sc">$</span>site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mock_samples) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"No se detectó ninguna muestra MOCK en este dataset."</span>)</span>
+<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Muestras MOCK detectadas: "</span>, <span class="fu">paste</span>(mock_samples, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
+<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mock_samples) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
@@ -1560,7 +1589,7 @@ Tip
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Usar la primera muestra MOCK encontrada</span></span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  mock_col <span class="ot">&lt;-</span> mock_samples[<span class="dv">1</span>]</span>
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  df_mock <span class="ot">&lt;-</span> species_site_reads <span class="sc">%&gt;%</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  df_mock <span class="ot">&lt;-</span> species_site_mock <span class="sc">%&gt;%</span></span>
 <span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(Species, dplyr<span class="sc">::</span><span class="fu">all_of</span>(mock_col)) <span class="sc">%&gt;%</span></span>
 <span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">reads =</span> dplyr<span class="sc">::</span><span class="fu">all_of</span>(mock_col)) <span class="sc">%&gt;%</span></span>
 <span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(reads <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
