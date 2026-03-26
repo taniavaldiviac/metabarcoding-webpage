@@ -384,8 +384,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="carga-de-paquetes">Carga de paquetes</h3>
 <p>Cargamos todos los paquetes necesarios al inicio del documento. Usamos <code>suppressPackageStartupMessages()</code> para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evitar que kable intente abrir navegador en el servidor</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">browser =</span> <span class="st">"false"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -412,15 +410,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(knitr)</span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(kableExtra)</span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="definición-de-rutas" class="level3">
 <h3 class="anchored" data-anchor-id="definición-de-rutas">Definición de rutas</h3>
 <p>Abre R desde <code>~/metabarcoding-code/</code>.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"~/metabarcoding-code"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ruta_rdata       <span class="ot">&lt;-</span> <span class="st">"final_data/rdata_output"</span></span>
@@ -431,15 +426,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear directorios de salida si no existen</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">dirname</span>(ruta_csv_output), <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(ruta_figs, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="carga-de-datos" class="level3">
 <h3 class="anchored" data-anchor-id="carga-de-datos">Carga de datos</h3>
 <p>Cargamos el archivo <code>*phyloseq_inputs.RData</code> generado por el pipeline DADA2, que contiene las matrices de abundancias, taxonomía y metadata.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Buscar específicamente el archivo phyloseq_inputs generado por el pipeline</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rdata_file <span class="ot">&lt;-</span> <span class="fu">list.files</span>(ruta_rdata, <span class="at">pattern =</span> <span class="st">"phyloseq_inputs</span><span class="sc">\\</span><span class="st">.RData$"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="st">"No se encontró *phyloseq_inputs.RData"</span> <span class="ot">=</span> <span class="fu">length</span>(rdata_file) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
@@ -453,7 +445,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Objetos cargados: "</span>, <span class="fu">paste</span>(<span class="fu">ls</span>(), <span class="at">collapse =</span> <span class="st">", "</span>))</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Muestras en track: "</span>, <span class="fu">nrow</span>(track))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -465,8 +456,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>El seguimiento del número de lecturas a lo largo del pipeline (<em>read tracking</em>) es el primer control de calidad del análisis. Cada etapa — filtrado, denoising, merge, quimeras, filtro de longitud — reduce el número de lecturas. Pérdidas moderadas son normales, pero caídas abruptas en algún paso pueden indicar parámetros inadecuados o muestras de baja calidad.</p>
 <p>En esta versión mejorada añadimos <strong>columnas de porcentaje de retención</strong> entre cada paso, lo que facilita identificar en qué etapa se pierden más lecturas. El porcentaje final (<code>pct_final</code>) refleja la eficiencia global del pipeline: valores entre <strong>70–90%</strong> son típicamente esperados.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>track_pct <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(track) <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_filtered  =</span> <span class="fu">round</span>(filtered      <span class="sc">/</span> input        <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>),</span>
@@ -498,11 +487,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar tabla de rendimiento</span></span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"final_data/reporte_ecologico"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(track_pct, <span class="st">"final_data/reporte_ecologico/track_rendimiento.csv"</span>, <span class="at">row.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumen global del pipeline</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>track_sum <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(<span class="fu">as.data.frame</span>(track), sum)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>track_sum_pct <span class="ot">&lt;-</span> track_sum <span class="sc">%&gt;%</span></span>
@@ -526,7 +512,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">font_size  =</span> <span class="dv">10</span></span>
 <span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -550,17 +535,12 @@ Nota
 <h3 class="anchored" data-anchor-id="preparación-de-datos-para-phyloseq">Preparación de datos para phyloseq</h3>
 <p>Antes de construir el objeto <em>phyloseq</em>, cargamos y cubramos las tablas de taxonomía y metadata, y construimos la matriz de abundancias en el formato correcto (ASVs como filas, muestras como columnas).</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Matriz de abundancias: ASVs como filas, muestras como columnas</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>otu_raw <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(asv_mat)) asv_mat <span class="cf">else</span> seqtab_clean</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="sc">!</span><span class="fu">is.null</span>(otu_raw))</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ASV_mat <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(otu_raw))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla taxonómica</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(tax_mat)) {</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  taxa_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(tax_mat)</span>
@@ -581,11 +561,8 @@ Nota
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Alinear filas con ASV_mat y filtrar clases no-peces</span></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>taxa_df <span class="ot">&lt;-</span> taxa_df[<span class="fu">rownames</span>(ASV_mat), , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>taxa_df <span class="ot">&lt;-</span> taxa_df[<span class="sc">!</span>(taxa_df<span class="sc">$</span>Class <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Mammalia"</span>, <span class="st">"Aves"</span>) <span class="sc">|</span> <span class="fu">is.na</span>(taxa_df<span class="sc">$</span>Class)), ]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Metadata de muestras</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>md <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(sample_meta)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -604,11 +581,8 @@ Nota
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>md <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(md[<span class="sc">!</span>is_ctrl, ], md[is_ctrl, ])</span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">nrow</span>(md) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Curación geográfica con lista de especies del Golfo de California</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>fish_sp      <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(ruta_metadata, <span class="at">row.names =</span> <span class="cn">NULL</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>fish_species <span class="ot">&lt;-</span> fish_sp<span class="sc">$</span>Species2</span>
@@ -681,7 +655,6 @@ Nota
 <span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a familia: "</span>, n_familia)</span>
 <span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>taxa_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(taxa2)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -707,8 +680,6 @@ Nota
 <h3 class="anchored" data-anchor-id="construcción-del-objeto-phyloseq">Construcción del objeto phyloseq</h3>
 <p><em>phyloseq</em> integra en un solo objeto la tabla de abundancias, la taxonomía y la metadata de muestras. Una vez construido, todas las operaciones — filtrado, transformación, visualización — se realizan de manera consistente y reproducible. También guardamos las secuencias originales de cada ASV en el slot <code>refseq</code> y renombramos los ASVs como <code>ASV1</code>, <code>ASV2</code>, etc., para mayor legibilidad.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ASV_ps <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ASV_mat, <span class="at">taxa_are_rows =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>TAX_ps <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_table</span>(taxa_mat)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>SMD_ps <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(md)</span>
@@ -725,15 +696,12 @@ Nota
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        phyloseq<span class="sc">::</span><span class="fu">nsamples</span>(ps), <span class="st">" muestras, "</span>,</span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        phyloseq<span class="sc">::</span><span class="fu">ntaxa</span>(ps), <span class="st">" ASVs"</span>)</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ps)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="guardar-phyloseq-y-fasta-de-asvs-para-vsearch" class="level3">
 <h3 class="anchored" data-anchor-id="guardar-phyloseq-y-fasta-de-asvs-para-vsearch">Guardar phyloseq y FASTA de ASVs (para VSEARCH)</h3>
 <p>Antes de continuar con los análisis ecológicos, guardamos el objeto phyloseq con las ASVs individuales (sin colapsar por especie) y exportamos las secuencias a FASTA. Estos archivos se usarán en el Día 4 para el agrupamiento en OTUs con VSEARCH.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"final_data/otus_vsearch"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar objeto phyloseq</span></span>
@@ -747,15 +715,12 @@ Nota
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Phyloseq y FASTA guardados en final_data/otus_vsearch/"</span>)</span>
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Total ASVs exportadas: "</span>, <span class="fu">length</span>(asv_seqs))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="reads-por-muestra-boxplot-de-cobertura" class="level3">
 <h3 class="anchored" data-anchor-id="reads-por-muestra-boxplot-de-cobertura">Reads por muestra (boxplot de cobertura)</h3>
 <p>Antes de cualquier análisis de diversidad es fundamental evaluar la <strong>cobertura de secuenciación</strong> por muestra. Muestras con muy pocas lecturas pueden producir estimados de diversidad poco confiables. Marcamos con una línea roja el umbral mínimo de 1,000 lecturas: muestras que no lo superen deben ser revisadas antes de continuar.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sample_reads <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample_id =</span> phyloseq<span class="sc">::</span><span class="fu">sample_names</span>(ps),</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">reads     =</span> phyloseq<span class="sc">::</span><span class="fu">sample_sums</span>(ps),</span>
@@ -800,7 +765,6 @@ Nota
 <span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardar gráfica</span></span>
 <span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/lecturas_por_muestra.png"</span>,</span>
 <span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -827,8 +791,6 @@ Tip
 <p>Rarefactamos al número de lecturas de la <strong>muestra con menos reads</strong> (excluyendo controles). No podemos “inventar” lecturas para las muestras con menos, así que bajamos todas al mismo nivel.</p>
 <p>Primero veamos cuántas lecturas tiene cada muestra:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Separar controles (MOCK, CTR) para análisis independiente</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ps_ctrl <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">subset_samples</span>(ps, <span class="fu">grepl</span>(<span class="st">"MOCK|CTR"</span>, site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ps_ctrl <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">prune_taxa</span>(phyloseq<span class="sc">::</span><span class="fu">taxa_sums</span>(ps_ctrl) <span class="sc">&gt;</span> <span class="dv">0</span>, ps_ctrl)</span>
@@ -843,7 +805,6 @@ Tip
 <span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver las 5 muestras con menos lecturas</span></span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(phyloseq<span class="sc">::</span><span class="fu">sample_sums</span>(ps_filt))[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>En nuestros datos, la muestra con menos lecturas es GC-024 con 10,024 reads. Las demás tienen 15,000+. Este será nuestro valor de rarefacción.</p>
 </section>
@@ -856,8 +817,6 @@ Tip
 </ul>
 <p>La línea roja vertical marca la profundidad de rarefacción (10,024 lecturas).</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparar datos para vegan::rarecurve</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>comm_rare_input <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">as.matrix</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps_filt)))</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (phyloseq<span class="sc">::</span><span class="fu">taxa_are_rows</span>(ps_filt)) comm_rare_input <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">t</span>(<span class="fu">as.matrix</span>(comm_rare_input)))</span>
@@ -893,7 +852,6 @@ Tip
 <span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex    =</span> <span class="fl">0.6</span>,</span>
 <span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty    =</span> <span class="st">"n"</span>)</span>
 <span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -917,8 +875,6 @@ Tip
 <section id="ejecutar-la-rarefacción" class="level4">
 <h4 class="anchored" data-anchor-id="ejecutar-la-rarefacción">Ejecutar la rarefacción</h4>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Rarefacción a: "</span>, min_depth, <span class="st">" lecturas por muestra"</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -931,7 +887,6 @@ Tip
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Muestras después de rarefacción: "</span>, phyloseq<span class="sc">::</span><span class="fu">nsamples</span>(ps_rare))</span>
 <span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs después de rarefacción: "</span>, phyloseq<span class="sc">::</span><span class="fu">ntaxa</span>(ps_rare))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -992,8 +947,6 @@ Nota
 <h3 class="anchored" data-anchor-id="cálculo-de-índices-y-boxplots-por-región">Cálculo de índices y boxplots por región</h3>
 <p>Calculamos todos los índices con <code>phyloseq::estimate_richness()</code> y graficamos la distribución de valores por región del Golfo de California. La prueba de Kruskal-Wallis evalúa si hay diferencias significativas entre regiones.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>alpha_df <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">estimate_richness</span>(</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  ps_rare,</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Chao1"</span>, <span class="st">"ACE"</span>, <span class="st">"Shannon"</span>, <span class="st">"Simpson"</span>, <span class="st">"InvSimpson"</span>)</span>
@@ -1079,7 +1032,6 @@ Nota
 <span id="cb16-83"><a href="#cb16-83" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-84"><a href="#cb16-84" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/diversidad_alfa_regiones.png"</span>,</span>
 <span id="cb16-85"><a href="#cb16-85" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1095,8 +1047,6 @@ Tip
 </div>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla resumen por región (ASVs)</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>alpha_summary <span class="ot">&lt;-</span> alpha_df <span class="sc">%&gt;%</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(region_gc) <span class="sc">%&gt;%</span></span>
@@ -1112,7 +1062,6 @@ Tip
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(alpha_summary, <span class="st">"final_data/reporte_ecologico/diversidad_alfa_asvs_resumen.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>alpha_summary</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="diversidad-alfa-a-nivel-de-especie" class="level3">
@@ -1124,8 +1073,6 @@ Tip
 <li><strong>Diversidad de especies</strong>: diversidad taxonómica — lo que tradicionalmente se reporta en ecología</li>
 </ul>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Colapsar ASVs por especie en el objeto rarefactado</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ps_rare_sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_glom</span>(ps_rare, <span class="st">"Species"</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1205,11 +1152,8 @@ Tip
 <span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/diversidad_alfa_especies.png"</span>,</span>
 <span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla resumen por región (especies)</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>alpha_sp_summary <span class="ot">&lt;-</span> alpha_sp <span class="sc">%&gt;%</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(region_gc) <span class="sc">%&gt;%</span></span>
@@ -1225,7 +1169,6 @@ Tip
 <span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(alpha_sp_summary, <span class="st">"final_data/reporte_ecologico/diversidad_alfa_especies_resumen.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>alpha_sp_summary</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1248,8 +1191,6 @@ Nota
 <p>La curva de acumulación muestra cómo aumenta el número de <strong>especies únicas detectadas</strong> conforme se incorporan más muestras al análisis. Es fundamental para evaluar la <strong>suficiencia del muestreo</strong>: si la curva alcanza una asíntota, el esfuerzo de muestreo fue suficiente. Si sigue creciendo, hay diversidad por descubrir.</p>
 <p>La banda sombreada representa ± 1 desviación estándar entre permutaciones aleatorias. La línea discontinua naranja muestra el estimador Chao de riqueza potencial total del sistema.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Objeto sin controles, nivel especie</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>ps_sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_glom</span>(ps_filt, <span class="st">"Species"</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1301,7 +1242,6 @@ Nota
 <span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/curva_acumulacion.png"</span>,</span>
 <span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1324,19 +1264,14 @@ Tip
 <section id="agrupación-por-especie-y-cálculo-de-abundancias-relativas" class="level3">
 <h3 class="anchored" data-anchor-id="agrupación-por-especie-y-cálculo-de-abundancias-relativas">Agrupación por especie y cálculo de abundancias relativas</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Agrupar ASVs por especie y calcular proporciones</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ps_sp_prop <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">transform_sample_counts</span>(ps_sp, <span class="cf">function</span>(x) x <span class="sc">/</span> <span class="fu">sum</span>(x))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="tabla-de-abundancias-por-especie-y-muestra" class="level3">
 <h3 class="anchored" data-anchor-id="tabla-de-abundancias-por-especie-y-muestra">Tabla de abundancias por especie y muestra</h3>
 <p>La tabla de abundancias por especie y muestra es el producto central del análisis: registra cuántas lecturas corresponden a cada especie en cada sitio. Se exporta en CSV para su uso en otros programas.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ASV_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps_sp)) <span class="sc">%&gt;%</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"seqID"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>seqID, <span class="at">names_to =</span> <span class="st">"Sample_name"</span>, <span class="at">values_to =</span> <span class="st">"nReads"</span>)</span>
@@ -1364,15 +1299,12 @@ Tip
 <span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>species.site.reads[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">%&gt;%</span></span>
 <span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">"html"</span>, <span class="at">caption =</span> <span class="st">"Primeros 10 renglones de la tabla de abundancias"</span>, <span class="at">align =</span> <span class="st">"c"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">TRUE</span>, <span class="at">font_size =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="distribución-de-longitudes-de-secuencias" class="level3">
 <h3 class="anchored" data-anchor-id="distribución-de-longitudes-de-secuencias">Distribución de longitudes de secuencias</h3>
 <p>Las ASVs deben tener una longitud consistente con el amplicón esperado. Secuencias muy cortas pueden ser artefactos; secuencias muy largas pueden indicar uniones incorrectas. El histograma muestra la distribución de longitudes y la línea naranja marca la mediana.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>seq_lengths <span class="ot">&lt;-</span> <span class="fu">nchar</span>(<span class="fu">as.character</span>(phyloseq<span class="sc">::</span><span class="fu">refseq</span>(ps)))</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df_lengths <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Length =</span> seq_lengths)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1390,7 +1322,6 @@ Tip
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/distribucion_longitudes_asv.png"</span>,</span>
 <span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">4</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -1398,8 +1329,6 @@ Tip
 <h3 class="anchored" data-anchor-id="barras-apiladas-por-familia">Barras apiladas por familia</h3>
 <p>La composición a nivel de familia facilita la comparación entre sitios e identifica los grupos funcionales dominantes. Familias con barras grandes y consistentes entre sitios indican taxa ampliamente distribuidos en el Golfo de California.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_fam <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">psmelt</span>(ps_sp_prop) <span class="sc">%&gt;%</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(site_id <span class="sc">%in%</span> md<span class="sc">$</span>site_id) <span class="sc">%&gt;%</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
@@ -1439,14 +1368,11 @@ Tip
 <span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(ruta_figs, <span class="st">"abundancia_relativa_familia.png"</span>),</span>
 <span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>  gp_fam, <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">dpi =</span> <span class="dv">300</span></span>
 <span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="top-5-familias-más-abundantes" class="level3">
 <h3 class="anchored" data-anchor-id="top-5-familias-más-abundantes">Top 5 familias más abundantes</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>top5_fam <span class="ot">&lt;-</span> df_fam <span class="sc">%&gt;%</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(Family) <span class="sc">%&gt;%</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">total =</span> <span class="fu">sum</span>(Abundance, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
@@ -1483,15 +1409,12 @@ Tip
 <span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(ruta_figs, <span class="st">"abundancia_relativa_top5_familias.png"</span>),</span>
 <span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>  gp_top5_fam, <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">300</span></span>
 <span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="barras-apiladas-por-especie" class="level3">
 <h3 class="anchored" data-anchor-id="barras-apiladas-por-especie">Barras apiladas por especie</h3>
 <p>El análisis a nivel de especie provee la resolución taxonómica más fina disponible. Dado el alto número de especies posibles, la paleta es extensa. Este gráfico se complementa con el heatmap de la sección siguiente.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">psmelt</span>(ps_sp_prop) <span class="sc">%&gt;%</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(site_id <span class="sc">%in%</span> md<span class="sc">$</span>site_id) <span class="sc">%&gt;%</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
@@ -1529,14 +1452,11 @@ Tip
 <span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(ruta_figs, <span class="st">"abundancia_relativa_especie.png"</span>),</span>
 <span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>  gp_sp, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">9</span>, <span class="at">dpi =</span> <span class="dv">300</span></span>
 <span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="top-5-especies-más-abundantes" class="level3">
 <h3 class="anchored" data-anchor-id="top-5-especies-más-abundantes">Top 5 especies más abundantes</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>top5_sp <span class="ot">&lt;-</span> df_sp <span class="sc">%&gt;%</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(Species) <span class="sc">%&gt;%</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">total =</span> <span class="fu">sum</span>(Abundance, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
@@ -1573,15 +1493,12 @@ Tip
 <span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(ruta_figs, <span class="st">"abundancia_relativa_top5_especies.png"</span>),</span>
 <span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>  gp_top5_sp, <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">300</span></span>
 <span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="heatmap-top-20-especies-sitios" class="level3">
 <h3 class="anchored" data-anchor-id="heatmap-top-20-especies-sitios">Heatmap: Top 20 especies × sitios</h3>
 <p>El heatmap complementa los gráficos de barras mostrando simultáneamente la distribución de las 20 especies más abundantes en todos los sitios. Los valores están transformados con log(x+1) para reducir el efecto de species muy dominantes y hacer visibles las abundancias bajas. El clustering jerárquico (Ward D2) agrupa automáticamente sitios y especies con patrones similares.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Top 20 especies por abundancia total</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>top20_names <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">sort</span>(phyloseq<span class="sc">::</span><span class="fu">taxa_sums</span>(ps_sp), <span class="at">decreasing =</span> <span class="cn">TRUE</span>))[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>]</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>ps_top20    <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">prune_taxa</span>(top20_names, ps_sp)</span>
@@ -1609,7 +1526,6 @@ Tip
 <span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">cellheight         =</span> <span class="dv">14</span></span>
 <span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1646,8 +1562,6 @@ Tip
 <section id="preparación-de-matrices-comunitarias" class="level3">
 <h3 class="anchored" data-anchor-id="preparación-de-matrices-comunitarias">Preparación de matrices comunitarias</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Matriz de abundancias por especie ---</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>comm_sp_mat <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">as.matrix</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps_sp)))</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (phyloseq<span class="sc">::</span><span class="fu">taxa_are_rows</span>(ps_sp)) comm_sp_mat <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">t</span>(<span class="fu">as.matrix</span>(comm_sp_mat)))</span>
@@ -1688,15 +1602,12 @@ Tip
 <span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Muestras en análisis de beta diversidad (especies): "</span>, <span class="fu">nrow</span>(comm_filt))</span>
 <span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Muestras en análisis de beta diversidad (ASVs): "</span>, <span class="fu">nrow</span>(asv_filt))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="homogeneidad-de-dispersiones-betadisper-bray-curtis" class="level3">
 <h3 class="anchored" data-anchor-id="homogeneidad-de-dispersiones-betadisper-bray-curtis">Homogeneidad de dispersiones (betadisper) — Bray-Curtis</h3>
 <p>Antes de aplicar PERMANOVA es <strong>obligatorio</strong> verificar la homogeneidad de varianzas entre grupos. Si los grupos tienen dispersiones muy distintas, un PERMANOVA significativo puede reflejar esa diferencia de dispersión y no necesariamente diferencias en la posición de los centroides (composición media).</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>bd      <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">betadisper</span>(dist_sp_bc, meta_filt<span class="sc">$</span>region_gc)</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>bd_test <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">permutest</span>(bd, <span class="at">permutations =</span> <span class="dv">999</span>)</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1737,7 +1648,6 @@ Tip
 <span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/betadisper_regiones.png"</span>,</span>
 <span id="cb30-40"><a href="#cb30-40" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1757,8 +1667,6 @@ Nota
 <h3 class="anchored" data-anchor-id="permanova-y-anosim-especies-jaccard-y-bray-curtis">PERMANOVA y ANOSIM — Especies (Jaccard y Bray-Curtis)</h3>
 <p>Calculamos PERMANOVA y ANOSIM con ambas métricas para especies, permitiendo comparar los resultados.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Bray-Curtis ---</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>permanova_sp_bc <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">adonis2</span>(</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  comm_filt <span class="sc">~</span> region_gc,</span>
@@ -1815,14 +1723,11 @@ Nota
 <span id="cb31-54"><a href="#cb31-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb31-55"><a href="#cb31-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">font_size  =</span> <span class="dv">10</span></span>
 <span id="cb31-56"><a href="#cb31-56" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="permanova-y-anosim-asvs-jaccard-y-bray-curtis" class="level3">
 <h3 class="anchored" data-anchor-id="permanova-y-anosim-asvs-jaccard-y-bray-curtis">PERMANOVA y ANOSIM — ASVs (Jaccard y Bray-Curtis)</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Bray-Curtis ---</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>permanova_asv_bc <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">adonis2</span>(</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  asv_filt <span class="sc">~</span> region_gc,</span>
@@ -1850,15 +1755,12 @@ Nota
 <span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(permanova_asv_jac)</span>
 <span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== ANOSIM ASVs — Jaccard ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anosim_asv_jac)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="nmds-basado-en-especies-bray-curtis-métrica-principal" class="level3">
 <h3 class="anchored" data-anchor-id="nmds-basado-en-especies-bray-curtis-métrica-principal">NMDS basado en especies — Bray-Curtis (métrica principal)</h3>
 <p>El NMDS (<em>Non-metric Multidimensional Scaling</em>) representa las distancias entre comunidades en 2D preservando al máximo las relaciones originales. Un <strong>stress &lt; 0.1</strong> es excelente; <strong>&lt; 0.2</strong> es aceptable. Usamos Bray-Curtis como métrica principal.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>nmds_sp_bc <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">metaMDS</span>(dist_sp_bc, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">trymax =</span> <span class="dv">500</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1903,14 +1805,11 @@ Nota
 <span id="cb33-42"><a href="#cb33-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-43"><a href="#cb33-43" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/nmds_especies_braycurtis.png"</span>,</span>
 <span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">7</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="nmds-basado-en-especies-jaccard-métrica-secundaria" class="level3">
 <h3 class="anchored" data-anchor-id="nmds-basado-en-especies-jaccard-métrica-secundaria">NMDS basado en especies — Jaccard (métrica secundaria)</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>nmds_sp_jac <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">metaMDS</span>(dist_sp_jac, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">trymax =</span> <span class="dv">500</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1955,15 +1854,12 @@ Nota
 <span id="cb34-42"><a href="#cb34-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-43"><a href="#cb34-43" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/nmds_especies_jaccard.png"</span>,</span>
 <span id="cb34-44"><a href="#cb34-44" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">7</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="nmds-basado-en-asvs-bray-curtis" class="level3">
 <h3 class="anchored" data-anchor-id="nmds-basado-en-asvs-bray-curtis">NMDS basado en ASVs — Bray-Curtis</h3>
 <p>El <strong>enfoque libre de taxonomía</strong> trabaja directamente con las ASVs sin requerir asignación taxonómica. Esto permite aprovechar toda la información disponible, incluidas las ASVs sin asignar, y es más sensible a diferencias sutiles en la composición genética de las comunidades.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>nmds_asv_bc <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">metaMDS</span>(dist_asv_bc, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">trymax =</span> <span class="dv">500</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2008,7 +1904,6 @@ Nota
 <span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-43"><a href="#cb35-43" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/nmds_asvs_braycurtis.png"</span>,</span>
 <span id="cb35-44"><a href="#cb35-44" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">7</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2027,8 +1922,6 @@ Tip
 <section id="tabla-comparativa-de-diversidad-beta-4-combinaciones" class="level3">
 <h3 class="anchored" data-anchor-id="tabla-comparativa-de-diversidad-beta-4-combinaciones">Tabla comparativa de diversidad beta (4 combinaciones)</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>comparacion_beta <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  Combinación <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Especies_Jaccard"</span>, <span class="st">"Especies_BrayCurtis"</span>,</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"ASVs_Jaccard"</span>, <span class="st">"ASVs_BrayCurtis"</span>),</span>
@@ -2079,14 +1972,11 @@ Tip
 <span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">font_size  =</span> <span class="dv">10</span></span>
 <span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section>
 <section id="resumen-de-pruebas-de-diversidad-beta" class="level3">
 <h3 class="anchored" data-anchor-id="resumen-de-pruebas-de-diversidad-beta">Resumen de pruebas de diversidad beta</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>resumen_beta <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  Análisis    <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"betadisper (Bray-Curtis, Especies)"</span>,</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"PERMANOVA Especies (Bray-Curtis)"</span>,</span>
@@ -2147,7 +2037,6 @@ Tip
 <span id="cb37-58"><a href="#cb37-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb37-59"><a href="#cb37-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">font_size  =</span> <span class="dv">10</span></span>
 <span id="cb37-60"><a href="#cb37-60" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <hr>
 </section>
@@ -2157,8 +2046,6 @@ Tip
 <p>La muestra MOCK es un control positivo que contiene una mezcla conocida de ADN de especies en proporciones definidas. Permite validar la fidelidad del pipeline de extremo a extremo: ¿detectamos las especies esperadas? ¿aparecen especies que no deberían estar?</p>
 <p><strong>Detección dinámica:</strong> en lugar de usar el nombre exacto de la muestra (que puede cambiar entre corridas), detectamos la muestra MOCK automáticamente usando <code>grepl("MOCK", site_id, ignore.case=TRUE)</code>.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generar tabla de abundancias por especie y muestra (para el análisis MOCK)</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>ASV_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps)) <span class="sc">%&gt;%</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"seqID"</span>) <span class="sc">%&gt;%</span></span>
@@ -2186,11 +2073,8 @@ Tip
 <span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
 <span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Muestras MOCK detectadas: "</span>, <span class="fu">paste</span>(mock_samples, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
 <span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mock_samples) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Usar la primera muestra MOCK encontrada</span></span>
@@ -2246,11 +2130,8 @@ Tip
 <span id="cb39-53"><a href="#cb39-53" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
 <span id="cb39-54"><a href="#cb39-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"No hay muestra MOCK en este dataset para graficar.</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb39-55"><a href="#cb39-55" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mock_samples) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  df_mock <span class="sc">%&gt;%</span></span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">rel_abund =</span> scales<span class="sc">::</span><span class="fu">percent</span>(rel_abund, <span class="at">accuracy =</span> <span class="fl">0.1</span>)) <span class="sc">%&gt;%</span></span>
@@ -2270,7 +2151,6 @@ Tip
 <span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">font_size  =</span> <span class="dv">10</span></span>
 <span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2290,10 +2170,7 @@ Nota
 <section id="información-de-sesión" class="level2">
 <h2 class="anchored" data-anchor-id="información-de-sesión">Información de sesión</h2>
 <div class="cell">
-<details class="code-fold">
-<summary>Código</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 
 
