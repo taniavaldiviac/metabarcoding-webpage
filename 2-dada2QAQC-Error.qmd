@@ -30,13 +30,8 @@ primer_csv        <- file.path(metadata_location, "primer_data.csv")
 primer.data       <- readr::read_csv(primer_csv, show_col_types = FALSE)
 i                 <- 1
 
-# El archivo se llama: AAAAMMDD_HHMM_12S_checkpoint2_Dereps.RData
-# Listar para ver el nombre exacto de tu corrida:
-list.files(file.path(output_location, "rdata_output"), pattern = "checkpoint2_Dereps")
-
-# Reemplaza con el nombre de tu archivo:
-load(file.path(output_location, "rdata_output", "20260325_1430_12S_checkpoint2_Dereps.RData"))
-message("Checkpoint 2 cargado")
+# Busca en rdata_output el archivo que termina en Dereps.RData y cárgalo:
+list.files(file.path(output_location, "rdata_output"), pattern = "Dereps\\.RData$")
 ```
 
 ---
