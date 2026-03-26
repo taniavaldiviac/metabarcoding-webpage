@@ -66,7 +66,7 @@ format:
     number-sections: false
     page-navigation: true
     lang: es
-    code-fold: true
+    code-fold: false
     highlight-style: github
     df-print: paged
     page-layout: full
