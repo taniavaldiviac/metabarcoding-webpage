@@ -400,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-es-la-dereplicación" class="level3">
 <h3 class="anchored" data-anchor-id="qué-es-la-dereplicación">¿Qué es la dereplicación?</h3>
 <p>Después del filtrado, cada muestra tiene miles de lecturas — pero muchas de ellas son <strong>idénticas</strong> entre sí. La dereplicación agrupa todas las lecturas con exactamente la misma secuencia en una sola entrada, y registra cuántas veces apareció cada una (su <strong>abundancia</strong>).</p>
-<p>Por ejemplo, en nuestros datos la muestra 1 tiene ~79,661 lecturas pero solo 6,374 secuencias únicas — la dereplicación reduce el volumen de datos en ~12x, cada entrada con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.</p>
+<p>Por ejemplo, en nuestros datos la muestra 1 tiene ~158,309 lecturas pero solo 6,374 secuencias únicas — la dereplicación reduce el volumen de datos en ~25x, cada entrada con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>exists <span class="ot">&lt;-</span> <span class="fu">file.exists</span>(filtFs) <span class="sc">&amp;</span> <span class="fu">file.exists</span>(filtRs)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>filtFs <span class="ot">&lt;-</span> filtFs[exists]</span>
@@ -438,9 +438,9 @@ Top 5 abundancias: 70868, 15720, 12618, 10018, 9878</code></pre>
 <section id="cómo-interpretar-estos-resultados" class="level3">
 <h3 class="anchored" data-anchor-id="cómo-interpretar-estos-resultados">¿Cómo interpretar estos resultados?</h3>
 <ul>
-<li><strong>6,374 secuencias únicas</strong> de ~79,661 lecturas totales — el ~8% son únicas, el resto son repeticiones</li>
+<li><strong>6,374 secuencias únicas</strong> de ~158,309 lecturas totales — el ~4% son únicas, el resto son repeticiones</li>
 <li><strong>Top 5 abundancias</strong>: la secuencia más abundante apareció 70,868 veces. Estas secuencias dominantes probablemente corresponden a las especies de peces más comunes en la muestra</li>
-<li>El <strong>ratio de compresión del ~8%</strong> indica diversidad moderada, lo cual es típico en muestras de eDNA marinas</li>
+<li>El <strong>ratio de compresión del ~4%</strong> indica diversidad moderada, lo cual es típico en muestras de eDNA marinas</li>
 </ul>
 <table class="caption-top table">
 <colgroup>
@@ -911,7 +911,7 @@ Nota
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Al finalizar verás para cada muestra un resumen como este:</p>
-<pre><code>Sample 1 - 79661 reads in 6374 unique sequences.
+<pre><code>Sample 1 - 158309 reads in 6374 unique sequences.
 Sample 2 - ...
 ...</code></pre>
 </section>
