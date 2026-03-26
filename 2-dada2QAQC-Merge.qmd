@@ -5,14 +5,15 @@ execute:
   warning: false
 ---
 
-
 En secuenciación paired-end cada fragmento de ADN se lee desde ambos extremos: una lectura **forward** (R1) y una **reverse** (R2). Para obtener la secuencia completa del amplicón, ambas lecturas deben ensamblarse aprovechando la región de solapamiento que comparten en el centro.
+
+El merge ocurre **después del denoising** — es decir, trabaja con lecturas ya corregidas, no con las crudas. Esto es importante: DADA2 no une lecturas con errores y luego las corrige, sino al revés.
 
 ---
 
 ## Paso 1 — Ensamblar pares con `mergePairs()`
 
-`mergePairs()` une R1 y R2 verificando que coincidan en la zona de solapamiento. Los pares que no coinciden se descartan  -  esto actua como filtro adicional de calidad.
+**Qué hace:** alinea cada par R1–R2 denoiseado buscando la región de solapamiento. Si R1 y R2 coinciden en esa zona, los une en una sola secuencia. Si no coinciden (o el solapamiento es insuficiente), el par se descarta — lo que actúa como filtro adicional de calidad.
 
 ```{r eval=FALSE}
 mergers <- mergePairs(
@@ -24,44 +25,42 @@ mergers <- mergePairs(
 )
 ```
 
-- `minOverlap = 12`: mínimo de bases solapantes (recomendado >= 12 bp)
-- `maxMismatch = 0`: no se permiten desajustes en la zona de solapamiento
+**Parámetros clave:**
 
-Verás cuantas lecturas se ensamblan exitosamente por muestra. Un porcentaje bajo puede indicar que el recorte en `filterAndTrim` fue demasiado agresivo.
+- `minOverlap = 12` — mínimo de bases solapantes requeridas para aceptar el ensamblaje. Valores menores aumentan el número de merges pero también el riesgo de ensamblajes erróneos. Para 12S (~62 bp) con truncLen ajustado, 12 bp es el mínimo razonable.
+- `maxMismatch = 0` — no se permiten desajustes en la zona de solapamiento. Un solo mismatch descarta el par. Esto es estricto pero correcto: si el solapamiento tiene diferencias, al menos una de las dos lecturas tiene un error que el denoising no pudo corregir.
 
 ```{r eval=FALSE}
 # Inspeccionar el resultado del merge para la primera muestra
 head(mergers[[1]])
 ```
 
-Cada fila es una secuencia ensamblada única. Las columnas mas importantes:
+**Qué significa la tabla resultante:** cada fila es una secuencia ensamblada única. Las columnas más importantes:
 
 | Columna | Descripción |
-|---------|-------------|
-| `abundance` | Lecturas con esa secuencia |
+|---|---|
+| `abundance` | Número de lecturas con esa secuencia ensamblada |
 | `accept` | `TRUE` si el par fue ensamblado correctamente |
-| `nmatch` | Bases coincidentes en el solapamiento |
-| `nmismatch` | Desajustes encontrados |
+| `nmatch` | Bases coincidentes en la zona de solapamiento |
+| `nmismatch` | Desajustes encontrados (debe ser 0 con `maxMismatch = 0`) |
 
 ---
 
 ## Paso 2 — Construir la tabla de secuencias
 
-`makeSequenceTable()` organiza los mergers en una matriz muestras x ASVs.
+**Qué hace:** organiza todos los mergers en una matriz donde las filas son muestras y las columnas son secuencias únicas (futuras ASVs). Esta es la tabla de abundancias antes de remover quimeras.
 
 ```{r eval=FALSE}
 seqtab <- makeSequenceTable(mergers)
 dim(seqtab)  # filas = muestras, columnas = ASVs únicos
 ```
 
-Deberías ver el número de muestras y el total de ASVs antes de remover quimeras.
-
 ```{r eval=FALSE}
 # Distribución de longitudes de las secuencias ensambladas
 table(nchar(getSequences(seqtab)))
 ```
 
-La distribución debe estar centrada alrededor de la longitud esperada del amplicón. Si hay muchas secuencias de longitudes muy diferentes, puede indicar artefactos de PCR o problemas de merge.
+**Qué chequear:** la distribución de longitudes debe estar centrada en la longitud esperada del amplicón (para 12S, ~62 bp). Un pico limpio y estrecho indica un merge exitoso. Si hay muchas secuencias de longitudes muy diferentes, puede indicar artefactos de PCR o problemas en el ensamblaje.
 
 ---
 
@@ -75,36 +74,31 @@ merge_pct <- sapply(mergers, function(m) {
 summary(merge_pct)
 ```
 
-### Interpretación
+**Qué chequear:**
 
 | % de merge | Interpretación |
-|------------|---------------|
-| > 80% | Normal [OK] |
-| 60-80% | Aceptable  -  revisar truncLen |
-| < 60% | Bajo  -  truncLen probablemente muy agresivo |
+|---|---|
+| > 80% | Normal |
+| 60–80% | Aceptable — revisar truncLen |
+| < 60% | Bajo — truncLen probablemente muy agresivo |
 
-Si el merge es bajo, verifica que los puntos de truncamiento preservan suficiente solapamiento entre R1 y R2. La longitud del amplicón debe ser: truncLen_F + truncLen_R - longitud_amplicón > 12 bp de overlap.
-
----
-
-## Causas comúnes de merge fallido
-
-| Problema | Causa probable | Solucion |
-|----------|---------------|----------|
-| Solapamiento insuficiente | Amplicón largo o recorte excesivo | Reducir truncLen o verificar longitud del amplicón |
-| Baja recuperacion en una muestra | Baja calidad o contaminación | Revisar QC de esa muestra |
-| Muchas longitudes inesperadas | Artefactos de PCR | Aplicar filtro de longitud en el paso siguiente |
+Si el merge es bajo, el problema casi siempre está en los puntos de truncamiento del paso anterior. La regla es: `truncLen_F + truncLen_R - longitud_amplicón > 12 bp`. Si esa diferencia es menor a 12 bp, el solapamiento no es suficiente.
 
 ---
 
-:::{.callout-note}
-## Recuerda
-El merge solo funcióna correctamente si los puntos de truncamiento en `filterAndTrim` preservan suficiente solapamiento entre R1 y R2. Un recorte demasiado agresivo en el paso anterior produce un merge fallido aqui.
-:::
+## Causas comunes de merge fallido
+
+| Problema | Causa probable | Solución |
+|---|---|---|
+| Merge bajo en todas las muestras | Solapamiento insuficiente por truncLen agresivo | Reducir truncLen o verificar longitud del amplicón |
+| Merge bajo en una sola muestra | Baja calidad o contaminación en esa muestra | Revisar QC de la muestra |
+| Muchas longitudes inesperadas en `seqtab` | Artefactos de PCR o amplificación inespecífica | Aplicar filtro de longitud en el paso de quimeras |
+
+---
 
 :::{.callout-tip}
 ## Para el curso
-1. Revisa el porcentaje de merge por muestra  -  ¿Hay muestras con < 50%?
-2. Inspecciona la distribución de longitudes de `seqtab`  -  ¿Coincide con el amplicón esperado?
-3. ¿Cuantos ASVs hay antes de remover quimeras (`ncol(seqtab)`)?
+1. ¿Qué porcentaje de lecturas se ensamblan por muestra? ¿Hay muestras con < 60%?
+2. Revisa la distribución de longitudes de `seqtab` — ¿coincide con la longitud esperada del amplicón 12S (~62 bp)?
+3. ¿Cuántos ASVs hay antes de remover quimeras (`ncol(seqtab)`)? ¿Y después?
 :::
