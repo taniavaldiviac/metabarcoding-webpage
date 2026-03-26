@@ -400,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-es-la-dereplicación" class="level3">
 <h3 class="anchored" data-anchor-id="qué-es-la-dereplicación">¿Qué es la dereplicación?</h3>
 <p>Después del filtrado, cada muestra tiene miles de lecturas — pero muchas de ellas son <strong>idénticas</strong> entre sí. La dereplicación agrupa todas las lecturas con exactamente la misma secuencia en una sola entrada, y registra cuántas veces apareció cada una (su <strong>abundancia</strong>).</p>
-<p>Por ejemplo, si una muestra tiene 200,000 lecturas pero solo 15,000 secuencias únicas, la dereplicación reduce el volumen de datos de 200,000 a 15,000 entradas, cada una con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.</p>
+<p>Por ejemplo, en nuestros datos la muestra 1 tiene ~79,661 lecturas pero solo 6,374 secuencias únicas — la dereplicación reduce el volumen de datos en ~12x, cada entrada con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>exists <span class="ot">&lt;-</span> <span class="fu">file.exists</span>(filtFs) <span class="sc">&amp;</span> <span class="fu">file.exists</span>(filtRs)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>filtFs <span class="ot">&lt;-</span> filtFs[exists]</span>
@@ -431,16 +431,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Alta diversidad inusual (&gt; 50% únicas). Revisa calidad del filtrado o contaminación."</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>En nuestros datos, los resultados se ven así:</p>
-<pre><code>Secuencias únicas Forward: 17428
+<pre><code>Secuencias únicas Forward: 6374
 Ratio de compresión: 7.63%
 Top 5 abundancias: 70868, 15720, 12618, 10018, 9878</code></pre>
 </section>
 <section id="cómo-interpretar-estos-resultados" class="level3">
 <h3 class="anchored" data-anchor-id="cómo-interpretar-estos-resultados">¿Cómo interpretar estos resultados?</h3>
 <ul>
-<li><strong>17,428 secuencias únicas</strong> de ~228,000 lecturas totales — el 7.63% son únicas, el resto son repeticiones</li>
+<li><strong>6,374 secuencias únicas</strong> de ~79,661 lecturas totales — el ~8% son únicas, el resto son repeticiones</li>
 <li><strong>Top 5 abundancias</strong>: la secuencia más abundante apareció 70,868 veces. Estas secuencias dominantes probablemente corresponden a las especies de peces más comunes en la muestra</li>
-<li>El <strong>ratio de compresión del 7.63%</strong> indica diversidad moderada, lo cual es típico en muestras de eDNA marinas</li>
+<li>El <strong>ratio de compresión del ~8%</strong> indica diversidad moderada, lo cual es típico en muestras de eDNA marinas</li>
 </ul>
 <table class="caption-top table">
 <colgroup>
@@ -546,9 +546,9 @@ Nota
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"Datos muy limitados (&lt; 1 MB). El modelo puede ser inestable."</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>En nuestros datos, la salida se ve así:</p>
-<pre><code>Forward disponible: ~95.2 MB
+<pre><code>Forward disponible: ~54.3 MB
 Reverse disponible: ~96.1 MB</code></pre>
-<p><strong>¿Qué nos dicen estos números?</strong> Los ~95 MB por dirección representan el tamaño total de los archivos FASTQ filtrados. Esto es una estimación indirecta de cuántas bases tenemos disponibles — como regla general, un archivo FASTQ de 95 MB contiene aproximadamente 100–150 millones de bases (cada base ocupa ~1 byte de secuencia más metadatos de calidad y encabezados). Con 95 MB tenemos datos más que suficientes para alcanzar nuestro objetivo de <code>nbases_target = 1e8</code> (100 millones de bases).</p>
+<p><strong>¿Qué nos dicen estos números?</strong> Los ~54 MB Forward y ~52 MB Reverse representan el tamaño total de los archivos FASTQ filtrados. Como regla general, un archivo FASTQ de 54 MB contiene aproximadamente 100 millones de bases (cada base ocupa ~1 byte de secuencia más metadatos). Con estos valores tenemos suficientes datos para alcanzar nuestro objetivo de <code>nbases_target = 1e8</code> (100 millones de bases), usando todas las muestras disponibles.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -618,9 +618,9 @@ Nota
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Este paso puede tardar varios minutos dependiendo del volumen de datos y el número de núcleos disponibles. La salida en consola te da información importante sobre cómo se construyó el modelo:</p>
-<pre><code>103156235 total bases in 1587019 reads from 12 samples will be used for learning the error rates.
+<pre><code>103158594 total bases in 1637438 reads from 20 samples will be used for learning the error rates.
 Initializing error rates to maximum possible estimate.
-selfConsist step 1 ............
+selfConsist step 1 ....................
    selfConsist step 2
    selfConsist step 3
    selfConsist step 4
@@ -630,10 +630,12 @@ selfConsist step 1 ............
    selfConsist step 8
    selfConsist step 9
    selfConsist step 10
-Convergence after  10  rounds.
-105668355 total bases in 1625667 reads from 13 samples will be used for learning the error rates.
+   selfConsist step 11
+   selfConsist step 12
+Convergence after  12  rounds.
+100436466 total bases in 1619943 reads from 21 samples will be used for learning the error rates.
 Initializing error rates to maximum possible estimate.
-selfConsist step 1 .............
+selfConsist step 1 .....................
    selfConsist step 2
    selfConsist step 3
    selfConsist step 4
@@ -647,7 +649,7 @@ Convergence after  9  rounds.</code></pre>
 <section id="cómo-leer-esta-salida" class="level3">
 <h3 class="anchored" data-anchor-id="cómo-leer-esta-salida">¿Cómo leer esta salida?</h3>
 <p>Cada bloque corresponde a una dirección (Forward primero, Reverse después). Desglosemos la primera línea:</p>
-<p><strong><code>103156235 total bases in 1587019 reads from 12 samples</code></strong> — DADA2 necesitaba 100 millones de bases (<code>nbases_target = 1e8</code>) y encontró 103 millones en 1.59 millones de lecturas, tomadas de 12 de nuestras muestras. No necesitó usar todas las muestras porque alcanzó el objetivo con 12. Para Reverse, necesitó 13 muestras para llegar a 105 millones — esto es normal porque las lecturas Reverse pueden tener longitudes ligeramente distintas después del filtrado.</p>
+<p><strong><code>103158594 total bases in 1637438 reads from 20 samples</code></strong> — DADA2 necesitaba 100 millones de bases (<code>nbases_target = 1e8</code>) y encontró 103 millones en 1.64 millones de lecturas, usando las 20 muestras Forward. Para Reverse usó 21 muestras para llegar a 100 millones — esto es normal porque las lecturas Reverse pueden tener longitudes ligeramente distintas después del filtrado.</p>
 <p><strong><code>Initializing error rates to maximum possible estimate</code></strong> — El algoritmo comienza asumiendo el peor escenario: que todas las diferencias entre lecturas son errores. A partir de ahí, va refinando.</p>
 <p><strong><code>selfConsist step 1 ............</code></strong> — Los puntos representan las muestras que se procesan en cada iteración. En el step 1 aparecen 12 puntos (uno por muestra usada en Forward).</p>
 </section>
@@ -660,7 +662,7 @@ Convergence after  9  rounds.</code></pre>
 <li><strong>Re-estima</strong> los errores separando las variantes reales de los errores</li>
 </ol>
 <p>Cuando las estimaciones dejan de cambiar significativamente entre rondas, el modelo <strong>convergió</strong> — es decir, encontró tasas de error estables que explican bien los patrones en tus datos.</p>
-<p>En nuestro caso: Forward convergió en <strong>10 rondas</strong> y Reverse en <strong>9 rondas</strong>. Ambos están en el rango ideal.</p>
+<p>En nuestros datos: Forward convergió en <strong>12 rondas</strong> y Reverse en <strong>9 rondas</strong>. Ambos están en el rango típico.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -909,8 +911,8 @@ Nota
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>dadaRs <span class="ot">&lt;-</span> <span class="fu">dada</span>(derepRs, <span class="at">err =</span> errR, <span class="at">multithread =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Al finalizar verás para cada muestra un resumen como este:</p>
-<pre><code>Sample 1 - 228534 reads in 17428 unique sequences.
-Sample 2 - 175230 reads in 14302 unique sequences.
+<pre><code>Sample 1 - 79661 reads in 6374 unique sequences.
+Sample 2 - ...
 ...</code></pre>
 </section>
 <section id="explorar-los-resultados" class="level3">
@@ -921,8 +923,9 @@ Sample 2 - 175230 reads in 14302 unique sequences.
 </div>
 <p>La salida te muestra cuántas ASVs se infirieron de cuántas secuencias únicas. Por ejemplo:</p>
 <pre><code>dada-class: object describing DADA2 denoising results
-126 sequence variants were inferred from 17428 input unique sequences.</code></pre>
-<p>Esto significa que de las 17,428 secuencias únicas que tenía la muestra 1 después de la dereplicación, DADA2 determinó que solo <strong>126 son variantes biológicas reales</strong>. Las otras ~17,300 son errores de secuenciación de esas 126.</p>
+140 sequence variants were inferred from 6374 input unique sequences.
+Key parameters: OMEGA_A = 1e-40, OMEGA_C = 1e-40, BAND_SIZE = 16</code></pre>
+<p>Esto significa que de las 6,374 secuencias únicas que tenía la muestra 1 después de la dereplicación, DADA2 determinó que solo <strong>140 son variantes biológicas reales (ASVs)</strong>. Las otras ~6,234 son errores de secuenciación de esas 140.</p>
 </section>
 <section id="cómo-interpretar-el-número-de-asvs" class="level3">
 <h3 class="anchored" data-anchor-id="cómo-interpretar-el-número-de-asvs">¿Cómo interpretar el número de ASVs?</h3>
@@ -943,10 +946,10 @@ Sample 2 - 175230 reads in 14302 unique sequences.
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">17,428</td>
-<td style="text-align: left;">126</td>
-<td style="text-align: left;">0.7%</td>
-<td style="text-align: left;">Típico — la mayoría de las secuencias únicas son errores</td>
+<td style="text-align: left;"><strong>6,374</strong></td>
+<td style="text-align: left;"><strong>140</strong></td>
+<td style="text-align: left;"><strong>2.2%</strong></td>
+<td style="text-align: left;"><strong>Nuestros datos — amplicón corto 12S</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">5,000</td>
