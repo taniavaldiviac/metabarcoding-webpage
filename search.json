@@ -488,6 +488,18 @@
     ]
   },
   {
+    "objectID": "2-dada2QAQC-Error.html#configuración-del-entorno",
+    "href": "2-dada2QAQC-Error.html#configuración-del-entorno",
+    "title": "Dada2 - Dereplicación e Inferencia de Errores",
+    "section": "Configuración del entorno",
+    "text": "Configuración del entorno\nAbre R desde el directorio del proyecto y carga los paquetes:\n\nlibrary(dada2,     quietly = TRUE)\nlibrary(tidyverse, quietly = TRUE)\nlibrary(ShortRead)\n\nset.seed(42)\n\nCarga el checkpoint guardado al final del filtrado:\n\nsetwd(\"~/metabarcoding-code\")\n\nload(file.path(output_location, \"rdata_output\",\n               paste0(run_name, \"_\", primer.data$locus_shorthand[i], \"_checkpoint1_filterAndTrim.RData\")))\nmessage(\"Checkpoint 1 cargado\")",
+    "crumbs": [
+      "Sesiones",
+      "Día 3",
+      "Dada2 - Dereplicación e Inferencia de Errores"
+    ]
+  },
+  {
     "objectID": "2-dada2QAQC-Error.html#paso-1-dereplicación",
     "href": "2-dada2QAQC-Error.html#paso-1-dereplicación",
     "title": "Dada2 - Dereplicación e Inferencia de Errores",
