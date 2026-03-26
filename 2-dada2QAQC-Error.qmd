@@ -273,13 +273,21 @@ dev.off()
 
 **Cómo leer la gráfica:**
 
-- **Puntos grises** — tasas de error observadas en tus datos por Q-score
-- **Línea negra** — el modelo ajustado por DADA2 (lo que usará en el denoising)
-- **Línea roja** — tasa teórica nominal del Q-score (referencia ideal de Illumina)
+16 paneles organizados en cuadrícula 4×4 — la fila es la base real (A, C, G, T) y la columna es la base leída. Tres elementos en cada panel:
 
-**Un buen modelo:** la línea negra sigue los puntos grises, y ambas bajan de izquierda a derecha (a mayor Q-score, menos error). La línea negra no tiene que coincidir con la roja — cada run tiene su propio perfil real.
+- **Puntos grises** — tasas de error observadas en tus datos, agrupadas por Q-score
+- **Línea negra** — el modelo aprendido por DADA2 (lo que usará en el denoising)
+- **Línea roja** — tasa teórica nominal del Q-score (lo que Illumina promete)
 
-**Paneles diagonales (A→A, C→C, G→G, T→T):** lecturas correctas — aparecen vacíos o con muy pocos puntos porque la frecuencia de "error correcto" es prácticamente cero.
+**Paneles diagonales (A2A, C2C, G2G, T2T):** la base se leyó correctamente — frecuencia de error ~0.99, la línea roja sube bruscamente a 1.0. No tienen información útil sobre errores.
+
+**Paneles fuera de la diagonal — aquí está la información.** Un modelo bien ajustado muestra tres cosas:
+
+1. La línea negra **baja de izquierda a derecha** — a mayor Q-score, menos error
+2. La línea negra **sigue los puntos grises** — el modelo se ajustó bien a los datos reales
+3. La línea negra está **por encima de la línea roja** — las tasas reales son mayores que las teóricas, especialmente en Q altos. Esto es normal — la definición nominal del Q-score es optimista, y por eso DADA2 aprende su propio modelo en lugar de usar las tasas teóricas
+
+**Oscilaciones en la línea negra** (como en G2C alrededor de Q30): indican pocos datos en esos bins de calidad. No es un problema si el patrón general sigue siendo decreciente.
 
 ::: {.callout-note icon="false"}
 Es normal que Reverse tenga tasas de error ligeramente más altas que Forward. Si Reverse se ve dramáticamente peor (línea plana, puntos muy dispersos), considera un truncamiento más agresivo en `filterAndTrim`.
