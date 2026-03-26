@@ -38,7 +38,7 @@ message("Checkpoint 2 cargado")
 
 Después del filtrado, cada muestra tiene miles de lecturas — pero muchas de ellas son **idénticas** entre sí. La dereplicación agrupa todas las lecturas con exactamente la misma secuencia en una sola entrada, y registra cuántas veces apareció cada una (su **abundancia**).
 
-Por ejemplo, en nuestros datos la muestra 1 tiene ~79,661 lecturas pero solo 6,374 secuencias únicas — la dereplicación reduce el volumen de datos en ~12x, cada entrada con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.
+Por ejemplo, en nuestros datos la muestra 1 tiene ~158,309 lecturas pero solo 6,374 secuencias únicas — la dereplicación reduce el volumen de datos en ~25x, cada entrada con su conteo de abundancia. Esto hace que los pasos siguientes (modelado de errores, inferencia de ASVs) sean mucho más rápidos sin perder ninguna información biológica.
 
 ```{r eval=FALSE}
 exists <- file.exists(filtFs) & file.exists(filtRs)
@@ -81,9 +81,9 @@ Top 5 abundancias: 70868, 15720, 12618, 10018, 9878
 
 ### ¿Cómo interpretar estos resultados?
 
-- **6,374 secuencias únicas** de ~79,661 lecturas totales — el ~8% son únicas, el resto son repeticiones
+- **6,374 secuencias únicas** de ~158,309 lecturas totales — el ~4% son únicas, el resto son repeticiones
 - **Top 5 abundancias**: la secuencia más abundante apareció 70,868 veces. Estas secuencias dominantes probablemente corresponden a las especies de peces más comunes en la muestra
-- El **ratio de compresión del ~8%** indica diversidad moderada, lo cual es típico en muestras de eDNA marinas
+- El **ratio de compresión del ~4%** indica diversidad moderada, lo cual es típico en muestras de eDNA marinas
 
 | Ratio de compresión | Interpretación |
 |:--------------------|:---------------|
@@ -429,7 +429,7 @@ dadaRs <- dada(derepRs, err = errR, multithread = 2)
 Al finalizar verás para cada muestra un resumen como este:
 
 ```
-Sample 1 - 79661 reads in 6374 unique sequences.
+Sample 1 - 158309 reads in 6374 unique sequences.
 Sample 2 - ...
 ...
 ```
