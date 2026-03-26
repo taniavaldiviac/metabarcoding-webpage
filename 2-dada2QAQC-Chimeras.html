@@ -374,10 +374,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Las <strong>quimeras</strong> son secuencias artificiales producidas durante la amplificación por PCR: una cadena parcialmente extendida se hibrida con otra molecula diferente y se extiende hasta el final, generando una secuencia hibrida que no existe en la naturaleza. Si no se eliminan, inflan artificialmente la riqueza de especies observada.</p>
+<p>Las <strong>quimeras</strong> son secuencias artificiales producidas durante la PCR: una cadena parcialmente extendida se desprende de su molde original y se hibrida con otra molécula diferente, generando una secuencia híbrida que no existe en la naturaleza. Si no se eliminan, inflan artificialmente el número de ASVs y la riqueza de especies observada.</p>
+<p>DADA2 elimina quimeras <strong>después</strong> del denoising y el merge — no antes. Esto es intencional: el denoising corrige errores de secuenciación y el merge ensamble pares, y solo una vez que tenemos secuencias corregidas y completas tiene sentido buscar híbridos entre ellas.</p>
 <hr>
 <section id="paso-1-remover-quimeras-con-removebimeradenovo" class="level2">
 <h2 class="anchored" data-anchor-id="paso-1-remover-quimeras-con-removebimeradenovo">Paso 1 — Remover quimeras con <code>removeBimeraDenovo()</code></h2>
+<p><strong>Qué hace:</strong> compara cada ASV contra todas las demás secuencias de mayor abundancia en el dataset. Si una ASV puede explicarse como el híbrido de dos secuencias parentales más abundantes, se considera quimérica y se elimina.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>seqtab.nochim <span class="ot">&lt;-</span> <span class="fu">removeBimeraDenovo</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  seqtab,</span>
@@ -386,9 +388,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose     =</span> <span class="cn">TRUE</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p><strong>Parámetros clave:</strong></p>
 <ul>
-<li><code>method = "consensus"</code>: cada secuencia candidata se verifica de forma independiente en cada muestra; se elimina si es quimérica en la mayoria de las muestras donde aparece. Es el método recomendado.</li>
-<li><code>method = "pooled"</code>: evalua todas las muestras en conjunto (mas sensible pero mas lento).</li>
+<li><code>method = "consensus"</code> — cada ASV candidata se evalúa de forma independiente en cada muestra; se elimina solo si es quimérica en la mayoría de muestras donde aparece. Es el método recomendado para la mayoría de los estudios.</li>
+<li><code>method = "pooled"</code> — evalúa todas las muestras en conjunto; más sensible para detectar quimeras raras, pero más lento y puede ser más agresivo.</li>
 </ul>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Proporción de lecturas que sobreviven</span></span>
@@ -399,9 +402,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs totales antes: "</span>, <span class="fu">ncol</span>(seqtab))</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs despues de quimeras: "</span>, <span class="fu">ncol</span>(seqtab.nochim))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Es común que una alta proporción de <strong>secuencias únicas</strong> sea quimérica, pero que la <strong>abundancia</strong> retenida sea alta. Las quimeras suelen ser raras (pocas lecturas).</p>
-<section id="interpretación" class="level3">
-<h3 class="anchored" data-anchor-id="interpretación">Interpretación</h3>
+<p><strong>Qué chequear:</strong> es normal que se elimine una fracción alta de ASVs únicos (secuencias distintas) pero que la proporción de lecturas retenidas sea alta — las quimeras suelen ser raras (pocas lecturas por ASV).</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -412,28 +413,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>&gt; 95%</td>
-<td>Normal [OK]</td>
+<td>Normal</td>
 </tr>
 <tr class="even">
-<td>80-95%</td>
-<td>Aceptable - revisar parámetros de PCR</td>
+<td>80–95%</td>
+<td>Aceptable — revisar parámetros de PCR</td>
 </tr>
 <tr class="odd">
 <td>&lt; 80%</td>
-<td>Preocupante - revisar calidad del ADN</td>
+<td>Preocupante — revisar calidad del ADN o diseño de primers</td>
 </tr>
 <tr class="even">
 <td>&lt; 50%</td>
-<td>Grave - revisar diseno experimental</td>
+<td>Grave — revisar el diseño experimental completo</td>
 </tr>
 </tbody>
 </table>
 <hr>
 </section>
-</section>
 <section id="paso-2-distribución-de-longitudes-y-filtrado" class="level2">
 <h2 class="anchored" data-anchor-id="paso-2-distribución-de-longitudes-y-filtrado">Paso 2 — Distribución de longitudes y filtrado</h2>
-<p>Antes de filtrar por longitud, visualizamos la distribución de ASVs para identificar el rango esperado del amplicón.</p>
+<p><strong>Qué hace:</strong> después de remover quimeras, verifica que todas las ASVs tengan la longitud esperada para el amplicón. Secuencias muy cortas o muy largas pueden ser artefactos de ensamblaje, no quimeras verdaderas pero sí ruido.</p>
+<p>Primero visualiza la distribución antes de filtrar:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>seq_lengths <span class="ot">&lt;-</span> <span class="fu">nchar</span>(<span class="fu">colnames</span>(seqtab.nochim))</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>median_len  <span class="ot">&lt;-</span> <span class="fu">median</span>(seq_lengths)</span>
@@ -466,7 +467,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Luego filtra automáticamente ASVs fuera del rango mediana ± 1 DE:</p>
+<p><strong>Parámetros clave del filtro:</strong> el pipeline calcula automáticamente el rango aceptable como <code>mediana ± 1 desviación estándar</code>. Para 12S (~62 bp) esto es conservador y elimina solo secuencias claramente fuera del rango del amplicón.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>min_len <span class="ot">&lt;-</span> median_len <span class="sc">-</span> sd_len</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>max_len <span class="ot">&lt;-</span> median_len <span class="sc">+</span> sd_len</span>
@@ -483,7 +484,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs después del filtro: "</span>, <span class="fu">ncol</span>(cleaned.seqtab.nochim))</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs filtradas por longitud: "</span>, <span class="fu">ncol</span>(filteredout.seqtab.nochim))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Y guarda una segunda gráfica <strong>después</strong> del filtro:</p>
+<p>Y guarda una segunda gráfica <strong>después</strong> del filtro para confirmar que el resultado es limpio:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>seq_lengths_clean <span class="ot">&lt;-</span> <span class="fu">nchar</span>(<span class="fu">colnames</span>(cleaned.seqtab.nochim))</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>median_len_clean  <span class="ot">&lt;-</span> <span class="fu">median</span>(seq_lengths_clean)</span>
@@ -504,12 +505,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Las ASVs filtradas también se guardan en <code>final_data/logs/</code> para revisión posterior.</p>
+<p><strong>Qué chequear:</strong> la gráfica post-filtro debe mostrar un pico estrecho centrado en la longitud esperada del amplicón. Si hay múltiples picos, puede indicar amplificación inespecífica. Las ASVs eliminadas se guardan en <code>final_data/logs/</code> para revisión.</p>
 <hr>
 </section>
 <section id="paso-3-tabla-de-seguimiento-de-lecturas-read-tracking" class="level2">
 <h2 class="anchored" data-anchor-id="paso-3-tabla-de-seguimiento-de-lecturas-read-tracking">Paso 3 — Tabla de seguimiento de lecturas (read tracking)</h2>
-<p>Esta tabla resume cuantas lecturas sobrevivieron cada paso del pipeline. Es la herramienta principal para diagnosticar donde se pierden lecturas.</p>
+<p><strong>Qué hace:</strong> resume cuántas lecturas sobrevivieron cada paso del pipeline. Es la herramienta diagnóstica más importante — una caída abrupta en cualquier paso señala exactamente dónde hay un problema.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>getN <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">getUniques</span>(x))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -540,34 +541,85 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_read_tracking.csv"</span>)),</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="valores-de-referencia" class="level3">
-<h3 class="anchored" data-anchor-id="valores-de-referencia">Valores de referencia</h3>
+<p><strong>Qué significa cada columna:</strong></p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>Transicion</th>
+<th>Columna</th>
+<th>Paso</th>
+<th>Pérdida esperada por</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>input</code></td>
+<td>Lecturas crudas</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><code>filtered</code></td>
+<td>Tras filtrado de calidad</td>
+<td>Reads de baja calidad o muy cortos</td>
+</tr>
+<tr class="odd">
+<td><code>denoisedF/R</code></td>
+<td>Tras denoising de F y R</td>
+<td>Corrección de errores</td>
+</tr>
+<tr class="even">
+<td><code>merged</code></td>
+<td>Tras ensamblaje de pares</td>
+<td>Reads sin overlap suficiente</td>
+</tr>
+<tr class="odd">
+<td><code>nonchim</code></td>
+<td>Tras remoción de quimeras</td>
+<td>ASVs quiméricas (raras en lecturas)</td>
+</tr>
+<tr class="even">
+<td><code>length_filter</code></td>
+<td>Tras filtro de longitud</td>
+<td>ASVs fuera del tamaño del amplicón</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Valores de referencia por transición:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Transición</th>
 <th>Normal</th>
 <th>Revisar si</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Input -&gt; filtered</td>
+<td>Input → filtered</td>
 <td>&gt; 70%</td>
 <td>&lt; 50%</td>
 </tr>
 <tr class="even">
-<td>Filtered -&gt; merged</td>
+<td>Filtered → merged</td>
 <td>&gt; 70%</td>
-<td>&lt; 50% (truncLen muy agresivo)</td>
+<td>&lt; 50% (truncLen muy agresivo o overlap insuficiente)</td>
 </tr>
 <tr class="odd">
-<td>Merged -&gt; nonchim</td>
+<td>Merged → nonchim</td>
 <td>&gt; 85%</td>
-<td>&lt; 75% (muchas quimeras)</td>
+<td>&lt; 75% (muchas quimeras — revisar PCR)</td>
 </tr>
 <tr class="even">
-<td>Total (input -&gt; final)</td>
+<td>Total (input → final)</td>
 <td>&gt; 50%</td>
 <td>&lt; 30%</td>
 </tr>
@@ -575,9 +627,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <hr>
 </section>
-</section>
 <section id="paso-4-generar-tabla-asv-en-formato-largo" class="level2">
 <h2 class="anchored" data-anchor-id="paso-4-generar-tabla-asv-en-formato-largo">Paso 4 — Generar tabla ASV en formato largo</h2>
+<p><strong>Qué hace:</strong> convierte la matriz de abundancias (muestras × ASVs) a formato largo (una fila por muestra-ASV con lecturas &gt; 0) para facilitar el análisis downstream con phyloseq y otras herramientas.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ASV_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_ASV_table.csv"</span>))</span>
@@ -592,21 +644,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(current_asv, ASV_file)</span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Tabla ASV guardada en: "</span>, ASV_file)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>El archivo resultante tiene una fila por muestra x ASV con lecturas &gt; 0, listo para análisis downstream con phyloseq.</p>
+<p>El archivo resultante tiene una fila por muestra × ASV con lecturas &gt; 0, listo para análisis downstream con phyloseq.</p>
 <hr>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Recuerda
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Las quimeras son artefactos de PCR, no errores de secuenciación. Por eso dada2 las elimina <strong>despues</strong> del denoising (que corrige errores de secuenciación) y del merge (que ensambla los pares). Este orden importa.</p>
-</div>
-</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -618,10 +657,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>¿Que porcentaje de lecturas se retienen despues de remover quimeras?</li>
-<li>¿Cuantos ASVs quedan antes y despues del filtro de longitud?</li>
-<li>Revisa la tabla de tracking - ?en que paso se pierde mas lectura?</li>
-<li>¿Hay muestras con retención &lt; 30% en algun paso?</li>
+<li>¿Qué porcentaje de lecturas se retiene después de remover quimeras? ¿Y de ASVs únicos?</li>
+<li>¿Cuántos ASVs quedan antes y después del filtro de longitud? ¿La gráfica post-filtro muestra un pico limpio?</li>
+<li>Revisa la tabla de tracking — ¿en qué paso se pierde más lecturas?</li>
+<li>¿Hay muestras con retención &lt; 30% en algún paso? ¿Cuáles y por qué podrían serlo?</li>
 </ol>
 </div>
 </div>
