@@ -173,7 +173,7 @@ Antes de construir el objeto *phyloseq*, cargamos y cubramos las tablas de taxon
 
 ```{r prep-otu}
 # Matriz de abundancias: ASVs como filas, muestras como columnas
-otu_raw <- if (!is.null(otu_mat)) otu_mat else seqtab_clean
+otu_raw <- if (!is.null(asv_mat)) asv_mat else seqtab_clean
 stopifnot(!is.null(otu_raw))
 ASV_mat <- t(as.matrix(otu_raw))
 ```
