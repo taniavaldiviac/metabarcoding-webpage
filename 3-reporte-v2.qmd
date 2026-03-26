@@ -561,7 +561,7 @@ ggplot(alpha_long, aes(x = region_gc, y = value, fill = region_gc)) +
   facet_wrap(~index, scales = "free_y", ncol = 3) +
   labs(
     title    = "Diversidad alfa por región del Golfo de California",
-    subtitle = "Conteos crudos — Kruskal-Wallis entre regiones",
+    subtitle = "Conteos crudos - Kruskal-Wallis entre regiones",
     x        = "Región",
     y        = "Valor del índice"
   ) +
@@ -602,39 +602,33 @@ alpha_summary
 
 ### Diversidad alfa a nivel de especie
 
-El análisis anterior mide diversidad a nivel de **ASVs** — cada variante de secuencia única cuenta como una unidad. Pero múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, haplotipos). Para obtener una medida más interpretable ecológicamente, colapsamos las ASVs por especie con `tax_glom()` y recalculamos los mismos índices.
+El análisis anterior mide diversidad a nivel de **ASVs** — cada variante de secuencia única cuenta como una unidad. Pero múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, haplotipos). Para obtener una medida más interpretable ecológicamente, colapsamos las ASVs por especie con `tax_glom()`.
 
-Esto nos permite comparar:
+A nivel de especie usamos solo **Observed, Shannon e InvSimpson** — Chao1 y ACE no son aplicables aquí porque al colapsar se suman los conteos de todas las ASVs de cada especie, eliminando los singletons que estos estimadores necesitan para funcionar.
 
-- **Diversidad de ASVs**: diversidad genética total — incluye variación intraespecífica
-- **Diversidad de especies**: diversidad taxonómica — lo que tradicionalmente se reporta en ecología
-
-```{r alfa-especies, fig.width=11, fig.height=7}
-# Colapsar ASVs por especie
-ps_sp <- phyloseq::tax_glom(ps_filt, "Species")
-
+```{r alfa-especies, fig.width=10, fig.height=5}
+# Colapsar ASVs por especie (ps_sp ya existe de la sección anterior)
 message("ASVs antes de colapsar: ", phyloseq::ntaxa(ps_filt))
-message("Especies después de colapsar: ", phyloseq::ntaxa(ps_sp))
+message("Especies despues de colapsar: ", phyloseq::ntaxa(ps_sp))
 
-# Calcular índices a nivel de especie
-alpha_sp <- phyloseq::estimate_richness(
+# Solo indices aplicables tras tax_glom (sin Chao1/ACE)
+alpha_sp <- suppressWarnings(phyloseq::estimate_richness(
   ps_sp,
-  measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson")
-)
+  measures = c("Observed", "Shannon", "Simpson", "InvSimpson")
+))
 alpha_sp$site_id   <- phyloseq::sample_data(ps_sp)$site_id
 alpha_sp$region_gc <- phyloseq::sample_data(ps_sp)$region_gc
 
 # Reshape para graficar
 alpha_sp_long <- alpha_sp %>%
-  dplyr::select(site_id, region_gc, Observed, Chao1, ACE, Shannon, Simpson, InvSimpson) %>%
+  dplyr::select(site_id, region_gc, Observed, Shannon, Simpson, InvSimpson) %>%
   tidyr::pivot_longer(
     cols      = -c(site_id, region_gc),
     names_to  = "index",
     values_to = "value"
   ) %>%
   dplyr::mutate(
-    index = factor(index,
-                   levels = c("Observed","Chao1","ACE","Shannon","Simpson","InvSimpson"))
+    index = factor(index, levels = c("Observed", "Shannon", "Simpson", "InvSimpson"))
   )
 
 # Kruskal-Wallis por índice
@@ -673,8 +667,8 @@ ggplot(alpha_sp_long, aes(x = region_gc, y = value, fill = region_gc)) +
   scale_color_manual(values = pal_regions) +
   facet_wrap(~index, scales = "free_y", ncol = 3) +
   labs(
-    title    = "Diversidad alfa por región — nivel de especie",
-    subtitle = "Colapsado por especie — Kruskal-Wallis entre regiones",
+    title    = "Diversidad alfa por region - nivel de especie",
+    subtitle = "Colapsado por especie - Kruskal-Wallis entre regiones",
     x        = "Región",
     y        = "Valor del índice"
   ) +
@@ -697,7 +691,7 @@ alpha_sp_summary <- alpha_sp %>%
   dplyr::group_by(region_gc) %>%
   dplyr::summarise(
     dplyr::across(
-      c(Observed, Chao1, Shannon, InvSimpson),
+      c(Observed, Shannon, InvSimpson),
       list(media = ~round(mean(.x, na.rm=TRUE), 2),
            sd    = ~round(sd(.x, na.rm=TRUE), 2)),
       .names = "{.col}_{.fn}"
