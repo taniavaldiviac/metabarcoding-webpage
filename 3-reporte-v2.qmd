@@ -412,118 +412,64 @@ ggsave("final_data/reporte_ecologico/lecturas_por_muestra.png",
 **Interpretación:** Si la muestra de baja cobertura es un control negativo, esto es esperado. Si es una muestra ambiental real, considera si eliminarla del análisis de diversidad afectaría tus conclusiones.
 :::
 
-### Rarefacción y curvas de rarefacción
+### Profundidad de secuenciación
 
-#### ¿Por qué rarefactar?
-
-Cuando comparamos la diversidad entre muestras, necesitamos que la comparación sea justa. Si una muestra tiene 200,000 lecturas y otra tiene 10,000, la primera detectará más especies simplemente porque tiene más datos — no necesariamente porque sea más diversa. La **rarefacción** resuelve esto submuestreando todas las muestras al mismo número de lecturas.
-
-#### ¿A cuántas lecturas rarefactar?
-
-Rarefactamos al número de lecturas de la **muestra con menos reads** (excluyendo controles). No podemos "inventar" lecturas para las muestras con menos, así que bajamos todas al mismo nivel.
-
-Primero veamos cuántas lecturas tiene cada muestra:
-
-```{r qc-rarefaccion, fig.width=9, fig.height=6}
+```{r qc-profundidad, fig.width=9, fig.height=5}
 # Separar controles (MOCK, CTR) para análisis independiente
 ps_ctrl <- phyloseq::subset_samples(ps, grepl("MOCK|CTR", site_id, ignore.case = TRUE))
 ps_ctrl <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_ctrl) > 0, ps_ctrl)
 message("Muestras control separadas: ", phyloseq::nsamples(ps_ctrl))
 
-# Excluir controles y sitios SLG, LIB, BSN antes de rarefacer
+# Excluir controles y sitios SLG, LIB, BSN
 ps_filt <- phyloseq::subset_samples(
   ps,
   !site_id %in% c("SLG", "LIB", "BSN") & !grepl("MOCK|CTR", site_id, ignore.case = TRUE)
 )
 ps_filt <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_filt) > 0, ps_filt)
 
-# Ver las 5 muestras con menos lecturas
-sort(phyloseq::sample_sums(ps_filt))[1:5]
+# Profundidad por muestra
+depth_df <- data.frame(
+  site_id = phyloseq::sample_data(ps_filt)$site_id,
+  reads   = phyloseq::sample_sums(ps_filt)
+) %>% dplyr::arrange(reads)
+
+ggplot(depth_df, aes(x = reorder(site_id, reads), y = reads)) +
+  geom_col(fill = "#3182bd", alpha = 0.85) +
+  geom_hline(yintercept = min(depth_df$reads), linetype = "dashed",
+             color = "#e6550d", linewidth = 0.8) +
+  annotate("text", x = 1, y = min(depth_df$reads),
+           label = paste0("Mín: ", scales::comma(min(depth_df$reads))),
+           hjust = 0, vjust = -0.5, color = "#e6550d", size = 3.2) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Lecturas por muestra", x = "Sitio", y = "Lecturas") +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        plot.title  = element_text(face = "bold"))
+
+message("Rango de profundidad: ", scales::comma(min(depth_df$reads)),
+        " – ", scales::comma(max(depth_df$reads)), " lecturas")
 ```
 
-En nuestros datos, la muestra con menos lecturas es GC-024 con 10,024 reads. Las demás tienen 15,000+. Este será nuestro valor de rarefacción.
+No aplicamos rarefacción. En su lugar usamos **abundancias relativas** para los análisis de composición y β-diversidad, e **índices robustos** (Chao1, ACE) para estimar riqueza. Esto evita descartar datos reales — rarefactar a la muestra más superficial significa tirar lecturas de todas las demás.
 
-#### Curvas de rarefacción
-
-Las curvas de rarefacción nos ayudan a evaluar si 10,024 lecturas son suficientes para capturar la diversidad. Cada línea representa una muestra — el eje X muestra cuántas lecturas se submuestrean y el eje Y cuántas ASVs se detectan.
-
-- Si la curva **se aplana** (llega a la asíntota): la muestra está bien cubierta, ya capturamos la mayoría de la diversidad
-- Si la curva **sigue subiendo**: con más lecturas detectaríamos más ASVs — la cobertura es insuficiente
-
-La línea roja vertical marca la profundidad de rarefacción (10,024 lecturas).
-
-```{r curvas-rarefaccion}
-# Preparar datos para vegan::rarecurve
-comm_rare_input <- as.data.frame(as.matrix(phyloseq::otu_table(ps_filt)))
-if (phyloseq::taxa_are_rows(ps_filt)) comm_rare_input <- as.data.frame(t(as.matrix(comm_rare_input)))
-
-site_ids <- phyloseq::sample_data(ps_filt)$site_id
-n_samp   <- nrow(comm_rare_input)
-pal      <- viridis::viridis(n_samp, option = "D")
-
-min_depth <- min(phyloseq::sample_sums(ps_filt))
-
-png("final_data/reporte_ecologico/curvas_rarefaccion_vegan.png",
-    width = 2400, height = 1600, res = 300)
-par(mar = c(5, 5, 3, 1))
-vegan::rarecurve(
-  comm_rare_input,
-  step     = 100,
-  col      = pal,
-  label    = FALSE,
-  main     = "Curvas de rarefacción por muestra",
-  xlab     = "Lecturas submuestreadas",
-  ylab     = "ASVs detectadas",
-  cex.main = 1.1,
-  cex.lab  = 1.0
-)
-abline(v = min_depth, lty = 2, col = "#d73027", lwd = 1.5)
-text(min_depth, par("usr")[4] * 0.95,
-     labels = paste0("Rarefacción\n(", scales::comma(min_depth), " lecturas)"),
-     pos = 4, col = "#d73027", cex = 0.85)
-legend("bottomright",
-       legend = site_ids,
-       col    = pal,
-       lty    = 1, lwd = 2,
-       cex    = 0.6,
-       bty    = "n")
-dev.off()
+```{r ps-rel}
+# Transformar a abundancias relativas (proporciones)
+ps_rel <- phyloseq::transform_sample_counts(ps_filt, function(x) x / sum(x))
 ```
 
-::: {.callout-tip icon="false"}
-**¿Cómo decidir si el valor de rarefacción es adecuado?**
+::: {.callout-note icon="false"}
+**¿Por qué no rarefactar?** La rarefacción descarta lecturas reales de las muestras más profundas para igualar el esfuerzo. Si una muestra tiene 50,000 lecturas y la más superficial tiene 10,000, rarefactar tira el 80% de los datos. Las alternativas son más informativas:
 
-- Si a 10,024 lecturas las curvas ya se aplanan → el valor es suficiente, no pierdes diversidad significativa
-- Si la muestra GC-024 no llega a la asíntota pero las demás sí → podrías excluirla y rarefactar a 15,827 (la siguiente muestra más baja, GC-007)
-- Con un amplicón corto como 12S (~65 bp) y muestras de eDNA, 10,000 lecturas generalmente son suficientes para capturar la diversidad de peces
-:::
-
-#### Ejecutar la rarefacción
-
-```{r rarefaccion}
-set.seed(123)
-message("Rarefacción a: ", min_depth, " lecturas por muestra")
-
-ps_rare <- phyloseq::rarefy_even_depth(
-  ps_filt,
-  sample.size = min_depth,
-  verbose     = FALSE,
-  rngseed     = 123
-)
-
-message("Muestras después de rarefacción: ", phyloseq::nsamples(ps_rare))
-message("ASVs después de rarefacción: ", phyloseq::ntaxa(ps_rare))
-```
-
-::: {.callout-note}
-**Recuerda:** Rarefacar implica descartar lecturas de las muestras más profundas. Si la diferencia de profundidad entre muestras es muy grande (>10x), considera si la muestra más superficial aporta información suficiente o si es mejor eliminarla del análisis.
+- **Índices robustos** (Chao1, ACE): estiman riqueza corrigiendo el sesgo de muestreo sin subsampling
+- **Abundancias relativas**: normalizan a proporciones antes de calcular distancias — equivalente a rarefacción infinita
+- **Shannon e InvSimpson**: calculados sobre conteos directamente; Chao1/ACE compensan la diferencia de profundidad
 :::
 
 ---
 
 ## 4. Diversidad alfa
 
-La diversidad alfa (α) describe la **riqueza y equitatividad de especies dentro de cada sitio**. Usamos el objeto rarefaccionado `ps_rare` para garantizar que las comparaciones entre sitios no estén sesgadas por diferencias en la profundidad de secuenciación.
+La diversidad alfa (α) describe la **riqueza y equitatividad de especies dentro de cada sitio**. Calculamos los índices directamente sobre `ps_filt` (conteos crudos). Chao1 y ACE corrigen el sesgo por diferencias de profundidad de secuenciación sin necesidad de rarefactar.
 
 Calculamos seis índices complementarios:
 
@@ -542,11 +488,11 @@ Calculamos todos los índices con `phyloseq::estimate_richness()` y graficamos l
 
 ```{r alfa-calculo, fig.width=11, fig.height=7}
 alpha_df <- phyloseq::estimate_richness(
-  ps_rare,
+  ps_filt,
   measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson")
 )
-alpha_df$site_id   <- phyloseq::sample_data(ps_rare)$site_id
-alpha_df$region_gc <- phyloseq::sample_data(ps_rare)$region_gc
+alpha_df$site_id   <- phyloseq::sample_data(ps_filt)$site_id
+alpha_df$region_gc <- phyloseq::sample_data(ps_filt)$region_gc
 
 # Reshape a formato largo para ggplot
 alpha_long <- alpha_df %>%
@@ -611,7 +557,7 @@ ggplot(alpha_long, aes(x = region_gc, y = value, fill = region_gc)) +
   facet_wrap(~index, scales = "free_y", ncol = 3) +
   labs(
     title    = "Diversidad alfa por región del Golfo de California",
-    subtitle = "Objeto rarefaccionado — Kruskal-Wallis entre regiones",
+    subtitle = "Conteos crudos — Kruskal-Wallis entre regiones",
     x        = "Región",
     y        = "Valor del índice"
   ) +
@@ -660,19 +606,19 @@ Esto nos permite comparar:
 - **Diversidad de especies**: diversidad taxonómica — lo que tradicionalmente se reporta en ecología
 
 ```{r alfa-especies, fig.width=11, fig.height=7}
-# Colapsar ASVs por especie en el objeto rarefactado
-ps_rare_sp <- phyloseq::tax_glom(ps_rare, "Species")
+# Colapsar ASVs por especie
+ps_sp <- phyloseq::tax_glom(ps_filt, "Species")
 
-message("ASVs antes de colapsar: ", phyloseq::ntaxa(ps_rare))
-message("Especies después de colapsar: ", phyloseq::ntaxa(ps_rare_sp))
+message("ASVs antes de colapsar: ", phyloseq::ntaxa(ps_filt))
+message("Especies después de colapsar: ", phyloseq::ntaxa(ps_sp))
 
 # Calcular índices a nivel de especie
 alpha_sp <- phyloseq::estimate_richness(
-  ps_rare_sp,
+  ps_sp,
   measures = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson")
 )
-alpha_sp$site_id   <- phyloseq::sample_data(ps_rare_sp)$site_id
-alpha_sp$region_gc <- phyloseq::sample_data(ps_rare_sp)$region_gc
+alpha_sp$site_id   <- phyloseq::sample_data(ps_sp)$site_id
+alpha_sp$region_gc <- phyloseq::sample_data(ps_sp)$region_gc
 
 # Reshape para graficar
 alpha_sp_long <- alpha_sp %>%
@@ -724,7 +670,7 @@ ggplot(alpha_sp_long, aes(x = region_gc, y = value, fill = region_gc)) +
   facet_wrap(~index, scales = "free_y", ncol = 3) +
   labs(
     title    = "Diversidad alfa por región — nivel de especie",
-    subtitle = "Objeto rarefaccionado y colapsado por especie — Kruskal-Wallis entre regiones",
+    subtitle = "Colapsado por especie — Kruskal-Wallis entre regiones",
     x        = "Región",
     y        = "Valor del índice"
   ) +
@@ -1133,41 +1079,36 @@ El flujo de análisis:
 ### Preparación de matrices comunitarias
 
 ```{r beta-prep}
-# --- Matriz de abundancias por especie ---
-comm_sp_mat <- as.data.frame(as.matrix(phyloseq::otu_table(ps_sp)))
-if (phyloseq::taxa_are_rows(ps_sp)) comm_sp_mat <- as.data.frame(t(as.matrix(comm_sp_mat)))
+# Colapsar por especie en abundancias relativas (para Bray-Curtis)
+ps_sp_rel <- phyloseq::transform_sample_counts(ps_sp, function(x) x / sum(x))
 
-meta_sp <- data.frame(phyloseq::sample_data(ps_sp), stringsAsFactors = FALSE)
+# --- Matriz de abundancias relativas por especie ---
+comm_sp_rel <- as.data.frame(as.matrix(phyloseq::otu_table(ps_sp_rel)))
+if (phyloseq::taxa_are_rows(ps_sp_rel)) comm_sp_rel <- as.data.frame(t(as.matrix(comm_sp_rel)))
 
-# Excluir controles dinámicamente (MOCK, CTR)
-is_ctrl_sp  <- grepl("MOCK|CTR", meta_sp$site_id, ignore.case = TRUE)
-meta_filt   <- meta_sp[!is_ctrl_sp, ]
-meta_filt$sample_id <- rownames(meta_filt)
+meta_sp <- data.frame(phyloseq::sample_data(ps_sp_rel), stringsAsFactors = FALSE)
+meta_sp$sample_id <- rownames(meta_sp)
 
-samps_keep  <- intersect(meta_filt$sample_id, rownames(comm_sp_mat))
-meta_filt   <- meta_filt[meta_filt$sample_id %in% samps_keep, ]
-comm_filt   <- as.data.frame(as.matrix(comm_sp_mat[samps_keep, , drop = FALSE]))
+samps_keep <- rownames(comm_sp_rel)
+meta_filt  <- meta_sp[meta_sp$sample_id %in% samps_keep, ]
+comm_filt  <- comm_sp_rel[samps_keep, , drop = FALSE]
 rownames(comm_filt) <- meta_filt$site_id
 
-# Calcular matrices de distancia — Especies
+# Bray-Curtis sobre abundancias relativas; Jaccard sobre presencia/ausencia
 dist_sp_bc  <- vegan::vegdist(comm_filt, method = "bray")
 dist_sp_jac <- vegan::vegdist(comm_filt, method = "jaccard")
 
-# --- Matriz de abundancias por ASV ---
-asv_full <- as.data.frame(t(as.matrix(phyloseq::otu_table(ps_filt))))  # muestras × ASVs
+# --- Matriz de abundancias relativas por ASV ---
+asv_rel <- as.data.frame(as.matrix(phyloseq::otu_table(ps_rel)))
+if (phyloseq::taxa_are_rows(ps_rel)) asv_rel <- as.data.frame(t(as.matrix(asv_rel)))
 
-meta_asv <- data.frame(phyloseq::sample_data(ps_filt), stringsAsFactors = FALSE)
+meta_asv <- data.frame(phyloseq::sample_data(ps_rel), stringsAsFactors = FALSE)
 meta_asv$sample_id <- rownames(meta_asv)
 
-is_ctrl_asv   <- grepl("MOCK|CTR", meta_asv$site_id, ignore.case = TRUE)
-meta_asv_filt <- meta_asv[!is_ctrl_asv, ]
-
-samps_asv     <- intersect(meta_asv_filt$sample_id, rownames(asv_full))
-meta_asv_filt <- meta_asv_filt[meta_asv_filt$sample_id %in% samps_asv, ]
-asv_filt      <- as.data.frame(as.matrix(asv_full[samps_asv, , drop = FALSE]))
+meta_asv_filt <- meta_asv
+asv_filt      <- asv_rel[meta_asv_filt$sample_id, , drop = FALSE]
 rownames(asv_filt) <- meta_asv_filt$site_id
 
-# Calcular matrices de distancia — ASVs
 dist_asv_bc  <- vegan::vegdist(asv_filt, method = "bray")
 dist_asv_jac <- vegan::vegdist(asv_filt, method = "jaccard")
 
