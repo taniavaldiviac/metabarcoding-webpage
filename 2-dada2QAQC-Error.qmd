@@ -30,8 +30,10 @@ primer_csv        <- file.path(metadata_location, "primer_data.csv")
 primer.data       <- readr::read_csv(primer_csv, show_col_types = FALSE)
 i                 <- 1
 
-# Busca en rdata_output el archivo que termina en Dereps.RData y cárgalo:
-list.files(file.path(output_location, "rdata_output"), pattern = "Dereps\\.RData$")
+checkpoint_derep <- list.files(file.path(output_location, "rdata_output"),
+                               pattern = "Dereps\\.RData$", full.names = TRUE)
+load(checkpoint_derep)
+message("Checkpoint cargado: ", basename(checkpoint_derep))
 ```
 
 ---
