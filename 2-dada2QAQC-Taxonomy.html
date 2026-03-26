@@ -478,8 +478,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo <code>.RData</code>. Esto permite continuar el análisis en otra sesión sin repetir los pasos anteriores.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparar matrices para phyloseq</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>otu_mat <span class="ot">&lt;-</span> cleaned.seqtab.nochim</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">storage.mode</span>(otu_mat) <span class="ot">&lt;-</span> <span class="st">"integer"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>asv_mat <span class="ot">&lt;-</span> cleaned.seqtab.nochim</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">storage.mode</span>(asv_mat) <span class="ot">&lt;-</span> <span class="st">"integer"</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>tax_mat <span class="ot">&lt;-</span> joined_old_new_taxa <span class="sc">%&gt;%</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"Sequence"</span>) <span class="sc">%&gt;%</span></span>
@@ -503,12 +503,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">SampleID =</span> <span class="sc">!!</span>id_col) <span class="sc">%&gt;%</span></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="st">"SampleID"</span>)</span>
 <span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Alinear con otu_mat y advertir si hay muestras sin metadata</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>faltan    <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(otu_mat), <span class="fu">rownames</span>(sample_meta))</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>sobrantes <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(sample_meta), <span class="fu">rownames</span>(otu_mat))</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Alinear con asv_mat y advertir si hay muestras sin metadata</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>faltan    <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(asv_mat), <span class="fu">rownames</span>(sample_meta))</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>sobrantes <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(sample_meta), <span class="fu">rownames</span>(asv_mat))</span>
 <span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(faltan))    <span class="fu">warning</span>(<span class="st">"Faltan en metadata: "</span>, <span class="fu">paste</span>(faltan, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
 <span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(sobrantes)) <span class="fu">message</span>(<span class="st">"En metadata pero no en datos: "</span>, <span class="fu">paste</span>(sobrantes, <span class="at">collapse =</span> <span class="st">", "</span>))</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta[<span class="fu">rownames</span>(otu_mat), , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>sample_meta <span class="ot">&lt;-</span> sample_meta[<span class="fu">rownames</span>(asv_mat), , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
 <span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Parámetros del run (para trazabilidad)</span></span>
 <span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
@@ -525,7 +525,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>rdata_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"rdata_output"</span>,</span>
 <span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_phyloseq_inputs.RData"</span>))</span>
 <span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(otu_mat, tax_mat, sample_meta, track,</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(asv_mat, tax_mat, sample_meta, track,</span>
 <span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>     <span class="at">seqtab_raw =</span> seqtab.nochim, <span class="at">seqtab_clean =</span> cleaned.seqtab.nochim,</span>
 <span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>     <span class="at">taxonomy_df =</span> joined_old_new_taxa, <span class="at">bootstrap_df =</span> ready_new_taxa,</span>
 <span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>     params,</span>
@@ -533,7 +533,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"RData guardado en: "</span>, rdata_path)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>El <code>.RData</code> contiene los tres objetos principales para phyloseq (<code>otu_mat</code>, <code>tax_mat</code>, <code>sample_meta</code>) más objetos adicionales para reproducibilidad: <code>track</code>, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).</p>
+<p>El <code>.RData</code> contiene los tres objetos principales para phyloseq (<code>asv_mat</code>, <code>tax_mat</code>, <code>sample_meta</code>) más objetos adicionales para reproducibilidad: <code>track</code>, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).</p>
 <hr>
 </section>
 <section id="exportar-secuencias-asv-a-fasta" class="level2">
