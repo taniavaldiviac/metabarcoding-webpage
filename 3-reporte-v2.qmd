@@ -6,7 +6,7 @@ format:
     toc: false
     toc-depth: 3
     toc-location: left
-    code-fold: true
+    code-fold: false
 execute:
   echo: true
   warning: false
