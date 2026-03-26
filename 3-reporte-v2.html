@@ -966,7 +966,7 @@ Nota
 <span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>index, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
 <span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Diversidad alfa por región del Golfo de California"</span>,</span>
-<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Conteos crudos — Kruskal-Wallis entre regiones"</span>,</span>
+<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Conteos crudos - Kruskal-Wallis entre regiones"</span>,</span>
 <span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Región"</span>,</span>
 <span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="st">"Valor del índice"</span></span>
 <span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
@@ -1015,92 +1015,85 @@ Tip
 </section>
 <section id="diversidad-alfa-a-nivel-de-especie" class="level3">
 <h3 class="anchored" data-anchor-id="diversidad-alfa-a-nivel-de-especie">Diversidad alfa a nivel de especie</h3>
-<p>El análisis anterior mide diversidad a nivel de <strong>ASVs</strong> — cada variante de secuencia única cuenta como una unidad. Pero múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, haplotipos). Para obtener una medida más interpretable ecológicamente, colapsamos las ASVs por especie con <code>tax_glom()</code> y recalculamos los mismos índices.</p>
-<p>Esto nos permite comparar:</p>
-<ul>
-<li><strong>Diversidad de ASVs</strong>: diversidad genética total — incluye variación intraespecífica</li>
-<li><strong>Diversidad de especies</strong>: diversidad taxonómica — lo que tradicionalmente se reporta en ecología</li>
-</ul>
+<p>El análisis anterior mide diversidad a nivel de <strong>ASVs</strong> — cada variante de secuencia única cuenta como una unidad. Pero múltiples ASVs pueden pertenecer a la misma especie (variantes intraespecíficas, alelos diferentes, haplotipos). Para obtener una medida más interpretable ecológicamente, colapsamos las ASVs por especie con <code>tax_glom()</code>.</p>
+<p>A nivel de especie usamos solo <strong>Observed, Shannon e InvSimpson</strong> — Chao1 y ACE no son aplicables aquí porque al colapsar se suman los conteos de todas las ASVs de cada especie, eliminando los singletons que estos estimadores necesitan para funcionar.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Colapsar ASVs por especie</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ps_sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_glom</span>(ps_filt, <span class="st">"Species"</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs antes de colapsar: "</span>, phyloseq<span class="sc">::</span><span class="fu">ntaxa</span>(ps_filt))</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Especies después de colapsar: "</span>, phyloseq<span class="sc">::</span><span class="fu">ntaxa</span>(ps_sp))</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular índices a nivel de especie</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>alpha_sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">estimate_richness</span>(</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  ps_sp,</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Chao1"</span>, <span class="st">"ACE"</span>, <span class="st">"Shannon"</span>, <span class="st">"Simpson"</span>, <span class="st">"InvSimpson"</span>)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>alpha_sp<span class="sc">$</span>site_id   <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps_sp)<span class="sc">$</span>site_id</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>alpha_sp<span class="sc">$</span>region_gc <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps_sp)<span class="sc">$</span>region_gc</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape para graficar</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>alpha_sp_long <span class="ot">&lt;-</span> alpha_sp <span class="sc">%&gt;%</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(site_id, region_gc, Observed, Chao1, ACE, Shannon, Simpson, InvSimpson) <span class="sc">%&gt;%</span></span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols      =</span> <span class="sc">-</span><span class="fu">c</span>(site_id, region_gc),</span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to  =</span> <span class="st">"index"</span>,</span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">index =</span> <span class="fu">factor</span>(index,</span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>                   <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>,<span class="st">"Chao1"</span>,<span class="st">"ACE"</span>,<span class="st">"Shannon"</span>,<span class="st">"Simpson"</span>,<span class="st">"InvSimpson"</span>))</span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Kruskal-Wallis por índice</span></span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>kw_sp <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span></span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(index) <span class="sc">%&gt;%</span></span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_value =</span> <span class="fu">tryCatch</span>(<span class="fu">kruskal.test</span>(value <span class="sc">~</span> region_gc)<span class="sc">$</span>p.value, <span class="at">error =</span> <span class="cf">function</span>(e) <span class="cn">NA_real_</span>),</span>
-<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>      p_value <span class="sc">&lt;</span> <span class="fl">0.001</span> <span class="sc">~</span> <span class="st">"p &lt; 0.001 ***"</span>,</span>
-<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>      p_value <span class="sc">&lt;</span> <span class="fl">0.01</span>  <span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"p = "</span>, <span class="fu">round</span>(p_value, <span class="dv">3</span>), <span class="st">" **"</span>),</span>
-<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>      p_value <span class="sc">&lt;</span> <span class="fl">0.05</span>  <span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"p = "</span>, <span class="fu">round</span>(p_value, <span class="dv">3</span>), <span class="st">" *"</span>),</span>
-<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(p_value) <span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"p = "</span>, <span class="fu">round</span>(p_value, <span class="dv">3</span>), <span class="st">" ns"</span>),</span>
-<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>            <span class="sc">~</span> <span class="st">"p = NA"</span></span>
-<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>alpha_sp_long <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(kw_sp, <span class="at">by =</span> <span class="st">"index"</span>)</span>
-<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>y_pos_sp <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span></span>
-<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(index) <span class="sc">%&gt;%</span></span>
-<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">y_ann =</span> <span class="fu">max</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="fl">1.08</span>, <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
-<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>alpha_sp_long <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(y_pos_sp, <span class="at">by =</span> <span class="st">"index"</span>)</span>
-<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(alpha_sp_long, <span class="fu">aes</span>(<span class="at">x =</span> region_gc, <span class="at">y =</span> value, <span class="at">fill =</span> region_gc)) <span class="sc">+</span></span>
-<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.75</span>, <span class="at">outlier.shape =</span> <span class="dv">21</span>, <span class="at">outlier.size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="fu">aes</span>(<span class="at">color =</span> region_gc), <span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
-<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> dplyr<span class="sc">::</span><span class="fu">distinct</span>(alpha_sp_long, index, label, y_ann),</span>
-<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> <span class="fl">1.5</span>, <span class="at">y =</span> y_ann, <span class="at">label =</span> label),</span>
-<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>, <span class="at">fontface =</span> <span class="st">"italic"</span>, <span class="at">color =</span> <span class="st">"gray30"</span></span>
-<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values  =</span> pal_regions) <span class="sc">+</span></span>
-<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> pal_regions) <span class="sc">+</span></span>
-<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>index, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Diversidad alfa por región — nivel de especie"</span>,</span>
-<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Colapsado por especie — Kruskal-Wallis entre regiones"</span>,</span>
-<span id="cb17-66"><a href="#cb17-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Región"</span>,</span>
-<span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="st">"Valor del índice"</span></span>
-<span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-69"><a href="#cb17-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb17-70"><a href="#cb17-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb17-71"><a href="#cb17-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
-<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb17-77"><a href="#cb17-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-78"><a href="#cb17-78" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/diversidad_alfa_especies.png"</span>,</span>
-<span id="cb17-79"><a href="#cb17-79" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Colapsar ASVs por especie (ps_sp ya existe de la sección anterior)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs antes de colapsar: "</span>, phyloseq<span class="sc">::</span><span class="fu">ntaxa</span>(ps_filt))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Especies despues de colapsar: "</span>, phyloseq<span class="sc">::</span><span class="fu">ntaxa</span>(ps_sp))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Solo indices aplicables tras tax_glom (sin Chao1/ACE)</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>alpha_sp <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(phyloseq<span class="sc">::</span><span class="fu">estimate_richness</span>(</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  ps_sp,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Shannon"</span>, <span class="st">"Simpson"</span>, <span class="st">"InvSimpson"</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>alpha_sp<span class="sc">$</span>site_id   <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps_sp)<span class="sc">$</span>site_id</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>alpha_sp<span class="sc">$</span>region_gc <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps_sp)<span class="sc">$</span>region_gc</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape para graficar</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>alpha_sp_long <span class="ot">&lt;-</span> alpha_sp <span class="sc">%&gt;%</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(site_id, region_gc, Observed, Shannon, Simpson, InvSimpson) <span class="sc">%&gt;%</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols      =</span> <span class="sc">-</span><span class="fu">c</span>(site_id, region_gc),</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to  =</span> <span class="st">"index"</span>,</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">index =</span> <span class="fu">factor</span>(index, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Observed"</span>, <span class="st">"Shannon"</span>, <span class="st">"Simpson"</span>, <span class="st">"InvSimpson"</span>))</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Kruskal-Wallis por índice</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>kw_sp <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(index) <span class="sc">%&gt;%</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_value =</span> <span class="fu">tryCatch</span>(<span class="fu">kruskal.test</span>(value <span class="sc">~</span> region_gc)<span class="sc">$</span>p.value, <span class="at">error =</span> <span class="cf">function</span>(e) <span class="cn">NA_real_</span>),</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>      p_value <span class="sc">&lt;</span> <span class="fl">0.001</span> <span class="sc">~</span> <span class="st">"p &lt; 0.001 ***"</span>,</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>      p_value <span class="sc">&lt;</span> <span class="fl">0.01</span>  <span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"p = "</span>, <span class="fu">round</span>(p_value, <span class="dv">3</span>), <span class="st">" **"</span>),</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>      p_value <span class="sc">&lt;</span> <span class="fl">0.05</span>  <span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"p = "</span>, <span class="fu">round</span>(p_value, <span class="dv">3</span>), <span class="st">" *"</span>),</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(p_value) <span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"p = "</span>, <span class="fu">round</span>(p_value, <span class="dv">3</span>), <span class="st">" ns"</span>),</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>            <span class="sc">~</span> <span class="st">"p = NA"</span></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>alpha_sp_long <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(kw_sp, <span class="at">by =</span> <span class="st">"index"</span>)</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>y_pos_sp <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(index) <span class="sc">%&gt;%</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">y_ann =</span> <span class="fu">max</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="fl">1.08</span>, <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>alpha_sp_long <span class="ot">&lt;-</span> alpha_sp_long <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(y_pos_sp, <span class="at">by =</span> <span class="st">"index"</span>)</span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(alpha_sp_long, <span class="fu">aes</span>(<span class="at">x =</span> region_gc, <span class="at">y =</span> value, <span class="at">fill =</span> region_gc)) <span class="sc">+</span></span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.75</span>, <span class="at">outlier.shape =</span> <span class="dv">21</span>, <span class="at">outlier.size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="fu">aes</span>(<span class="at">color =</span> region_gc), <span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> dplyr<span class="sc">::</span><span class="fu">distinct</span>(alpha_sp_long, index, label, y_ann),</span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> <span class="fl">1.5</span>, <span class="at">y =</span> y_ann, <span class="at">label =</span> label),</span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>, <span class="at">fontface =</span> <span class="st">"italic"</span>, <span class="at">color =</span> <span class="st">"gray30"</span></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values  =</span> pal_regions) <span class="sc">+</span></span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> pal_regions) <span class="sc">+</span></span>
+<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>index, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Diversidad alfa por region - nivel de especie"</span>,</span>
+<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Colapsado por especie - Kruskal-Wallis entre regiones"</span>,</span>
+<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Región"</span>,</span>
+<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="st">"Valor del índice"</span></span>
+<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-66"><a href="#cb17-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb17-69"><a href="#cb17-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb17-70"><a href="#cb17-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb17-71"><a href="#cb17-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"final_data/reporte_ecologico/diversidad_alfa_especies.png"</span>,</span>
+<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla resumen por región (especies)</span></span>
@@ -1108,7 +1101,7 @@ Tip
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(region_gc) <span class="sc">%&gt;%</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">across</span>(</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(Observed, Chao1, Shannon, InvSimpson),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(Observed, Shannon, InvSimpson),</span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">list</span>(<span class="at">media =</span> <span class="sc">~</span><span class="fu">round</span>(<span class="fu">mean</span>(.x, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="dv">2</span>),</span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">sd    =</span> <span class="sc">~</span><span class="fu">round</span>(<span class="fu">sd</span>(.x, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="dv">2</span>)),</span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">.names =</span> <span class="st">"{.col}_{.fn}"</span></span>
