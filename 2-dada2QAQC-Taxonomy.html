@@ -378,19 +378,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <hr>
 <section id="cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian" class="level2">
 <h2 class="anchored" data-anchor-id="cómo-funciona-assigntaxonomy-el-clasificador-naive-bayesian">¿Cómo funciona <code>assignTaxonomy()</code>? — El clasificador Naive Bayesian</h2>
-<p><code>assignTaxonomy()</code> implementa el clasificador bayesiano ingenuo (<em>Naive Bayesian Classifier</em>) del RDP (<em>Ribosomal Database Project</em>), adaptado por el equipo de DADA2.</p>
-<p>El proceso funciona así:</p>
+<p><code>assignTaxonomy()</code> implementa el clasificador bayesiano ingenuo (<em>Naive Bayesian Classifier</em>) del RDP (<em>Ribosomal Database Project</em>), adaptado por el equipo de DADA2. El proceso en cuatro pasos:</p>
 <ol type="1">
-<li><p><strong>Fragmentación en k-mers</strong> — Cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (<em>8-mers</em>). Por ejemplo, la secuencia <code>ATCGGCTA</code> genera los 8-mers <code>ATCGGCTA</code>, <code>TCGGCTAG</code>, etc.</p></li>
-<li><p><strong>Comparación con la base de datos</strong> — La base de datos de referencia (por ejemplo, una base de 12S o 18S) también está indexada en 8-mers por cada grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo.</p></li>
-<li><p><strong>Por qué “ingenuo”</strong> — Se llama “naive” porque asume que cada 8-mer es <em>independiente</em> de los demás, lo cual no es biológicamente cierto, pero hace el cálculo computacionalmente muy eficiente y funciona bien en la práctica.</p></li>
-<li><p><strong>Asignación jerárquica</strong> — La clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de <strong>bootstrap</strong> (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como <code>NA</code>.</p></li>
-<li><p><strong>Por qué bajan las asignaciones en niveles finos</strong> — A nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado, la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.</p></li>
+<li><p><strong>Fragmentación en k-mers</strong> — cada ASV se divide en todos los fragmentos de 8 nucleótidos posibles (<em>8-mers</em>). Una secuencia de 62 bp genera ~55 8-mers distintos.</p></li>
+<li><p><strong>Comparación con la base de datos</strong> — la base de referencia está indexada en 8-mers por grupo taxonómico. El clasificador calcula la probabilidad de que los 8-mers de la ASV pertenezcan a cada grupo en la base.</p></li>
+<li><p><strong>Asignación jerárquica con bootstrap</strong> — la clasificación se hace nivel por nivel: Reino → Filo → Clase → Orden → Familia → Género → Especie. En cada nivel se reporta un valor de <strong>bootstrap</strong> (0–100) que indica qué tan consistente fue la asignación al remuestrear los 8-mers. El umbral por defecto es 80: si el bootstrap cae por debajo de ese valor en algún nivel, la asignación se trunca ahí y los niveles inferiores quedan como <code>NA</code>.</p></li>
+<li><p><strong>Por qué bajan las asignaciones en niveles finos</strong> — a nivel de género y especie, la base de datos necesita tener representantes muy cercanos a la secuencia de la muestra. Si el organismo no está bien representado, la asignación se queda en familia u orden. Esto no es un error — es una limitación real de la cobertura de la base de datos.</p></li>
 </ol>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Por qué “naive” (ingenuo)?</strong> Porque asume que cada 8-mer es <em>independiente</em> de los demás, lo cual no es biológicamente cierto — las posiciones en una secuencia están correlacionadas. Pero esta simplificación hace el cálculo muy eficiente y, en la práctica, funciona bien para clasificación taxonómica.</p>
+</div>
+</div>
 <hr>
 </section>
 <section id="paso-1-asignar-taxonomía-con-assigntaxonomy" class="level2">
 <h2 class="anchored" data-anchor-id="paso-1-asignar-taxonomía-con-assigntaxonomy">Paso 1 — Asignar taxonomía con <code>assignTaxonomy()</code></h2>
+<p><strong>Qué hace:</strong> toma las secuencias de <code>cleaned.seqtab.nochim</code> y las compara contra la base de datos de referencia especificada en <code>primer_data.csv</code>. Devuelve una tabla de taxonomía y otra de valores de bootstrap por nivel.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tax_location <span class="ot">&lt;-</span> <span class="fu">file.path</span>(metadata_location, primer.data<span class="sc">$</span>db_name[i])</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -407,16 +419,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose          =</span> <span class="cn">TRUE</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p><strong>Parámetros clave:</strong></p>
 <ul>
-<li><code>tryRC = TRUE</code>: prueba también el complemento reverso de cada ASV — importante para marcadores que pueden amplificarse en cualquier orientación</li>
-<li><code>outputBootstraps = TRUE</code>: devuelve los valores de confianza por nivel taxonómico</li>
-<li>La base de datos está definida en <code>primer_data.csv</code> (columna <code>db_name</code>)</li>
+<li><code>tryRC = TRUE</code> — prueba también el complemento reverso de cada ASV. Importante cuando el amplicón puede amplificarse en cualquier orientación según el par de primers.</li>
+<li><code>outputBootstraps = TRUE</code> — devuelve los valores de confianza (0–100) por nivel taxonómico. Esencial para evaluar la calidad de cada asignación.</li>
+<li><code>multithread = 2</code> — usa 2 núcleos (límite del servidor con ~30 usuarios concurrentes).</li>
 </ul>
-<p>Este paso puede tardar varios minutos dependiendo del número de ASVs y la base de datos.</p>
+<p>Este paso puede tardar varios minutos dependiendo del número de ASVs y el tamaño de la base de datos.</p>
 <hr>
 </section>
 <section id="paso-2-verificar-el-resultado" class="level2">
 <h2 class="anchored" data-anchor-id="paso-2-verificar-el-resultado">Paso 2 — Verificar el resultado</h2>
+<p><strong>Qué hace:</strong> separa la tabla de taxonomía de los valores de bootstrap y calcula el porcentaje de ASVs asignadas por nivel taxonómico.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Separar taxonomía y bootstraps</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tax_mat  <span class="ot">&lt;-</span> at<span class="sc">$</span>tax</span>
@@ -433,6 +447,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pct_assigned <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="sc">!</span><span class="fu">is.na</span>(tax_mat)) <span class="sc">/</span> <span class="fu">nrow</span>(tax_mat) <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(pct_assigned, <span class="dv">1</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p><strong>Qué chequear:</strong> es normal que el porcentaje de asignación baje progresivamente de Reino a Especie. Una caída muy brusca en niveles altos (Filo, Clase) puede indicar un problema con la base de datos o contaminación. Ver tabla de referencia al final de la página.</p>
 <p>El pipeline guarda automáticamente el porcentaje de ASVs <strong>sin</strong> asignación por nivel en <code>final_data/logs/</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pct_unassigned <span class="ot">&lt;-</span> <span class="fu">vapply</span>(ranks, <span class="cf">function</span>(rk) {</span>
@@ -450,6 +465,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="paso-3-guardar-archivos-de-taxonomía" class="level2">
 <h2 class="anchored" data-anchor-id="paso-3-guardar-archivos-de-taxonomía">Paso 3 — Guardar archivos de taxonomía</h2>
+<p><strong>Qué hace:</strong> genera dos archivos CSV en <code>final_data/csv_output/</code>:</p>
+<ul>
+<li><code>_taxonomy_output.csv</code> — tabla de taxonomía (Sequence + niveles taxonómicos)</li>
+<li><code>_tax_bootstrap.csv</code> — tabla de bootstraps unida a la taxonomía, para revisar la confianza de cada asignación</li>
+</ul>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>taxonomy_file  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_location, <span class="st">"csv_output"</span>,</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(run_name, <span class="st">"_"</span>, primer.data<span class="sc">$</span>locus_shorthand[i], <span class="st">"_taxonomy_output.csv"</span>))</span>
@@ -471,11 +491,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Taxonomía guardada en: "</span>, taxonomy_file)</span>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Bootstraps guardados en: "</span>, bootstrap_file)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p><strong>Qué chequear en <code>_tax_bootstrap.csv</code>:</strong> busca asignaciones con bootstrap &lt; 80 en niveles altos (Family, Order) — esas son las más inciertas. Un bootstrap alto en Genus pero baja cobertura de esa especie en la base de datos puede resultar en asignaciones incorrectas de especie.</p>
 <hr>
 </section>
 <section id="paso-4-guardar-insumos-para-phyloseq-.rdata" class="level2">
 <h2 class="anchored" data-anchor-id="paso-4-guardar-insumos-para-phyloseq-.rdata">Paso 4 — Guardar insumos para phyloseq (.RData)</h2>
-<p>El pipeline guarda todos los objetos necesarios para construir el objeto phyloseq en un único archivo <code>.RData</code>. Esto permite continuar el análisis en otra sesión sin repetir los pasos anteriores.</p>
+<p><strong>Qué hace:</strong> empaqueta en un único archivo <code>.RData</code> todos los objetos necesarios para el análisis ecológico: la matriz de abundancias, la taxonomía, los metadatos y los parámetros del run. Esto permite continuar el análisis en otra sesión sin repetir ningún paso del pipeline.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparar matrices para phyloseq</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>asv_mat <span class="ot">&lt;-</span> cleaned.seqtab.nochim</span>
@@ -533,12 +554,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"RData guardado en: "</span>, rdata_path)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>El <code>.RData</code> contiene los tres objetos principales para phyloseq (<code>asv_mat</code>, <code>tax_mat</code>, <code>sample_meta</code>) más objetos adicionales para reproducibilidad: <code>track</code>, tablas de taxonomía completas y los parámetros del run. El siguiente paso es construir el objeto phyloseq para análisis de diversidad (Día 4).</p>
+<p><strong>Qué contiene el <code>.RData</code>:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Objeto</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>asv_mat</code></td>
+<td>Matriz de abundancias (muestras × ASVs)</td>
+</tr>
+<tr class="even">
+<td><code>tax_mat</code></td>
+<td>Taxonomía asignada por DADA2 (sin curación geográfica)</td>
+</tr>
+<tr class="odd">
+<td><code>sample_meta</code></td>
+<td>Metadatos de muestras alineados con <code>asv_mat</code></td>
+</tr>
+<tr class="even">
+<td><code>track</code></td>
+<td>Tabla de seguimiento de lecturas por paso</td>
+</tr>
+<tr class="odd">
+<td><code>params</code></td>
+<td>Parámetros del run (truncLen, longitudes, fecha)</td>
+</tr>
+<tr class="even">
+<td><code>taxonomy_df</code>, <code>bootstrap_df</code></td>
+<td>Tablas de taxonomía y bootstraps completas</td>
+</tr>
+</tbody>
+</table>
 <hr>
 </section>
 <section id="exportar-secuencias-asv-a-fasta" class="level2">
 <h2 class="anchored" data-anchor-id="exportar-secuencias-asv-a-fasta">Exportar secuencias ASV a FASTA</h2>
-<p>Exportamos las secuencias de ASVs en formato FASTA para usarlas en análisis posteriores como el agrupamiento en OTUs con VSEARCH.</p>
+<p><strong>Qué hace:</strong> guarda las secuencias de todas las ASVs en formato FASTA con identificadores legibles (<code>ASV_0001</code>, <code>ASV_0002</code>, …). Este archivo se usa en pasos posteriores como el agrupamiento en OTUs con VSEARCH.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear directorio de salida</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="fu">file.path</span>(output_location, <span class="st">"otus_vsearch"</span>), <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
@@ -554,16 +613,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"FASTA exportado: "</span>, fasta_path)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Total ASVs: "</span>, <span class="fu">length</span>(asv_seqs))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Este archivo contiene las secuencias sin taxonomía — solo un identificador (<code>ASV_0001</code>, <code>ASV_0002</code>, …) y la secuencia. VSEARCH lo usará para agrupar ASVs similares en OTUs.</p>
 <hr>
 </section>
 <section id="causas-de-baja-asignación-taxonómica" class="level2">
 <h2 class="anchored" data-anchor-id="causas-de-baja-asignación-taxonómica">Causas de baja asignación taxonómica</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 28%">
-<col style="width: 36%">
-<col style="width: 36%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -575,22 +633,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>Base de datos desactualizada</td>
-<td>Muchos NA en filo</td>
+<td>Muchos <code>NA</code> en Filo</td>
 <td>Usar versión más reciente</td>
 </tr>
 <tr class="even">
 <td>Marcador poco representado</td>
 <td>% bajos en todos los niveles</td>
-<td>Considerar BD más específica</td>
+<td>Considerar base de datos más específica</td>
 </tr>
 <tr class="odd">
-<td><code>minBoot</code> muy alto</td>
-<td>Muchos NA en niveles medios</td>
+<td><code>minBoot</code> muy alto (&gt; 80)</td>
+<td>Muchos <code>NA</code> en niveles medios</td>
 <td>Bajar a 60 con precaución</td>
 </tr>
 <tr class="even">
 <td>Quimeras no removidas</td>
-<td>Asignaciones inconsistentes</td>
+<td>Asignaciones inconsistentes entre muestras</td>
 <td>Verificar paso anterior</td>
 </tr>
 </tbody>
@@ -602,11 +660,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Recuerda
+Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningún método puede asignar correctamente un organismo que no está representado en la referencia. Siempre reporta la versión de la base de datos que usaste en la sección de métodos.</p>
+<p>La asignación taxonómica depende de la calidad y cobertura de la base de datos. Ningún método puede asignar correctamente un organismo que no está representado en la referencia. Siempre reporta el nombre y versión de la base de datos en la sección de métodos de tu artículo.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -620,9 +678,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>¿Qué porcentaje de ASVs se asignan a nivel de filo? ¿Y a nivel de género?</li>
-<li>¿Hay ASVs sin asignación a ningún nivel? ¿Cuántos son?</li>
-<li>Revisa los valores de bootstrap en <code>ready_new_taxa</code> — ¿Hay asignaciones con baja confianza?</li>
+<li>¿Qué porcentaje de ASVs se asignan a nivel de Filo? ¿Y a nivel de Género?</li>
+<li>¿Hay ASVs sin asignación a ningún nivel (Kingdom = <code>NA</code>)? ¿Cuántos son?</li>
+<li>Revisa los valores de bootstrap en <code>ready_new_taxa</code> — ¿hay asignaciones de Género con bootstrap &lt; 80?</li>
 <li>¿El <code>.RData</code> fue creado correctamente en <code>final_data/rdata_output/</code>?</li>
 </ol>
 </div>
