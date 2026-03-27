@@ -993,7 +993,7 @@ message("Top ", top_n, " especies mostradas; ",
 df_sp <- df_sp %>%
   dplyr::mutate(
     Species_plot = dplyr::if_else(Species %in% top_species, Species, "Otros"),
-    Species_plot = factor(Species_plot, levels = c(top_species, "Otros"))
+    Species_plot = factor(Species_plot, levels = c("Otros", rev(top_species)))
   ) %>%
   dplyr::group_by(site_id, Species_plot) %>%
   dplyr::summarise(Abundance = sum(Abundance), .groups = "drop") %>%
