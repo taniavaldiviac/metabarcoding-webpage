@@ -38,21 +38,21 @@ website:
           - 0-Datos.qmd
           - 0-Clonacion.qmd
           - 0-Preparacion.qmd
-          - 0-FASTQ.qmd
-          - 1-qaqc-cutadapt.qmd
       - section: "Día 3"
         contents:
+          - 0-FASTQ.qmd
+          - 1-qaqc-cutadapt.qmd
           - 2-dada2QAQC-Prep.qmd
+      - section: "Día 4"
+        contents:
           - 2-dada2QAQC-Error.qmd
           - 2-dada2QAQC-Merge.qmd
           - 2-dada2QAQC-Chimeras.qmd
           - 2-dada2QAQC-Taxonomy.qmd
-      - section: "Día 4"
+      - section: "Día 5"
         contents:
           - 3-reporte-v2.qmd
           - 4-otus-vsearch.qmd
-      - section: "Día 5"
-        contents:
           - 5-decontam.qmd
           - 5-base-datos.qmd
       - section: "Lecturas recomendadas"

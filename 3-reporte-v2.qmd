@@ -1243,9 +1243,9 @@ La muestra MOCK es un control positivo que contiene una mezcla conocida de ADN d
 **Detección dinámica:** en lugar de usar el nombre exacto de la muestra (que puede cambiar entre corridas), detectamos la muestra MOCK automáticamente usando `grepl("MOCK", site_id, ignore.case=TRUE)`.
 
 ::: {.callout-note icon="false"}
-**¿Por qué no aplicar la curación geográfica al MOCK?**
+**Curación geográfica en el MOCK**
 
-El MOCK es un control de performance del pipeline, no una muestra ambiental del Golfo de California. Contiene especies de laboratorio — algunas pueden no estar en la lista de peces del GC. Si aplicáramos la curación geográfica, esas especies quedarían como `NA` y parecería que no fueron detectadas, cuando en realidad sí lo fueron. Para evaluar el pipeline correctamente, usamos la taxonomía directa del clasificador DADA2 (pre-curación).
+Aplicamos la misma curación geográfica al MOCK que a las muestras ambientales. Esto significa que especies del control positivo que no estén documentadas en el Golfo de California pueden aparecer como `Género sp.` o perder la asignación a especie. Tenlo en cuenta al interpretar los resultados: una especie "no detectada" podría haber sido identificada por DADA2 pero eliminada por el filtro geográfico.
 :::
 
 ```{r mock-deteccion}
@@ -1266,17 +1266,16 @@ species_site_reads <- ASV_df %>%
 
 write.csv(species_site_reads, ruta_csv_output, row.names = FALSE)
 
-# Para el MOCK usamos taxonomía PRE-curación (taxa_df, antes de filtro geográfico)
-# para recuperar todas las especies del control positivo, incluso si no están en la lista del GC
-ASV_df_mock <- as.data.frame(ASV_mat) %>%
-  tibble::rownames_to_column("Sequence") %>%
-  tidyr::pivot_longer(cols = -Sequence, names_to = "Sample_name", values_to = "nReads")
+# Para el MOCK usamos la misma taxonomía curada geográficamente (ps)
+ASV_df_mock <- as.data.frame(phyloseq::otu_table(ps)) %>%
+  tibble::rownames_to_column("seqID") %>%
+  tidyr::pivot_longer(cols = -seqID, names_to = "Sample_name", values_to = "nReads")
 
-TAXA_df_precur <- taxa_df %>%
-  tibble::rownames_to_column("Sequence")
+TAXA_df_mock <- as.data.frame(phyloseq::tax_table(ps)) %>%
+  tibble::rownames_to_column("seqID")
 
 species_site_mock <- ASV_df_mock %>%
-  dplyr::left_join(TAXA_df_precur, by = "Sequence") %>%
+  dplyr::left_join(TAXA_df_mock, by = "seqID") %>%
   dplyr::filter(!is.na(Species)) %>%
   dplyr::group_by(Sample_name, Species) %>%
   dplyr::summarise(nReads = sum(nReads), .groups = "drop") %>%
