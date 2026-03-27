@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -674,6 +674,18 @@ Nota
 <span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">nrow</span>(md) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</section>
+<section id="curación-taxonómica-y-geográfica" class="level3">
+<h3 class="anchored" data-anchor-id="curación-taxonómica-y-geográfica">Curación taxonómica y geográfica</h3>
+<p>La base de datos de referencia (e.g.&nbsp;MiFish) contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación se hace en dos pasos:</p>
+<p><strong>Paso 1 — Correcciones manuales:</strong> Algunas asignaciones requieren ajustes puntuales basados en conocimiento experto. Por ejemplo, el género <em>Balistes</em> en el GC corresponde a <em>B. polylepis</em>, y algunas familias necesitan reclasificación a nivel de orden siguiendo la taxonomía actualizada.</p>
+<p><strong>Paso 2 — Curación geográfica automática:</strong> Contrastamos cada asignación contra una lista de especies documentadas para el Golfo de California (<code>Fish_speciesGC.csv</code>):</p>
+<ul>
+<li><strong>Especie en la lista del GC</strong> → se mantiene tal cual (ej. <em>Mycteroperca rosacea</em>)</li>
+<li><strong>Especie NO en GC, género SÍ, y el género tiene una sola especie en la lista</strong> → se asigna esa especie (ej. <em>Elops</em> solo tiene <em>E. affinis</em> en el GC)</li>
+<li><strong>Especie NO en GC, género SÍ, pero con varias especies</strong> → se deja como <em>Género</em> sp. (no podemos resolver a especie)</li>
+<li><strong>Ni especie ni género en la lista del GC</strong> → se limpia hasta familia (la asignación a género/especie no es confiable para esta región)</li>
+</ul>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Curación geográfica con lista de especies del Golfo de California</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>fish_sp      <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(ruta_metadata, <span class="at">row.names =</span> <span class="cn">NULL</span>)</span>
@@ -755,26 +767,6 @@ Nota
 <span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"ASVs reducidas a familia: "</span>, n_familia)</span>
 <span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a>taxa_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(taxa2)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Nota
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>¿Por qué curar geográficamente?</strong></p>
-<p>La base de datos de referencia contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación geográfica contrasta cada asignación contra una lista de especies documentadas para la región:</p>
-<ul>
-<li><strong>Especie en el GC</strong> → se mantiene (ej. <em>Mycteroperca rosacea</em>)</li>
-<li><strong>Género en el GC, especie no, y el género tiene una sola especie en la lista</strong> → se asigna esa especie (ej. <em>Elops</em> solo tiene <em>Elops affinis</em> en el GC, así que se resuelve directamente)</li>
-<li><strong>Género en el GC, especie no, y el género tiene varias especies</strong> → se deja como <em>Mycteroperca</em> sp. (el género es correcto, pero no podemos distinguir la especie)</li>
-<li><strong>Ni género ni especie en el GC</strong> → se mantiene solo la asignación a nivel de familia (la asignación a género/especie no es confiable para esta región)</li>
-</ul>
-</div>
 </div>
 </section>
 <section id="construcción-del-objeto-phyloseq-1" class="level3">
