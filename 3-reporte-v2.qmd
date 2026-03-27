@@ -615,14 +615,14 @@ ggsave("final_data/reporte_ecologico/curva_acumulacion.png",
 
 Calculamos seis índices complementarios:
 
-| Índice | Qué mide |
-|:-------|:---------|
-| **Observed** | Número de ASVs detectadas |
-| **Chao1** | Riqueza estimada (incluye raras no detectadas) |
-| **ACE** | Estimador de cobertura de abundancia |
-| **Shannon** | Riqueza + equitatividad (sensible a especies raras) |
-| **Simpson** | Dominancia (sensible a especies abundantes) |
-| **InvSimpson** | Número efectivo de especies dominantes |
+| Índice | Qué mide | ¿Usa abundancia? | Rango |
+|:-------|:---------|:----------------:|:------|
+| **Observed** | Número de ASVs detectadas (riqueza observada) | No — solo presencia/ausencia | 0 – ∞ |
+| **Chao1** | Riqueza estimada incluyendo especies raras no detectadas, basado en singletons y doubletons | Parcial — usa singletons/doubletons | ≥ Observed |
+| **ACE** | Estimador de cobertura de abundancia; usa especies con <10 lecturas para estimar riqueza total | Parcial — distingue raras (<10) vs abundantes | ≥ Observed |
+| **Shannon** | Combina riqueza y equitatividad; sensible a especies raras | Sí — usa proporciones de cada especie | 0 – ln(S) |
+| **Simpson** | Probabilidad de que dos lecturas al azar sean de la misma especie (dominancia) | Sí — pesa más las especies abundantes | 0 – 1 (1 = alta diversidad) |
+| **InvSimpson** | Inverso de Simpson; se interpreta como el número efectivo de especies dominantes | Sí — derivado de Simpson | 1 – S |
 
 ### Cálculo de índices y boxplots por región
 
@@ -1167,14 +1167,14 @@ La muestra MOCK es un control positivo con ADN de especies conocidas. Permite va
 ```{r mock, fig.width=8, fig.height=6}
 # Detección dinámica del MOCK
 mock_meta <- data.frame(phyloseq::sample_data(ps), stringsAsFactors = FALSE)
-mock_samples <- rownames(mock_meta)[grepl("MOCK", mock_meta$site_id, ignore.case = TRUE)]
+mock_ids <- mock_meta$site_id[grepl("MOCK", mock_meta$site_id, ignore.case = TRUE)]
 
-if (length(mock_samples) > 0) {
-  mock_col <- mock_samples[1]
-  message("Muestra MOCK: ", mock_col)
+if (length(mock_ids) > 0) {
+  mock_col <- mock_ids[1]
+  message("Muestra MOCK (site_id): ", mock_col)
 
-  # Abundancias por especie (reutiliza species_site_reads de la sección anterior)
-  df_mock <- species_site_reads %>%
+  # Abundancias por especie (reutiliza species.site.reads de la sección anterior)
+  df_mock <- species.site.reads %>%
     dplyr::select(Species, dplyr::all_of(mock_col)) %>%
     dplyr::rename(reads = dplyr::all_of(mock_col)) %>%
     dplyr::filter(reads > 0) %>%
