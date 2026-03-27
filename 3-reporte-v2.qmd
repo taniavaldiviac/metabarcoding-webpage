@@ -63,10 +63,6 @@ ruta_rdata       <- "final_data/rdata_output"
 ruta_metadata    <- "metadata/Fish_speciesGC.csv"
 ruta_csv_output  <- "final_data/csv_output/taxon_table.csv"
 ruta_figs        <- "final_data/reporte_ecologico"
-
-# Crear directorios de salida si no existen
-dir.create(dirname(ruta_csv_output), showWarnings = FALSE, recursive = TRUE)
-dir.create(ruta_figs, showWarnings = FALSE, recursive = TRUE)
 ```
 
 ### Carga de datos
