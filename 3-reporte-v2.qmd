@@ -57,11 +57,7 @@ suppressPackageStartupMessages({
 Abre R desde `~/metabarcoding-code/`.
 
 ```{r rutas}
-# Buscar el directorio metabarcoding-code en el servidor
-mc_dir <- system("find ~ -maxdepth 3 -type d -name 'metabarcoding-code' 2>/dev/null | head -1", intern = TRUE)
-if (length(mc_dir) == 0 || mc_dir == "") stop("No se encontró el directorio metabarcoding-code")
-setwd(mc_dir)
-message("Working directory: ", mc_dir)
+setwd("~/metabarcoding-code")
 
 ruta_rdata       <- "final_data/rdata_output"
 ruta_metadata    <- "metadata/Fish_speciesGC.csv"
