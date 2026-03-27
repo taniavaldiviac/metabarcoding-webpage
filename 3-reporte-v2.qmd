@@ -115,81 +115,7 @@ message("NAs en sample_meta: ", sum(is.na(sample_meta[,1])))
 
 ---
 
-## 2. Tabla de rendimiento del pipeline
-
-### Track con porcentajes de retención
-
-El seguimiento del número de lecturas a lo largo del pipeline (*read tracking*) es el primer control de calidad del análisis. Cada etapa — filtrado, denoising, merge, quimeras, filtro de longitud — reduce el número de lecturas. Pérdidas moderadas son normales, pero caídas abruptas en algún paso pueden indicar parámetros inadecuados o muestras de baja calidad.
-
-En esta versión mejorada añadimos **columnas de porcentaje de retención** entre cada paso, lo que facilita identificar en qué etapa se pierden más lecturas. El porcentaje final (`pct_final`) refleja la eficiencia global del pipeline: valores entre **70–90%** son típicamente esperados.
-
-```{r track-tabla}
-track_pct <- as.data.frame(track) %>%
-  dplyr::mutate(
-    pct_filtered  = round(filtered      / input        * 100, 1),
-    pct_denoised  = round(denoisedF     / filtered     * 100, 1),
-    pct_merged    = round(merged        / denoisedF    * 100, 1),
-    pct_nonchim   = round(nonchim       / merged       * 100, 1),
-    pct_final     = round(length_filter / input        * 100, 1)
-  )
-
-track_pct %>%
-  kable(
-    format  = "html",
-    digits  = 1,
-    big.mark = ",",
-    align   = "c",
-    caption = "Rendimiento del pipeline DADA2 por muestra (conteos y % de retención)"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = TRUE,
-    font_size  = 10
-  ) %>%
-  column_spec(
-    which(grepl("^pct_", colnames(track_pct))),
-    color = "white",
-    background = "#2c7bb6"
-  )
-
-# Guardar tabla de rendimiento
-dir.create("final_data/reporte_ecologico", recursive = TRUE, showWarnings = FALSE)
-write.csv(track_pct, "final_data/reporte_ecologico/track_rendimiento.csv", row.names = TRUE)
-```
-
-```{r track-suma}
-# Resumen global del pipeline
-track_sum <- dplyr::summarise_all(as.data.frame(track), sum)
-track_sum_pct <- track_sum %>%
-  dplyr::mutate(
-    pct_filtered  = round(filtered      / input        * 100, 1),
-    pct_merged    = round(merged        / filtered     * 100, 1),
-    pct_nonchim   = round(nonchim       / merged       * 100, 1),
-    pct_final     = round(length_filter / input        * 100, 1)
-  )
-
-track_sum_pct %>%
-  kable(
-    format   = "html",
-    digits   = 1,
-    big.mark = ",",
-    align    = "c",
-    caption  = "Resumen global del pipeline (suma de todas las muestras)"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = TRUE,
-    font_size  = 10
-  )
-```
-
-::: {.callout-note}
-**Recuerda:** Una retención final (`pct_final`) por debajo del 50% en la mayoría de las muestras puede indicar problemas en el paso de filtrado de calidad (parámetros demasiado estrictos) o en el merge (amplicón demasiado largo para el overlap de los reads).
-:::
-
----
-
-## 3. Construcción del objeto phyloseq
+## 2. Construcción del objeto phyloseq
 
 **phyloseq** es un paquete de R diseñado para el análisis de datos de secuenciación de amplicones (16S, 18S, ITS, 12S, etc.). Su función principal es integrar en un único objeto todas las capas de información de un estudio de microbiomas o comunidades: las abundancias de secuencias, la taxonomía y los metadatos de las muestras.
 
@@ -631,7 +557,7 @@ ps_rel <- phyloseq::transform_sample_counts(ps_filt, function(x) x / sum(x))
 
 ---
 
-## 4. Diversidad alfa
+## 3. Diversidad alfa
 
 La diversidad alfa (α) describe la **riqueza y equitatividad de especies dentro de cada sitio**. Calculamos los índices directamente sobre `ps_filt` (conteos crudos). Chao1 y ACE corrigen el sesgo por diferencias de profundidad de secuenciación sin necesidad de rarefactar.
 
@@ -921,7 +847,7 @@ alpha_sp_summary
 
 ---
 
-## 6. Composición taxonómica
+## 4. Composición taxonómica
 
 Las barras apiladas muestran la **abundancia relativa** por especie en cada sitio. Son la visualización central del metabarcoding: qué detectamos y en qué proporción.
 
@@ -1076,7 +1002,7 @@ dev.off()
 
 ---
 
-## 7. Diversidad beta
+## 5. Diversidad beta
 
 La diversidad beta (β) mide las **diferencias en composición de comunidades entre sitios**. Usamos **Bray-Curtis** sobre abundancias relativas a nivel de especie — sensible a cambios en abundancia de especies dominantes.
 
@@ -1234,7 +1160,7 @@ ggsave("final_data/reporte_ecologico/nmds_especies_braycurtis.png",
 
 ---
 
-## 8. Control positivo — MOCK
+## 6. Control positivo — MOCK
 
 La muestra MOCK es un control positivo con ADN de especies conocidas. Permite validar el pipeline: ¿detectamos las especies esperadas? ¿aparecen especies inesperadas? Se aplica la misma curación geográfica que a las muestras ambientales, por lo que especies no documentadas en el GC pueden perder su asignación a especie.
 
