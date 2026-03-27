@@ -972,7 +972,7 @@ Abundancia relativa de cada especie curada geográficamente en cada sitio del Go
 
 ```{r composicion-especie, fig.width=12, fig.height=9}
 # Top N especies por abundancia total; el resto se agrupa en "Otros"
-top_n <- 20
+top_n <- 15
 
 df_sp <- phyloseq::psmelt(ps_sp_prop) %>%
   dplyr::filter(site_id %in% md$site_id)
@@ -1029,7 +1029,7 @@ gp_sp <- ggplot(df_sp, aes(x = site_id, y = Abundance, fill = Species_plot)) +
     plot.title       = element_text(face = "bold"),
     axis.title       = element_text(face = "bold")
   ) +
-  guides(fill = guide_legend(nrow = ceiling((n_top + 1) / 4), byrow = TRUE))
+  guides(fill = guide_legend(nrow = ceiling((n_top + 1) / 4), byrow = TRUE, title.position = "top"))
 
 print(gp_sp)
 ggsave(
