@@ -609,68 +609,11 @@ En este caso los resultados fueron casi idénticos porque 12S es un marcador con
 En resumen: para análisis ecológicos de comunidades a nivel de especie, ambas estrategias suelen dar resultados equivalentes. La diferencia importa cuando se trabaja sin colapsar por especie, o cuando el marcador y el grupo taxonómico lo demandan.
 :::
 
----
+### Filtrado de muestras y transformación
 
-## 4. Control de calidad
+Separamos controles y muestras problemáticas antes de los análisis ecológicos. No aplicamos rarefacción — usamos **abundancias relativas** para composición y β-diversidad, y Chao1/ACE para estimar riqueza.
 
-### Lecturas por muestra
-
-Antes de cualquier análisis de diversidad es fundamental evaluar la **cobertura de secuenciación** por muestra. Muestras con muy pocas lecturas pueden producir estimados de diversidad poco confiables. Marcamos con una línea roja el umbral mínimo de 1,000 lecturas: muestras que no lo superen deben ser revisadas antes de continuar.
-
-```{r qc-reads-por-muestra, fig.width=9, fig.height=5}
-sample_reads <- data.frame(
-  sample_id = phyloseq::sample_names(ps),
-  reads     = phyloseq::sample_sums(ps),
-  site_id   = phyloseq::sample_data(ps)$site_id,
-  stringsAsFactors = FALSE
-)
-
-low_cov <- sample_reads %>% dplyr::filter(reads < 1000)
-if (nrow(low_cov) > 0) {
-  message("Muestras con menos de 1,000 lecturas: ", paste(low_cov$site_id, collapse = ", "))
-}
-
-ggplot(sample_reads, aes(x = reorder(site_id, reads), y = reads)) +
-  geom_col(
-    aes(fill = reads < 1000),
-    alpha = 0.85, width = 0.7
-  ) +
-  geom_hline(yintercept = 1000, linetype = "dashed", color = "#d73027", linewidth = 0.9) +
-  annotate("text", x = 0.5, y = 1000, label = "Mínimo 1,000 lecturas",
-           hjust = 0, vjust = -0.5, size = 3.2, color = "#d73027") +
-  scale_fill_manual(
-    values = c("FALSE" = "#4dac26", "TRUE" = "#d01c8b"),
-    labels = c("FALSE" = ">= 1,000", "TRUE" = "< 1,000 (baja cobertura)")
-  ) +
-  scale_y_continuous(labels = scales::comma) +
-  coord_flip() +
-  labs(
-    title = "Lecturas por muestra",
-    subtitle = NULL,
-    x = "Sitio",
-    y = "Número de lecturas",
-    fill = "Cobertura"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title    = element_text(face = "bold"),
-    axis.title    = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom"
-  )
-
-# Guardar gráfica
-ggsave("final_data/reporte_ecologico/lecturas_por_muestra.png",
-       width = 10, height = 6, dpi = 300)
-```
-
-::: {.callout-tip}
-**Interpretación:** Si la muestra de baja cobertura es un control negativo, esto es esperado. Si es una muestra ambiental real, considera si eliminarla del análisis de diversidad afectaría tus conclusiones.
-:::
-
-### Profundidad de secuenciación
-
-```{r qc-profundidad, fig.width=9, fig.height=5}
+```{r filtrado-muestras}
 # Separar controles (MOCK, CTR) para análisis independiente
 ps_ctrl <- phyloseq::subset_samples(ps, grepl("MOCK|CTR", site_id, ignore.case = TRUE))
 ps_ctrl <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_ctrl) > 0, ps_ctrl)
@@ -682,76 +625,15 @@ ps_filt <- phyloseq::subset_samples(
   !site_id %in% c("SLG", "LIB", "BSN") & !grepl("MOCK|CTR", site_id, ignore.case = TRUE)
 )
 ps_filt <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_filt) > 0, ps_filt)
+message("Muestras para análisis: ", phyloseq::nsamples(ps_filt))
 
-# Profundidad por muestra
-depth_df <- data.frame(
-  site_id = phyloseq::sample_data(ps_filt)$site_id,
-  reads   = phyloseq::sample_sums(ps_filt)
-) %>% dplyr::arrange(reads)
-
-gp_depth <- ggplot(depth_df, aes(x = reorder(site_id, reads), y = reads)) +
-  geom_col(fill = "#3182bd", alpha = 0.85) +
-  geom_hline(yintercept = min(depth_df$reads), linetype = "dashed",
-             color = "#e6550d", linewidth = 0.8) +
-  annotate("text", x = 1, y = min(depth_df$reads),
-           label = paste0("Mín: ", scales::comma(min(depth_df$reads))),
-           hjust = 0, vjust = -0.5, color = "#e6550d", size = 3.2) +
-  scale_y_continuous(labels = scales::comma) +
-  labs(title = "Lecturas por muestra", x = "Sitio", y = "Lecturas") +
-  theme_minimal(base_size = 12) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-        plot.title  = element_text(face = "bold"))
-
-print(gp_depth)
-ggsave("final_data/reporte_ecologico/profundidad_secuenciacion.png",
-       gp_depth, width = 9, height = 5, dpi = 300)
-
-message("Rango de profundidad: ", scales::comma(min(depth_df$reads)),
-        " – ", scales::comma(max(depth_df$reads)), " lecturas")
-```
-
-No aplicamos rarefacción. En su lugar usamos **abundancias relativas** para los análisis de composición y β-diversidad, e **índices robustos** (Chao1, ACE) para estimar riqueza. Esto evita descartar datos reales — rarefactar a la muestra más superficial significa tirar lecturas de todas las demás.
-
-```{r ps-rel}
 # Transformar a abundancias relativas (proporciones)
 ps_rel <- phyloseq::transform_sample_counts(ps_filt, function(x) x / sum(x))
 ```
 
-### Distribución de longitudes de ASVs
-
-Las ASVs deben tener una longitud consistente con el amplicón esperado (~62 bp para 12S). Secuencias muy cortas o muy largas pueden ser artefactos de ensamblaje.
-
-```{r dist-longitudes, fig.width=8, fig.height=4}
-seq_lengths <- nchar(as.character(phyloseq::refseq(ps)))
-df_lengths <- data.frame(Length = seq_lengths)
-
-ggplot(df_lengths, aes(x = Length)) +
-  geom_histogram(binwidth = 1, fill = "#3182bd", color = "white", alpha = 0.85) +
-  geom_vline(aes(xintercept = median(Length)), color = "#e6550d", linetype = "dashed", linewidth = 1) +
-  labs(
-    title = "Distribución de longitudes de secuencias ASV",
-    subtitle = paste("Mediana:", median(seq_lengths), "bp | n =", length(seq_lengths), "ASVs"),
-    x = "Longitud (bp)", y = "Frecuencia"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(plot.title = element_text(face = "bold"),
-        panel.grid.minor = element_blank())
-
-ggsave("final_data/reporte_ecologico/distribucion_longitudes_asv.png",
-       width = 8, height = 4, dpi = 300)
-```
-
-::: {.callout-note icon="false"}
-**¿Por qué no rarefactar?** La rarefacción descarta lecturas reales de las muestras más profundas para igualar el esfuerzo. Si una muestra tiene 50,000 lecturas y la más superficial tiene 10,000, rarefactar tira el 80% de los datos. Las alternativas son más informativas:
-
-- **Índices robustos** (Chao1, ACE): estiman riqueza corrigiendo el sesgo de muestreo sin subsampling
-- **Abundancias relativas**: normalizan a proporciones antes de calcular distancias — equivalente a rarefacción infinita
-- **Shannon e InvSimpson**: calculados sobre conteos directamente; Chao1/ACE compensan la diferencia de profundidad
-:::
-
 ---
 
-## 5. Diversidad alfa
+## 4. Diversidad alfa
 
 La diversidad alfa (α) describe la **riqueza y equitatividad de especies dentro de cada sitio**. Calculamos los índices directamente sobre `ps_filt` (conteos crudos). Chao1 y ACE corrigen el sesgo por diferencias de profundidad de secuenciación sin necesidad de rarefactar.
 
