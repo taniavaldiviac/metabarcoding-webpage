@@ -593,7 +593,20 @@ ggsave("final_data/reporte_ecologico/comparacion_asvs_vs_otus.png",
 ```
 
 ::: {.callout-note icon="false"}
-**Interpretación:** La diferencia entre ASVs y OTUs refleja cuánta variación intraespecífica (haplotipos, alelos) captura el análisis por ASVs. A niveles taxonómicos altos (Phylum, Class) la diferencia es mínima; a nivel de Genus/Species puede ser notable. En cada nivel puede haber asignaciones `NA` que cuentan como 1 taxón.
+**Interpretación:** De 1,403 ASVs, VSEARCH las agrupó en 981 OTUs (reducción del ~30%), pero la resolución taxonómica prácticamente no cambió: de Kingdom a Family los números son idénticos, y a nivel de Species solo se pierden 2. Esto indica que las ASVs colapsadas eran variación **intraespecífica** (haplotipos de la misma especie), no especies distintas. Al colapsar por especie con `tax_glom()`, ambas estrategias producirán resultados muy similares.
+:::
+
+::: {.callout-tip}
+**¿Cuándo sí importa la elección ASVs vs OTUs?**
+
+En este caso los resultados fueron casi idénticos porque 12S es un marcador conservado, los peces del Golfo de California están bien representados en la base de datos, y la variación intraespecífica es baja. Sin embargo, los resultados pueden diferir significativamente cuando:
+
+- **El marcador tiene mayor variación intraespecífica** — COI (barcoding animal) o ITS (hongos) generan más ASVs por especie. Mayor variación intraespecífica = mayor diferencia entre ASVs y OTUs.
+- **La comunidad es más diversa** — en invertebrados, hongos o bacterias (16S), con cientos de géneros cercanos, el umbral de 97% puede colapsar especies distintas en el mismo OTU, perdiendo resolución taxonómica real.
+- **La base de datos es incompleta** — si muchas ASVs quedan sin asignación a especie, no se pueden colapsar con `tax_glom()`. Los OTUs retienen esa diversidad "sin nombre" mejor que las ASVs sueltas.
+- **La divergencia interespecífica es baja** — en grupos donde especies distintas difieren <1% (ej. *Vibrio* en 16S), el 97% colapsa especies reales en un solo OTU.
+
+En resumen: para análisis ecológicos de comunidades a nivel de especie, ambas estrategias suelen dar resultados equivalentes. La diferencia importa cuando se trabaja sin colapsar por especie, o cuando el marcador y el grupo taxonómico lo demandan.
 :::
 
 ---
