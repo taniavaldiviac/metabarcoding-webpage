@@ -280,9 +280,9 @@ stopifnot(nrow(md) > 0)
 
 La base de datos de referencia contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación se hace en dos pasos:
 
-**Paso 1 — Correcciones manuales:** Algunas asignaciones requieren ajustes puntuales basados en conocimiento experto. Por ejemplo, el género *Balistes* en el GC corresponde a *B. polylepis*, y algunas familias necesitan reclasificación a nivel de orden siguiendo la taxonomía actualizada.
+**Paso 1 — Correcciones de Order:** Algunas familias necesitan reclasificación a nivel de orden siguiendo la taxonomía actualizada (Betancur-R et al. 2017), ya que la base de datos de referencia puede tener clasificaciones desactualizadas.
 
-**Paso 2 — Curación geográfica automática:** Contrastamos cada asignación contra una lista de especies documentadas para el Golfo de California (`Fish_speciesGC.csv`):
+**Paso 2 — Curación geográfica automática:** Contrastamos cada asignación de especie contra una lista de especies documentadas para el Golfo de California (`Fish_speciesGC.csv`):
 
 - **Especie en la lista del GC** → se mantiene tal cual (ej. *Mycteroperca rosacea*)
 - **Especie NO en GC, género SÍ, y el género tiene una sola especie en la lista** → se asigna esa especie (ej. *Elops* solo tiene *E. affinis* en el GC)
@@ -296,30 +296,11 @@ fish_species <- fish_sp$Species2
 
 taxa2 <- as.data.frame(taxa_df)
 
-check_and_replace <- function(species, genus, family, order) {
-  if (!is.na(genus) && genus == "Balistes")      species <- "Balistes polylepis"
-  if (!is.na(genus) && genus == "Atractoscion")  species <- "Atractoscion nobilis"
-  if (!is.na(genus) && genus == "Elops")         species <- "Elops affinis"
-  if (!is.na(genus) && genus == "Kajikia")       species <- "Kajikia audax"
-  if (!is.na(genus) && genus == "Prionurus")     species <- "Prionurus laticlavius"
-  if (!is.na(family) && family == "Pomacentridae") order <- "Blenniiformes"
-  if (!is.na(family) && family == "Sphyraenidae")  order <- "Carangiformes"
-  if (!is.na(family) && family == "Sciaenidae")    order <- "Perciformes"
-  if (!is.na(family) && family == "Malacanthidae") order <- "Perciformes"
-  if (!is.na(family) && family == "Pomacanthidae") order <- "Acanthuriformes"
-  list(species = species, order = order)
-}
-
-res <- mapply(
-  check_and_replace,
-  species = taxa2[, "Species"],
-  genus   = taxa2[, "Genus"],
-  family  = taxa2[, "Family"],
-  order   = taxa2[, "Order"],
-  SIMPLIFY = FALSE
-)
-taxa2$Species <- sapply(res, `[[`, "species")
-taxa2$Order   <- sapply(res, `[[`, "order")
+# Correcciones de Order según taxonomía actualizada (Betancur-R et al. 2017)
+taxa2$Order[!is.na(taxa2$Family) & taxa2$Family == "Sphyraenidae"]  <- "Carangiformes"
+taxa2$Order[!is.na(taxa2$Family) & taxa2$Family == "Sciaenidae"]    <- "Perciformes"
+taxa2$Order[!is.na(taxa2$Family) & taxa2$Family == "Malacanthidae"] <- "Perciformes"
+taxa2$Order[!is.na(taxa2$Family) & taxa2$Family == "Pomacanthidae"] <- "Acanthuriformes"
 
 # Filtrar artefactos (conservar Species=NA — la curación geográfica los resolverá)
 taxa2 <- taxa2 %>%
