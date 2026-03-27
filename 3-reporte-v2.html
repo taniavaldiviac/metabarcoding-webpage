@@ -883,6 +883,12 @@ Nota
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de OTUs (otureps) vs miembros</span></span>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(uc.df<span class="sc">$</span>Type)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>La tabla muestra dos tipos de registros:</p>
+<ul>
+<li><strong>S</strong> (Seed/centroide): secuencias que son representantes de un cluster — cada una define un OTU. En este caso <strong>981 OTUs</strong>.</li>
+<li><strong>H</strong> (Hit/miembro): secuencias que fueron asignadas a un cluster existente porque tienen ≥97% de similitud con el centroide. Aquí <strong>422 ASVs</strong> fueron absorbidas por un OTU existente.</li>
+</ul>
+<p>Es decir, de las 1,403 ASVs originales (981 + 422), VSEARCH las agrupó en <strong>981 OTUs</strong>. La reducción (~30%) refleja la variación intraespecífica (haplotipos, errores residuales) que se colapsa al agrupar al 97%.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identificar otureps y su cluster</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>oturep.df <span class="ot">&lt;-</span> uc.df <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(Type <span class="sc">%in%</span> <span class="st">"S"</span>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(clus_ID, ASV_ID)</span>
