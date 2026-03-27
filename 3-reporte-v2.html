@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -1029,7 +1029,28 @@ Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Interpretación:</strong> La diferencia entre ASVs y OTUs refleja cuánta variación intraespecífica (haplotipos, alelos) captura el análisis por ASVs. A niveles taxonómicos altos (Phylum, Class) la diferencia es mínima; a nivel de Genus/Species puede ser notable. En cada nivel puede haber asignaciones <code>NA</code> que cuentan como 1 taxón.</p>
+<p><strong>Interpretación:</strong> De 1,403 ASVs, VSEARCH las agrupó en 981 OTUs (reducción del ~30%), pero la resolución taxonómica prácticamente no cambió: de Kingdom a Family los números son idénticos, y a nivel de Species solo se pierden 2. Esto indica que las ASVs colapsadas eran variación <strong>intraespecífica</strong> (haplotipos de la misma especie), no especies distintas. Al colapsar por especie con <code>tax_glom()</code>, ambas estrategias producirán resultados muy similares.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>¿Cuándo sí importa la elección ASVs vs OTUs?</strong></p>
+<p>En este caso los resultados fueron casi idénticos porque 12S es un marcador conservado, los peces del Golfo de California están bien representados en la base de datos, y la variación intraespecífica es baja. Sin embargo, los resultados pueden diferir significativamente cuando:</p>
+<ul>
+<li><strong>El marcador tiene mayor variación intraespecífica</strong> — COI (barcoding animal) o ITS (hongos) generan más ASVs por especie. Mayor variación intraespecífica = mayor diferencia entre ASVs y OTUs.</li>
+<li><strong>La comunidad es más diversa</strong> — en invertebrados, hongos o bacterias (16S), con cientos de géneros cercanos, el umbral de 97% puede colapsar especies distintas en el mismo OTU, perdiendo resolución taxonómica real.</li>
+<li><strong>La base de datos es incompleta</strong> — si muchas ASVs quedan sin asignación a especie, no se pueden colapsar con <code>tax_glom()</code>. Los OTUs retienen esa diversidad “sin nombre” mejor que las ASVs sueltas.</li>
+<li><strong>La divergencia interespecífica es baja</strong> — en grupos donde especies distintas difieren &lt;1% (ej. <em>Vibrio</em> en 16S), el 97% colapsa especies reales en un solo OTU.</li>
+</ul>
+<p>En resumen: para análisis ecológicos de comunidades a nivel de especie, ambas estrategias suelen dar resultados equivalentes. La diferencia importa cuando se trabaja sin colapsar por especie, o cuando el marcador y el grupo taxonómico lo demandan.</p>
 </div>
 </div>
 <hr>
