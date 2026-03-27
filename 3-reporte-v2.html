@@ -670,7 +670,7 @@ Nota
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Mover controles (MOCK/CTR) al final para tablas</span></span>
 <span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>is_ctrl <span class="ot">&lt;-</span> <span class="fu">grepl</span>(<span class="st">"MOCK|CTR"</span>, md<span class="sc">$</span>site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>is_ctrl[<span class="fu">is.na</span>(is_ctrl)] <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>md <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(md[<span class="sc">!</span>is_ctrl, ], md[is_ctrl, ])</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>md <span class="ot">&lt;-</span> <span class="fu">rbind</span>(md[<span class="sc">!</span>is_ctrl, ], md[is_ctrl, ])</span>
 <span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">nrow</span>(md) <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
