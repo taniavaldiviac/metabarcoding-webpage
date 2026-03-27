@@ -980,7 +980,22 @@ df_sp <- phyloseq::psmelt(ps_sp_prop) %>%
   dplyr::arrange(site_id, dplyr::desc(Abundance))
 
 n_sp    <- length(unique(df_sp$Species))
-pal_sp  <- colorspace::rainbow_hcl(n_sp, c = 80, l = 60, start = 0, end = 360)
+message("Especies en el gráfico: ", n_sp)
+
+# Generar paleta con suficientes colores distintos combinando múltiples fuentes
+base_colors <- c(
+  RColorBrewer::brewer.pal(12, "Set3"),
+  RColorBrewer::brewer.pal(12, "Paired"),
+  RColorBrewer::brewer.pal(8, "Set2"),
+  RColorBrewer::brewer.pal(8, "Dark2"),
+  RColorBrewer::brewer.pal(9, "Set1")
+)
+# Si aún no alcanzan, completar con rainbow_hcl
+if (n_sp > length(base_colors)) {
+  extra <- colorspace::rainbow_hcl(n_sp - length(base_colors), c = 90, l = 55)
+  base_colors <- c(base_colors, extra)
+}
+pal_sp <- base_colors[1:n_sp]
 
 gp_sp <- ggplot(df_sp, aes(x = site_id, y = Abundance, fill = Species)) +
   geom_bar(stat = "identity") +
