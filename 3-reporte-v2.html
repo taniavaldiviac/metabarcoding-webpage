@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -1061,36 +1061,56 @@ Tip
 <h3 class="anchored" data-anchor-id="índices-de-diversidad">Índices de diversidad</h3>
 <p>Calculamos seis índices complementarios:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 23%">
+<col style="width: 41%">
+<col style="width: 16%">
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Índice</th>
 <th style="text-align: left;">Qué mide</th>
+<th style="text-align: center;">¿Usa abundancia?</th>
+<th style="text-align: left;">Rango</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Observed</strong></td>
-<td style="text-align: left;">Número de ASVs detectadas</td>
+<td style="text-align: left;">Número de ASVs detectadas (riqueza observada)</td>
+<td style="text-align: center;">No — solo presencia/ausencia</td>
+<td style="text-align: left;">0 – ∞</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Chao1</strong></td>
-<td style="text-align: left;">Riqueza estimada (incluye raras no detectadas)</td>
+<td style="text-align: left;">Riqueza estimada incluyendo especies raras no detectadas, basado en singletons y doubletons</td>
+<td style="text-align: center;">Parcial — usa singletons/doubletons</td>
+<td style="text-align: left;">≥ Observed</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>ACE</strong></td>
-<td style="text-align: left;">Estimador de cobertura de abundancia</td>
+<td style="text-align: left;">Estimador de cobertura de abundancia; usa especies con &lt;10 lecturas para estimar riqueza total</td>
+<td style="text-align: center;">Parcial — distingue raras (&lt;10) vs abundantes</td>
+<td style="text-align: left;">≥ Observed</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Shannon</strong></td>
-<td style="text-align: left;">Riqueza + equitatividad (sensible a especies raras)</td>
+<td style="text-align: left;">Combina riqueza y equitatividad; sensible a especies raras</td>
+<td style="text-align: center;">Sí — usa proporciones de cada especie</td>
+<td style="text-align: left;">0 – ln(S)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Simpson</strong></td>
-<td style="text-align: left;">Dominancia (sensible a especies abundantes)</td>
+<td style="text-align: left;">Probabilidad de que dos lecturas al azar sean de la misma especie (dominancia)</td>
+<td style="text-align: center;">Sí — pesa más las especies abundantes</td>
+<td style="text-align: left;">0 – 1 (1 = alta diversidad)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>InvSimpson</strong></td>
-<td style="text-align: left;">Número efectivo de especies dominantes</td>
+<td style="text-align: left;">Inverso de Simpson; se interpreta como el número efectivo de especies dominantes</td>
+<td style="text-align: center;">Sí — derivado de Simpson</td>
+<td style="text-align: left;">1 – S</td>
 </tr>
 </tbody>
 </table>
@@ -1668,14 +1688,14 @@ Tip
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Detección dinámica del MOCK</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>mock_meta <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>mock_samples <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mock_meta)[<span class="fu">grepl</span>(<span class="st">"MOCK"</span>, mock_meta<span class="sc">$</span>site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>mock_ids <span class="ot">&lt;-</span> mock_meta<span class="sc">$</span>site_id[<span class="fu">grepl</span>(<span class="st">"MOCK"</span>, mock_meta<span class="sc">$</span>site_id, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)]</span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mock_samples) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  mock_col <span class="ot">&lt;-</span> mock_samples[<span class="dv">1</span>]</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Muestra MOCK: "</span>, mock_col)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mock_ids) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  mock_col <span class="ot">&lt;-</span> mock_ids[<span class="dv">1</span>]</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"Muestra MOCK (site_id): "</span>, mock_col)</span>
 <span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Abundancias por especie (reutiliza species_site_reads de la sección anterior)</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  df_mock <span class="ot">&lt;-</span> species_site_reads <span class="sc">%&gt;%</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Abundancias por especie (reutiliza species.site.reads de la sección anterior)</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  df_mock <span class="ot">&lt;-</span> species.site.reads <span class="sc">%&gt;%</span></span>
 <span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(Species, dplyr<span class="sc">::</span><span class="fu">all_of</span>(mock_col)) <span class="sc">%&gt;%</span></span>
 <span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">reads =</span> dplyr<span class="sc">::</span><span class="fu">all_of</span>(mock_col)) <span class="sc">%&gt;%</span></span>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(reads <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
