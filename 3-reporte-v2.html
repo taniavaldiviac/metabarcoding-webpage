@@ -1456,58 +1456,71 @@ Nota
 <h3 class="anchored" data-anchor-id="barras-apiladas-por-especie">Barras apiladas por especie</h3>
 <p>Abundancia relativa de cada especie curada geográficamente en cada sitio del Golfo de California.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">psmelt</span>(ps_sp_prop) <span class="sc">%&gt;%</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(site_id <span class="sc">%in%</span> md<span class="sc">$</span>site_id) <span class="sc">%&gt;%</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">site_id =</span> <span class="fu">factor</span>(site_id, <span class="at">levels =</span> <span class="fu">unique</span>(md<span class="sc">$</span>site_id)),</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Species =</span> <span class="fu">as.factor</span>(Species)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(site_id, dplyr<span class="sc">::</span><span class="fu">desc</span>(Abundance))</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>n_sp    <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(df_sp<span class="sc">$</span>Species))</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Especies en el gráfico: "</span>, n_sp)</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Generar paleta con suficientes colores distintos combinando múltiples fuentes</span></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>base_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">12</span>, <span class="st">"Set3"</span>),</span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">12</span>, <span class="st">"Paired"</span>),</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Set2"</span>),</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Dark2"</span>),</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Set1"</span>)</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Si aún no alcanzan, completar con rainbow_hcl</span></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (n_sp <span class="sc">&gt;</span> <span class="fu">length</span>(base_colors)) {</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  extra <span class="ot">&lt;-</span> colorspace<span class="sc">::</span><span class="fu">rainbow_hcl</span>(n_sp <span class="sc">-</span> <span class="fu">length</span>(base_colors), <span class="at">c =</span> <span class="dv">90</span>, <span class="at">l =</span> <span class="dv">55</span>)</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  base_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(base_colors, extra)</span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>pal_sp <span class="ot">&lt;-</span> base_colors[<span class="dv">1</span><span class="sc">:</span>n_sp]</span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>gp_sp <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_sp, <span class="fu">aes</span>(<span class="at">x =</span> site_id, <span class="at">y =</span> Abundance, <span class="at">fill =</span> Species)) <span class="sc">+</span></span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> pal_sp) <span class="sc">+</span></span>
-<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Abundancia relativa por Especie"</span>,</span>
-<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Sitio"</span>,</span>
-<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Abundancia relativa (%)"</span></span>
-<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_linedraw</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
-<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x      =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.95</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">9</span>),</span>
-<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position  =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.key.size  =</span> <span class="fu">unit</span>(<span class="fl">0.35</span>, <span class="st">"cm"</span>),</span>
-<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>, <span class="at">size =</span> <span class="dv">7</span>),</span>
-<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title     =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title       =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title       =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>)</span>
-<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">nrow =</span> <span class="fu">ceiling</span>(n_sp <span class="sc">/</span> <span class="dv">4</span>), <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gp_sp)</span>
-<span id="cb26-49"><a href="#cb26-49" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb26-50"><a href="#cb26-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(ruta_figs, <span class="st">"abundancia_relativa_especie.png"</span>),</span>
-<span id="cb26-51"><a href="#cb26-51" aria-hidden="true" tabindex="-1"></a>  gp_sp, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">9</span>, <span class="at">dpi =</span> <span class="dv">300</span></span>
-<span id="cb26-52"><a href="#cb26-52" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Top N especies por abundancia total; el resto se agrupa en "Otros"</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>top_n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>df_sp <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">psmelt</span>(ps_sp_prop) <span class="sc">%&gt;%</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(site_id <span class="sc">%in%</span> md<span class="sc">$</span>site_id)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ranking de especies por abundancia media global</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>sp_rank <span class="ot">&lt;-</span> df_sp <span class="sc">%&gt;%</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(Species) <span class="sc">%&gt;%</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">mean_abund =</span> <span class="fu">mean</span>(Abundance, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(dplyr<span class="sc">::</span><span class="fu">desc</span>(mean_abund))</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>top_species <span class="ot">&lt;-</span> sp_rank<span class="sc">$</span>Species[<span class="dv">1</span><span class="sc">:</span><span class="fu">min</span>(top_n, <span class="fu">nrow</span>(sp_rank))]</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>n_otros <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span>df_sp<span class="sc">$</span>Species <span class="sc">%in%</span> top_species <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(df_sp<span class="sc">$</span>Species))</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Top "</span>, top_n, <span class="st">" especies mostradas; "</span>,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">length</span>(<span class="fu">unique</span>(df_sp<span class="sc">$</span>Species)) <span class="sc">-</span> <span class="fu">length</span>(top_species),</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">" especies agrupadas en 'Otros'"</span>)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Reclasificar las menos abundantes como "Otros"</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>df_sp <span class="ot">&lt;-</span> df_sp <span class="sc">%&gt;%</span></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Species_plot =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(Species <span class="sc">%in%</span> top_species, Species, <span class="st">"Otros"</span>),</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">Species_plot =</span> <span class="fu">factor</span>(Species_plot, <span class="at">levels =</span> <span class="fu">c</span>(top_species, <span class="st">"Otros"</span>))</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(site_id, Species_plot) <span class="sc">%&gt;%</span></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">Abundance =</span> <span class="fu">sum</span>(Abundance), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">site_id =</span> <span class="fu">factor</span>(site_id, <span class="at">levels =</span> <span class="fu">unique</span>(md<span class="sc">$</span>site_id)))</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Paleta: colores distintos para top especies + gris para "Otros"</span></span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>n_top <span class="ot">&lt;-</span> <span class="fu">length</span>(top_species)</span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>base_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">12</span>, <span class="st">"Paired"</span>),</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Set2"</span>),</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>  RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Dark2"</span>)</span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>pal_sp <span class="ot">&lt;-</span> <span class="fu">c</span>(base_colors[<span class="dv">1</span><span class="sc">:</span>n_top], <span class="st">"Otros"</span> <span class="ot">=</span> <span class="st">"#D3D3D3"</span>)</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pal_sp)[<span class="dv">1</span><span class="sc">:</span>n_top] <span class="ot">&lt;-</span> top_species</span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>gp_sp <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_sp, <span class="fu">aes</span>(<span class="at">x =</span> site_id, <span class="at">y =</span> Abundance, <span class="at">fill =</span> Species_plot)) <span class="sc">+</span></span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> pal_sp) <span class="sc">+</span></span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Abundancia relativa por especie (Top "</span>, top_n, <span class="st">" + Otros)"</span>),</span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Sitio"</span>,</span>
+<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Abundancia relativa (%)"</span>,</span>
+<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill  =</span> <span class="st">"Especie"</span></span>
+<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-49"><a href="#cb26-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_linedraw</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb26-50"><a href="#cb26-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb26-51"><a href="#cb26-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x      =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.95</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">9</span>),</span>
+<span id="cb26-52"><a href="#cb26-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position  =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb26-53"><a href="#cb26-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.key.size  =</span> <span class="fu">unit</span>(<span class="fl">0.35</span>, <span class="st">"cm"</span>),</span>
+<span id="cb26-54"><a href="#cb26-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text      =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>, <span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb26-55"><a href="#cb26-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title     =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb26-56"><a href="#cb26-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title       =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb26-57"><a href="#cb26-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title       =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>)</span>
+<span id="cb26-58"><a href="#cb26-58" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-59"><a href="#cb26-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">nrow =</span> <span class="fu">ceiling</span>((n_top <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">4</span>), <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb26-60"><a href="#cb26-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-61"><a href="#cb26-61" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gp_sp)</span>
+<span id="cb26-62"><a href="#cb26-62" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb26-63"><a href="#cb26-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(ruta_figs, <span class="st">"abundancia_relativa_especie.png"</span>),</span>
+<span id="cb26-64"><a href="#cb26-64" aria-hidden="true" tabindex="-1"></a>  gp_sp, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">9</span>, <span class="at">dpi =</span> <span class="dv">300</span></span>
+<span id="cb26-65"><a href="#cb26-65" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="heatmap-top-20-especies-sitios" class="level3">
