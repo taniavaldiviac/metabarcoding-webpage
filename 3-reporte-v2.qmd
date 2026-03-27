@@ -474,8 +474,10 @@ oturep.seq <- phyloseq::refseq(ps.sub)
 oturep.tax <- phyloseq::tax_table(ps.sub)
 oturep.md  <- phyloseq::sample_data(ps.sub)
 
-# Tabla de conteos original en formato largo
-conteos.ini <- data.frame(phyloseq::otu_table(ps.asv), stringsAsFactors = FALSE)
+# Tabla de conteos original: asegurar formato muestras × ASVs (filas = muestras)
+otu_mat <- as.matrix(phyloseq::otu_table(ps.asv))
+if (phyloseq::taxa_are_rows(ps.asv)) otu_mat <- t(otu_mat)
+conteos.ini <- data.frame(otu_mat, stringsAsFactors = FALSE, check.names = FALSE)
 
 conteos.ini.long <- conteos.ini |>
   tibble::rownames_to_column(var = "SampleID") |>
@@ -504,9 +506,8 @@ message("Dimensiones OTU table: ", nrow(conteos.sum), " muestras × ", ncol(cont
 ASV_otu  <- phyloseq::otu_table(conteos.sum, taxa_are_rows = FALSE)
 TAXA_otu <- phyloseq::tax_table(oturep.tax)
 SEQ_otu  <- phyloseq::refseq(oturep.seq)
-MD_otu   <- phyloseq::sample_data(oturep.md)
 
-ps.otu <- phyloseq::phyloseq(ASV_otu, TAXA_otu, SEQ_otu, MD_otu)
+ps.otu <- phyloseq::phyloseq(ASV_otu, TAXA_otu, SEQ_otu, oturep.md)
 ps.otu
 ```
 
