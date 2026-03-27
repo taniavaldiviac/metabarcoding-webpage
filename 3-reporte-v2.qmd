@@ -1165,18 +1165,25 @@ ggsave("final_data/reporte_ecologico/nmds_especies_braycurtis.png",
 La muestra MOCK es un control positivo con ADN de especies conocidas. Permite validar el pipeline: ¿detectamos las especies esperadas? ¿aparecen especies inesperadas? Se aplica la misma curación geográfica que a las muestras ambientales, por lo que especies no documentadas en el GC pueden perder su asignación a especie.
 
 ```{r mock, fig.width=8, fig.height=6}
-# Detección dinámica del MOCK
-mock_meta <- data.frame(phyloseq::sample_data(ps), stringsAsFactors = FALSE)
+# Detección dinámica del MOCK (usa ps_ctrl, creado al separar controles)
+mock_meta <- data.frame(phyloseq::sample_data(ps_ctrl), stringsAsFactors = FALSE)
 mock_ids <- mock_meta$site_id[grepl("MOCK", mock_meta$site_id, ignore.case = TRUE)]
 
 if (length(mock_ids) > 0) {
-  mock_col <- mock_ids[1]
-  message("Muestra MOCK (site_id): ", mock_col)
+  mock_sid <- mock_ids[1]
+  message("Muestra MOCK (site_id): ", mock_sid)
 
-  # Abundancias por especie (reutiliza species.site.reads de la sección anterior)
-  df_mock <- species.site.reads %>%
-    dplyr::select(Species, dplyr::all_of(mock_col)) %>%
-    dplyr::rename(reads = dplyr::all_of(mock_col)) %>%
+  # Construir tabla de abundancias por especie desde ps_ctrl
+  ps_mock <- phyloseq::subset_samples(ps_ctrl, site_id == mock_sid)
+  ps_mock_sp <- phyloseq::tax_glom(ps_mock, "Species")
+  mock_counts <- as.numeric(phyloseq::otu_table(ps_mock_sp))
+  mock_taxa   <- as.data.frame(phyloseq::tax_table(ps_mock_sp), stringsAsFactors = FALSE)
+
+  df_mock <- data.frame(
+    Species = mock_taxa$Species,
+    reads   = mock_counts,
+    stringsAsFactors = FALSE
+  ) %>%
     dplyr::filter(reads > 0) %>%
     dplyr::mutate(rel_abund = reads / sum(reads)) %>%
     dplyr::arrange(dplyr::desc(rel_abund))
