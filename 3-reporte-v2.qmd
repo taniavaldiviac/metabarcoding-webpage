@@ -271,7 +271,7 @@ md <- md %>%
 # Mover controles (MOCK/CTR) al final para tablas
 is_ctrl <- grepl("MOCK|CTR", md$site_id, ignore.case = TRUE)
 is_ctrl[is.na(is_ctrl)] <- FALSE
-md <- dplyr::bind_rows(md[!is_ctrl, ], md[is_ctrl, ])
+md <- rbind(md[!is_ctrl, ], md[is_ctrl, ])
 
 stopifnot(nrow(md) > 0)
 ```
