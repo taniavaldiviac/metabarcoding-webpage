@@ -453,6 +453,13 @@ uc.df <- readr::read_tsv(uc_file, col_names = uc_names, show_col_types = FALSE) 
 table(uc.df$Type)
 ```
 
+La tabla muestra dos tipos de registros:
+
+- **S** (Seed/centroide): secuencias que son representantes de un cluster — cada una define un OTU. En este caso **981 OTUs**.
+- **H** (Hit/miembro): secuencias que fueron asignadas a un cluster existente porque tienen ≥97% de similitud con el centroide. Aquí **422 ASVs** fueron absorbidas por un OTU existente.
+
+Es decir, de las 1,403 ASVs originales (981 + 422), VSEARCH las agrupó en **981 OTUs**. La reducción (~30%) refleja la variación intraespecífica (haplotipos, errores residuales) que se colapsa al agrupar al 97%.
+
 ```{r vsearch-otureps}
 # Identificar otureps y su cluster
 oturep.df <- uc.df |> dplyr::filter(Type %in% "S") |> dplyr::select(clus_ID, ASV_ID)
