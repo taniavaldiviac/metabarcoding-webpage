@@ -276,6 +276,19 @@ md <- dplyr::bind_rows(md[!is_ctrl, ], md[is_ctrl, ])
 stopifnot(nrow(md) > 0)
 ```
 
+### Curación taxonómica y geográfica
+
+La base de datos de referencia (e.g. MiFish) contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación se hace en dos pasos:
+
+**Paso 1 — Correcciones manuales:** Algunas asignaciones requieren ajustes puntuales basados en conocimiento experto. Por ejemplo, el género *Balistes* en el GC corresponde a *B. polylepis*, y algunas familias necesitan reclasificación a nivel de orden siguiendo la taxonomía actualizada.
+
+**Paso 2 — Curación geográfica automática:** Contrastamos cada asignación contra una lista de especies documentadas para el Golfo de California (`Fish_speciesGC.csv`):
+
+- **Especie en la lista del GC** → se mantiene tal cual (ej. *Mycteroperca rosacea*)
+- **Especie NO en GC, género SÍ, y el género tiene una sola especie en la lista** → se asigna esa especie (ej. *Elops* solo tiene *E. affinis* en el GC)
+- **Especie NO en GC, género SÍ, pero con varias especies** → se deja como *Género* sp. (no podemos resolver a especie)
+- **Ni especie ni género en la lista del GC** → se limpia hasta familia (la asignación a género/especie no es confiable para esta región)
+
 ```{r curación-taxonómica}
 # Curación geográfica con lista de especies del Golfo de California
 fish_sp      <- read.csv(ruta_metadata, row.names = NULL)
@@ -358,17 +371,6 @@ message("ASVs reducidas a familia: ", n_familia)
 
 taxa_mat <- as.matrix(taxa2)
 ```
-
-::: {.callout-note icon="false"}
-**¿Por qué curar geográficamente?**
-
-La base de datos de referencia contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación geográfica contrasta cada asignación contra una lista de especies documentadas para la región:
-
-- **Especie en el GC** → se mantiene (ej. *Mycteroperca rosacea*)
-- **Género en el GC, especie no, y el género tiene una sola especie en la lista** → se asigna esa especie (ej. *Elops* solo tiene *Elops affinis* en el GC, así que se resuelve directamente)
-- **Género en el GC, especie no, y el género tiene varias especies** → se deja como *Mycteroperca* sp. (el género es correcto, pero no podemos distinguir la especie)
-- **Ni género ni especie en el GC** → se mantiene solo la asignación a nivel de familia (la asignación a género/especie no es confiable para esta región)
-:::
 
 ### Construcción del objeto phyloseq
 
