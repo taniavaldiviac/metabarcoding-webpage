@@ -408,25 +408,11 @@ Usamos `vsearch` ([Rognes et al., 2016](https://doi.org/10.7717/peerj.2584)) par
 
 `vsearch` agrupa secuencias similares en clusters. El parámetro principal es el **porcentaje de similitud** (0.97 = 97%). A cada cluster se le asigna una secuencia representante (**oturep**).
 
-```{r vsearch-run}
-# Ejecutar vsearch desde R
-vsearch_similarity <- 0.97
-fasta_in  <- "final_data/otus_vsearch/fish_ASV.fasta"
-uc_out    <- paste0("final_data/otus_vsearch/otus_", vsearch_similarity, ".uc")
-rep_out   <- paste0("final_data/otus_vsearch/otus_", vsearch_similarity, "_oturep.fasta")
-log_out   <- paste0("final_data/otus_vsearch/otus_", vsearch_similarity, ".log")
+En la **terminal** (no en R), ejecuta:
 
-vsearch_cmd <- paste(
-  "vsearch --cluster_size", fasta_in,
-  "--id", vsearch_similarity,
-  "--uc", uc_out,
-  "--centroids", rep_out,
-  "--log", log_out
-)
-
-message("Ejecutando: ", vsearch_cmd)
-system(vsearch_cmd)
-message("VSEARCH completado.")
+```bash
+cd ~/metabarcoding-code
+bash scripts/08b-vsearch.sh 0.97
 ```
 
 Resultado: tres archivos generados:
@@ -450,11 +436,15 @@ El archivo `.uc` es una tabla separada por tabuladores con un renglón por cada 
 | 9 | Etiqueta de la secuencia |
 | 10 | Etiqueta del centroide (solo tipo H) |
 
+De vuelta en **R**, procesamos el archivo `.uc`:
+
 ```{r vsearch-uc}
+uc_file <- "final_data/otus_vsearch/otus_0.97.uc"
+
 uc_names <- c("Type", "clus_ID", "len", "id_pct", "strand",
               "NA1", "NA2", "aln", "ASV_ID", "centroid")
 
-uc.df <- readr::read_tsv(uc_out, col_names = uc_names, show_col_types = FALSE) |>
+uc.df <- readr::read_tsv(uc_file, col_names = uc_names, show_col_types = FALSE) |>
   dplyr::select(-NA1, -NA2) |>
   dplyr::filter(!Type %in% "C") |>
   dplyr::relocate(ASV_ID)
