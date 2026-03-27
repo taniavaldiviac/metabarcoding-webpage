@@ -30,7 +30,7 @@ git checkout origin/main -- metadata/metadata.csv
 
 ### Carga de paquetes
 
-Cargamos todos los paquetes necesarios al inicio del documento. Usamos `suppressPackageStartupMessages()` para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.
+Abre R desde `~/metabarcoding-code/`. Cargamos todos los paquetes necesarios al inicio del documento. Usamos `suppressPackageStartupMessages()` para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.
 
 ```{r paquetes}
 # Evitar que kable intente abrir navegador en el servidor
@@ -62,8 +62,6 @@ suppressPackageStartupMessages({
 ```
 
 ### Definición de rutas
-
-Abre R desde `~/metabarcoding-code/`.
 
 ```{r rutas}
 setwd("~/metabarcoding-code")
