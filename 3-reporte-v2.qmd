@@ -50,6 +50,7 @@ suppressPackageStartupMessages({
   # Visualización
   library(ggplot2)
   library(ggforce)
+  library(gridExtra)
   library(viridis)
   library(RColorBrewer)
   library(pheatmap)
@@ -520,10 +521,37 @@ ps.otu
 
 ### Comparar resolución taxonómica: ASVs vs OTUs
 
-```{r vsearch-comparar, fig.width=9, fig.height=5}
+```{r vsearch-comparar, fig.width=12, fig.height=5}
 asv.tax <- data.frame(phyloseq::tax_table(ps.asv), stringsAsFactors = FALSE)
 otu.tax <- data.frame(phyloseq::tax_table(ps.otu), stringsAsFactors = FALSE)
 
+# --- Panel 1: Total ASVs vs OTUs ---
+n_asv <- phyloseq::ntaxa(ps.asv)
+n_otu <- phyloseq::ntaxa(ps.otu)
+pct_red <- round((1 - n_otu / n_asv) * 100, 1)
+
+df_total <- data.frame(
+  Estrategia = factor(c("ASVs", "OTUs (97%)"), levels = c("ASVs", "OTUs (97%)")),
+  Total = c(n_asv, n_otu)
+)
+
+p1 <- ggplot(df_total, aes(x = Estrategia, y = Total, fill = Estrategia)) +
+  geom_col(width = 0.6, alpha = 0.85) +
+  geom_text(aes(label = scales::comma(Total)), vjust = -0.5, fontface = "bold", size = 4.5) +
+  scale_fill_manual(values = c("ASVs" = "#1b9e77", "OTUs (97%)" = "#d95f02")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = paste0("Reducción: ", pct_red, "%"),
+    x = NULL, y = "Total de secuencias"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+
+# --- Panel 2: Taxones únicos por nivel ---
 df_comp <- data.frame(
   ASVs = apply(asv.tax, 2, function(x) length(unique(na.omit(x)))),
   OTUs = apply(otu.tax, 2, function(x) length(unique(na.omit(x))))
@@ -536,43 +564,32 @@ df_comp <- df_comp |>
     levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
     ordered = TRUE))
 
-# Separar para ejes independientes
-df_asv <- df_comp |> dplyr::filter(Estrategia == "ASVs")
-df_otu <- df_comp |> dplyr::filter(Estrategia == "OTUs")
-
-# Factor de escala para eje secundario
-scale_factor <- max(df_asv$Conteo) / max(df_otu$Conteo)
-
-ggplot() +
-  geom_line(data = df_asv, aes(x = Nivel, y = Conteo, group = 1),
-            color = "#1b9e77", linewidth = 1.5, alpha = 0.7) +
-  geom_point(data = df_asv, aes(x = Nivel, y = Conteo),
-             color = "#1b9e77", size = 3) +
-  geom_line(data = df_otu, aes(x = Nivel, y = Conteo * scale_factor, group = 1),
-            color = "#d95f02", linewidth = 1.5, alpha = 0.7) +
-  geom_point(data = df_otu, aes(x = Nivel, y = Conteo * scale_factor),
-             color = "#d95f02", size = 3) +
-  scale_y_continuous(
-    name = "ASVs",
-    sec.axis = sec_axis(~ . / scale_factor, name = "OTUs")
-  ) +
+p2 <- ggplot(df_comp, aes(x = Nivel, y = Conteo, fill = Estrategia)) +
+  geom_col(position = "dodge", width = 0.7, alpha = 0.85) +
+  geom_text(aes(label = Conteo, group = Estrategia),
+            position = position_dodge(width = 0.7), vjust = -0.5, size = 3) +
+  scale_fill_manual(values = c("ASVs" = "#1b9e77", "OTUs" = "#d95f02")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
   labs(
-    title = "Número de taxones identificados: ASVs vs OTUs (97%)",
-    x = "Nivel taxonómico"
+    title = "Taxones únicos por nivel",
+    x = "Nivel taxonómico", y = "Número de taxones"
   ) +
   theme_minimal(base_size = 12) +
   theme(
-    plot.title = element_text(face = "bold"),
-    axis.title.y.left = element_text(face = "bold", color = "#1b9e77"),
-    axis.text.y.left = element_text(color = "#1b9e77"),
-    axis.title.y.right = element_text(face = "bold", color = "#d95f02"),
-    axis.text.y.right = element_text(color = "#d95f02"),
-    axis.title.x = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
   )
 
+# Combinar paneles
+gridExtra::grid.arrange(p1, p2, ncol = 2, widths = c(1, 2.5),
+                        top = grid::textGrob("Comparación ASVs vs OTUs (97% similitud)",
+                                             gp = grid::gpar(fontface = "bold", fontsize = 14)))
+
 ggsave("final_data/reporte_ecologico/comparacion_asvs_vs_otus.png",
-       width = 9, height = 5, dpi = 300)
+       gridExtra::arrangeGrob(p1, p2, ncol = 2, widths = c(1, 2.5)),
+       width = 12, height = 5, dpi = 300)
 ```
 
 ::: {.callout-note icon="false"}
