@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-775723b94007e7b2c3a70c9020acb80b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bc2510e1e3f98dd3e3b16757959306bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-e8c0cd74c39ddf4bd7a5563e5f10a176.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -903,40 +903,41 @@ Nota
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>oturep.tax <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_table</span>(ps.sub)</span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>oturep.md  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(ps.sub)</span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de conteos original en formato largo</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>conteos.ini <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps.asv), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>conteos.ini.long <span class="ot">&lt;-</span> conteos.ini <span class="sc">|&gt;</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"SampleID"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>SampleID, <span class="at">names_to =</span> <span class="st">"ASV_ID"</span>, <span class="at">values_to =</span> <span class="st">"conteo"</span>)</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>conteos.ini.long <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(conteos.ini.long, uc.df, <span class="at">by =</span> <span class="st">"ASV_ID"</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de conteos original: asegurar formato muestras × ASVs (filas = muestras)</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>otu_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(ps.asv))</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (phyloseq<span class="sc">::</span><span class="fu">taxa_are_rows</span>(ps.asv)) otu_mat <span class="ot">&lt;-</span> <span class="fu">t</span>(otu_mat)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>conteos.ini <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(otu_mat, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>conteos.ini.long <span class="ot">&lt;-</span> conteos.ini <span class="sc">|&gt;</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"SampleID"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>SampleID, <span class="at">names_to =</span> <span class="st">"ASV_ID"</span>, <span class="at">values_to =</span> <span class="st">"conteo"</span>)</span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Sumar conteos por muestra y cluster</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>conteos.sum.long <span class="ot">&lt;-</span> conteos.ini.long <span class="sc">|&gt;</span></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(SampleID, clus_ID) <span class="sc">|&gt;</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">conteo_cluster =</span> <span class="fu">sum</span>(conteo), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Reemplazar cluster_ID por ASV_ID del oturep</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>conteos.sum.long <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(conteos.sum.long, oturep.df, <span class="at">by =</span> <span class="st">"clus_ID"</span>)</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a matriz muestras × OTUs</span></span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>conteos.sum <span class="ot">&lt;-</span> conteos.sum.long <span class="sc">|&gt;</span></span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>clus_ID) <span class="sc">|&gt;</span></span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> ASV_ID, <span class="at">values_from =</span> conteo_cluster, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"SampleID"</span>)</span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>conteos.sum <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(conteos.sum)</span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Dimensiones OTU table: "</span>, <span class="fu">nrow</span>(conteos.sum), <span class="st">" muestras × "</span>, <span class="fu">ncol</span>(conteos.sum), <span class="st">" OTUs"</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>conteos.ini.long <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(conteos.ini.long, uc.df, <span class="at">by =</span> <span class="st">"ASV_ID"</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Sumar conteos por muestra y cluster</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>conteos.sum.long <span class="ot">&lt;-</span> conteos.ini.long <span class="sc">|&gt;</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(SampleID, clus_ID) <span class="sc">|&gt;</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">conteo_cluster =</span> <span class="fu">sum</span>(conteo), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Reemplazar cluster_ID por ASV_ID del oturep</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>conteos.sum.long <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(conteos.sum.long, oturep.df, <span class="at">by =</span> <span class="st">"clus_ID"</span>)</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a matriz muestras × OTUs</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>conteos.sum <span class="ot">&lt;-</span> conteos.sum.long <span class="sc">|&gt;</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>clus_ID) <span class="sc">|&gt;</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> ASV_ID, <span class="at">values_from =</span> conteo_cluster, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"SampleID"</span>)</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>conteos.sum <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(conteos.sum)</span>
 <span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Construir nuevo objeto phyloseq</span></span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>ASV_otu  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(conteos.sum, <span class="at">taxa_are_rows =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>TAXA_otu <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_table</span>(oturep.tax)</span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>SEQ_otu  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">refseq</span>(oturep.seq)</span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>MD_otu   <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">sample_data</span>(oturep.md)</span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>ps.otu <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">phyloseq</span>(ASV_otu, TAXA_otu, SEQ_otu, MD_otu)</span>
-<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>ps.otu</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Dimensiones OTU table: "</span>, <span class="fu">nrow</span>(conteos.sum), <span class="st">" muestras × "</span>, <span class="fu">ncol</span>(conteos.sum), <span class="st">" OTUs"</span>)</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Construir nuevo objeto phyloseq</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>ASV_otu  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">otu_table</span>(conteos.sum, <span class="at">taxa_are_rows =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>TAXA_otu <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">tax_table</span>(oturep.tax)</span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>SEQ_otu  <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">refseq</span>(oturep.seq)</span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>ps.otu <span class="ot">&lt;-</span> phyloseq<span class="sc">::</span><span class="fu">phyloseq</span>(ASV_otu, TAXA_otu, SEQ_otu, oturep.md)</span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>ps.otu</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="comparar-resolución-taxonómica-asvs-vs-otus" class="level3">
