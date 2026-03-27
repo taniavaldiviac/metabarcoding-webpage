@@ -278,7 +278,7 @@ stopifnot(nrow(md) > 0)
 
 ### Curación taxonómica y geográfica
 
-La base de datos de referencia (e.g. MiFish) contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación se hace en dos pasos:
+La base de datos de referencia contiene especies de todo el mundo. DADA2 asigna la especie con mayor similitud de secuencia, pero esa especie puede no distribuirse en el Golfo de California. La curación se hace en dos pasos:
 
 **Paso 1 — Correcciones manuales:** Algunas asignaciones requieren ajustes puntuales basados en conocimiento experto. Por ejemplo, el género *Balistes* en el GC corresponde a *B. polylepis*, y algunas familias necesitan reclasificación a nivel de orden siguiendo la taxonomía actualizada.
 
