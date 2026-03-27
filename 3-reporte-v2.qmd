@@ -536,20 +536,39 @@ df_comp <- df_comp |>
     levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
     ordered = TRUE))
 
-ggplot(df_comp, aes(x = Nivel, y = Conteo, group = Estrategia, color = Estrategia)) +
-  geom_line(linewidth = 1.5, alpha = 0.7) +
-  geom_point(size = 3) +
-  scale_color_manual(values = c("ASVs" = "#1b9e77", "OTUs" = "#d95f02")) +
+# Separar para ejes independientes
+df_asv <- df_comp |> dplyr::filter(Estrategia == "ASVs")
+df_otu <- df_comp |> dplyr::filter(Estrategia == "OTUs")
+
+# Factor de escala para eje secundario
+scale_factor <- max(df_asv$Conteo) / max(df_otu$Conteo)
+
+ggplot() +
+  geom_line(data = df_asv, aes(x = Nivel, y = Conteo, group = 1),
+            color = "#1b9e77", linewidth = 1.5, alpha = 0.7) +
+  geom_point(data = df_asv, aes(x = Nivel, y = Conteo),
+             color = "#1b9e77", size = 3) +
+  geom_line(data = df_otu, aes(x = Nivel, y = Conteo * scale_factor, group = 1),
+            color = "#d95f02", linewidth = 1.5, alpha = 0.7) +
+  geom_point(data = df_otu, aes(x = Nivel, y = Conteo * scale_factor),
+             color = "#d95f02", size = 3) +
+  scale_y_continuous(
+    name = "ASVs",
+    sec.axis = sec_axis(~ . / scale_factor, name = "OTUs")
+  ) +
   labs(
     title = "Número de taxones identificados: ASVs vs OTUs (97%)",
-    x = "Nivel taxonómico", y = "Número de taxones"
+    x = "Nivel taxonómico"
   ) +
   theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold"),
-    axis.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "bottom"
+    axis.title.y.left = element_text(face = "bold", color = "#1b9e77"),
+    axis.text.y.left = element_text(color = "#1b9e77"),
+    axis.title.y.right = element_text(face = "bold", color = "#d95f02"),
+    axis.text.y.right = element_text(color = "#d95f02"),
+    axis.title.x = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
 ggsave("final_data/reporte_ecologico/comparacion_asvs_vs_otus.png",
