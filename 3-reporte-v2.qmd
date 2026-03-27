@@ -57,7 +57,11 @@ suppressPackageStartupMessages({
 Abre R desde `~/metabarcoding-code/`.
 
 ```{r rutas}
-setwd("~/metabarcoding-code")
+# Buscar el directorio metabarcoding-code en el servidor
+mc_dir <- system("find ~ -maxdepth 3 -type d -name 'metabarcoding-code' 2>/dev/null | head -1", intern = TRUE)
+if (length(mc_dir) == 0 || mc_dir == "") stop("No se encontró el directorio metabarcoding-code")
+setwd(mc_dir)
+message("Working directory: ", mc_dir)
 
 ruta_rdata       <- "final_data/rdata_output"
 ruta_metadata    <- "metadata/Fish_speciesGC.csv"
@@ -71,22 +75,55 @@ dir.create(ruta_figs, showWarnings = FALSE, recursive = TRUE)
 
 ### Carga de datos
 
-Cargamos el archivo `*phyloseq_inputs.RData` generado por el pipeline DADA2, que contiene las matrices de abundancias, taxonomía y metadata.
+Cargamos el archivo `.RData` más reciente generado por el pipeline DADA2, que contiene las matrices de abundancias, taxonomía y metadata.
+
+::: {.callout-warning}
+**Bug conocido:** la columna `sample_id` en `metadata.csv` puede estar vacía (NA). Esto causa que `sample_meta` se cargue sin rownames válidos y todo el análisis falle con NAs. Si te pasa, restaura el archivo original desde GitHub:
+
+```bash
+cd ~/metabarcoding-code
+git checkout origin/main -- metadata/metadata.csv
+```
+
+El pipeline usa la columna `rename_to` para alinear los nombres de muestra, así que el análisis funciona aunque `sample_id` esté vacío.
+:::
 
 ```{r cargar-datos}
-# Buscar específicamente el archivo phyloseq_inputs generado por el pipeline
-rdata_file <- list.files(ruta_rdata, pattern = "phyloseq_inputs\\.RData$", full.names = TRUE)
-stopifnot("No se encontró *phyloseq_inputs.RData" = length(rdata_file) > 0)
+# Buscar todos los .RData en el directorio de salida del pipeline
+rdata_files <- list.files(ruta_rdata, pattern = "\\.RData$", full.names = TRUE)
+stopifnot("No se encontró ningún .RData en rdata_output" = length(rdata_files) > 0)
 
-# Si hay varios (por múltiples corridas), usar el más reciente
-if (length(rdata_file) > 1) {
-  rdata_file <- rdata_file[which.max(file.info(rdata_file)$mtime)]
-}
-message("Cargando: ", basename(rdata_file))
+# Usar el más reciente
+rdata_file <- rdata_files[which.max(file.info(rdata_files)$mtime)]
+message("Cargando (más reciente): ", basename(rdata_file))
 load(rdata_file)
 
+# --- Alinear sample_meta con rownames de asv_mat ---
+# El RData puede traer sample_meta con rownames NA (bug en metadata.csv).
+# Siempre recargamos desde el CSV y usamos rename_to como fuente confiable del ID.
+sample_meta <- readr::read_csv(
+  file.path("metadata", "metadata.csv"), show_col_types = FALSE
+)
+sample_meta <- as.data.frame(sample_meta)
+
+# rename_to tiene el nombre completo del FASTQ: "12S-GC-001-d1_1_S1_L001"
+# asv_mat usa una versión simplificada:          "12S-GC-001-d1_S1"
+# Transformamos rename_to para que coincida con asv_mat
+if ("rename_to" %in% colnames(sample_meta)) {
+  meta_names <- sub("_L001$", "", sample_meta$rename_to)
+  meta_names <- sub("(d1)_1_(S)", "\\1_\\2", meta_names)
+  rownames(sample_meta) <- meta_names
+} else {
+  stop("metadata.csv no tiene columna 'rename_to'. Restaura desde GitHub:\n",
+       "  cd ~/metabarcoding-code && git checkout origin/main -- metadata/metadata.csv")
+}
+
+sample_meta <- sample_meta[rownames(asv_mat), , drop = FALSE]
+
 message("Objetos cargados: ", paste(ls(), collapse = ", "))
-message("Muestras en track: ", nrow(track))
+message("Muestras en asv_mat: ", nrow(asv_mat))
+message("Muestras en sample_meta: ", nrow(sample_meta))
+message("NAs en sample_meta: ", sum(is.na(sample_meta[,1])))
 ```
 
 ---
@@ -224,11 +261,17 @@ taxa_df <- taxa_df[!(taxa_df$Class %in% c("Mammalia", "Aves") | is.na(taxa_df$Cl
 ```
 
 ```{r prep-meta}
-# Metadata de muestras
+# Metadata de muestras (sample_meta ya fue alineada con asv_mat en cargar-datos)
 md <- as.data.frame(sample_meta)
 
+# Verificar que la metadata se cargó correctamente
+if (all(is.na(md[, 1]))) {
+  stop("sample_meta tiene puros NAs. Revisa que el chunk 'cargar-datos' se haya ejecutado correctamente.\n",
+       "Si el problema persiste, restaura metadata.csv desde GitHub:\n",
+       "  cd ~/metabarcoding-code && git checkout origin/main -- metadata/metadata.csv")
+}
+
 # Corrección de site_id donde sea necesario (dinámica, sin hardcoding)
-# Ejemplo: corregir Isla San Marcos Norte si el name es exactamente ese
 md <- md %>%
   dplyr::mutate(
     site_id = dplyr::case_when(
@@ -239,6 +282,7 @@ md <- md %>%
 
 # Mover controles (MOCK/CTR) al final para tablas
 is_ctrl <- grepl("MOCK|CTR", md$site_id, ignore.case = TRUE)
+is_ctrl[is.na(is_ctrl)] <- FALSE
 md <- dplyr::bind_rows(md[!is_ctrl, ], md[is_ctrl, ])
 
 stopifnot(nrow(md) > 0)
@@ -380,6 +424,172 @@ writeLines(asv_fasta, "final_data/otus_vsearch/fish_ASV.fasta")
 message("Phyloseq y FASTA guardados en final_data/otus_vsearch/")
 message("Total ASVs exportadas: ", length(asv_seqs))
 ```
+
+---
+
+## OTUs: agrupamiento por similitud con VSEARCH
+
+Las ASVs son secuencias únicas — entre dos ASVs puede haber solo 1 base de diferencia. Esto da gran resolución, pero nos lleva a preguntarnos: ¿existe 1 base de diferencia entre especies diferentes? ¿Cuál es el impacto en las estimaciones de diversidad?
+
+Usamos `vsearch` ([Rognes et al., 2016](https://doi.org/10.7717/peerj.2584)) para formar **OTUs** (Operational Taxonomic Units) a partir de las ASVs al **97% de similitud**, reconstruimos un objeto `phyloseq` con la nueva información y comparamos la resolución taxonómica de ambas estrategias.
+
+### Agrupamiento de ASVs en OTUs
+
+`vsearch` agrupa secuencias similares en clusters. El parámetro principal es el **porcentaje de similitud** (0.97 = 97%). A cada cluster se le asigna una secuencia representante (**oturep**).
+
+```{r vsearch-run}
+# Ejecutar vsearch desde R
+vsearch_similarity <- 0.97
+fasta_in  <- "final_data/otus_vsearch/fish_ASV.fasta"
+uc_out    <- paste0("final_data/otus_vsearch/otus_", vsearch_similarity, ".uc")
+rep_out   <- paste0("final_data/otus_vsearch/otus_", vsearch_similarity, "_oturep.fasta")
+log_out   <- paste0("final_data/otus_vsearch/otus_", vsearch_similarity, ".log")
+
+vsearch_cmd <- paste(
+  "vsearch --cluster_size", fasta_in,
+  "--id", vsearch_similarity,
+  "--uc", uc_out,
+  "--centroids", rep_out,
+  "--log", log_out
+)
+
+message("Ejecutando: ", vsearch_cmd)
+system(vsearch_cmd)
+message("VSEARCH completado.")
+```
+
+Resultado: tres archivos generados:
+
+| Archivo | Contenido |
+|:--------|:----------|
+| `_oturep.fasta` | Secuencias representantes en formato FASTA |
+| `.uc` | Relación de las agrupaciones en formato uclust |
+| `.log` | Registro de la ejecución de vsearch |
+
+### Procesar archivo .uc
+
+El archivo `.uc` es una tabla separada por tabuladores con un renglón por cada secuencia analizada:
+
+| Columna | Descripción |
+|:-------:|:------------|
+| 1 | Tipo: `S` (centroide/oturep), `H` (hit/miembro), `C` (registro de cluster) |
+| 2 | Número de cluster (base 0) |
+| 3 | Longitud de la secuencia |
+| 4 | Porcentaje de identidad con el centroide (solo tipo H) |
+| 9 | Etiqueta de la secuencia |
+| 10 | Etiqueta del centroide (solo tipo H) |
+
+```{r vsearch-uc}
+uc_names <- c("Type", "clus_ID", "len", "id_pct", "strand",
+              "NA1", "NA2", "aln", "ASV_ID", "centroid")
+
+uc.df <- readr::read_tsv(uc_out, col_names = uc_names, show_col_types = FALSE) |>
+  dplyr::select(-NA1, -NA2) |>
+  dplyr::filter(!Type %in% "C") |>
+  dplyr::relocate(ASV_ID)
+
+# Número de OTUs (otureps) vs miembros
+table(uc.df$Type)
+```
+
+```{r vsearch-otureps}
+# Identificar otureps y su cluster
+oturep.df <- uc.df |> dplyr::filter(Type %in% "S") |> dplyr::select(clus_ID, ASV_ID)
+oturepID <- oturep.df |> dplyr::pull(ASV_ID)
+message("Total OTUs (otureps): ", length(oturepID))
+```
+
+### Reconstruir objeto phyloseq con OTUs
+
+Extraemos los componentes del phyloseq original correspondientes a los otureps y colapsamos los conteos por cluster:
+
+```{r vsearch-phyloseq}
+ps.asv <- ps
+
+# Subset: solo los otureps
+ps.sub <- phyloseq::subset_taxa(ps.asv, phyloseq::taxa_names(ps.asv) %in% oturepID)
+
+oturep.seq <- phyloseq::refseq(ps.sub)
+oturep.tax <- phyloseq::tax_table(ps.sub)
+oturep.md  <- phyloseq::sample_data(ps.sub)
+
+# Tabla de conteos original en formato largo
+conteos.ini <- data.frame(phyloseq::otu_table(ps.asv), stringsAsFactors = FALSE)
+
+conteos.ini.long <- conteos.ini |>
+  tibble::rownames_to_column(var = "SampleID") |>
+  tidyr::pivot_longer(-SampleID, names_to = "ASV_ID", values_to = "conteo")
+
+conteos.ini.long <- dplyr::left_join(conteos.ini.long, uc.df, by = "ASV_ID")
+
+# Sumar conteos por muestra y cluster
+conteos.sum.long <- conteos.ini.long |>
+  dplyr::group_by(SampleID, clus_ID) |>
+  dplyr::summarise(conteo_cluster = sum(conteo), .groups = "drop")
+
+# Reemplazar cluster_ID por ASV_ID del oturep
+conteos.sum.long <- dplyr::left_join(conteos.sum.long, oturep.df, by = "clus_ID")
+
+# Convertir a matriz muestras × OTUs
+conteos.sum <- conteos.sum.long |>
+  dplyr::select(-clus_ID) |>
+  tidyr::pivot_wider(names_from = ASV_ID, values_from = conteo_cluster, values_fill = 0) |>
+  tibble::column_to_rownames(var = "SampleID")
+conteos.sum <- as.matrix(conteos.sum)
+
+message("Dimensiones OTU table: ", nrow(conteos.sum), " muestras × ", ncol(conteos.sum), " OTUs")
+
+# Construir nuevo objeto phyloseq
+ASV_otu  <- phyloseq::otu_table(conteos.sum, taxa_are_rows = FALSE)
+TAXA_otu <- phyloseq::tax_table(oturep.tax)
+SEQ_otu  <- phyloseq::refseq(oturep.seq)
+MD_otu   <- phyloseq::sample_data(oturep.md)
+
+ps.otu <- phyloseq::phyloseq(ASV_otu, TAXA_otu, SEQ_otu, MD_otu)
+ps.otu
+```
+
+### Comparar resolución taxonómica: ASVs vs OTUs
+
+```{r vsearch-comparar, fig.width=9, fig.height=5}
+asv.tax <- data.frame(phyloseq::tax_table(ps.asv), stringsAsFactors = FALSE)
+otu.tax <- data.frame(phyloseq::tax_table(ps.otu), stringsAsFactors = FALSE)
+
+df_comp <- data.frame(
+  ASVs = apply(asv.tax, 2, function(x) length(unique(na.omit(x)))),
+  OTUs = apply(otu.tax, 2, function(x) length(unique(na.omit(x))))
+)
+
+df_comp <- df_comp |>
+  tibble::rownames_to_column(var = "Nivel") |>
+  tidyr::pivot_longer(-Nivel, names_to = "Estrategia", values_to = "Conteo") |>
+  dplyr::mutate(Nivel = factor(Nivel,
+    levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
+    ordered = TRUE))
+
+ggplot(df_comp, aes(x = Nivel, y = Conteo, group = Estrategia, color = Estrategia)) +
+  geom_line(linewidth = 1.5, alpha = 0.7) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("ASVs" = "#1b9e77", "OTUs" = "#d95f02")) +
+  labs(
+    title = "Número de taxones identificados: ASVs vs OTUs (97%)",
+    x = "Nivel taxonómico", y = "Número de taxones"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  )
+
+ggsave("final_data/reporte_ecologico/comparacion_asvs_vs_otus.png",
+       width = 9, height = 5, dpi = 300)
+```
+
+::: {.callout-note icon="false"}
+**Interpretación:** La diferencia entre ASVs y OTUs refleja cuánta variación intraespecífica (haplotipos, alelos) captura el análisis por ASVs. A niveles taxonómicos altos (Phylum, Class) la diferencia es mínima; a nivel de Genus/Species puede ser notable. En cada nivel puede haber asignaciones `NA` que cuentan como 1 taxón.
+:::
 
 ---
 
