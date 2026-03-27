@@ -19,6 +19,15 @@ Este reporte presenta el flujo completo de análisis ecológico de comunidades d
 
 ## 1. Preparación
 
+::: {.callout-warning}
+**Bug conocido:** la columna `sample_id` en `metadata.csv` puede estar vacía (NA). Si es tu caso, restaura el archivo original desde GitHub **antes de abrir R**:
+
+```bash
+cd ~/metabarcoding-code
+git checkout origin/main -- metadata/metadata.csv
+```
+:::
+
 ### Carga de paquetes
 
 Cargamos todos los paquetes necesarios al inicio del documento. Usamos `suppressPackageStartupMessages()` para mantener el output limpio. Los paquetes están organizados por función: manipulación de datos, análisis ecológico, visualización y tablas.
@@ -68,17 +77,6 @@ ruta_figs        <- "final_data/reporte_ecologico"
 ### Carga de datos
 
 Cargamos el archivo `.RData` más reciente generado por el pipeline DADA2, que contiene las matrices de abundancias, taxonomía y metadata.
-
-::: {.callout-warning}
-**Bug conocido:** la columna `sample_id` en `metadata.csv` puede estar vacía (NA). Esto causa que `sample_meta` se cargue sin rownames válidos y todo el análisis falle con NAs. Si te pasa, restaura el archivo original desde GitHub:
-
-```bash
-cd ~/metabarcoding-code
-git checkout origin/main -- metadata/metadata.csv
-```
-
-El pipeline usa la columna `rename_to` para alinear los nombres de muestra, así que el análisis funciona aunque `sample_id` esté vacío.
-:::
 
 ```{r cargar-datos}
 # Buscar todos los .RData en el directorio de salida del pipeline
